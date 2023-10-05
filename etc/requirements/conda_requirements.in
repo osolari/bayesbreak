@@ -1,0 +1,29 @@
+### General Packages ###
+setuptools
+ipython
+mamba
+pip
+black
+joblib
+requests
+tqdm
+
+numpy
+cython
+scipy
+pandas
+scikit-learn
+shap
+statsmodels
+
+jupyterlab
+
+### Testing ###
+pytest
+ipytest
+ipdb
+
+### Plotting ###
+matplotlib
+seaborn
+
