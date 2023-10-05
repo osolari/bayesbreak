@@ -1,1 +1,1 @@
-# ADEL
+# Hierarchical Bayes Change-Point Estimation
