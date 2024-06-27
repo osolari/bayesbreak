@@ -1,5 +1,4 @@
-from sklearn.base import BaseEstimator, RegressorMixin
-from .utils import _fit_context
+from sklearn.base import BaseEstimator, RegressorMixin, _fit_context
 
 
 class ProcessSegmentation(RegressorMixin, BaseEstimator):
