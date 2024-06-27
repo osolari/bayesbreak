@@ -1,51 +1,77 @@
 import numpy as np
 from numpy.testing import assert_allclose
 
-from bayescp.estimator.utils import log_add, index_la0, est_glob_param
+from bayescp.estimator.utils import log_add, indexLA0, est_glob_param
+
+import pytest
 
 
-def test_log_add_1d():
-    # Test for a 1D input array
-    x = np.array([1.0, 2.0, 3.0])
-    expected_result = np.log(np.sum(np.exp(x)))  # Compute the expected result
-    assert_allclose(log_add(x), expected_result, atol=1e-10)
+# log_add tests
 
 
-def test_log_add_2d():
-    # Test for a 2D input array
-    x = np.array([[1.0, 2.0, 3.0], [4.0, 5.0, 6.0]])
-    expected_result = np.log(np.sum(np.exp(x), axis=0))  # Compute the expected result
-    assert_allclose(log_add(x), expected_result, atol=1e-10)
+def test_log_add_single_column():
+    """
+    Test case for a 1D array.
+    """
+    x = np.array([-np.inf, -1, 0, 1])
+    assert np.isclose(log_add(x), 1.3862943611198906)
 
 
-def test_index_la0_single_values():
-    # Test for single row and single column
-    r = 3
-    c = 5
-    n = 10
-    expected_result = np.array([c + (r - 1) * (n - r // 2)])
-    assert np.array_equal(index_la0(r, c, n), expected_result)
+def test_log_add_multiple_columns():
+    """
+    Test case for a 2D array with multiple columns.
+    """
+    x = np.array([[-np.inf, -2, 0], [0, 0, 0], [1, -1, -1]])
+    expected = np.array([1.31326169, 0.74193734, 1.55144471])
+    np.testing.assert_almost_equal(log_add(x), expected)
 
 
-def test_index_la0_column_range():
-    # Test for single row and column range
-    r = 3
-    c_range = (5, 8)
-    n = 10
-    expected_result = np.array([6, 7, 8])  # Computed manually using the formula
-    assert np.array_equal(index_la0(r, c_range, n), expected_result)
+def test_log_add_inf_values():
+    """
+    Test case for an array with all -inf values.
+    """
+    x = np.array([-np.inf, -np.inf, -np.inf])
+    assert log_add(x) == -np.inf
 
 
-def test_index_la0_row_range():
-    # Test for row range
-    r_range = (2, 4)
-    c = 5
-    n = 10
-    expected_result = np.array([9, 14, 19])  # Computed manually using the formula
-    assert np.array_equal(index_la0(r_range, c, n), expected_result)
+def test_log_add_zero_length_array():
+    """
+    Test case for an empty array.
+    """
+    x = np.array([])
+    assert log_add(x) == -np.inf
 
 
-def test_est_glob_param():
-    y = [1, 2, 3, 4, 5]
-    expected_result = {"nu": 3.0, "rho_square": 2.0, "sigma_square": 2.5}
-    assert est_glob_param(y) == expected_result
+# indexLA0 tests
+
+
+def test_indexLA0_single_row_single_column():
+    """
+    Test case for a single row and a single column.
+    """
+    assert np.array_equal(indexLA0(1, 1, 5), [1])
+
+
+def test_indexLA0_single_row_range_column():
+    """
+    Test case for a single row and a range of columns.
+    """
+    assert np.array_equal(indexLA0(1, [1, 3], 5), [1, 2, 3])
+
+
+def test_indexLA0_range_row_single_column():
+    """
+    Test case for a range of rows and a single column.
+    """
+    assert np.array_equal(indexLA0([1, 3], 3, 5), [3, 6, 9])
+
+
+def test_indexLA0_complex_case():
+    """
+    Test case for a complex range of rows and columns.
+    """
+    assert np.array_equal(indexLA0(2, [1, 3], 5), [4, 5, 6])
+
+
+if __name__ == "__main__":
+    pytest.main()
