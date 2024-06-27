@@ -28,3 +28,5 @@ external_resources/mBPCR/R-ex/importCNData.R
 external_resources/mBPCR/R-ex/logAdd.R
 external_resources/mBPCR/R-ex/plotEstProfile.R
 external_resources/mBPCR/R-ex/printEstProfile.R
+
+bayescp/estimator/__pycache__
