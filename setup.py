@@ -2,11 +2,11 @@ from setuptools import setup, find_packages
 import numpy
 
 setup(
-    name="bayescp",
+    name="bprseg",
     version="0.0.1",
     author="Omid Shams Solari",
     author_email="solari@berkeley.edu",
-    description="Bayesian Change-Point Estimation",
+    description="Bayesian Process Segmentation",
     maintainer="Omid Shams Solari",
     maintainer_email="solari@berkeley.edu",
     setup_requires=[

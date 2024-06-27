@@ -1,9 +1,9 @@
 dev
-bayescp/__pycache__/__init__.cpython-310.pyc
-bayescp.egg-info/dependency_links.txt
-bayescp.egg-info/PKG-INFO
-bayescp.egg-info/SOURCES.txt
-bayescp.egg-info/top_level.txt
+bprseg/__pycache__/__init__.cpython-310.pyc
+bprseg.egg-info/dependency_links.txt
+bprseg.egg-info/PKG-INFO
+bprseg.egg-info/SOURCES.txt
+bprseg.egg-info/top_level.txt
 external_resources
 external_resources/mBPCR.zip
 external_resources/mBPCR/CONTENTS
@@ -29,4 +29,4 @@ external_resources/mBPCR/R-ex/logAdd.R
 external_resources/mBPCR/R-ex/plotEstProfile.R
 external_resources/mBPCR/R-ex/printEstProfile.R
 
-bayescp/estimator/__pycache__
+bprseg/estimator/__pycache__

@@ -1,1 +1,1 @@
-# Hierarchical Bayes Change-Point Estimation
+# Hierarchical Bayes Process Segmentation

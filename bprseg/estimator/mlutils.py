@@ -99,14 +99,14 @@ def indexLA0(r, c, n):
     """
     if isinstance(r, int):  # r is a single integer
         if isinstance(c, int):  # c is a single integer
-            index = np.array([c + (r - 1) * (n - r / 2)])
+            index = numpy.array([c + (r - 1) * (n - r / 2)])
         else:  # c is a list or range
-            c1 = np.arange(c[0], c[1] + 1)
+            c1 = numpy.arange(c[0], c[1] + 1)
             c1 = c1[c1 >= r]
             index = c1 + (r - 1) * (n - r / 2)
         return index
     else:  # r is a list or range
-        r1 = np.arange(r[0], r[1] + 1)
+        r1 = numpy.arange(r[0], r[1] + 1)
         r1 = r1[r1 <= c]
         index = c + (r1 - 1) * (n - r1 / 2)
         return index

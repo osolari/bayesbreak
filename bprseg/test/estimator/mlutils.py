@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.testing import assert_allclose
 
-from bayescp.estimator.utils import log_add, indexLA0, est_glob_param
+from bprseg.estimator.mlutils import log_add, indexLA0, est_glob_param
 
 import pytest
 
