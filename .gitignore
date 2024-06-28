@@ -4,7 +4,6 @@ bprseg.egg-info/dependency_links.txt
 bprseg.egg-info/PKG-INFO
 bprseg.egg-info/SOURCES.txt
 bprseg.egg-info/top_level.txt
-external_resources
 external_resources/mBPCR.zip
 external_resources/mBPCR/CONTENTS
 external_resources/mBPCR/DESCRIPTION
@@ -21,6 +20,9 @@ external_resources/mBPCR/html/logAdd.html
 external_resources/mBPCR/html/mBPCR-internal.html
 external_resources/mBPCR/html/plotEstProfile.html
 external_resources/mBPCR/html/printEstProfile.html
+
+external_resources/mBPCR/
+external_resources/mBPCR/R-ex/
 external_resources/mBPCR/R-ex/computeMBPCR.R
 external_resources/mBPCR/R-ex/estGlobParam.R
 external_resources/mBPCR/R-ex/estProfileWithMBPCR.R
@@ -30,3 +32,4 @@ external_resources/mBPCR/R-ex/plotEstProfile.R
 external_resources/mBPCR/R-ex/printEstProfile.R
 
 bprseg/estimator/__pycache__
+.Rproj.user
