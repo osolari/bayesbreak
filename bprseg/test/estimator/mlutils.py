@@ -1,3 +1,4 @@
+import os
 import tempfile
 import numpy as np
 from numpy.testing import assert_allclose
@@ -9,9 +10,12 @@ from bprseg.estimator.mlutils import (
     computePCReg,
     computeRecursions,
     computeRegrCurve,
+    est_profile_with_mbpcr,
+    import_cn_data,
     log_add,
     indexLA0,
     est_glob_param,
+    plot_est_profile,
     print_est_profile,
 )
 
@@ -317,31 +321,189 @@ def test_computeMBPCR():
 
 
 # print_est_profile test
-def test_print_est_profile():
-    snp_name = np.array(["snp1", "snp2", "snp3", "snp4"])
-    chr = np.array([1, 1, 2, 2])
-    position = np.array([100, 200, 300, 400])
-    logratio = np.array([0.1, 0.2, -0.1, -0.2])
-    chr_to_be_printed = [1, 2]
-    est_pc = np.array([0.15, 0.25, -0.05, -0.15])
-    est_boundaries = {1: [1], 2: [1]}
-    post_prob_t = {1: [0.9], 2: [0.8]}
-    regr_curve = np.array([0.12, 0.22, -0.08, -0.18])
+
+
+@pytest.fixture
+def setup_data():
+    path = "test_output/"
+    if not os.path.exists(path):
+        os.makedirs(path)
+    sample_name = "sample1"
+    snp_name = np.array(["snp1", "snp2", "snp3"])
+    chr = np.array(["chr1", "chr1", "chr2"])
+    position = np.array([100, 200, 300])
+    logratio = np.array([0.5, -0.5, 0.1])
+    chr_to_be_printed = ["chr1", "chr2"]
+    est_pc = np.array([0.4, -0.3, 0.05])
+    est_boundaries = {"chr1": [0, 1], "chr2": [2]}
+    post_prob_t = {"chr1": [0.8, 0.2], "chr2": [0.9]}
+    regr_curve = np.array([0.3, -0.2, 0.08])
     regr = 1
 
-    # Call the function
-    with tempfile.TemporaryDirectory() as tempdir:
-        print_est_profile(
-            path=f"{tempdir}",
-            sample_name="sample1",
-            snp_name=snp_name,
-            chr=chr,
-            position=position,
-            logratio=logratio,
-            chr_to_be_printed=chr_to_be_printed,
-            est_pc=est_pc,
-            est_boundaries=est_boundaries,
-            post_prob_t=post_prob_t,
-            regr_curve=regr_curve,
-            regr=regr,
-        )
+    return (
+        path,
+        sample_name,
+        snp_name,
+        chr,
+        position,
+        logratio,
+        chr_to_be_printed,
+        est_pc,
+        est_boundaries,
+        post_prob_t,
+        regr_curve,
+        regr,
+    )
+
+
+def test_print_est_profile(setup_data):
+    (
+        path,
+        sample_name,
+        snp_name,
+        chr,
+        position,
+        logratio,
+        chr_to_be_printed,
+        est_pc,
+        est_boundaries,
+        post_prob_t,
+        regr_curve,
+        regr,
+    ) = setup_data
+
+    print_est_profile(
+        path,
+        sample_name,
+        snp_name,
+        chr,
+        position,
+        logratio,
+        chr_to_be_printed,
+        est_pc,
+        est_boundaries,
+        post_prob_t,
+        regr_curve,
+        regr,
+    )
+
+    # Check if files are created
+    assert os.path.exists(f"{path}{sample_name}_mBPCRestimate.txt")
+    assert os.path.exists(f"{path}{sample_name}_mBPCRbreakpoints")
+
+
+# import_cn_data tests
+
+
+@pytest.fixture
+def setup_test_file():
+    # Setup a test file
+    test_path = "test_cn_data.txt"
+    data = """SNP1\tchr1\t100\t0.5
+SNP2\tchr1\t200\t1.5
+SNP3\tchr2\t300\t2.5
+"""
+    with open(test_path, "w") as f:
+        f.write(data)
+    yield test_path
+    # Cleanup
+    os.remove(test_path)
+
+
+def test_import_cn_data_with_log_ratio(setup_test_file):
+    test_path = setup_test_file
+    result = import_cn_data(test_path, n_row_skip=0, if_log_ratio=1)
+
+    assert result["snp_name"] == ["SNP1", "SNP2", "SNP3"]
+    assert result["chr"] == ["chr1", "chr1", "chr2"]
+    assert result["position"] == [100, 200, 300]
+    assert result["logratio"] == [0.5, 1.5, 2.5]
+
+
+def test_import_cn_data_without_log_ratio(setup_test_file):
+    test_path = setup_test_file
+    result = import_cn_data(test_path, n_row_skip=0, if_log_ratio=0)
+
+    expected_logratio = np.log([0.5, 1.5, 2.5]) - 1
+
+    assert result["snp_name"] == ["SNP1", "SNP2", "SNP3"]
+    assert result["chr"] == ["chr1", "chr1", "chr2"]
+    assert result["position"] == [100, 200, 300]
+    np.testing.assert_almost_equal(result["logratio"], expected_logratio.tolist())
+
+
+def test_import_cn_data_invalid_log_ratio(setup_test_file):
+    test_path = setup_test_file
+    with pytest.raises(
+        ValueError, match="Invalid value for if_log_ratio: must be either 0 or 1"
+    ):
+        import_cn_data(test_path, n_row_skip=0, if_log_ratio=2)
+
+
+# est_profile_with_mbpcr tests
+@pytest.fixture
+def sample_data():
+    snp_name = ["SNP1", "SNP2", "SNP3", "SNP4"]
+    chr = [1, 1, 2, 2]
+    position = [100, 200, 300, 400]
+    logratio = [0.5, 0.6, 0.7, 0.8]
+    chr_to_be_analyzed = [1, 2]
+    max_probe_number = 2
+    return snp_name, chr, position, logratio, chr_to_be_analyzed, max_probe_number
+
+
+def test_est_profile_with_mbpcr(sample_data):
+    snp_name, chr, position, logratio, chr_to_be_analyzed, max_probe_number = (
+        sample_data
+    )
+    result = est_profile_with_mbpcr(
+        snp_name=snp_name,
+        chr=chr,
+        position=position,
+        logratio=logratio,
+        chr_to_be_analyzed=chr_to_be_analyzed,
+        max_probe_number=max_probe_number,
+    )
+
+    assert "est_pc" in result
+    assert "est_boundaries" in result
+    assert "post_prob_t" in result
+    assert len(result["est_pc"]) == len(snp_name)
+    assert len(result["est_boundaries"]) == len(chr_to_be_analyzed)
+
+
+# plot_est_profile tests
+@pytest.fixture
+def sample_plot_data():
+    chr = [1, 1, 2, 2]
+    position = [100, 200, 300, 400]
+    logratio = [0.5, 0.6, 0.7, 0.8]
+    chr_to_be_plotted = [1, 2]
+    est_pc = [0.55, 0.65, 0.75, 0.85]
+    max_probe_number = 2
+    regr_curve = [0.54, 0.64, 0.74, 0.84]
+    return (
+        chr,
+        position,
+        logratio,
+        chr_to_be_plotted,
+        est_pc,
+        max_probe_number,
+        regr_curve,
+    )
+
+
+def test_plot_est_profile(sample_plot_data):
+    chr, position, logratio, chr_to_be_plotted, est_pc, max_probe_number, regr_curve = (
+        sample_plot_data
+    )
+    plot_est_profile(
+        chr=chr,
+        position=position,
+        logratio=logratio,
+        chr_to_be_plotted=chr_to_be_plotted,
+        est_pc=est_pc,
+        max_probe_number=max_probe_number,
+        regr_curve=regr_curve,
+    )
+    assert True  # Check if the function runs without error

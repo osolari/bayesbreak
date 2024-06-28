@@ -459,6 +459,26 @@ def print_est_profile(
     regr_curve=None,
     regr=None,
 ):
+    """
+    Print and save estimated profile data to files.
+
+    Parameters:
+    path (str): Path for the output files.
+    sample_name (str): Sample name.
+    snp_name (list): List of SNP names.
+    chr (list): List of chromosomes.
+    position (list): List of positions.
+    logratio (list): List of log ratios.
+    chr_to_be_printed (list): List of chromosomes to be printed.
+    est_pc (list): List of estimated PC values.
+    est_boundaries (list): List of estimated boundaries.
+    post_prob_t (list): List of posterior probabilities.
+    regr_curve (list): List of regression curves.
+    regr (int): Regression type.
+
+    Returns:
+    None
+    """
     if (
         snp_name is None
         or chr is None
@@ -467,16 +487,17 @@ def print_est_profile(
         or chr_to_be_printed is None
         or est_pc is None
     ):
-        raise ValueError("Missing required parameters")
+        print("Error: Missing required parameter(s)")
+        return None
 
     path_results1 = f"{path}{sample_name}_mBPCRestimate.txt"
     data11 = pd.DataFrame(
         {
-            "SNP_name": [],
-            "chromosome": [],
-            "position": [],
-            "rawLog2ratio": [],
-            "mBPCR_estimate": [],
+            "SNP_name": snp_name,
+            "chromosome": chr,
+            "position": position,
+            "rawLog2ratio": logratio,
+            "mBPCR_estimate": est_pc,
         }
     )
     data11.to_csv(path_results1, sep="\t", index=False, header=False)
@@ -511,10 +532,10 @@ def print_est_profile(
         data21.to_csv(path_results2, sep="\t", index=False, header=False)
     else:
         if post_prob_t is not None:
-            print("Error: estBoundaries=None while posteriorProbT!=None")
+            print("Error: estBoundaries=NULL while posteriorProbT!=NULL")
             return None
 
-    if regr_curve is not None and np.any(~np.isnan(regr_curve)):
+    if regr_curve is not None and not np.all(np.isnan(regr_curve)):
         if regr is None or regr not in [1, 2]:
             print("Error: wrong value for parameter regr")
             return None
@@ -523,52 +544,51 @@ def print_est_profile(
                 path_results3 = f"{path}{sample_name}_mBRCestimate.txt"
                 data31 = pd.DataFrame(
                     {
-                        "SNP_name": [],
-                        "chromosome": [],
-                        "position": [],
-                        "rawLog2ratio": [],
-                        "mBRC_estimate": [],
+                        "SNP_name": snp_name,
+                        "chromosome": chr,
+                        "position": position,
+                        "rawLog2ratio": logratio,
+                        "mBRC_estimate": regr_curve,
                     }
                 )
             else:
                 path_results3 = f"{path}{sample_name}_BRCAkestimate.txt"
                 data31 = pd.DataFrame(
                     {
-                        "SNP_name": [],
-                        "chromosome": [],
-                        "position": [],
-                        "rawLog2ratio": [],
-                        "BRCAk_estimate": [],
+                        "SNP_name": snp_name,
+                        "chromosome": chr,
+                        "position": position,
+                        "rawLog2ratio": logratio,
+                        "BRCAk_estimate": regr_curve,
                     }
                 )
             data31.to_csv(path_results3, sep="\t", index=False, header=False)
 
     for j in chr_to_be_printed:
-        mask = chr == j
         data12 = pd.DataFrame(
             {
-                "SNP_name": snp_name[mask],
-                "chromosome": chr[mask],
-                "position": position[mask],
-                "rawLog2ratio": logratio[mask],
-                "mBPCR_estimate": est_pc[mask],
+                "SNP_name": snp_name[chr == j],
+                "chromosome": chr[chr == j],
+                "position": position[chr == j],
+                "rawLog2ratio": logratio[chr == j],
+                "mBPCR_estimate": est_pc[chr == j],
             }
         )
         data12.to_csv(path_results1, sep="\t", index=False, header=False, mode="a")
 
         if est_boundaries is not None:
-            start_boundaries = np.array(est_boundaries[j]) + 1
-            if len(est_pc[mask][~np.isnan(est_pc[mask])]) != np.sum(mask):
-                if est_boundaries[j][-1] == np.sum(mask):
+            start_boundaries = est_boundaries[j] + 1
+            if len(est_pc[chr == j]) != len(chr[chr == j]):
+                if est_boundaries[j][-1] == len(chr[chr == j]):
                     start_boundaries = np.concatenate(
                         (
                             [1],
-                            [np.sum(np.isnan(est_pc[mask])) + 1],
+                            np.where(np.isnan(est_pc[chr == j]))[0] + 1,
                             start_boundaries[:-1],
                         )
                     )
                     est_boundaries[j] = np.concatenate(
-                        ([np.sum(np.isnan(est_pc[mask]))], est_boundaries[j])
+                        (np.where(np.isnan(est_pc[chr == j]))[0], est_boundaries[j])
                     )
                     if post_prob_t is not None:
                         post_prob_t[j] = np.concatenate(([np.nan], post_prob_t[j]))
@@ -577,11 +597,11 @@ def print_est_profile(
                         (
                             [1],
                             start_boundaries[:-1],
-                            [np.sum(np.isnan(est_pc[mask])) + 1],
+                            [np.where(np.isnan(est_pc[chr == j]))[0] + 1],
                         )
                     )
                     est_boundaries[j] = np.concatenate(
-                        (est_boundaries[j], [np.sum(mask)])
+                        (est_boundaries[j], [len(chr[chr == j])])
                     )
                     if post_prob_t is not None:
                         post_prob_t[j] = np.concatenate((post_prob_t[j], [np.nan]))
@@ -591,38 +611,440 @@ def print_est_profile(
             if post_prob_t is not None:
                 data22 = pd.DataFrame(
                     {
-                        "SNP_name(start)": snp_name[mask][start_boundaries - 1],
-                        "SNP_name(end)": snp_name[mask][est_boundaries[j] - 1],
+                        "SNP_name(start)": snp_name[chr == j][start_boundaries],
+                        "SNP_name(end)": snp_name[chr == j][est_boundaries[j]],
                         "chromosome": [j] * len(est_boundaries[j]),
-                        "position(start)": position[mask][start_boundaries - 1],
-                        "position(end)": position[mask][est_boundaries[j] - 1],
+                        "position(start)": position[chr == j][start_boundaries],
+                        "position(end)": position[chr == j][est_boundaries[j]],
                         "n_probes": est_boundaries[j] - start_boundaries + 1,
-                        "mBPCR_estimate": est_pc[mask][est_boundaries[j] - 1],
+                        "mBPCR_estimate": est_pc[chr == j][est_boundaries[j]],
                         "breakpointPostProb": post_prob_t[j],
                     }
                 )
             else:
                 data22 = pd.DataFrame(
                     {
-                        "SNP_name(start)": snp_name[mask][start_boundaries - 1],
-                        "SNP_name(end)": snp_name[mask][est_boundaries[j] - 1],
+                        "SNP_name(start)": snp_name[chr == j][start_boundaries],
+                        "SNP_name(end)": snp_name[chr == j][est_boundaries[j]],
                         "chromosome": [j] * len(est_boundaries[j]),
-                        "position(start)": position[mask][start_boundaries - 1],
-                        "position(end)": position[mask][est_boundaries[j] - 1],
+                        "position(start)": position[chr == j][start_boundaries],
+                        "position(end)": position[chr == j][est_boundaries[j]],
                         "n_probes": est_boundaries[j] - start_boundaries + 1,
-                        "mBPCR_estimate": est_pc[mask][est_boundaries[j] - 1],
+                        "mBPCR_estimate": est_pc[chr == j][est_boundaries[j]],
                     }
                 )
             data22.to_csv(path_results2, sep="\t", index=False, header=False, mode="a")
 
-        if regr_curve is not None and np.any(~np.isnan(regr_curve)):
+        if regr_curve is not None and not np.all(np.isnan(regr_curve)):
             data32 = pd.DataFrame(
                 {
-                    "SNP_name": snp_name[mask],
-                    "chromosome": chr[mask],
-                    "position": position[mask],
-                    "rawLog2ratio": logratio[mask],
-                    "regrCurve": regr_curve[mask],
+                    "SNP_name": snp_name[chr == j],
+                    "chromosome": chr[chr == j],
+                    "position": position[chr == j],
+                    "rawLog2ratio": logratio[chr == j],
+                    "regrCurve": regr_curve[chr == j],
                 }
             )
             data32.to_csv(path_results3, sep="\t", index=False, header=False, mode="a")
+
+
+def import_cn_data(path, n_row_skip, if_log_ratio=1):
+    """
+    Import CN data from a file.
+
+    Parameters:
+    path (str): Path to the input file.
+    n_row_skip (int): Number of rows to skip at the beginning of the file.
+    if_log_ratio (int): Indicator whether the log ratio is already provided (1) or needs to be calculated (0).
+
+    Returns:
+    dict: A dictionary with keys 'snp_name', 'chr', 'position', and 'logratio'.
+    """
+    # Read the table, skipping the specified number of rows
+    results = pd.read_csv(path, sep="\t", skiprows=n_row_skip, header=None)
+
+    # Check if we need to compute the log ratio
+    if if_log_ratio == 1:
+        return {
+            "snp_name": results[0].tolist(),
+            "chr": results[1].tolist(),
+            "position": results[2].tolist(),
+            "logratio": results[3].tolist(),
+        }
+    elif if_log_ratio == 0:
+        logratio = np.log(results[3].astype(float)) - 1
+        return {
+            "snp_name": results[0].tolist(),
+            "chr": results[1].tolist(),
+            "position": results[2].tolist(),
+            "logratio": logratio.tolist(),
+        }
+
+    # In case of an invalid if_log_ratio value, raise an error
+    raise ValueError("Invalid value for if_log_ratio: must be either 0 or 1")
+
+
+def est_profile_with_mbpcr(
+    path="",
+    sample_name="",
+    snp_name=None,
+    chr=None,
+    position=None,
+    logratio=None,
+    chr_to_be_analyzed=None,
+    max_probe_number=None,
+    rho_square=None,
+    k_max=50,
+    nu=None,
+    sigma_square=None,
+    type_est_rho=1,
+    regr=None,
+):
+    """
+    Estimate profile using MBPCR.
+
+    Parameters:
+    path (str): Path to save the results.
+    sample_name (str): Sample name.
+    snp_name (list): List of SNP names.
+    chr (list): List of chromosomes.
+    position (list): List of positions.
+    logratio (list): List of log ratios.
+    chr_to_be_analyzed (list): Chromosomes to be analyzed.
+    max_probe_number (int): Maximum number of probes.
+    rho_square (float): Rho squared value.
+    k_max (int): Maximum value for k.
+    nu (float): Nu value.
+    sigma_square (float): Sigma squared value.
+    type_est_rho (int): Type of rho estimation.
+    regr (int): Regression parameter.
+
+    Returns:
+    dict: Dictionary containing estimated profile data.
+    """
+    pos_centromere = [
+        124200000,
+        93400000,
+        91700000,
+        50900000,
+        47700000,
+        60500000,
+        58900000,
+        45200000,
+        50600000,
+        40300000,
+        52900000,
+        35400000,
+        16000000,
+        15600000,
+        17000000,
+        38200000,
+        22200000,
+        16100000,
+        28500000,
+        27100000,
+        12300000,
+        11800000,
+    ]
+
+    # Estimate global parameters if not provided
+    if nu is None or rho_square is None or sigma_square is None:
+        results = est_glob_param(logratio, nu, rho_square, sigma_square, type_est_rho)
+        nu = results["nu"]
+        rho_square = results["rho_square"]
+        sigma_square = results["sigma_square"]
+
+    index_no = []
+    est_pc = np.full(len(snp_name), np.nan)
+    est_boundaries = [None] * len(chr_to_be_analyzed)
+    post_prob_t = [None] * len(chr_to_be_analyzed)
+    regr_curve = np.full(len(snp_name), np.nan)
+
+    for j in chr_to_be_analyzed:
+        y = logratio[np.array(chr) == j]
+        n = len(y)
+
+        if n <= max_probe_number:
+            print(f"Estimation of the profile of chromosome {j}")
+            results = computeMBPCR(
+                y, k_max, nu, rho_square, sigma_square, type_est_rho, regr
+            )
+            est_pc[np.array(chr) == j] = results["est_pc"]
+            if regr is not None:
+                regr_curve[np.array(chr) == j] = results["regr_curve"]
+            est_boundaries[chr_to_be_analyzed.index(j)] = results["est_boundaries"]
+            post_prob_t[chr_to_be_analyzed.index(j)] = np.append(
+                results["post_prob_t"][results["est_boundaries"][:-1]], 1
+            )
+
+        else:
+            a = pos_centromere[j - 1] if j != "X" else pos_centromere[22]
+            a = np.argmax(position[np.array(chr) == j] > a)
+            bounds1, post_prob1 = [], []
+
+            if a > max_probe_number and n - a > max_probe_number:
+                print(
+                    f"Warning: the profile of chromosome {j} has not been estimated because of its size"
+                )
+                index_no.append(chr_to_be_analyzed.index(j))
+                continue
+
+            print(f"Estimation of the profile of chromosome {j}")
+            if a <= max_probe_number:
+                y = y[:a]
+                results = computeMBPCR(
+                    y, k_max, nu, rho_square, sigma_square, type_est_rho, regr
+                )
+                est_pc[np.array(chr) == j][:a] = results["est_pc"]
+                if regr is not None:
+                    regr_curve[np.array(chr) == j][:a] = results["regr_curve"]
+                bounds1.extend(results["est_boundaries"])
+                post_prob1.extend(
+                    np.append(results["post_prob_t"][results["est_boundaries"][:-1]], 1)
+                )
+
+            if n - a <= max_probe_number:
+                y = logratio[np.array(chr) == j][a:]
+                results = computeMBPCR(
+                    y, k_max, nu, rho_square, sigma_square, type_est_rho, regr
+                )
+                est_pc[np.array(chr) == j][a:] = results["est_pc"]
+                if regr is not None:
+                    regr_curve[np.array(chr) == j][a:] = results["regr_curve"]
+                bounds1.extend(a + np.array(results["est_boundaries"]))
+                post_prob1.extend(
+                    np.append(results["post_prob_t"][results["est_boundaries"][:-1]], 1)
+                )
+
+            if a <= max_probe_number or n - a <= max_probe_number:
+                est_boundaries[chr_to_be_analyzed.index(j)] = bounds1
+                post_prob_t[chr_to_be_analyzed.index(j)] = post_prob1
+
+            if a <= max_probe_number and n - a > max_probe_number:
+                print(
+                    f"Warning: the profile of arm q of chromosome {j} has not been estimated because of its size"
+                )
+
+            if a > max_probe_number and n - a <= max_probe_number:
+                print(
+                    f"Warning: the profile of arm p of chromosome {j} has not been estimated because of its size"
+                )
+
+    if path:
+        if index_no:
+            print_est_profile(
+                path,
+                sample_name,
+                snp_name,
+                chr,
+                position,
+                logratio,
+                chr_to_be_analyzed=[
+                    c for i, c in enumerate(chr_to_be_analyzed) if i not in index_no
+                ],
+                est_pc=est_pc,
+                est_boundaries=[
+                    e for i, e in enumerate(est_boundaries) if i not in index_no
+                ],
+                post_prob_t=[p for i, p in enumerate(post_prob_t) if i not in index_no],
+                regr_curve=regr_curve,
+                regr=regr,
+            )
+        else:
+            print_est_profile(
+                path,
+                sample_name,
+                snp_name,
+                chr,
+                position,
+                logratio,
+                chr_to_be_analyzed=chr_to_be_analyzed,
+                est_pc=est_pc,
+                est_boundaries=est_boundaries,
+                post_prob_t=post_prob_t,
+                regr_curve=regr_curve,
+                regr=regr,
+            )
+
+    if regr is not None:
+        return {
+            "est_pc": est_pc,
+            "est_boundaries": est_boundaries,
+            "post_prob_t": post_prob_t,
+            "regr_curve": regr_curve,
+        }
+    return {
+        "est_pc": est_pc,
+        "est_boundaries": est_boundaries,
+        "post_prob_t": post_prob_t,
+    }
+
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+
+def plot_est_profile(
+    path="",
+    sample_name="",
+    chr=None,
+    position=None,
+    logratio=None,
+    chr_to_be_plotted=None,
+    est_pc=None,
+    max_probe_number=None,
+    legend_position="lower left",
+    regr_curve=None,
+    regr=None,
+):
+    """
+    Plot estimated profile.
+
+    Parameters:
+    path (str): Path to save the plots.
+    sample_name (str): Sample name.
+    chr (list): List of chromosomes.
+    position (list): List of positions.
+    logratio (list): List of log ratios.
+    chr_to_be_plotted (list): Chromosomes to be plotted.
+    est_pc (list): Estimated profile data.
+    max_probe_number (int): Maximum number of probes.
+    legend_position (str): Position of the legend.
+    regr_curve (list): Regression curve data.
+    regr (int): Regression parameter.
+
+    Returns:
+    None
+    """
+    pos_centromere = [
+        124200000,
+        93400000,
+        91700000,
+        50900000,
+        47700000,
+        60500000,
+        58900000,
+        45200000,
+        50600000,
+        40300000,
+        52900000,
+        35400000,
+        16000000,
+        15600000,
+        17000000,
+        38200000,
+        22200000,
+        16100000,
+        28500000,
+        27100000,
+        12300000,
+        11800000,
+    ]
+
+    for j in chr_to_be_plotted:
+        plt.figure()
+        plt.scatter(
+            position[np.array(chr) == j],
+            logratio[np.array(chr) == j],
+            color="grey",
+            s=2,
+        )
+        plt.xlabel(f"Chromosome {j}")
+        plt.ylabel("log2ratio")
+        plt.title(sample_name)
+
+        if est_pc is not None:
+            if regr is None:
+                plt.legend(["mBPCR"], loc=legend_position)
+            else:
+                if regr == 1:
+                    plt.legend(["mBPCR", "BRC with K_2"], loc=legend_position)
+                elif regr == 2:
+                    plt.legend(["mBPCR", "BRCAk"], loc=legend_position)
+                else:
+                    print("Error: wrong value for parameter regr")
+                    return None
+
+            n = np.sum(np.array(chr) == j)
+            if n <= max_probe_number:
+                plt.plot(
+                    position[np.array(chr) == j],
+                    est_pc[np.array(chr) == j],
+                    color="blue",
+                )
+                if regr is not None and (regr == 1 or regr == 2):
+                    plt.plot(
+                        position[np.array(chr) == j],
+                        regr_curve[np.array(chr) == j],
+                        color="red",
+                    )
+            else:
+                a = pos_centromere[j - 1] if j != "X" else pos_centromere[22]
+                a = np.argmax(position[np.array(chr) == j] > a)
+                plt.plot(
+                    position[np.array(chr) == j][:a],
+                    est_pc[np.array(chr) == j][:a],
+                    color="blue",
+                )
+                plt.plot(
+                    position[np.array(chr) == j][a:],
+                    est_pc[np.array(chr) == j][a:],
+                    color="blue",
+                )
+                if regr is not None and (regr == 1 or regr == 2):
+                    plt.plot(
+                        position[np.array(chr) == j][:a],
+                        regr_curve[np.array(chr) == j][:a],
+                        color="red",
+                    )
+                    plt.plot(
+                        position[np.array(chr) == j][a:],
+                        regr_curve[np.array(chr) == j][a:],
+                        color="red",
+                    )
+
+            if path:
+                if regr is None:
+                    plt.savefig(f"{path}{sample_name}_chr{j}_mBPCR.eps")
+                else:
+                    if regr == 1:
+                        plt.savefig(f"{path}{sample_name}_chr{j}_mBPCR&mBRC.eps")
+                    elif regr == 2:
+                        plt.savefig(f"{path}{sample_name}_chr{j}_mBPCR&BRCAk.eps")
+        else:
+            if regr == 1:
+                plt.legend(["BRC with K_2"], loc=legend_position)
+            elif regr == 2:
+                plt.legend(["BRCAk"], loc=legend_position)
+            else:
+                print("Error: wrong value for parameter regr")
+                return None
+
+            n = np.sum(np.array(chr) == j)
+            if n <= max_probe_number:
+                plt.plot(
+                    position[np.array(chr) == j],
+                    regr_curve[np.array(chr) == j],
+                    color="blue",
+                )
+            else:
+                a = pos_centromere[j - 1] if j != "X" else pos_centromere[22]
+                a = np.argmax(position[np.array(chr) == j] > a)
+                plt.plot(
+                    position[np.array(chr) == j][:a],
+                    regr_curve[np.array(chr) == j][:a],
+                    color="blue",
+                )
+                plt.plot(
+                    position[np.array(chr) == j][a:],
+                    regr_curve[np.array(chr) == j][a:],
+                    color="blue",
+                )
+
+            if path:
+                if regr == 1:
+                    plt.savefig(f"{path}{sample_name}_chr{j}_mBRC.eps")
+                elif regr == 2:
+                    plt.savefig(f"{path}{sample_name}_chr{j}_BRCAk.eps")
+
+        plt.close()
