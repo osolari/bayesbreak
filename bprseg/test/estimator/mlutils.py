@@ -3,6 +3,7 @@ import tempfile
 import numpy as np
 from numpy.testing import assert_allclose
 
+from bprseg.constants import DATA_RESOURCES_DIR
 from bprseg.estimator.mlutils import (
     computeA10,
     computeLA0Vect,
@@ -23,6 +24,21 @@ import pytest
 
 
 # log_add tests
+
+
+def test_log_add_simple():
+    x = np.log([0.0001, 0.0003, 0.000006])
+
+    # Compute log of sum of exponentials
+    y = log_add(x)
+
+    # Verification
+    z = np.sum([0.0001, 0.0003, 0.000006])
+    z_exp_y = np.exp(y)
+
+    assert np.isclose(
+        y,
+    )
 
 
 def test_log_add_single_column():
@@ -94,6 +110,28 @@ if __name__ == "__main__":
 
 
 # est_glob_param tests
+
+
+def test_est_glob_param_rec10k():
+
+    rec10k = import_cn_data(
+        os.path.join(DATA_RESOURCES_DIR, "rec10k.tsv"), n_row_skip=1
+    )
+    out = est_glob_param(rec10k["logratio"])
+
+    assert all(
+        [
+            np.isclose(x, y, atol=1e-6)
+            for x, y in zip(
+                out.values(),
+                {
+                    "nu": -0.024038,
+                    "rho_square": 0.088963,
+                    "sigma_square": 0.597142,
+                }.values(),
+            )
+        ]
+    )
 
 
 def test_est_glob_param_default():

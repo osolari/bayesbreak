@@ -3,6 +3,8 @@ import numpy as np
 import pandas as pd
 from scipy.special import comb
 
+import matplotlib.pyplot as plt
+
 
 def log_add(x: np.ndarray):
     """
@@ -878,10 +880,6 @@ def est_profile_with_mbpcr(
         "est_boundaries": est_boundaries,
         "post_prob_t": post_prob_t,
     }
-
-
-import matplotlib.pyplot as plt
-import numpy as np
 
 
 def plot_est_profile(

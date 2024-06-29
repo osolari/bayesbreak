@@ -1,5 +1,6 @@
 dev
-bprseg/__pycache__/__init__.cpython-310.pyc
+bprseg/__pycache__/
+
 bprseg.egg-info/dependency_links.txt
 bprseg.egg-info/PKG-INFO
 bprseg.egg-info/SOURCES.txt
