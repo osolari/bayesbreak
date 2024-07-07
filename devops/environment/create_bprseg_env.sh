@@ -19,4 +19,5 @@ else
 fi
 
 conda install --freeze-installed --file "$PIN_FILE" -c r -c anaconda -c conda-forge -c bioconda -c defaults --override-channels
-python $DIR/../../setup.py develop
+# python $DIR/../../setup.py develop
+python -m pip install --editable ../../
