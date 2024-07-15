@@ -2,7 +2,6 @@ from sklearn.base import BaseEstimator, RegressorMixin, _fit_context
 
 
 class ProcessSegmentation(RegressorMixin, BaseEstimator):
-
     def __init__(self, num_jobs: int = 1) -> None:
         super().__init__()
 

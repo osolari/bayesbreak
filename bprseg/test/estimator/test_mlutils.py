@@ -27,18 +27,19 @@ import pytest
 
 
 def test_log_add_simple():
-    x = np.log([0.0001, 0.0003, 0.000006])
+
+    i = [0.0001, 0.0003, 0.000006]
+    x = np.log(i)
 
     # Compute log of sum of exponentials
     y = log_add(x)
+    assert np.isclose(y, -7.809157)
 
     # Verification
-    z = np.sum([0.0001, 0.0003, 0.000006])
+    z = np.sum(i)
     z_exp_y = np.exp(y)
 
-    assert np.isclose(
-        y,
-    )
+    assert np.isclose(z, z_exp_y)
 
 
 def test_log_add_single_column():
@@ -46,7 +47,7 @@ def test_log_add_single_column():
     Test case for a 1D array.
     """
     x = np.array([-np.inf, -1, 0, 1])
-    assert np.isclose(log_add(x), 1.3862943611198906)
+    assert np.isclose(log_add(x), 1.4076059644443804)
 
 
 def test_log_add_multiple_columns():
@@ -54,7 +55,7 @@ def test_log_add_multiple_columns():
     Test case for a 2D array with multiple columns.
     """
     x = np.array([[-np.inf, -2, 0], [0, 0, 0], [1, -1, -1]])
-    expected = np.array([1.31326169, 0.74193734, 1.55144471])
+    expected = np.array([1.3132617, 0.407606, 0.8619948])
     np.testing.assert_almost_equal(log_add(x), expected)
 
 
@@ -71,7 +72,7 @@ def test_log_add_zero_length_array():
     Test case for an empty array.
     """
     x = np.array([])
-    assert log_add(x) == -np.inf
+    assert log_add(x).tolist() == x.tolist()
 
 
 # indexLA0 tests
@@ -95,25 +96,20 @@ def test_indexLA0_range_row_single_column():
     """
     Test case for a range of rows and a single column.
     """
-    assert np.array_equal(indexLA0([1, 3], 3, 5), [3, 6, 9])
+    assert np.array_equal(indexLA0([1, 3], 3, 5), [3, 7, 10])
 
 
 def test_indexLA0_complex_case():
     """
     Test case for a complex range of rows and columns.
     """
-    assert np.array_equal(indexLA0(2, [1, 3], 5), [4, 5, 6])
-
-
-if __name__ == "__main__":
-    pytest.main()
+    assert np.array_equal(indexLA0(2, [1, 3], 5), [6, 7])
 
 
 # est_glob_param tests
 
 
 def test_est_glob_param_rec10k():
-
     rec10k = import_cn_data(
         os.path.join(DATA_RESOURCES_DIR, "rec10k.tsv"), n_row_skip=1
     )
@@ -137,33 +133,33 @@ def test_est_glob_param_rec10k():
 def test_est_glob_param_default():
     y = [1, 2, 3, 4]
     result = est_glob_param(y)
-    assert np.isclose(result["nu"], 2.5)
-    assert np.isclose(result["rho_square"], 1.25)
-    assert np.isclose(result["sigma_square"], 2.0)
+    assert np.isclose(result["nu"], 2.75)
+    assert np.isclose(result["rho_square"], 0.1875)
+    assert np.isclose(result["sigma_square"], 1.5)
 
 
 def test_est_glob_param_with_nu():
     y = [1, 2, 3, 4]
     result = est_glob_param(y, nu=2.0)
     assert np.isclose(result["nu"], 2.0)
-    assert np.isclose(result["rho_square"], 1.25)
-    assert np.isclose(result["sigma_square"], 2.0)
+    assert np.isclose(result["rho_square"], 0.1875)
+    assert np.isclose(result["sigma_square"], 1.5)
 
 
 def test_est_glob_param_with_sigma_square():
     y = [1, 2, 3, 4]
     result = est_glob_param(y, sigma_square=1.0)
-    assert np.isclose(result["nu"], 2.5)
-    assert np.isclose(result["rho_square"], 1.25)
+    assert np.isclose(result["nu"], 2.75)
+    assert np.isclose(result["rho_square"], 0.1875)
     assert np.isclose(result["sigma_square"], 1.0)
 
 
 def test_est_glob_param_type_est_rho_0():
     y = [1, 2, 3, 4]
     result = est_glob_param(y, type_est_rho=0)
-    assert np.isclose(result["nu"], 2.5)
-    assert np.isclose(result["rho_square"], 1.25)
-    assert np.isclose(result["sigma_square"], 2.0)
+    assert np.isclose(result["nu"], 2.75)
+    assert np.isclose(result["rho_square"], 0.1875)
+    assert np.isclose(result["sigma_square"], 1.5)
 
 
 def test_est_glob_param_invalid_type_est_rho():
@@ -176,7 +172,7 @@ def test_est_glob_param_invalid_type_est_rho():
 
 # computeLA0Vect tests
 def test_computeLA0Vect_basic():
-    y = [1, 2, 3, 4]
+    y = np.array([1, 2, 3, 4])
     nu = 2.5
     rho_square = 1.0
     sigma_square = 1.0
@@ -187,7 +183,7 @@ def test_computeLA0Vect_basic():
 
 
 def test_computeLA0Vect_custom():
-    y = [2, 3, 1, 5]
+    y = np.array([2, 3, 1, 5])
     nu = 2.75
     rho_square = 1.25
     sigma_square = 2.0
@@ -491,9 +487,14 @@ def sample_data():
 
 
 def test_est_profile_with_mbpcr(sample_data):
-    snp_name, chr, position, logratio, chr_to_be_analyzed, max_probe_number = (
-        sample_data
-    )
+    (
+        snp_name,
+        chr,
+        position,
+        logratio,
+        chr_to_be_analyzed,
+        max_probe_number,
+    ) = sample_data
     result = est_profile_with_mbpcr(
         snp_name=snp_name,
         chr=chr,
@@ -532,9 +533,15 @@ def sample_plot_data():
 
 
 def test_plot_est_profile(sample_plot_data):
-    chr, position, logratio, chr_to_be_plotted, est_pc, max_probe_number, regr_curve = (
-        sample_plot_data
-    )
+    (
+        chr,
+        position,
+        logratio,
+        chr_to_be_plotted,
+        est_pc,
+        max_probe_number,
+        regr_curve,
+    ) = sample_plot_data
     plot_est_profile(
         chr=chr,
         position=position,

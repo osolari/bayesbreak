@@ -16,7 +16,8 @@ def log_add(x: np.ndarray):
     Returns:
     float or np.ndarray: The result of log-sum-exp computation.
     """
-
+    if not x.size:
+        return x
     # Check if the input is a 1D array
     if x.ndim == 1:
         # Find the maximum value in the array
