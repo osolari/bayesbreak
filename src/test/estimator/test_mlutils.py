@@ -3,8 +3,8 @@ import tempfile
 import numpy as np
 from numpy.testing import assert_allclose
 
-from bprseg.constants import DATA_RESOURCES_DIR
-from bprseg.estimator.mlutils import (
+from src.constants import DATA_RESOURCES_DIR
+from src.estimator.mlutils import (
     computeA10,
     computeLA0Vect,
     computeMBPCR,

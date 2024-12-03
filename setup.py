@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import numpy
 
 setup(
-    name="bprseg",
+    name="src",
     version="0.0.1",
     author="Omid Shams Solari",
     author_email="solari@berkeley.edu",
