@@ -1,1 +1,1 @@
-# Hierarchical Bayes Process Segmentation
+# BayesBreak: Hierarchical Bayes Process Segmentation of Mixtures of Random Variables

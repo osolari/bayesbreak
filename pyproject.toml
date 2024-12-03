@@ -4,7 +4,7 @@ requires = ["setuptools>=40.8.0",
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bprseg"
+name = "bayesbreak"
 version = "0.0.1"
 authors = [
   {name = "Omid Solari", email = "solari@berkeley.edu"},
@@ -18,6 +18,6 @@ license = {text = "MIT License"}
 keywords = ["bayesian", "regression", "change-point estimation"]
 
 [project.urls]
-Homepage = "https://github.com/osolari/BPrSeg"
-Documentation = "https://github.com/osolari/BPrSeg"
-Repository = "https://github.com/osolari/BPrSeg"
+Homepage = "https://github.com/osolari/bayesbreak"
+Documentation = "https://github.com/osolari/bayesbreak"
+Repository = "https://github.com/osolari/bayesbreak"
