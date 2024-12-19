@@ -1,7 +1,7 @@
 ### General Packages ###
+python
 setuptools
 ipython
-mamba
 pip
 black
 joblib
@@ -13,7 +13,6 @@ cython
 scipy
 pandas
 scikit-learn
-shap
 statsmodels
 
 jupyterlab

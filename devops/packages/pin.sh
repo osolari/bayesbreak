@@ -26,13 +26,12 @@ fi
 CONDA_ENV=pin_$(git rev-parse HEAD)
 
 #CURRENT_ENV=$CONDA_DEFAULT_ENV
-# ensure conda and mamba are installed
-command -v mamba
+# ensure conda is installed
 command -v conda
 
 # create an environment to solve in
 conda create -y -n "$CONDA_ENV"
-mamba install -y -n "$CONDA_ENV" --file $DIR/../../etc/requirements/conda_requirements.in -c conda-forge -c bioconda -c r --override-channels
+conda install -y -n "$CONDA_ENV" --file $DIR/../../etc/requirements/conda_requirements.in -c conda-forge -c bioconda -c r --override-channels
 
 # run the pin command
 conda list -n "$CONDA_ENV" --no-pip --explicit > "$PIN_FILE"
