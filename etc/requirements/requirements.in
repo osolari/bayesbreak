@@ -1,28 +1,27 @@
 ### General Packages ###
-python
-setuptools
-ipython
-pip
 black
 joblib
 requests
-tqdm
+pip-tools
+pytest
 
 numpy
-cython
 scipy
 pandas
 scikit-learn
 statsmodels
 
-jupyterlab
-
 ### Testing ###
 pytest
-ipytest
 ipdb
 
 ### Plotting ###
 matplotlib
 seaborn
+
+### Jupyter ###
+jupyterlab
+jupyter-book
+ghp-import
+
 
