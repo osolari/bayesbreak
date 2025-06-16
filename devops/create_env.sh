@@ -18,9 +18,9 @@ echo Creating environment for "$unamestr" operating system
 
 # Set requirements file path based on operating system
 if [[ "$unamestr" == "Linux" ]]; then
-   REQUIREMENTS_FILE=$DIR/../../etc/requirements/requirements.txt
+   REQUIREMENTS_FILE=$DIR/requirements.txt
 elif [[ "$unamestr" == "Darwin" ]]; then
-   REQUIREMENTS_FILE=$DIR/../../etc/requirements/requirements.txt
+   REQUIREMENTS_FILE=$DIR/requirements.txt
 else
   raise error "Operating system $unamestr is not supported."
 fi

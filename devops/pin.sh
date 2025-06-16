@@ -13,10 +13,10 @@ done
 DIR=$( cd -P "$( dirname "$SOURCE" )" >/dev/null 2>&1 && pwd )
 
 # Project root directory (two levels up from this script)
-PROJECT_ROOT="$DIR/../.."
+PROJECT_ROOT="$DIR/../"
 
 # Requirements directory
-REQ_DIR="$PROJECT_ROOT/etc/requirements"
+REQ_DIR="$PROJECT_ROOT/devops"
 
 # Check if pip-tools is installed
 if ! pip show pip-tools > /dev/null 2>&1; then
