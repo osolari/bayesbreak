@@ -1,0 +1,6 @@
+include requirements-lock.yml
+include requirements.yml
+include README.md
+include LICENSE
+include pyproject.toml
+recursive-include docs *

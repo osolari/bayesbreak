@@ -1,23 +1,31 @@
 [build-system]
-requires = ["setuptools>=40.8.0",
-        "cython", "numpy"]
+requires = ["setuptools>=45", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "bayesbreak"
-version = "0.0.1"
-authors = [
-  {name = "Omid Solari", email = "solari@berkeley.edu"},
-]
-maintainers = [
-  {name = "Omid Solari", email = "solari@berkeley.edu"}
-]
-description = "Bayesian Process Segmentation"
+name = "BayesBreak"
+version = "0.1.0"
+description = "BayesBreak toolkit"
 readme = "README.md"
-license = {text = "MIT License"}
-keywords = ["bayesian", "regression", "change-point estimation"]
+license = {text = "MIT"}
+authors = [
+    {name = "BayesBreak"}
+]
 
-[project.urls]
-Homepage = "https://github.com/osolari/bayesbreak"
-Documentation = "https://github.com/osolari/bayesbreak"
-Repository = "https://github.com/osolari/bayesbreak"
+# Minimal dependencies - most are handled by conda environment
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "pytest",
+    "ipdb",
+]
+
+[tool.setuptools]
+include-package-data = true  # This activates MANIFEST.in
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["bayesbreak*"]
+exclude = ["tests*"]

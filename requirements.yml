@@ -1,0 +1,30 @@
+name: bayesbreak
+channels:
+  - pytorch
+  - bioconda
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.8
+  - pip
+  - tqdm
+  - requests
+  - black
+  - pytest
+  - ipdb
+  - numpy
+  - scipy
+  - pandas
+  - pyarrow
+  - statsmodels
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - pytorch
+  - torchvision
+  - pysam
+  - pip:
+    - pip-tools
+    - scikit-allel
+    - cerebras-pytorch
