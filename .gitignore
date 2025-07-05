@@ -1,2 +1,11 @@
 .idea
+**.egg-info
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.db
+*.sqlite
+*.log
 /external_resources/mBPCR/
