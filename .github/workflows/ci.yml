@@ -1,0 +1,28 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Conda environment using create_env.sh
+        run: |
+          bash create_env.sh
+
+      - name: Activate environment and install package
+        shell: bash -l {0}
+        run: |
+          conda activate bayesbreak
+
+      - name: Run tests
+        shell: bash -l {0}
+        run: |
+          conda activate bayesbreak
+          pytest test/
