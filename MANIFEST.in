@@ -1,6 +1,22 @@
-include requirements-lock.yml
-include requirements.yml
-include README.md
+# Core metadata and license
 include LICENSE
+include README.md
+include CHANGELOG.md
+include CITATION.cff
 include pyproject.toml
-recursive-include docs *
+
+# Source code
+recursive-include src/bayesbreak *.py
+include src/bayesbreak/py.typed
+
+# Documentation
+recursive-include docs *.md *.yml
+
+# Tests (for reproducibility)
+recursive-include tests *.py *.npz
+
+# Example notebooks and scripts
+recursive-include examples *.ipynb *.py
+
+# Environment reproducibility
+recursive-include env *.yml *.lock *.sh

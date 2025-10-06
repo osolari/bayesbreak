@@ -1,0 +1,12 @@
+site_name: MBPCR
+repo_url: https://github.com/yourname/mbpcr
+theme:
+  name: "material"
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - API: api.md
+markdown_extensions:
+  - admonition
+  - toc:
+      permalink: true

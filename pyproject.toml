@@ -13,7 +13,22 @@ authors = [
 ]
 
 # Minimal dependencies - most are handled by conda environment
-dependencies = []
+dependencies = [
+    "numpy",
+    "scipy",
+    "pandas",
+    "scikit-learn",
+    "matplotlib",
+    "typer",
+    "tqdm",
+    "pyyaml",
+    "tomlkit",
+    "black",
+    "jupyterlab",
+    "tqdm",
+    "pydantic",
+    "mkdocs-material",
+]
 
 [project.optional-dependencies]
 dev = [

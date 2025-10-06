@@ -5,7 +5,6 @@ __pycache__
 *.pyo
 *.pyd
 *.pkl
-*.db
 *.sqlite
 *.log
-/external_resources/mBPCR/
+notebooks/
