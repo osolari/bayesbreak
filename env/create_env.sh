@@ -1,7 +1,9 @@
 #!/bin/bash
 # filepath: bayesbreak/create_env.sh
 set -euo pipefail
-cd "$(dirname "$0")"
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+cd "$SCRIPT_DIR"
 ############################################
 # 1. Load SSL certificates (optional)
 ############################################
@@ -12,7 +14,7 @@ fi
 ############################################
 # 2. Environment name from requirements.yml
 ############################################
-INPUT_FILE="$(dirname "$0")/requirements.yml"
+INPUT_FILE="requirements.yml"
 if [ ! -f "$INPUT_FILE" ]; then
     echo "Input file '$INPUT_FILE' not found." >&2
     exit 1
@@ -100,6 +102,8 @@ conda activate "$ENV_NAME"
 echo "Updating pip inside environment..."
 pip install --upgrade pip
 
+PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+cd "$PROJECT_ROOT"
 echo "Installing package in editable mode..."
 pip install -e .
 
