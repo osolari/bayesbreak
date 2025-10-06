@@ -1,18 +1,35 @@
 [build-system]
-requires = ["setuptools>=45", "wheel"]
+requires = ["setuptools>=68", "setuptools-scm>=8", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "BayesBreak"
-version = "0.1.0"
-description = "BayesBreak toolkit"
+name = "bayesbreak"
+dynamic = ["version"]
+description = "Bayesian Piecewise Constant Regression — exact Bayesian segmentation following Hutter (2006)"
 readme = "README.md"
-license = {text = "MIT"}
+license = { file = "LICENSE" }
+requires-python = ">=3.10"
+
 authors = [
-    {name = "BayesBreak"}
+    { name = "Omid Shams", email = "omid@example.com" }
+]
+maintainers = [
+    { name = "Omid Shams", email = "omid@example.com" }
 ]
 
-# Minimal dependencies - most are handled by conda environment
+keywords = ["bayesian", "segmentation", "regression", "piecewise", "variational", "ml"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
+
+# Dependencies — this will be auto-updated by env/pin.sh
 dependencies = [
     "numpy",
     "scipy",
@@ -21,26 +38,59 @@ dependencies = [
     "matplotlib",
     "typer",
     "tqdm",
-    "pyyaml",
-    "tomlkit",
-    "black",
-    "jupyterlab",
-    "tqdm",
     "pydantic",
-    "mkdocs-material",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "black",
     "pytest",
-    "ipdb",
+    "ruff",
+    "mypy",
+    "black",
+    "pre-commit",
+    "mkdocs-material",
+    "jupyterlab",
 ]
 
-[tool.setuptools]
-include-package-data = true  # This activates MANIFEST.in
+[project.urls]
+Homepage = "https://github.com/omidshams/bayesbreak"
+Documentation = "https://omidshams.github.io/bayesbreak"
+Repository = "https://github.com/omidshams/bayesbreak"
+Issues = "https://github.com/omidshams/bayesbreak/issues"
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["bayesbreak*"]
-exclude = ["tests*"]
+# Optional console entry point
+[project.scripts]
+bayesbreak = "bayesbreak.cli:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = true
+packages = ["bayesbreak"]
+
+[tool.setuptools.package-data]
+bayesbreak = ["py.typed"]
+
+[tool.setuptools_scm]
+write_to = "src/bayesbreak/_version.py"
+fallback_version = "0.0.0.dev0"
+version_scheme = "post-release"
+local_scheme = "dirty-tag"
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]
+addopts = "-ra -q"
+
+[tool.mypy]
+python_version = "3.11"
+check_untyped_defs = true
+strict_optional = true
+warn_unused_ignores = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]

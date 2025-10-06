@@ -3,6 +3,9 @@
 set -Eeuo pipefail
 IFS=$'\n\t'
 
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+cd "$SCRIPT_DIR"
+
 ############################################
 # (Optional) Logging to file
 ############################################
@@ -27,8 +30,6 @@ fi
 ############################################
 # 1. Validate input file
 ############################################
-SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
-cd "$SCRIPT_DIR"
 INPUT_FILE="requirements.yml"
 if [[ ! -f "$INPUT_FILE" ]]; then
   echo "Input file '$INPUT_FILE' not found." >&2
@@ -78,12 +79,14 @@ for PLATFORM in "${PLATFORMS[@]}"; do
 done
 
 ############################################
-# 7. Update pyproject.toml dependencies (pure Bash)
+# 7. Update pyproject.toml dependencies (pure Bash, newline-safe)
 ############################################
 echo
 echo "Updating pyproject.toml dependencies from env/requirements.yml..."
 
-cd "$(dirname "$0")"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
+cd "$SCRIPT_DIR"
+
 REQ_FILE="requirements.yml"
 TOML_FILE="../pyproject.toml"
 
@@ -96,10 +99,9 @@ if [[ ! -f "$TOML_FILE" ]]; then
   exit 1
 fi
 
-# Extract dependencies (ignore comments, python, pip, and dev tools)
+# Extract dependencies from YAML
 DEPS=()
 while IFS= read -r line; do
-  # match lines like "- numpy" or "- numpy >=1.23"
   if [[ "$line" =~ ^[[:space:]]*-[[:space:]]*([^[:space:]].*)$ ]]; then
     dep="${BASH_REMATCH[1]}"
     name="${dep%%[<>=]*}"
@@ -113,33 +115,26 @@ while IFS= read -r line; do
 done < "$REQ_FILE"
 
 # Build TOML dependency array
-dep_block=$(printf '  "%s",\n' "${DEPS[@]}")
-dep_block="[project]\ndependencies = [\n${dep_block%??}\n]\n"
+tmpfile=$(mktemp)
+{
+  echo "[project]"
+  echo "dependencies = ["
+  for dep in "${DEPS[@]}"; do
+    echo "  \"$dep\","
+  done | sed '$ s/,$//'   # remove trailing comma on last line
+  echo "]"
+} > "$tmpfile"
 
-# Remove existing dependencies block
-awk '
-  BEGIN {inblock=0}
-  /^\[project\]/ {print; next}
-  /^\[.*\]/ && inblock {inblock=0}
-  !inblock && !/^\[project\]/ {
-    if ($0 ~ /^dependencies[[:space:]]*=/) {inblock=1; next}
-    print
-  }
-' "$TOML_FILE" > "${TOML_FILE}.tmp"
-
-# Insert new dependencies block after [project]
-awk -v block="$dep_block" '
-  BEGIN{printed=0}
-  /^\[project\]/ && !printed {
-    print block
-    printed=1
-    next
-  }
+# Remove old dependencies block and insert the new one
+awk -v repl="$(cat "$tmpfile")" '
+  BEGIN {print_repl=1}
+  /^\[project\]/ {print repl; next}
+  /^dependencies[[:space:]]*=/ {next}
   {print}
-' "${TOML_FILE}.tmp" > "${TOML_FILE}.new"
+' "$TOML_FILE" > "${TOML_FILE}.new"
 
 mv "${TOML_FILE}.new" "$TOML_FILE"
-rm -f "${TOML_FILE}.tmp"
+rm -f "$tmpfile"
 
 echo "Updated pyproject.toml dependencies:"
 printf '  - %s\n' "${DEPS[@]}"
