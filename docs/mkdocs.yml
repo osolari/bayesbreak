@@ -1,11 +1,15 @@
-site_name: MBPCR
-repo_url: https://github.com/yourname/mbpcr
-theme:
-  name: "material"
+site_name: BayesBreak
+repo_name: bayesbreak
 nav:
   - Home: index.md
-  - Getting Started: getting-started.md
+  - Quickstart: quickstart.md
+  - Model families: models.md
   - API: api.md
+  - Math notes: math.md
+  - Reproducibility: reproducibility.md
+
+theme:
+  name: material
 markdown_extensions:
   - admonition
   - toc:
