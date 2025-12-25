@@ -85,7 +85,7 @@ class BayesBreakGaussian(BayesBreakBase):
     # Subclass hooks
     # ---------------------------------------------------------------------
 
-    def _estimate_global_params(self, y: np.ndarray) -> Dict[str, float]:
+    def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
         # If hyperparameter estimation is disabled, require user input.
         if not self.estimate_hyper:
             missing = [name for name, v in (('nu', self.nu), ('rho2', self.rho2), ('sigma2', self.sigma2)) if v is None]
@@ -96,21 +96,32 @@ class BayesBreakGaussian(BayesBreakBase):
             return {"nu": float(self.nu), "rho2": float(self.rho2), "sigma2": float(self.sigma2)}
 
         n = y.size
-        nu_hat = float(np.mean(y))
+        w = sample_weight
+        w_sum = float(np.sum(w))
+        if w_sum <= 0:
+            raise ValueError("sample_weight must have a positive total weight.")
+
+        nu_hat = float(np.sum(w * y) / w_sum)
 
         # Estimate sigma^2 from first differences:
         #   E[(y_{t+1}-y_t)^2] = 2 sigma^2  under iid Normal noise.
         dy = np.diff(y)
-        denom = 2.0 * max(1, (n - 1))
-        sigma2_hat = float(np.sum(dy * dy) / denom)
+        # For weighted observations, treat weights as fractional replication
+        # exponents in the likelihood. We use mid-point weights for the
+        # difference-based estimator.
+        w_diff = 0.5 * (w[:-1] + w[1:])
+        denom = 2.0 * max(float(np.sum(w_diff)), 1.0)
+        sigma2_hat = float(np.sum(w_diff * (dy * dy)) / denom)
 
         if self.rho_estimation == "cov":
             y0 = y[:-1] - nu_hat
             y1 = y[1:] - nu_hat
-            cov = float(np.sum(y0 * y1) / max(1, (n - 1)))
+            denom_cov = max(float(np.sum(w_diff)), 1.0)
+            cov = float(np.sum(w_diff * y0 * y1) / denom_cov)
             rho2_hat = abs(cov)
         else:
-            rho2_hat = float(np.var(y, ddof=0))
+            yc = y - nu_hat
+            rho2_hat = float(np.sum(w * (yc * yc)) / w_sum)
 
         # Allow user overrides even when estimate_hyper=True.
         if self.nu is not None:
@@ -127,21 +138,22 @@ class BayesBreakGaussian(BayesBreakBase):
         return {"nu": nu_hat, "rho2": rho2_hat, "sigma2": sigma2_hat}
 
     def _compute_single_segment_stats(
-        self, y: np.ndarray, hyper: Dict[str, float]
+        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         nu, rho2, sigma2 = hyper["nu"], hyper["rho2"], hyper["sigma2"]
         n = y.size
 
-        # Prefix sums for raw and centered observations.
-        S_raw = np.zeros(n + 1, dtype=float)
-        S_raw[1:] = np.cumsum(y)
+        w = sample_weight
 
-        yc = y - nu
-        S1 = np.zeros(n + 1, dtype=float)
-        S1[1:] = np.cumsum(yc)
+        # Weighted prefix sums.
+        W = np.zeros(n + 1, dtype=float)
+        W[1:] = np.cumsum(w)
 
-        S2 = np.zeros(n + 1, dtype=float)
-        S2[1:] = np.cumsum(yc * yc)
+        Sy = np.zeros(n + 1, dtype=float)
+        Sy[1:] = np.cumsum(w * y)
+
+        Sy2 = np.zeros(n + 1, dtype=float)
+        Sy2[1:] = np.cumsum(w * (y * y))
 
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         A1 = np.zeros((n + 1, n + 1), dtype=float)
@@ -150,23 +162,25 @@ class BayesBreakGaussian(BayesBreakBase):
 
         for i in range(n):
             j = np.arange(i + 1, n + 1)
-            d = j - i
+            Wseg = W[j] - W[i]
+            Syseg = Sy[j] - Sy[i]
+            Sy2seg = Sy2[j] - Sy2[i]
 
-            ysum_c = S1[j] - S1[i]
-            y2sum = S2[j] - S2[i]
+            # Weighted centered sufficient statistics.
+            ysum_c = Syseg - nu * Wseg
+            y2sum = Sy2seg - 2.0 * nu * Syseg + (nu * nu) * Wseg
 
             # Closed-form log segment evidence under Normal--Normal.
             # See docs/theory.md for a derivation.
-            term1 = -0.5 * d * log2pi_sigma
-            term2 = -0.5 * np.log1p(d * (rho2 / sigma2))
-            denom = d + (sigma2 / rho2)
+            term1 = -0.5 * Wseg * log2pi_sigma
+            term2 = -0.5 * np.log1p(Wseg * (rho2 / sigma2))
+            denom = Wseg + (sigma2 / rho2)
             term3 = 0.5 / sigma2 * (ysum_c * ysum_c / denom - y2sum)
             logA0_ij = term1 + term2 + term3
             lA0[i, j] = logA0_ij
 
             # Posterior mean of mu on the segment.
-            ysum_raw = S_raw[j] - S_raw[i]
-            mu_hat = (rho2 * ysum_raw + sigma2 * nu) / (d * rho2 + sigma2)
+            mu_hat = (rho2 * Syseg + sigma2 * nu) / (rho2 * Wseg + sigma2)
 
             # A^1_{ij} = A^0_{ij} * E[mu | segment]
             A1[i, j] = np.exp(logA0_ij) * mu_hat
@@ -176,11 +190,14 @@ class BayesBreakGaussian(BayesBreakBase):
         lA0[idx, idx] = -np.inf
         return lA0, A1
 
-    def _segment_posterior_mean(self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float]) -> float:
+    def _segment_posterior_mean(
+        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
+    ) -> float:
         nu, rho2, sigma2 = hyper["nu"], hyper["rho2"], hyper["sigma2"]
-        d = b - a
-        ysum = float(np.sum(y[a:b]))
-        return (rho2 * ysum + sigma2 * nu) / (d * rho2 + sigma2)
+        w = sample_weight[a:b]
+        Wseg = float(np.sum(w))
+        Syseg = float(np.sum(w * y[a:b]))
+        return (rho2 * Syseg + sigma2 * nu) / (rho2 * Wseg + sigma2)
 
 
 # Backward-compatible alias (historically BayesBreak == Gaussian model)

@@ -6,7 +6,7 @@ This page highlights the most commonly used objects and methods.
 
 `bayesbreak.base.BayesBreakBase`
 
-- `fit(X, y=None)`
+- `fit(X, y=None, sample_weight=None)`
 - `predict(X=None)`
 - `score(...)` returns the log-evidence `log P(y)`.
 
@@ -30,7 +30,15 @@ Constructs the right estimator for a family name:
 - `"gaussian"`
 - `"poisson"`
 - `"binomial"`
+- `"bernoulli"`
 - `"beta"`
+
+## Wrappers and group prediction
+
+- `bayesbreak.multivariate.BayesBreakMultivariate`: shared-boundary segmentation
+  for vector-valued observations `y.shape == (n, d)`.
+- `bayesbreak.groups.BayesBreakGrouped`: group-membership scoring (posterior over
+  known groups) and MAP signal evaluation under group-specific models.
 
 Example:
 

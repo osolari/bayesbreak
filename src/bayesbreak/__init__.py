@@ -9,6 +9,7 @@ The package exposes a distribution-agnostic base class
 - :class:`bayesbreak.families.poisson.BayesBreakPoisson`
 - :class:`bayesbreak.families.binomial.BayesBreakBinomial`
 - :class:`bayesbreak.families.beta.BayesBreakBeta`
+- :class:`bayesbreak.families.bernoulli.BayesBreakBernoulli`
 
 For convenience and backward compatibility, :class:`~bayesbreak.BayesBreak`
 aliases :class:`~bayesbreak.families.gaussian.BayesBreakGaussian`.
@@ -19,7 +20,18 @@ from __future__ import annotations
 from typing import Any, Dict
 
 from .base import BayesBreakBase
-from .families import BayesBreakBeta, BayesBreakBinomial, BayesBreakGaussian, BayesBreakPoisson
+from .families import (
+    BayesBreakBeta,
+    BayesBreakBetaObs,
+    BayesBreakBernoulli,
+    BayesBreakBinomial,
+    BayesBreakGaussian,
+    BayesBreakLogisticNormal,
+    BayesBreakPoisson,
+)
+from .groups import BayesBreakGrouped
+from .mixture import BayesBreakMixture
+from .multivariate import BayesBreakMultivariate
 
 # Backward-compatible alias used in earlier drafts.
 BayesBreak = BayesBreakGaussian
@@ -31,7 +43,8 @@ def make_bayesbreak(family: str, **kwargs: Any) -> BayesBreakBase:
     Parameters
     ----------
     family:
-        One of ``{'gaussian', 'poisson', 'binomial', 'beta'}``.
+        One of
+        ``{'gaussian', 'poisson', 'binomial', 'beta', 'bernoulli', 'logistic-normal', 'beta-obs'}``.
 
     **kwargs:
         Passed to the corresponding estimator constructor.
@@ -56,7 +69,17 @@ def make_bayesbreak(family: str, **kwargs: Any) -> BayesBreakBase:
         return BayesBreakBinomial(**kwargs)
     if key in {"beta", "fractional"}:
         return BayesBreakBeta(**kwargs)
-    raise ValueError(f"Unknown family={family!r}. Expected one of: gaussian, poisson, binomial, beta.")
+    if key in {"beta-obs", "beta_obs", "betaobservation", "beta-observation"}:
+        return BayesBreakBetaObs(**kwargs)
+    if key in {"bernoulli", "binary", "logistic"}:
+        # "logistic" is accepted as a common shorthand for binary sequences.
+        return BayesBreakBernoulli(**kwargs)
+    if key in {"logistic-normal", "logistic_normal", "logit-normal", "logit_normal"}:
+        return BayesBreakLogisticNormal(**kwargs)
+    raise ValueError(
+        "Unknown family=%r. Expected one of: gaussian, poisson, binomial, beta, beta-obs, "
+        "bernoulli, logistic-normal." % (family,)
+    )
 
 
 # Alias retained for readability in user code and unit tests.
@@ -69,6 +92,12 @@ __all__ = [
     "BayesBreakPoisson",
     "BayesBreakBinomial",
     "BayesBreakBeta",
+    "BayesBreakBetaObs",
+    "BayesBreakBernoulli",
+    "BayesBreakLogisticNormal",
+    "BayesBreakMultivariate",
+    "BayesBreakGrouped",
+    "BayesBreakMixture",
     "BayesBreak",
     "make_bayesbreak",
     "make_model",

@@ -94,7 +94,7 @@ class BayesBreakBinomial(BayesBreakBase):
 
     # ----- subclass hooks -----
 
-    def _estimate_global_params(self, y: np.ndarray) -> Dict[str, float]:
+    def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
         n = y.size
         n_arr = self._trials_array(n)
         self._n_arr = n_arr
@@ -106,15 +106,30 @@ class BayesBreakBinomial(BayesBreakBase):
                 )
             return {"alpha": float(self.alpha), "beta": float(self.beta)}
 
-        # aggregated mean proportion
-        S = float(np.sum(y))
-        T = float(np.sum(n_arr))
+        w = sample_weight
+
+        # aggregated mean proportion (replicate-weighted)
+        S = float(np.sum(w * y))
+        T = float(np.sum(w * n_arr))
         mu = S / max(T, 1e-12)
 
         # estimate Var[p] from per-observation proportions with noise correction
         p_i = np.where(n_arr > 0, y / n_arr, mu)
-        var_p_obs = float(np.var(p_i, ddof=1)) if n > 1 else 1e-4
-        noise = float(np.mean(mu * (1.0 - mu) / np.maximum(n_arr, 1.0)))
+        # replicate-weighted variance of per-observation proportions
+        if n > 1:
+            w_sum = float(np.sum(w))
+            if w_sum <= 0.0:
+                var_p_obs = 1e-4
+            else:
+                var_p_obs = float(np.sum(w * (p_i - mu) ** 2) / w_sum)
+        else:
+            var_p_obs = 1e-4
+
+        # Binomial sampling noise contribution, weighted by replicate counts.
+        denom_w = float(np.sum(w))
+        noise = float(
+            np.sum(w * (mu * (1.0 - mu)) / np.maximum(n_arr, 1.0)) / max(denom_w, 1e-12)
+        )
         var_p = max(var_p_obs - noise, 1e-12)
 
         # Solve for tau = alpha+beta
@@ -130,7 +145,7 @@ class BayesBreakBinomial(BayesBreakBase):
         return {"alpha": float(max(alpha, 1e-12)), "beta": float(max(beta, 1e-12))}
 
     def _compute_single_segment_stats(
-        self, y: np.ndarray, hyper: Dict[str, float]
+        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         if self._n_arr is None:
             # In normal operation _estimate_global_params has already set this.
@@ -140,15 +155,17 @@ class BayesBreakBinomial(BayesBreakBase):
         alpha, beta = hyper["alpha"], hyper["beta"]
         n = y.size
 
+        w = sample_weight
+
         S = np.zeros(n + 1, dtype=float)
-        S[1:] = np.cumsum(y)
+        S[1:] = np.cumsum(w * y)
         N = np.zeros(n + 1, dtype=float)
-        N[1:] = np.cumsum(n_arr)
+        N[1:] = np.cumsum(w * n_arr)
 
         # sum log comb(n_i, y_i)
         Lcomb = gammaln(n_arr + 1.0) - gammaln(y + 1.0) - gammaln(n_arr - y + 1.0)
         Csum = np.zeros(n + 1, dtype=float)
-        Csum[1:] = np.cumsum(Lcomb)
+        Csum[1:] = np.cumsum(w * Lcomb)
 
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         A1 = np.zeros((n + 1, n + 1), dtype=float)
@@ -174,10 +191,13 @@ class BayesBreakBinomial(BayesBreakBase):
         np.fill_diagonal(lA0, -np.inf)
         return lA0, A1
 
-    def _segment_posterior_mean(self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float]) -> float:
+    def _segment_posterior_mean(
+        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
+    ) -> float:
         if self._n_arr is None:
             raise RuntimeError("Internal error: trials array not initialized.")
         alpha, beta = hyper["alpha"], hyper["beta"]
-        Ssum = float(np.sum(y[a:b]))
-        Nsum = float(np.sum(self._n_arr[a:b]))
+        w = sample_weight
+        Ssum = float(np.sum(w[a:b] * y[a:b]))
+        Nsum = float(np.sum(w[a:b] * self._n_arr[a:b]))
         return (alpha + Ssum) / (alpha + beta + Nsum)

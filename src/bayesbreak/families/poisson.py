@@ -65,14 +65,21 @@ class BayesBreakPoisson(BayesBreakBase):
         self.alpha = alpha
         self.beta = beta
 
-    def _estimate_global_params(self, y: np.ndarray) -> Dict[str, float]:
+    def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
         if not self.estimate_hyper:
             if self.alpha is None or self.beta is None:
                 raise ValueError("estimate_hyper=False requires alpha and beta to be set.")
             return {"alpha": float(self.alpha), "beta": float(self.beta)}
 
-        m = float(np.mean(y))
-        v = float(np.var(y, ddof=1)) if y.size > 1 else max(1.0, m)
+        w = sample_weight
+        w_sum = float(np.sum(w))
+        if w_sum <= 0:
+            # Degenerate all-zero weights: fall back to unweighted estimates.
+            w = np.ones_like(y, dtype=float)
+            w_sum = float(y.size)
+
+        m = float(np.sum(w * y) / w_sum)
+        v = float(np.sum(w * (y - m) ** 2) / max(w_sum, 1e-12)) if y.size > 1 else max(1.0, m)
 
         if v > m + 1e-12:
             alpha_hat = max(1e-8, m * m / (v - m))
@@ -88,16 +95,23 @@ class BayesBreakPoisson(BayesBreakBase):
 
         return {"alpha": alpha_hat, "beta": beta_hat}
 
-    def _compute_single_segment_stats(self, y: np.ndarray, hyper: Dict[str, float]) -> Tuple[np.ndarray, np.ndarray]:
+    def _compute_single_segment_stats(
+        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
+    ) -> Tuple[np.ndarray, np.ndarray]:
         alpha, beta = hyper["alpha"], hyper["beta"]
         n = y.size
 
+        w = sample_weight
+
         # Prefix sums: counts and log-factorials.
         S = np.zeros(n + 1, dtype=float)
-        S[1:] = np.cumsum(y)
+        S[1:] = np.cumsum(w * y)
+
+        W = np.zeros(n + 1, dtype=float)
+        W[1:] = np.cumsum(w)
 
         Lfac = np.zeros(n + 1, dtype=float)
-        Lfac[1:] = np.cumsum(gammaln(y + 1.0))
+        Lfac[1:] = np.cumsum(w * gammaln(y + 1.0))
 
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         A1 = np.zeros((n + 1, n + 1), dtype=float)
@@ -106,26 +120,29 @@ class BayesBreakPoisson(BayesBreakBase):
 
         for i in range(n):
             j = np.arange(i + 1, n + 1)
-            d = j - i
+            Wsum = W[j] - W[i]
             Ssum = S[j] - S[i]
 
             const = -(Lfac[j] - Lfac[i])  # -sum log(y!)
 
             # log A^0 = -sum log y! + alpha log beta - log Gamma(alpha)
             #          + log Gamma(alpha + S) - (alpha + S) log(beta + d)
-            logA0 = const + log_beta_alpha + gammaln(alpha + Ssum) - (alpha + Ssum) * np.log(beta + d)
+            logA0 = const + log_beta_alpha + gammaln(alpha + Ssum) - (alpha + Ssum) * np.log(beta + Wsum)
             lA0[i, j] = logA0
 
-            # E[lambda | segment] = (alpha + S) / (beta + d)
-            logE = np.log(alpha + Ssum) - np.log(beta + d)
+            # E[lambda | segment] = (alpha + S) / (beta + W)
+            logE = np.log(alpha + Ssum) - np.log(beta + Wsum)
             A1[i, j] = np.exp(logA0 + logE)
 
         idx = np.arange(n + 1)
         lA0[idx, idx] = -np.inf
         return lA0, A1
 
-    def _segment_posterior_mean(self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float]) -> float:
+    def _segment_posterior_mean(
+        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
+    ) -> float:
         alpha, beta = hyper["alpha"], hyper["beta"]
-        Ssum = float(np.sum(y[a:b]))
-        d = b - a
-        return (alpha + Ssum) / (beta + d)
+        w = sample_weight
+        Ssum = float(np.sum(w[a:b] * y[a:b]))
+        Wsum = float(np.sum(w[a:b]))
+        return (alpha + Ssum) / (beta + Wsum)

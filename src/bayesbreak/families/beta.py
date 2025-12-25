@@ -74,7 +74,7 @@ class BayesBreakBeta(BayesBreakBase):
 
     # ---- subclass hooks ----
 
-    def _estimate_global_params(self, y: np.ndarray) -> Dict[str, float]:
+    def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
         # validate domain early (helps catch data bugs before expensive DP)
         if np.any((y <= 0) | (y >= 1)):
             raise ValueError("BayesBreakBeta expects y strictly in (0,1).")
@@ -84,9 +84,18 @@ class BayesBreakBeta(BayesBreakBase):
                 raise ValueError("When estimate_hyper=False, provide alpha and beta.")
             return {"alpha": float(self.alpha), "beta": float(self.beta)}
 
+        w = sample_weight
+        w_sum = float(np.sum(w))
+        if w_sum <= 0.0:
+            w = np.ones_like(y, dtype=float)
+            w_sum = float(y.size)
+
         kappa = self.concentration
-        mu = float(np.mean(y))
-        var_obs = float(np.var(y, ddof=1)) if y.size > 1 else 1e-4
+        mu = float(np.sum(w * y) / max(1e-12, w_sum))
+        if y.size > 1:
+            var_obs = float(np.sum(w * (y - mu) ** 2) / max(1e-12, w_sum))
+        else:
+            var_obs = 1e-4
 
         # Var[y] ≈ Var[p] + mu(1-mu)/kappa
         var_p = max(var_obs - mu * (1 - mu) / kappa, 1e-12)
@@ -102,27 +111,30 @@ class BayesBreakBeta(BayesBreakBase):
         return {"alpha": float(alpha), "beta": float(beta)}
 
     def _compute_single_segment_stats(
-        self, y: np.ndarray, hyper: Dict[str, float]
+        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         alpha, beta = hyper["alpha"], hyper["beta"]
         kappa = self.concentration
         n = y.size
 
+        w = sample_weight
+
         s = kappa * y
         f = kappa * (1.0 - y)
         n_eff = np.full(n, kappa, dtype=float)
 
+        # weighted pseudo-count prefix sums
         S = np.zeros(n + 1)
-        S[1:] = np.cumsum(s)
+        S[1:] = np.cumsum(w * s)
         F = np.zeros(n + 1)
-        F[1:] = np.cumsum(f)
+        F[1:] = np.cumsum(w * f)
         N = np.zeros(n + 1)
-        N[1:] = np.cumsum(n_eff)
+        N[1:] = np.cumsum(w * n_eff)
 
-        # generalized log comb(kappa, s) using Γ
+        # generalized log comb(kappa, s) using Γ (weighted/power-likelihood)
         Lcomb = gammaln(n_eff + 1.0) - gammaln(s + 1.0) - gammaln(n_eff - s + 1.0)
         Csum = np.zeros(n + 1)
-        Csum[1:] = np.cumsum(Lcomb)
+        Csum[1:] = np.cumsum(w * Lcomb)
 
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         A1 = np.zeros((n + 1, n + 1), dtype=float)
@@ -148,10 +160,11 @@ class BayesBreakBeta(BayesBreakBase):
         return lA0, A1
 
     def _segment_posterior_mean(
-        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float]
+        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
     ) -> float:
         alpha, beta = hyper["alpha"], hyper["beta"]
         kappa = self.concentration
-        Ssum = float(np.sum(kappa * y[a:b]))
-        Nsum = float(kappa * (b - a))
+        w = sample_weight[a:b]
+        Ssum = float(np.sum(w * (kappa * y[a:b])))
+        Nsum = float(np.sum(w) * kappa)
         return (alpha + Ssum) / (alpha + beta + Nsum)

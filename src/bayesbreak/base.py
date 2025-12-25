@@ -31,7 +31,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 from sklearn.base import BaseEstimator, RegressorMixin
 
-from .utils import as_1d_float_array, log_binom, logsumexp, require_fitted
+from .utils import as_1d_float_array, check_sample_weight, log_binom, logsumexp, require_fitted
 
 
 class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
@@ -109,13 +109,14 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         self.pc_fit_: Optional[np.ndarray] = None  # MAP-like piecewise-constant fit
         self.brc_: Optional[np.ndarray] = None  # Bayesian regression curve
         self.log_evidence_: Optional[float] = None  # log P(y)
+        self.sample_weight_: Optional[np.ndarray] = None
 
     # ---------------------------------------------------------------------
     # Subclass hooks
     # ---------------------------------------------------------------------
 
     @abstractmethod
-    def _estimate_global_params(self, y: np.ndarray) -> Dict[str, float]:
+    def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
         """Return model hyperparameters.
 
         Subclasses must implement this method and should honor
@@ -134,7 +135,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
 
     @abstractmethod
     def _compute_single_segment_stats(
-        self, y: np.ndarray, hyper: Dict[str, float]
+        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
     ) -> Tuple[np.ndarray, np.ndarray]:
         """Compute per-block evidences and first moments.
 
@@ -153,7 +154,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
 
     @abstractmethod
     def _segment_posterior_mean(
-        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float]
+        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
     ) -> float:
         """Posterior mean of the segment parameter for block ``y[a:b]``."""
 
@@ -161,7 +162,12 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
     # Public sklearn-style API
     # ---------------------------------------------------------------------
 
-    def fit(self, X: Optional[ArrayLike] = None, y: Optional[ArrayLike] = None):
+    def fit(
+        self,
+        X: Optional[ArrayLike] = None,
+        y: Optional[ArrayLike] = None,
+        sample_weight: Optional[ArrayLike] = None,
+    ):
         """Fit the BayesBreak model.
 
         Parameters
@@ -190,12 +196,15 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         n = int(y_arr.size)
         self.n_ = n
 
+        w_arr = check_sample_weight(sample_weight, n)
+        self.sample_weight_ = w_arr
+
         k_max = min(self.k_max, n)
 
         # -----------------------------------------------------------------
         # 1) Hyperparameters
         # -----------------------------------------------------------------
-        hyper = self._estimate_global_params(y_arr)
+        hyper = self._estimate_global_params(y_arr, w_arr)
         if not isinstance(hyper, dict):
             raise TypeError("_estimate_global_params must return a dict")
         self.hyper_ = {str(k): float(v) for k, v in hyper.items()}
@@ -203,7 +212,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         # -----------------------------------------------------------------
         # 2) Block evidences
         # -----------------------------------------------------------------
-        lA0, A1 = self._compute_single_segment_stats(y_arr, self.hyper_)
+        lA0, A1 = self._compute_single_segment_stats(y_arr, self.hyper_, w_arr)
         if lA0.shape != (n + 1, n + 1) or A1.shape != (n + 1, n + 1):
             raise ValueError(
                 "_compute_single_segment_stats must return arrays of shape "
@@ -246,7 +255,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         # -----------------------------------------------------------------
         # 6) Piecewise-constant posterior-mean fit for the selected boundaries
         # -----------------------------------------------------------------
-        self.pc_fit_ = self._compute_pc_fit(y_arr, boundaries, self.hyper_)
+        self.pc_fit_ = self._compute_pc_fit(y_arr, w_arr, boundaries, self.hyper_)
 
         # -----------------------------------------------------------------
         # 7) Optional Bayesian regression curve
@@ -402,11 +411,11 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         return [0, *picks.tolist(), n]
 
     def _compute_pc_fit(
-        self, y: np.ndarray, boundaries: List[int], hyper: Dict[str, float]
+        self, y: np.ndarray, sample_weight: np.ndarray, boundaries: List[int], hyper: Dict[str, float]
     ) -> np.ndarray:
         pc = np.empty_like(y, dtype=float)
         for a, b in zip(boundaries[:-1], boundaries[1:]):
-            mu = self._segment_posterior_mean(a, b, y, hyper)
+            mu = self._segment_posterior_mean(a, b, y, hyper, sample_weight)
             pc[a:b] = mu
         return pc
 

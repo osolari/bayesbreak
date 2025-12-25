@@ -14,7 +14,7 @@ Python's :func:`math.lgamma`.
 from __future__ import annotations
 
 import math
-from typing import Any, Optional
+from typing import Any, Optional, Union
 
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
@@ -150,6 +150,50 @@ def as_1d_float_array(x: ArrayLike, *, name: str = "array") -> FloatArray:
     if not np.all(np.isfinite(arr)):
         raise ValueError(f"{name} must contain only finite values.")
     return np.ascontiguousarray(arr)
+
+
+def check_sample_weight(sample_weight: Optional[Union[float, int, ArrayLike]], n: int) -> FloatArray:
+    """Validate and normalize ``sample_weight``.
+
+    The BayesBreak codebase treats sample weights as **power-likelihood**
+    exponents: each per-observation log-likelihood contribution is multiplied
+    by ``w_i``. This is a standard and convenient way to represent
+    heteroscedastic weights, exposures, or replicated observations.
+
+    Parameters
+    ----------
+    sample_weight:
+        ``None`` (all ones), a scalar (broadcasted), or a 1D array-like of
+        length ``n``.
+    n:
+        Number of observations.
+
+    Returns
+    -------
+    ndarray
+        A contiguous float array of shape ``(n,)`` with nonnegative entries.
+
+    Raises
+    ------
+    ValueError
+        If the weights are not compatible with ``n`` or contain invalid values.
+    """
+
+    if sample_weight is None:
+        return np.ones(n, dtype=float)
+
+    if np.isscalar(sample_weight):
+        w = np.full(n, float(sample_weight), dtype=float)
+    else:
+        w = np.asarray(sample_weight, dtype=float)
+
+    if w.ndim != 1 or w.shape[0] != n:
+        raise ValueError(f"sample_weight must be 1D with length {n}; got shape {w.shape}.")
+    if not np.all(np.isfinite(w)):
+        raise ValueError("sample_weight must contain only finite values.")
+    if np.any(w < 0):
+        raise ValueError("sample_weight must be nonnegative.")
+    return np.ascontiguousarray(w)
 
 
 def require_fitted(obj: Any, attrs: list[str]) -> None:
