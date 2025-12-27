@@ -10,6 +10,7 @@ This script fits the Gaussian model and reports:
 Outputs
 -------
 - results/table2_posterior_summary.md
+- results/table2_posterior_summary.tex
 
 This table is useful when checking that changes in hyperparameter estimation or
 numerical stability do not strongly affect the posterior over k.
@@ -57,6 +58,17 @@ def main(outdir: Path, n: int, k_max: int, seed: int) -> None:
     md.append(f"| log evidence log P(y) | {float(m.score()):.3f} |\n")
 
     (outdir / "table2_posterior_summary.md").write_text("".join(md))
+
+    # LaTeX tabular (for \input in the paper).
+    tex_lines = []
+    tex_lines.append("\\begin{tabular}{lr}\\toprule\n")
+    tex_lines.append("Quantity & Value\\\\\\midrule\n")
+    tex_lines.append(f"Selected $k$ (\\texttt{{k\\_ml\\_}}) & {m.k_ml_}\\\\\n")
+    tex_lines.append(f"Posterior mean $\\mathbb{{E}}[k]$ & {ek:.3f}\\\\\n")
+    tex_lines.append(f"MAP $k$ & {k_map}\\\\\n")
+    tex_lines.append(f"$\\log p(y)$ & {float(m.score()):.3f}\\\\\n")
+    tex_lines.append("\\bottomrule\\end{tabular}\n")
+    (outdir / "table2_posterior_summary.tex").write_text("".join(tex_lines))
 
 
 if __name__ == "__main__":

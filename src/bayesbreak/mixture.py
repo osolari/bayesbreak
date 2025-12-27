@@ -331,9 +331,9 @@ def _run_dp_from_stats(
 
     brc: Optional[np.ndarray] = None
     if regression_curve == "fixed_k":
-        brc = BayesBreakBase._bayes_regression_curve_fixed_k(L, R, A1, n, k_ml)
+        brc = BayesBreakBase._bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k_ml)
     elif regression_curve == "mix_k":
-        brc = BayesBreakBase._bayes_regression_curve_mixed_k(L, R, A1, n, kk, C)
+        brc = BayesBreakBase._bayes_regression_curve_mixed_k(L, R, lA0, A1, n, kk, C)
     return L, R, logC, C, float(logE), k_ml, d1, boundaries, brc
 
 

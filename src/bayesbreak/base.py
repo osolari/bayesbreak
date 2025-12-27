@@ -262,9 +262,9 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         # -----------------------------------------------------------------
         self.brc_ = None
         if self.regression_curve == "fixed_k":
-            self.brc_ = self._bayes_regression_curve_fixed_k(L, R, A1, n, k_sel)
+            self.brc_ = self._bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k_sel)
         elif self.regression_curve == "mix_k":
-            self.brc_ = self._bayes_regression_curve_mixed_k(L, R, A1, n, k_max, C)
+            self.brc_ = self._bayes_regression_curve_mixed_k(L, R, lA0, A1, n, k_max, C)
 
         return self
 
@@ -450,8 +450,14 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
     # Bayesian regression curve
     # ---------------------------------------------------------------------
 
+    @staticmethod
     def _bayes_regression_curve_fixed_k(
-        self, L: np.ndarray, R: np.ndarray, A1: np.ndarray, n: int, k: int
+        L: np.ndarray,
+        R: np.ndarray,
+        lA0: np.ndarray,
+        A1: np.ndarray,
+        n: int,
+        k: int,
     ) -> np.ndarray:
         """Compute Bayesian regression curve for a fixed number of segments ``k``.
 
@@ -471,20 +477,43 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
             Li = L[0:k, i]  # p=0..k-1
             for j in range(i + 1, n + 1):
                 Rj = R[k - 1 :: -1, j]  # R[k-1, j], ..., R[0, j]
-                log_w_ij = float(logsumexp(Li + Rj) - denom)
-                # Contribution of block (i,j] to all t in [i, j)
-                contrib = math.exp(log_w_ij) * float(A1[i, j])
-                if contrib != 0.0:
+                la0 = float(lA0[i, j])
+                if not np.isfinite(la0):
+                    continue
+
+                # Segment posterior probability weight (should be <= 1).
+                log_pseg = float(logsumexp(Li + Rj) + la0 - denom)
+                if log_pseg < -745.0:
+                    continue
+                w = math.exp(log_pseg)
+
+                # Segment posterior mean for the latent parameter.
+                # We recover it from A1 / A0 in log domain to avoid overflow.
+                a = float(A1[i, j])
+                if a == 0.0 or not np.isfinite(a):
+                    continue
+                log_abs_mu = math.log(abs(a)) - la0
+                if log_abs_mu < -745.0:
+                    continue
+                # Guard against pathological cases.
+                if log_abs_mu > 709.0:
+                    mu_hat = math.copysign(float("inf"), a)
+                else:
+                    mu_hat = math.copysign(math.exp(log_abs_mu), a)
+
+                contrib = w * mu_hat
+                if contrib != 0.0 and np.isfinite(contrib):
                     diff[i] += contrib
                     diff[j] -= contrib
 
         mu = np.cumsum(diff)
         return mu[:n]
 
+    @staticmethod
     def _bayes_regression_curve_mixed_k(
-        self,
         L: np.ndarray,
         R: np.ndarray,
+        lA0: np.ndarray,
         A1: np.ndarray,
         n: int,
         k_max: int,
@@ -497,5 +526,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
             w = float(C[k - 1])
             if w == 0.0 or not np.isfinite(L[k, n]):
                 continue
-            out += w * self._bayes_regression_curve_fixed_k(L, R, A1, n, k)
+            out += w * BayesBreakBase._bayes_regression_curve_fixed_k(
+                L, R, lA0, A1, n, k
+            )
         return out

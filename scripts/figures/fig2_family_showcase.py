@@ -75,22 +75,30 @@ def main(outdir: Path, seed: int) -> None:
 
     fig, axes = plt.subplots(4, 1, figsize=(10, 10), sharex=True)
 
-    axes[0].plot(y_gauss, linewidth=1)
-    axes[0].plot(pc_gauss, linewidth=2)
+    axes[0].plot(y_gauss, linewidth=1, label="observed")
+    axes[0].plot(mu, linewidth=2, linestyle="--", label="true signal")
+    axes[0].plot(pc_gauss, linewidth=2, label="BayesBreak fit")
     axes[0].set_title("Gaussian")
 
     axes[1].plot(y_pois, linewidth=1)
+    axes[1].plot(lam, linewidth=2, linestyle="--")
     axes[1].plot(pc_pois, linewidth=2)
     axes[1].set_title("Poisson")
 
     axes[2].plot(y_binom / n_trials, linewidth=1)
+    axes[2].plot(p, linewidth=2, linestyle="--")
     axes[2].plot(pc_binom, linewidth=2)
     axes[2].set_title("Binomial (shown as proportion)")
 
     axes[3].plot(y_beta, linewidth=1)
+    axes[3].plot(p_beta, linewidth=2, linestyle="--")
     axes[3].plot(pc_beta, linewidth=2)
     axes[3].set_title("Beta-valued (fractional Beta--Binomial)")
     axes[3].set_xlabel("Index")
+
+    # One shared legend for all panels.
+    handles, labels = axes[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper right", frameon=True)
 
     fig.tight_layout()
     fig.savefig(outdir / "fig2_family_showcase.png", dpi=200)

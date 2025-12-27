@@ -7,6 +7,7 @@ The results are saved as:
 
 - results/table1_runtime_scaling.csv
 - results/table1_runtime_scaling.md
+- results/table1_runtime_scaling.tex
 
 The benchmark is intentionally lightweight and is meant for relative comparisons
 (e.g., after code changes) rather than absolute performance claims.
@@ -50,6 +51,7 @@ def main(outdir: Path, k_max: int, repeats: int, seed: int) -> None:
 
     csv_path = outdir / "table1_runtime_scaling.csv"
     md_path = outdir / "table1_runtime_scaling.md"
+    tex_path = outdir / "table1_runtime_scaling.tex"
 
     with csv_path.open("w", encoding="utf-8") as f:
         f.write("n,k_max,mean_seconds,std_seconds\n")
@@ -64,6 +66,16 @@ def main(outdir: Path, k_max: int, repeats: int, seed: int) -> None:
 
     print(f"Wrote {csv_path}")
     print(f"Wrote {md_path}")
+
+    # LaTeX tabular (for \input in the paper).
+    with tex_path.open("w", encoding="utf-8") as f:
+        f.write("\\begin{tabular}{rrrr}\\toprule\n")
+        f.write("n & $k_{\\max}$ & mean (s) & std (s)\\\\\\midrule\n")
+        for n, km, m, s in rows:
+            f.write(f"{n} & {km} & {m:.4f} & {s:.4f}\\\\\n")
+        f.write("\\bottomrule\\end{tabular}\n")
+
+    print(f"Wrote {tex_path}")
 
 
 if __name__ == "__main__":
