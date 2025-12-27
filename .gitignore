@@ -8,3 +8,6 @@ __pycache__
 *.sqlite
 *.log
 notebooks/
+**/.DS_Store
+.env
+.vscode/
