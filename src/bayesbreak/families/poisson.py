@@ -6,8 +6,8 @@ Within each segment ``q`` the observations are i.i.d. Poisson:
 
 .. math::
 
-    y_i \mid \lambda_q \sim \mathrm{Poisson}(\lambda_q),\quad
-    \lambda_q \sim \mathrm{Gamma}(\alpha,\beta).
+    y_i \\mid \\lambda_q \\sim \\mathrm{Poisson}(\\lambda_q),\\quad
+    \\lambda_q \\sim \\mathrm{Gamma}(\alpha,\beta).
 
 We use the (shape, rate) Gamma parameterization.
 
@@ -17,7 +17,7 @@ The segment marginal likelihood and first moment are available in closed form.
 from __future__ import annotations
 
 import math
-from typing import Dict, Optional, Tuple, Literal
+from typing import Dict, Literal, Optional, Tuple
 
 import numpy as np
 
@@ -47,7 +47,7 @@ class BayesBreakPoisson(BayesBreakBase):
 
     .. math::
 
-        \mathbb{E}[Y] = m,\qquad \mathrm{Var}(Y) = m + m^2/\alpha.
+        \\mathbb{E}[Y] = m,\\qquad \\mathrm{Var}(Y) = m + m^2/\alpha.
 
     which implies ``alpha = m^2/(v - m)`` when ``v > m``.
     """
@@ -61,7 +61,9 @@ class BayesBreakPoisson(BayesBreakBase):
         alpha: Optional[float] = None,
         beta: Optional[float] = None,
     ):
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         self.alpha = alpha
         self.beta = beta
 
@@ -127,7 +129,12 @@ class BayesBreakPoisson(BayesBreakBase):
 
             # log A^0 = -sum log y! + alpha log beta - log Gamma(alpha)
             #          + log Gamma(alpha + S) - (alpha + S) log(beta + d)
-            logA0 = const + log_beta_alpha + gammaln(alpha + Ssum) - (alpha + Ssum) * np.log(beta + Wsum)
+            logA0 = (
+                const
+                + log_beta_alpha
+                + gammaln(alpha + Ssum)
+                - (alpha + Ssum) * np.log(beta + Wsum)
+            )
             lA0[i, j] = logA0
 
             # E[lambda | segment] = (alpha + S) / (beta + W)

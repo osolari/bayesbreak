@@ -105,7 +105,7 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
     mses = []
     nlls = []
     k_sels = []
-    for r in range(n_rep):
+    for _ in range(n_rep):
         mu = np.repeat(mu_levels, [n // 3, n // 3, n - 2 * (n // 3)])
         y = mu + sigma * rng.standard_normal(n)
         m = BayesBreakGaussian(k_max=12).fit(y)
@@ -244,9 +244,7 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
 
     md_path = outdir / "table3_conjugate_summary.md"
     with md_path.open("w", encoding="utf-8") as f:
-        f.write(
-            "| Family | n | k_true | k_sel (median) | F1@tau | MAE | MSE | -log p(y)/n |\n"
-        )
+        f.write("| Family | n | k_true | k_sel (median) | F1@tau | MAE | MSE | -log p(y)/n |\n")
         f.write("|---|---:|---:|---:|---:|---:|---:|---:|\n")
         for row in rows:
             fam, n, k_true, k_sel, f1m, _, maem, _, msem, _, nllm, _ = row
@@ -258,7 +256,7 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
     with tex_path.open("w", encoding="utf-8") as f:
         f.write("\\begin{tabular}{lrrrrrrr}\\toprule\n")
         f.write(
-            "Family & n & $k^\star$ & $\hat{k}$ & F1@$\\tau$ & MAE & MSE & $-\\log p(y)/n$\\\\\\midrule\n"
+            "Family & n & $k^\\star$ & $\\hat{k}$ & F1@$\\tau$ & MAE & MSE & $-\\log p(y)/n$\\\\\\midrule\n"
         )
         for row in rows:
             fam, n, k_true, k_sel, f1m, _, maem, _, msem, _, nllm, _ = row

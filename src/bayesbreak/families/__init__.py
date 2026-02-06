@@ -6,13 +6,13 @@ non-conjugate blocks are provided via deterministic approximations and/or
 numerical quadrature.
 """
 
-from .gaussian import BayesBreakGaussian
-from .poisson import BayesBreakPoisson
-from .binomial import BayesBreakBinomial
+from .bernoulli import BayesBreakBernoulli
 from .beta import BayesBreakBeta
 from .beta_obs import BayesBreakBetaObs
-from .bernoulli import BayesBreakBernoulli
+from .binomial import BayesBreakBinomial
+from .gaussian import BayesBreakGaussian
 from .logistic_normal import BayesBreakLogisticNormal
+from .poisson import BayesBreakPoisson
 
 __all__ = [
     "BayesBreakGaussian",

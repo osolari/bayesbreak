@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import math
 from abc import ABC, abstractmethod
-from typing import Any, Dict, List, Literal, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -35,7 +35,7 @@ from .utils import as_1d_float_array, check_sample_weight, log_binom, logsumexp,
 
 
 class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
-    """Abstract base class for BayesBreak estimators.
+    r"""Abstract base class for BayesBreak estimators.
 
     The estimator fits a piecewise-constant latent signal with an unknown number
     of segments. The latent segment parameter (e.g., mean, rate, probability)
@@ -75,7 +75,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         self,
         k_max: int = 50,
         estimate_hyper: bool = True,
-        regression_curve: Literal["none", "fixed_k", "mix_k"] = "none",
+        regression_curve: str = "none",
     ):
         if k_max < 1:
             raise ValueError("k_max must be >= 1")
@@ -140,13 +140,13 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         """Compute per-block evidences and first moments.
 
         For indices ``0 <= i < j <= n``, define the block as
-        :math:`y_{i+1},\ldots,y_j`, corresponding to Python slice ``y[i:j]``.
+        :math:`y_{i+1},\\ldots,y_j`, corresponding to Python slice ``y[i:j]``.
 
         Subclasses must return two upper-triangular ``(n+1) x (n+1)`` arrays:
 
         - ``lA0[i, j] = log A^0_{ij}``, the integrated (marginal) likelihood of
           the block under a single segment.
-        - ``A1[i, j] = A^1_{ij} = A^0_{ij} * E[\theta\mid y_{i:j}]``.
+        - ``A1[i, j] = A^1_{ij} = A^0_{ij} * E[\theta\\mid y_{i:j}]``.
 
         ``A1`` is stored in the linear domain because it is used as an additive
         quantity in the regression-curve computation.
@@ -378,7 +378,7 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
     ) -> Tuple[np.ndarray, np.ndarray, float]:
         """Compute ``log P(k|y)``, ``P(k|y)``, and ``log P(y)``.
 
-        We use a uniform prior over ``k`` on ``{1,\ldots,k_max}``.
+        We use a uniform prior over ``k`` on ``{1,\\ldots,k_max}``.
 
         Additionally, we include the BayesBreak combinatorial correction
         :math:`1/\binom{n-1}{k-1}` to account for the number of distinct boundary
@@ -411,10 +411,14 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
         return [0, *picks.tolist(), n]
 
     def _compute_pc_fit(
-        self, y: np.ndarray, sample_weight: np.ndarray, boundaries: List[int], hyper: Dict[str, float]
+        self,
+        y: np.ndarray,
+        sample_weight: np.ndarray,
+        boundaries: List[int],
+        hyper: Dict[str, float],
     ) -> np.ndarray:
         pc = np.empty_like(y, dtype=float)
-        for a, b in zip(boundaries[:-1], boundaries[1:]):
+        for a, b in zip(boundaries[:-1], boundaries[1:], strict=False):
             mu = self._segment_posterior_mean(a, b, y, hyper, sample_weight)
             pc[a:b] = mu
         return pc
@@ -526,7 +530,5 @@ class BayesBreakBase(BaseEstimator, RegressorMixin, ABC):
             w = float(C[k - 1])
             if w == 0.0 or not np.isfinite(L[k, n]):
                 continue
-            out += w * BayesBreakBase._bayes_regression_curve_fixed_k(
-                L, R, lA0, A1, n, k
-            )
+            out += w * BayesBreakBase._bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k)
         return out

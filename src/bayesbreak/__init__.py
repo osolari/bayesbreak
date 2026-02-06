@@ -17,13 +17,13 @@ aliases :class:`~bayesbreak.families.gaussian.BayesBreakGaussian`.
 
 from __future__ import annotations
 
-from typing import Any, Dict
+from typing import Any
 
 from .base import BayesBreakBase
 from .families import (
+    BayesBreakBernoulli,
     BayesBreakBeta,
     BayesBreakBetaObs,
-    BayesBreakBernoulli,
     BayesBreakBinomial,
     BayesBreakGaussian,
     BayesBreakLogisticNormal,

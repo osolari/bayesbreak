@@ -36,7 +36,7 @@ def _make_piecewise_constant(n: int, boundaries: list[int], levels: list[float])
     if len(boundaries) != len(levels) + 1:
         raise ValueError("boundaries must have length len(levels)+1")
     x = np.empty(n, dtype=float)
-    for a, b, m in zip(boundaries[:-1], boundaries[1:], levels):
+    for a, b, m in zip(boundaries[:-1], boundaries[1:], levels, strict=False):
         x[a:b] = float(m)
     return x
 

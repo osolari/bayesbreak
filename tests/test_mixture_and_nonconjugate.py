@@ -1,12 +1,13 @@
 import numpy as np
 
 
-def _make_gaussian_group_data(rng: np.random.Generator, n: int, means: list[float], cps: list[int],
-                             sigma: float = 0.5) -> np.ndarray:
+def _make_gaussian_group_data(
+    rng: np.random.Generator, n: int, means: list[float], cps: list[int], sigma: float = 0.5
+) -> np.ndarray:
     """Piecewise-constant Gaussian data with changepoints cps (interior indices)."""
     boundaries = [0, *cps, n]
     y = np.empty(n, dtype=float)
-    for (a, b), m in zip(zip(boundaries[:-1], boundaries[1:]), means):
+    for (a, b), m in zip(zip(boundaries[:-1], boundaries[1:], strict=False), means, strict=False):
         y[a:b] = rng.normal(loc=m, scale=sigma, size=b - a)
     return y
 

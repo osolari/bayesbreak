@@ -1,13 +1,53 @@
+# IDEs and editors
 .idea
-**.egg-info
-__pycache__
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+*.egg
+build/
+dist/
+
+# Data files
+*.pkl
+*.pickle
 *.pyc
 *.pyo
 *.pyd
-*.pkl
 *.sqlite
+
+# Logs
 *.log
-notebooks/
-**/.DS_Store
+
+# Environment
 .env
-.vscode/
+.venv
+venv/
+
+# OS
+**/.DS_Store
+.DS_Store
+
+# IDE
+.idea/
+
+# Development
+.mypy_cache/
+.pytest_cache/
+.coverage
+htmlcov/
+.ruff_cache/
+
+# Generated documentation
+site/
+docs/_build/
+
+# Jupyter
+.ipynb_checkpoints/
+notebooks/

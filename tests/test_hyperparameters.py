@@ -14,9 +14,7 @@ def test_gaussian_requires_hyper_when_estimation_disabled():
 
 def test_gaussian_accepts_provided_hyper_when_estimation_disabled():
     y = np.zeros(10)
-    m = BayesBreakGaussian(
-        estimate_hyper=False, k_max=3, nu=0.0, rho2=1.0, sigma2=1.0
-    ).fit(y)
+    m = BayesBreakGaussian(estimate_hyper=False, k_max=3, nu=0.0, rho2=1.0, sigma2=1.0).fit(y)
     assert m.hyper_["nu"] == 0.0
 
 

@@ -1,0 +1,16 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+We introduced BayesBreak, a modular Bayesian segmentation framework that cleanly separates block-level
+parameter integration from global dynamic-programming over segmentations. For EF likelihoods with
+conjugate priors, BayesBreak yields closed-form block evidences and posterior moments and enables exact
+offline inference of $P(k\mid y)$, boundary posteriors $P(t_p\mid y,k)$, and Bayes regression curves in
+$\mathcal{O}(k_{\max}n^2)$ time. We extended the core method to irregular designs and length-aware priors
+(including refinement invariance), exact pooling across replicates/subjects with shared boundaries,
+known-group analysis, and latent-group discovery via an EM procedure with monotone lower-bound
+improvement. Finally, we developed non-conjugate GLM plug-ins that preserve the DP layer while
+broadening applicability, together with stability guarantees linking block approximation error to DP
+posterior error. A comprehensive experimental plan (synthetic and real data) evaluates segmentation
+accuracy, uncertainty calibration, evidence-based model selection, and scaling behavior, positioning
+BayesBreak as a practical, rigorous, and extensible baseline for segmentation problems across machine
+learning and computational biology.

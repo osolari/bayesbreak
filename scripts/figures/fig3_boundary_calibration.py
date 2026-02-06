@@ -103,14 +103,14 @@ def main(
     probs: list[float] = []
     labels: list[int] = []
 
-    for s in range(n_seq):
+    for _ in range(n_seq):
         k_true = int(rng.integers(3, 7))  # 3..6 segments
         b = _sample_boundaries(rng, n=n, k_true=k_true, min_len=min_seg_len)
         # Latent means.
         mus = rng.normal(loc=0.0, scale=1.0, size=k_true)
 
         mu = np.empty(n, dtype=float)
-        for q, (a, c) in enumerate(zip(b[:-1], b[1:])):
+        for q, (a, c) in enumerate(zip(b[:-1], b[1:], strict=False)):
             mu[a:c] = float(mus[q])
 
         y = mu + sigma * rng.standard_normal(n)

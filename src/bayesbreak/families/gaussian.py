@@ -9,10 +9,10 @@ For segment ``q`` with constant mean ``mu_q``:
 
 .. math::
 
-    y_i \mid \mu_q \sim \mathcal{N}(\mu_q,\sigma^2),\quad
-    \mu_q \sim \mathcal{N}(\nu,\rho^2).
+    y_i \\mid \\mu_q \\sim \\mathcal{N}(\\mu_q,\\sigma^2),\\quad
+    \\mu_q \\sim \\mathcal{N}(\nu,\rho^2).
 
-The hyperparameters \((\nu,\rho^2,\sigma^2)\) are either:
+The hyperparameters \\((\nu,\rho^2,\\sigma^2)\\) are either:
 
 - Estimated from the whole series (empirical Bayes), or
 - Provided by the user when ``estimate_hyper=False``.
@@ -75,7 +75,9 @@ class BayesBreakGaussian(BayesBreakBase):
         rho2: Optional[float] = None,
         sigma2: Optional[float] = None,
     ):
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         self.rho_estimation = rho_estimation
         self.nu = nu
         self.rho2 = rho2
@@ -88,14 +90,21 @@ class BayesBreakGaussian(BayesBreakBase):
     def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
         # If hyperparameter estimation is disabled, require user input.
         if not self.estimate_hyper:
-            missing = [name for name, v in (('nu', self.nu), ('rho2', self.rho2), ('sigma2', self.sigma2)) if v is None]
+            missing = [
+                name
+                for name, v in (("nu", self.nu), ("rho2", self.rho2), ("sigma2", self.sigma2))
+                if v is None
+            ]
             if missing:
                 raise ValueError(
-                    "estimate_hyper=False requires fixed hyperparameters; missing: " + ", ".join(missing)
+                    "estimate_hyper=False requires fixed hyperparameters; missing: "
+                    + ", ".join(missing)
                 )
+            # At this point we know nu, rho2, sigma2 are not None
+            assert self.nu is not None and self.rho2 is not None and self.sigma2 is not None
             return {"nu": float(self.nu), "rho2": float(self.rho2), "sigma2": float(self.sigma2)}
 
-        n = y.size
+        _n = y.size  # noqa: F841
         w = sample_weight
         w_sum = float(np.sum(w))
         if w_sum <= 0:

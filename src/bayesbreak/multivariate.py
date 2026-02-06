@@ -2,13 +2,13 @@ from __future__ import annotations
 
 import math
 from dataclasses import dataclass
-from typing import List, Literal, Optional, Sequence, Tuple
+from typing import Any, List, Literal, Optional
 
 import numpy as np
 from sklearn.base import BaseEstimator, RegressorMixin, clone
 
 from .base import BayesBreakBase
-from .utils import check_sample_weight, log_binom, logsumexp, require_fitted
+from .utils import check_sample_weight, logsumexp, require_fitted
 
 
 def _normalize_multivariate_weights(
@@ -52,7 +52,7 @@ class _ChannelState:
 
 
 class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
-    """Multivariate wrapper for BayesBreak.
+    r"""Multivariate wrapper for BayesBreak.
 
     This wrapper supports *shared-boundary* segmentation for vector-valued
     observations :math:`y_t \in \mathbb{R}^d` under a conditional independence
@@ -146,7 +146,11 @@ class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
             raise ValueError("combine must be either 'shared' or 'independent'.")
 
         # Shared-boundary: build channel states and combine block evidences.
-        k_max = int(self.k_max) if self.k_max is not None else int(getattr(self.base_estimator, "k_max", 50))
+        k_max = (
+            int(self.k_max)
+            if self.k_max is not None
+            else int(getattr(self.base_estimator, "k_max", 50))
+        )
         k_max = min(max(1, n), k_max)
 
         channel_states: List[_ChannelState] = []
@@ -185,7 +189,7 @@ class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
 
         # per-channel piecewise-constant fit
         pc = np.zeros((n, d), dtype=float)
-        for a, b in zip(boundaries[:-1], boundaries[1:]):
+        for a, b in zip(boundaries[:-1], boundaries[1:], strict=False):
             for c, st in enumerate(channel_states):
                 mu = st.est._segment_posterior_mean(a, b, y_arr[:, c], st.hyper, w_mat[:, c])
                 pc[a:b, c] = mu
@@ -199,7 +203,9 @@ class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
             for c, st in enumerate(channel_states):
                 A1_joint_c = self._make_channel_A1_joint(st, lA0_joint)
                 if rc == "fixed_k":
-                    brc[:, c] = self._bayes_regression_curve_fixed_k(L, R, A1_joint_c, n, self.k_ml_)
+                    brc[:, c] = self._bayes_regression_curve_fixed_k(
+                        L, R, A1_joint_c, n, self.k_ml_
+                    )
                 else:
                     brc[:, c] = self._bayes_regression_curve_mixed_k(L, R, A1_joint_c, n, k_max, C)
             self.brc_ = brc
@@ -208,12 +214,16 @@ class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
         self.channel_estimators_ = [st.est for st in channel_states]
         return self
 
-    def predict(self, X=None):
+    def predict(self, X: Any = None) -> np.ndarray:
         require_fitted(self, ["pc_fit_"])
+        if self.pc_fit_ is None:
+            raise RuntimeError("pc_fit_ is None")
         return np.array(self.pc_fit_, copy=True)
 
-    def score(self, X=None, y=None):
+    def score(self, X: Any = None, y: Any = None) -> float:
         require_fitted(self, ["log_evidence_"])
+        if self.log_evidence_ is None:
+            raise RuntimeError("log_evidence_ is None")
         return float(self.log_evidence_)
 
     # ---------------------------------------------------------------------
@@ -297,6 +307,7 @@ class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
         for k in range(1, k_max + 1):
             if C[k - 1] == 0.0 or not np.isfinite(L[k, n]):
                 continue
-            out += float(C[k - 1]) * BayesBreakMultivariate._bayes_regression_curve_fixed_k(L, R, A1, n, k)
+            out += float(C[k - 1]) * BayesBreakMultivariate._bayes_regression_curve_fixed_k(
+                L, R, A1, n, k
+            )
         return out
-

@@ -47,7 +47,9 @@ def main(outdir: Path, k_max: int, repeats: int, seed: int) -> None:
     rows = []
     for idx, n in enumerate(ns):
         times = [_fit_once(n=n, k_max=k_max, seed=seed + 1000 * idx + r) for r in range(repeats)]
-        rows.append((n, k_max, float(np.mean(times)), float(np.std(times, ddof=1)) if repeats > 1 else 0.0))
+        rows.append(
+            (n, k_max, float(np.mean(times)), float(np.std(times, ddof=1)) if repeats > 1 else 0.0)
+        )
 
     csv_path = outdir / "table1_runtime_scaling.csv"
     md_path = outdir / "table1_runtime_scaling.md"

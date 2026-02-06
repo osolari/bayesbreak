@@ -1,0 +1,190 @@
+\section{Notation and symbols}
+\label{sec:notation}
+
+This section summarizes the notation used throughout the paper. Indices are lower-case Roman
+letters; random variables are in italics; vectors of observations are bold where helpful;
+block indices follow the half-open convention $(i,j] := \{i+1,\dots,j\}$ with $0\le i<j\le n$.
+The dynamic-programming arrays $L$ and $R$ mirror those introduced for the Gaussian BPCR case
+\citep{hutter2006bpcr}; here they are defined for general EF block evidences
+(Sections~\ref{sec:ef}--\ref{sec:dp}).
+
+\paragraph{Normalisation convention for EF conjugate priors.}
+To avoid the common sign/ratio ambiguity, we fix the following convention. For conjugate
+hyperparameters $(\alpha,\beta)$ we define
+\begin{equation}
+p(\theta\mid \alpha,\beta)
+  = Z(\alpha,\beta)\,
+    \exp\{\eta(\theta)^\top \alpha - \beta A(\theta)\},
+\qquad
+Z(\alpha,\beta)^{-1}
+  = \int \exp\{\eta(\theta)^\top \alpha - \beta A(\theta)\}\,d\theta.
+\label{eq:Zconvention}
+\end{equation}
+With \eqref{eq:Zconvention}, single-block evidences take the ratio form
+$Z(\alpha_0,\beta_0)/Z(\alpha_0+S_{ij},\beta_0+W_{ij})$ as in \cref{eq:A0}.
+
+\begin{longtable}{@{}p{0.20\linewidth}p{0.74\linewidth}@{}}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$n$ & Number of observations on the (common) index grid. \\
+$x_i$ & Design/location of observation $y_i$ (irregular design allowed). \\
+$y_i$ & Observation at $x_i$ (single-sequence case). \\
+$w_i$ & Exposure/weight (default $w_i=x_i-x_{i-1}$ for irregular designs; may also encode known heteroscedasticity). \\
+\midrule
+$k$; $k_{\max}$ & Number of segments; maximum segment count used in the DP. \\
+$t_p$ & Boundary indices: $0=t_0<t_1<\cdots<t_k=n$. \\
+$b_t$ & Boundary indicator for index $t\in\{1,\dots,n-1\}$: $b_t=1$ iff $t$ is a boundary (end of a segment). \\
+$(i,j]$ & Block/segment indices $\{i+1,\dots,j\}$. \\
+\midrule
+$T(y)$, $\eta(\theta)$, $A(\theta)$, $h(y)$ & EF sufficient statistic, natural parameter, log-partition, base measure. \\
+$m(\theta)$ & Observation-scale mean for EF parameter $\theta$: $m(\theta)=\mathbb{E}[Y\mid\theta]$. \\
+\midrule
+$(\alpha,\beta)$ & EF conjugate hyperparameters with normalizer $Z(\alpha,\beta)$ defined by \eqref{eq:Zconvention}. \\
+$(\alpha_0,\beta_0)$ & Segment prior hyperparameters (before observing block data). \\
+\midrule
+$S_{ij}$ & Block sufficient statistic sum: $S_{ij}=\sum_{t=i+1}^j w_t\,T(y_t)$. \\
+$W_{ij}$ & Block exposure/weight sum: $W_{ij}=\sum_{t=i+1}^j w_t$. \\
+$H_{ij}$ & Block base-measure sum: $H_{ij}=\sum_{t=i+1}^j \log h(y_t,w_t)$ (model-dependent). \\
+\midrule
+$A^{(0)}_{ij}$ & Block evidence on $(i,j]$: $\exp\{H_{ij}\}\,Z(\alpha_0,\beta_0)/Z(\alpha_0+S_{ij},\beta_0+W_{ij})$ (\cref{eq:A0}). \\
+$A^{(r)}_{ij}$ & Block moment integral: $A^{(r)}_{ij}=A^{(0)}_{ij}\,\mathbb{E}[m(\theta)^r\mid \alpha_0+S_{ij},\beta_0+W_{ij}]$ (\cref{eq:Ar}). \\
+\midrule
+$L_{k j}$ & Prefix evidence for $y_{1:j}$ with $k$ segments (DP array; \cref{eq:LR}). \\
+$R_{k i}$ & Suffix evidence for $y_{i+1:n}$ with $k$ segments (DP array; \cref{eq:LR}). \\
+\midrule
+$C_k$ & Normalizer of $p(t\mid k)$: for index-uniform $C_k=\binom{n-1}{k-1}$; for length-aware priors see \cref{eq:Ck-general}. \\
+$P(k\mid y)$ & Posterior over segment counts; \cref{eq:post-k}. \\
+$P(t_p=h\mid y,k)$ & Boundary posterior (conditional on $k$); \cref{eq:boundary-post}. \\
+\midrule
+$\widehat{k}$, $\widehat{t}$ & MAP segment count and MAP boundary vector under $P(k\mid y)$ and $P(t_p\mid y,\widehat{k})$. \\
+$\widehat{\mu}^{(r)}_q$ & Segment-level posterior moments for MAP segment $q$: $A^{(r)}_{\widehat{t}_{q-1},\widehat{t}_q}/A^{(0)}_{\widehat{t}_{q-1},\widehat{t}_q}$ (\cref{eq:segmom-seg}). \\
+$\widehat{\mu}'^{(r)}_t$ & Bayes regression-curve moment at index $t$ given $k$; \cref{eq:segmom}. \\
+\midrule
+$s\in\{1,\dots,S\}$ & Subject/sample index for multi-subject settings. \\
+$g\in\{1,\dots,G\}$ & Group index (known or latent). \\
+$r_{sg}$ & Responsibility $P(z_s=g\mid y^{(s)})$ in latent-group EM. \\
+\midrule
+\textbf{Prediction} & \\
+\midrule
+$\mathcal{M}_g$ & Trained group-specific BayesBreak model for group $g$ (posterior objects + exported curves). \\
+$(x_i^{\text{new}},y_i^{\text{new}})$ & New pointwise observations for prediction, with $x_1^{\text{new}}<\cdots<x_m^{\text{new}}$. \\
+$u=1,\dots,U$ & Index for \emph{multivariate} (set-valued) units in new data (each unit carries multiple internal pairs). \\
+$\{(x_{u r},y_{u r})\}_{r=1}^{R_u}$ & Internal observations within multivariate unit $u$ (so $X_u=(x_{u1},\dots,x_{uR_u})$ and $y_u=(y_{u1},\dots,y_{uR_u})$). \\
+$\ell_g$ & Log posterior-predictive likelihood of new data under group $g$: $\ell_g=\log p(\text{new}\mid \mathcal{M}_g)$. \\
+$r_g$ & Posterior group membership probability for new data: $r_g=P(g\mid \text{new}) \propto \pi_g\exp(\ell_g)$. \\
+$\pi_g$ & Prior mixing weight over groups at prediction time (optional; default uniform). \\
+$\widehat{f}^{\text{MAP}}_g(x)$ & Group-$g$ MAP piecewise-constant signal evaluated at $x$ (breakpoints + levels). \\
+$\widehat{f}^{\text{Bayes}}_g(x)$ & Group-$g$ Bayesian curve value (posterior mean; optionally variance) at $x$. \\
+$d$ & Response dimension for vector-valued observations $y_i\in\mathbb{R}^d$ (multivariate response). \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Notes.}
+(i) When multiple replicates are available at $x_i$ for a subject $s$, either treat them
+explicitly or pre-aggregate into $(S^{(s)}_{ij},W^{(s)}_{ij},H^{(s)}_{ij})$ by summing over
+replicates within $(i,j]$.
+(ii) For irregular designs, the default $w_i=x_i-x_{i-1}$ absorbs interval length/exposure;
+alternative weights can encode known heteroscedasticity (e.g., inverse variance) in Gaussian
+blocks.
+(iii) Boundary priors $p(t\mid k)$ enter the DP either via $C_k$ (global normalizer) and/or
+via segment-factorized weights $g(x_j-x_i)$ that can be absorbed into block evidences
+(Section~\ref{sec:dp}, Section~\ref{sec:irregular}).
+
+\section{Problem setup and Bayesian segmentation model}
+\label{sec:setup}
+
+We observe $(x_i,y_i)$ with $x_1<\dots<x_n$ (irregular design allowed). A segmentation is
+$0=t_0<t_1<\dots<t_k=n$, with segment index $q\in\{1,\dots,k\}$ and segment parameter
+$\theta_q$. Conditionally on the segmentation, observations in a block $(i,j]$ are
+independent with likelihood parameter $\theta$ (the segment parameter for that block).
+
+\subsection{Warm-up: equispaced index model (BPCR view)}
+To motivate the BayesBreak construction, consider the equispaced case where the design is
+implicit ($x_i=i$) and exposure weights are uniform ($w_i\equiv 1$). A standard Gaussian BPCR
+model \citep{hutter2006bpcr} is
+\[
+y_t\mid \mu_q \sim \mathcal{N}(\mu_q,\sigma^2),\qquad \mu_q\sim \mathcal{N}(\nu,\rho^2),
+\quad t\in(t_{q-1},t_q].
+\]
+The key observation is that for any candidate block $(i,j]$ one can integrate out $\mu$ in
+closed form to obtain a \emph{single-block evidence} $A^{(0)}_{ij}$. If we precompute
+$A^{(0)}_{ij}$ for all $0\le i<j\le n$, then the marginal likelihood of the full sequence
+under $k$ segments is a sum over all segmentations into $k$ blocks of products of these block
+evidences, and a DP computes this sum exactly in $\mathcal{O}(k_{\max}n^2)$ time. BayesBreak
+extends this ``block evidence + DP'' paradigm from the Gaussian equispaced setting to
+(i) general EF likelihoods, (ii) irregular designs and length priors, and (iii) multi-subject
+and grouped models.
+
+\subsection{General model: exponential families, irregular designs, and segment-length priors}
+\label{subsec:general-setup}
+
+For general EF models, we assume that within each block $(i,j]$ observations follow an EF
+likelihood with canonical parameter $\theta$:
+\begin{equation}
+p(y\mid \theta)=h(y)\exp\!\{\eta(\theta)^\top T(y)-A(\theta)\}.
+\label{eq:EFbasic}
+\end{equation}
+To incorporate irregular design and/or known heteroscedasticity, we allow \emph{exposure/length
+weights} $w_t\ge 0$ (default $w_t=x_t-x_{t-1}$ with $x_0$ the left boundary of the domain).
+A broad weighted EF form (covering Poisson exposure, Gaussian precision weights, binomial
+trial counts, etc.) is written in Section~\ref{sec:ef}.
+
+We adopt a conjugate prior $p(\theta\mid\alpha,\beta)$ of the form \eqref{eq:Zconvention}.
+For a block $(i,j]$, we define cumulative quantities
+\[
+S_{ij}=\sum_{t=i+1}^j w_t\,T(y_t),\qquad
+W_{ij}=\sum_{t=i+1}^j w_t,\qquad
+H_{ij}=\sum_{t=i+1}^j \log h(y_t,w_t),
+\]
+and show that $A^{(0)}_{ij}$ and $A^{(r)}_{ij}$ depend on the data only through these sums
+(Theorem~\ref{thm:ef-integral}).
+
+\paragraph{Priors on segmentations.}
+We place a prior on the number of segments $p(k)$ (default flat on $\{1,\dots,k_{\max}\}$)
+and a prior on boundary locations given $k$, $p(t\mid k)$. Two important cases are:
+\begin{itemize}
+\item \textbf{Index-uniform prior (equispaced baseline).}
+$p(t\mid k)=\binom{n-1}{k-1}^{-1}$, uniform over all ordered $(k-1)$-subsets of $\{1,\dots,n-1\}$.
+\item \textbf{Length-aware prior (irregular designs).}
+Let $\Delta x_q := x_{t_q} - x_{t_{q-1}}$ be the physical length of segment $q$. We consider
+\begin{equation}
+p(t\mid k) \propto \prod_{q=1}^k g(\Delta x_q)
+\label{eq:lengthprior}
+\end{equation}
+for some nonnegative function $g$ (e.g.\ $g(L)=L^\gamma$). Because \eqref{eq:lengthprior}
+factorizes over segments, it integrates seamlessly into the DP by multiplying each block
+evidence by the corresponding segment factor (Section~\ref{sec:dp}, Section~\ref{sec:irregular}).
+\end{itemize}
+
+The proportionality in \eqref{eq:lengthprior} hides a normalizing constant
+\begin{equation}
+C_k \;:=\; \sum_{0=t_0<t_1<\cdots<t_k=n}\ \prod_{q=1}^k g\big(x_{t_q}-x_{t_{q-1}}\big),
+\label{eq:Ck-setup}
+\end{equation}
+so that $p(t\mid k)=C_k^{-1}\prod_q g(\Delta x_q)$.
+For index-uniform priors, $g\equiv 1$ and $C_k=\binom{n-1}{k-1}$.
+For general $g$, the same DP as in Section~\ref{sec:dp} computes $C_k$ by setting
+all block evidences to one (cf. \eqref{eq:Ck-general}).
+
+\paragraph{Hazard-rate interpretation.}
+An important special case is a (discrete) constant hazard model that places a boundary after each
+observation with probability $\rho\in(0,1)$, independently across positions.
+Conditioned on $k$, the induced distribution on segment lengths factorizes as in \eqref{eq:lengthprior}
+with $g(m)\propto (1-\rho)^{m-1}$ for integer length $m$ (and an additional factor of $\rho$ that can
+be absorbed into $p(k)$).
+For irregular designs, one may analogously choose a continuous-time hazard rate $\lambda>0$ and set
+$g(L)=\exp(-\lambda L)$, yielding a renewal-process prior on segment lengths.
+We keep $g$ generic throughout; Section~\ref{sec:irregular} shows that a broad class of design-aware
+priors preserve the DP factorization.
+
+\begin{assumption}[Factorizing partition prior]
+\label{ass:factorizing-prior}
+For each $k\in\{1,\dots,k_{\max}\}$, the conditional prior on boundaries admits the factorization
+\eqref{eq:lengthprior} with a nonnegative function $g$ such that the normalizer $C_k$ in
+\eqref{eq:Ck-setup} is finite.
+\end{assumption}
+
+Assumption~\ref{ass:factorizing-prior} is the minimal structural condition needed for exact DP.
+It allows rich priors (design-aware, minimum-length constraints, and truncation) while maintaining
+the product-partition form required by BayesBreak.

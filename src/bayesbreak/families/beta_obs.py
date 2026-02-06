@@ -1,4 +1,4 @@
-"""bayesbreak.families.beta_obs
+r"""bayesbreak.families.beta_obs
 
 Continuous observations y in (0, 1) with a fixed-precision Beta likelihood and a
 Beta prior on the segment mean.
@@ -65,7 +65,7 @@ def _betaobs_block_quadrature(
     Sw = np.asarray(Sw, dtype=float)
     Slogy = np.asarray(Slogy, dtype=float)
     Slog1my = np.asarray(Slog1my, dtype=float)
-    m = Sw.size
+    _m = Sw.size  # noqa: F841
 
     mu_grid, w_grid = _legendre_nodes_weights(n_quad)
     # Precompute prior log-density (up to additive constant) on grid.
@@ -139,7 +139,9 @@ class BayesBreakBetaObs(BayesBreakBase):
         alpha: Optional[float] = None,
         beta: Optional[float] = None,
     ):
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         if phi <= 0:
             raise ValueError("phi must be > 0")
         self.phi = float(phi)
@@ -152,7 +154,9 @@ class BayesBreakBetaObs(BayesBreakBase):
         self.beta = beta
 
     # ---- hyperparameters (EB) ----
-    def _estimate_global_params(self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> Dict[str, float]:
+    def _estimate_global_params(
+        self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+    ) -> Dict[str, float]:
         if (not self.estimate_hyper) and (self.alpha is not None) and (self.beta is not None):
             return {"alpha": float(self.alpha), "beta": float(self.beta), "phi": float(self.phi)}
 

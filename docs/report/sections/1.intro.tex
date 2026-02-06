@@ -1,0 +1,126 @@
+\section{Introduction}
+Piecewise-constant segmentation (multiple change-point inference) is a central task in
+signal processing, biostatistics, econometrics, and modern machine learning. Typical
+applications range from copy-number and methylation profiles along the genome, through neural
+and financial time series, to binned point-process or count data. In all of these settings,
+one observes noisy data $y_1,\dots,y_n$ (possibly at design points $x_1<\cdots<x_n$) and seeks
+to infer (i) the number of segments, (ii) the locations of the change-points, and (iii)
+segment-specific parameters such as means, rates, or success probabilities. Bayesian
+formulations are attractive because they provide coherent uncertainty quantification over all
+of these objects and expose marginal likelihoods (evidences) that can be used for model
+comparison, hyperparameter selection, and principled pooling across related sequences.
+
+When coupled with dynamic programming (DP), Bayesian change-point models can be made exact
+and polynomial-time in $n$ for a broad class of priors. The core idea is to integrate out
+single-segment parameters in closed form, obtain a matrix of single-block evidences, and then
+use a DP over all segmentations to compute evidences, posterior boundary distributions, and
+Bayes regression curves. For one-dimensional Gaussian noise, such DP-based Bayesian
+piecewise-constant regression (BPCR) has been studied extensively and has become a standard
+baseline in change-point workflows \citep{hutter2006bpcr}.
+
+Despite this progress, existing exact Bayesian methods are often restricted in at least one
+of the following ways: (a) they assume independent, identically distributed Gaussian noise
+with regularly spaced designs; (b) they operate on a single sequence, making it cumbersome to
+share information across replicates or subjects with aligned boundaries; (c) they lack a
+modular way to plug in different exponential-family (EF) observation models while retaining
+exact DP inference; and (d) they provide limited support for hierarchical structure such as
+known groups or latent subpopulations. These limitations are practically important in modern
+applications where observations are often irregularly spaced, non-Gaussian (counts,
+proportions, bounded responses), and collected across multiple related individuals or
+conditions.
+
+\paragraph{Our contributions.}
+We introduce \emph{BayesBreak}, a modular Bayesian segmentation framework that systematically
+addresses these limitations while retaining an exact DP core:
+\begin{itemize}
+\item \textbf{General EF-conjugate blocks.} We work with a general EF likelihood and
+conjugate prior at the segment level. This yields closed-form, single-block integrated
+evidences and moments (Theorem~\ref{thm:ef-integral}) that can be computed in $\mathcal{O}(1)$
+per block from cumulative sufficient statistics, enabling $\mathcal{O}(n^2)$ precomputation
+for all candidate blocks.
+\item \textbf{Exact DP inference for evidences, boundaries, and Bayes regression curves.}
+We provide forward/backward DP recursions for prefix/suffix evidences and show how these
+yield exact posteriors over $k$ and over boundary locations, as well as exact Bayes regression
+curves and moment bands (Theorem~\ref{thm:dp-correctness}).
+\item \textbf{Irregular designs and length-aware priors.} We admit observations at arbitrary
+locations $x_i$ and incorporate irregular spacing through exposure/length weights $w_i$. We
+also incorporate segment-length priors $p(t\mid k)\propto\prod_q g(\Delta x_q)$ that
+factorize over segments and therefore integrate seamlessly into the DP (Section~\ref{sec:irregular}),
+including refinement invariance under zero-exposure grid refinements (Theorem~\ref{thm:refine}).
+\item \textbf{Replicates and multi-subject pooling.} We extend the model to replicated or
+multi-subject data sets that share change-point locations but allow subject-specific segment
+parameters. Information is pooled via exact block-level evidence combination
+(Theorem~\ref{thm:multisubject}), yielding sharper boundary posteriors while preserving
+between-subject heterogeneity (Section~\ref{sec:replicates}).
+\item \textbf{Known and latent groups.} We support both (i) known groups of subjects with
+group-specific segmentation structure (Section~\ref{sec:groups-known}), and (ii) latent
+groups learned via an EM algorithm whose DP-based M-steps operate on responsibility-weighted
+block evidences and whose evidence lower bound is provably monotone (Theorem~\ref{thm:em-monotone},
+Section~\ref{sec:latent-em}).
+\item \textbf{Concrete families and non-conjugate plug-ins.} We instantiate the framework for
+Gaussian, Poisson, Binomial, and Beta-observation models (Section~\ref{sec:families}), and
+provide a non-conjugate plug-in toolkit (Laplace / variational / EP / P\'olya--Gamma) for
+approximating block evidences and moments when conjugacy is unavailable while leaving the DP
+layer unchanged (Section~\ref{sec:nonconj}).
+\item \textbf{Out-of-sample group scoring and prediction.}
+Given trained group-specific BayesBreak models, we derive posterior-predictive scoring
+rules that map new inputs $(X,y)$ to group likelihoods and posterior group membership
+probabilities, and we provide a curve-evaluation interface that maps $(X,\text{group})$
+to MAP or Bayes signal values at arbitrary query points (\S\ref{sec:prediction}).
+We treat point observations and multivariate/set-valued observations separately and
+give algorithms suitable for direct implementation.
+\end{itemize}
+At a high level, BayesBreak separates \emph{block computation} from \emph{global
+segmentation}: once single-block evidences and moments are available for a chosen
+likelihood/prior pair (exact or approximate), the same $\mathcal{O}(k_{\max}n^2)$ DP produces
+evidences, boundary posteriors, MAP segmentations, and Bayes regression curves across all of
+our extensions.
+
+\subsection{Related work and literature review}\label{sec:lit}
+Piecewise-constant regression and changepoint detection are long-standing topics in statistics, signal processing, and machine learning, motivated by settings in which the data-generating mechanism is locally stationary but exhibits abrupt regime shifts.
+BayesBreak sits at the intersection of (i) \emph{offline} segmentation methods that seek globally optimal partitions of an ordered design, and (ii) \emph{Bayesian} formulations that quantify posterior uncertainty over the number and locations of changepoints as well as segment-level parameters.
+
+\paragraph{Frequentist segmentation via dynamic programming and penalization.}
+Classical offline segmentation treats changepoints as unknown discrete parameters and optimizes a cost-plus-penalty objective over all partitions.
+Early dynamic-programming (DP) formulations include segment-neighborhood and optimal-partitioning algorithms that compute the global minimizer for a fixed number of segments or a fixed penalty, respectively \citep{auger1989segment, jackson2005optpart}.
+Modern variants exploit pruning to reduce the typical computational burden while preserving exact optimality; prominent examples include pruned DP schemes \citep{rigaill2010pruned} and the PELT algorithm \citep{killick2012pelt}, both of which apply to a wide class of additive segment costs.
+Complementary approaches impose convex relaxations such as total-variation (TV) regularization \citep{rudin1992rof}, with the fused lasso \citep{tibshirani2005fused} and its multivariate/group extensions \citep{bleakley2011groupfused} yielding piecewise-constant estimates via $\ell_1$-type penalties.
+Multiscale and scanning procedures provide alternative inferential paradigms that emphasize simultaneous control across scales and high-probability recovery guarantees; representative examples include SMUCE \citep{frick2014smuce} and wild binary segmentation (WBS) \citep{fryzlewicz2014wbs}.
+In computational biology, circular binary segmentation (CBS) \citep{olshen2004cbs} is a widely used heuristic for copy-number and related genomic signals.
+These frequentist methods are highly effective for point estimation, but uncertainty quantification for the full partition and the induced curve typically requires additional approximations or resampling.
+For a broad contemporary overview of offline changepoint detection, including both exact DP and multiscale heuristics, see the selective survey of \citet{truong2020review}.
+
+BayesBreak is also closely related in spirit to \emph{Bayesian blocks} \citep{scargle2013bayesianblocks}, a widely used model-selection procedure in astronomy that chooses a piecewise-constant partition by optimizing a penalized marginal-likelihood criterion; we highlight it here as an example of a segmentation objective that is naturally expressed in terms of blockwise evidences.
+
+\paragraph{Bayesian offline and online changepoint models.}
+Bayesian changepoint analysis dates back at least to product-partition models (PPMs), where a prior over partitions is combined with conjugate segment likelihoods to yield tractable marginalization \citep{barry1992ppm, barry1993bayesCP}.
+Exact offline Bayesian inference can be performed using DP when the segment likelihoods integrate in closed form, leading to algorithms that compute the posterior over partitions and changepoint locations without MCMC \citep{fearnhead2006exact}.
+Approximate Bayesian inference has also been explored through reversible-jump MCMC \citep{green1995rjMCMC} and related sampling-based schemes \citep{denison1998bayesian}, as well as information-criterion approaches for selecting the number of changepoints \citep{yao1988biometrika}.
+Bayesian online changepoint detection (BOCPD) \citep{adamsmackay2007bocpd} provides a complementary filtering perspective, prioritizing streaming updates over exact offline posterior inference.
+Bayesian piecewise-constant regression (BPCR) \citep{hutter2006bpcr} emphasizes predictive performance and model averaging across partitions, closely aligned with BayesBreak's use of marginal likelihoods and posterior predictive quantities.
+
+\paragraph{Multi-sequence, hierarchical, and latent-structure extensions.}
+Many applications involve multiple related sequences or covariate-aligned replicates, motivating hierarchical priors that pool information while permitting between-sequence heterogeneity.
+Bayesian hierarchical changepoint models and related functional formulations have been studied in a variety of forms \citep{carlin1992hierBayesCP, punskaya2002bayesian}.
+On the optimization side, the group fused lasso \citep{bleakley2011groupfused} and other structured penalties encourage shared changepoints across multiple signals.
+A persistent challenge in these multi-signal settings is balancing statistical efficiency (via pooling) with flexibility (via sequence-specific departures), while retaining computational tractability and interpretable uncertainty.
+
+\paragraph{Positioning of BayesBreak.}
+BayesBreak contributes a unified and modular Bayesian treatment of piecewise-constant regression in which (i) segment marginal likelihoods are expressed for general conjugate exponential-family models using aggregated block summaries, (ii) partition priors can incorporate length-aware and irregular-design structure, (iii) multi-sequence learning is supported under known or latent group structure, and (iv) prediction is formalized as posterior predictive scoring and MAP/Bayes signal evaluation for new observations under both univariate and multivariate models.
+The central design goal is to decouple \emph{local} distributional modeling (via block evidence routines, exact or approximate) from \emph{global} combinatorial inference (via DP), so that extending to new observation models does not require re-deriving posterior recursions.
+
+
+\paragraph{Paper organization.}
+Section~\ref{sec:problem} states the offline Bayesian segmentation problem and the inferential targets BayesBreak is designed to compute.
+Section~\ref{sec:notation} introduces notation and bookkeeping conventions.
+Section~\ref{sec:setup} defines the Bayesian segmentation model and the class of partition priors considered in BayesBreak.
+Section~\ref{sec:ef} derives the generic block (segment) marginal likelihood for conjugate exponential-family models, emphasizing computations via sufficient-statistic aggregation.
+Section~\ref{sec:dp} develops exact posterior inference by dynamic programming, including boundary posterior probabilities and segment-wise posterior moments.
+Section~\ref{sec:algorithms} collects implementation-ready pseudocode, complexity analysis, and numerical-stability considerations (log-space DP and normalization).
+Section~\ref{sec:irregular} extends the framework to irregular designs and weighted observations.
+Section~\ref{sec:replicates} and Section~\ref{sec:groups-known} treat replicated sequences and known-group pooling, respectively, while Section~\ref{sec:latent-em} introduces a latent-group mixture-of-segmentations model and an EM procedure for joint group assignment and segmentation.
+Section~\ref{sec:families} provides closed-form block evidence and posterior moment formulas for common conjugate families used in practice.
+Section~\ref{sec:nonconj} develops approximation strategies for non-conjugate GLMs at the block level, together with a stability analysis for propagating block-level approximation error through the DP.
+Section~\ref{sec:prediction} formalizes prediction for new $(X,y)$ pairs as (i) group-membership likelihood scoring and (ii) MAP/Bayes signal evaluation conditional on group membership, with separate treatments for univariate and multivariate observations.
+Section~\ref{sec:experiments} details the proposed experiments, baselines, evaluation metrics, and expected takeaways.
+We conclude in Section~\ref{sec:conclusion}.

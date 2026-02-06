@@ -40,7 +40,7 @@ specified generative mixture.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Union
+from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
@@ -58,7 +58,6 @@ from .families import (
 )
 from .groups import BayesBreakGrouped
 from .utils import log_binom, logsumexp
-
 
 ArrayLike1D = Union[np.ndarray, Sequence[float]]
 SequenceInput = Union[np.ndarray, Sequence[np.ndarray]]
@@ -124,9 +123,7 @@ def _as_list_of_weight_arrays(
         return [np.asarray(sample_weight, dtype=float)]
     if isinstance(sample_weight, (list, tuple)):
         if len(sample_weight) != n_seq:
-            raise ValueError(
-                f"sample_weight must have length {n_seq}, got {len(sample_weight)}."
-            )
+            raise ValueError(f"sample_weight must have length {n_seq}, got {len(sample_weight)}.")
         out: List[Optional[np.ndarray]] = []
         for i, w in enumerate(sample_weight):
             if w is None:
@@ -134,9 +131,7 @@ def _as_list_of_weight_arrays(
                 continue
             ww = np.asarray(w, dtype=float)
             if ww.ndim != 1 or ww.shape[0] != n:
-                raise ValueError(
-                    f"sample_weight[{i}] must be shape ({n},), got {ww.shape}."
-                )
+                raise ValueError(f"sample_weight[{i}] must be shape ({n},), got {ww.shape}.")
             out.append(ww)
         return out
     raise TypeError(f"Unsupported type for sample_weight: {type(sample_weight)!r}.")
@@ -219,7 +214,7 @@ def _pool_hyper_by_family(
             w_flat = np.concatenate(
                 [
                     np.ones_like(y, dtype=float) if w is None else np.asarray(w, dtype=float)
-                    for y, w in zip(ys, ws)
+                    for y, w in zip(ys, ws, strict=False)
                 ],
                 axis=0,
             )
@@ -233,16 +228,14 @@ def _pool_hyper_by_family(
         w_flat = np.concatenate(
             [
                 np.ones_like(y, dtype=float) if w is None else np.asarray(w, dtype=float)
-                for y, w in zip(ys, ws)
+                for y, w in zip(ys, ws, strict=False)
             ],
             axis=0,
         )
     return template._estimate_global_params(y_flat, sample_weight=w_flat)
 
 
-def _safe_weighted_sum_lA0(
-    mats: List[np.ndarray], weights: np.ndarray
-) -> np.ndarray:
+def _safe_weighted_sum_lA0(mats: List[np.ndarray], weights: np.ndarray) -> np.ndarray:
     """Responsibility-weighted sum of log-evidence matrices.
 
     Avoids ``0 * (-inf) -> nan`` by masking finite entries.
@@ -251,7 +244,7 @@ def _safe_weighted_sum_lA0(
         raise ValueError("mats must be non-empty")
     out = np.zeros_like(mats[0])
     mask = np.isfinite(mats[0])
-    for m, w in zip(mats, weights):
+    for m, w in zip(mats, weights, strict=False):
         if w == 0.0:
             continue
         out[mask] += w * m[mask]
@@ -263,7 +256,7 @@ def _safe_weighted_sum_A1(mats: List[np.ndarray], weights: np.ndarray) -> np.nda
     if not mats:
         raise ValueError("mats must be non-empty")
     out = np.zeros_like(mats[0])
-    for m, w in zip(mats, weights):
+    for m, w in zip(mats, weights, strict=False):
         if w == 0.0:
             continue
         out += w * m
@@ -276,7 +269,7 @@ def _run_dp_from_stats(
     *,
     k_max: int,
     regression_curve: str,
-    prior_k: Literal["uniform", "geometric"] = "uniform",
+    prior_k: str = "uniform",  # "uniform" or "geometric"
     geom_p: float = 0.5,
 ) -> Tuple[
     np.ndarray,
@@ -312,8 +305,7 @@ def _run_dp_from_stats(
             raise ValueError("geom_p must be in (0, 1) for prior_k='geometric'.")
         logC_raw[1 : kk + 1] = logC_raw[1 : kk + 1] + (np.arange(1, kk + 1) - 1) * np.log(p)
     elif prior_k != "uniform":
-        raise ValueError("prior_k must be one of {'uniform','geometric'}."
-                         f" Got {prior_k!r}.")
+        raise ValueError("prior_k must be one of {'uniform','geometric'}." f" Got {prior_k!r}.")
 
     logE = float(logsumexp(logC_raw[1 : kk + 1]))
     logC = logC_raw.copy()
@@ -567,7 +559,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                     lA0_s = lA0_cache[g][s]
                     # Sum block evidences along the group's MAP partition.
                     score_sg = 0.0
-                    for a, b in zip(bnds[:-1], bnds[1:]):
+                    for a, b in zip(bnds[:-1], bnds[1:], strict=False):
                         score_sg += float(lA0_s[a, b])
                     log_resp[s, g] = np.log(pi[g]) + score_sg
 
@@ -626,9 +618,11 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                 w_s = ws[s]
                 if w_s is None:
                     w_s = np.ones(n, dtype=float)
-                lA0_s, _A1_s = est_s._compute_single_segment_stats(ys[s], gs.hyper, sample_weight=w_s)
+                lA0_s, _A1_s = est_s._compute_single_segment_stats(
+                    ys[s], gs.hyper, sample_weight=w_s
+                )
                 score_sg = 0.0
-                for a, b in zip(gs.boundaries[:-1], gs.boundaries[1:]):
+                for a, b in zip(gs.boundaries[:-1], gs.boundaries[1:], strict=False):
                     score_sg += float(lA0_s[a, b])
                 log_resp[s, g] = np.log(self.pi_[g]) + score_sg
 
@@ -756,7 +750,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                         est.set_params(**{key: float(val)})
                 y_arr = np.asarray(ys[s], dtype=float)
                 w_arr = None if ws[s] is None else np.asarray(ws[s], dtype=float)
-                for a, b in zip(boundaries[:-1], boundaries[1:]):
+                for a, b in zip(boundaries[:-1], boundaries[1:], strict=False):
                     mu = est._segment_posterior_mean(a, b, y_arr, gs.hyper, sample_weight=w_arr)
                     out[s, a:b] = float(mu)
             else:

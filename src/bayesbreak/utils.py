@@ -19,7 +19,6 @@ from typing import Any, Optional, Union
 import numpy as np
 from numpy.typing import ArrayLike, NDArray
 
-
 FloatArray = NDArray[np.floating]
 
 
@@ -28,12 +27,14 @@ FloatArray = NDArray[np.floating]
 # -----------------------------------------------------------------------------
 
 try:  # SciPy-backed version (preferred)
-    from scipy.special import logsumexp as _scipy_logsumexp  # type: ignore
+    from scipy.special import logsumexp as _scipy_logsumexp
 except Exception:  # pragma: no cover
     _scipy_logsumexp = None
 
 
-def logsumexp(a: FloatArray, axis: Optional[int | tuple[int, ...]] = None, keepdims: bool = False) -> FloatArray:
+def logsumexp(
+    a: ArrayLike, axis: Optional[int | tuple[int, ...]] = None, keepdims: bool = False
+) -> np.ndarray:
     """Compute ``log(sum(exp(a)))`` in a numerically stable way.
 
     Parameters
@@ -80,12 +81,12 @@ def logsumexp(a: FloatArray, axis: Optional[int | tuple[int, ...]] = None, keepd
 # -----------------------------------------------------------------------------
 
 try:
-    from scipy.special import gammaln as _scipy_gammaln  # type: ignore
+    from scipy.special import gammaln as _scipy_gammaln
 except Exception:  # pragma: no cover
     _scipy_gammaln = None
 
 
-def gammaln(x: ArrayLike) -> FloatArray:
+def gammaln(x: ArrayLike) -> np.ndarray:
     """Compute ``log(Gamma(x))`` element-wise.
 
     This function uses SciPy when available and otherwise falls back to
@@ -152,7 +153,9 @@ def as_1d_float_array(x: ArrayLike, *, name: str = "array") -> FloatArray:
     return np.ascontiguousarray(arr)
 
 
-def check_sample_weight(sample_weight: Optional[Union[float, int, ArrayLike]], n: int) -> FloatArray:
+def check_sample_weight(
+    sample_weight: Optional[Union[float, int, ArrayLike]], n: int
+) -> FloatArray:
     """Validate and normalize ``sample_weight``.
 
     The BayesBreak codebase treats sample weights as **power-likelihood**
@@ -183,7 +186,7 @@ def check_sample_weight(sample_weight: Optional[Union[float, int, ArrayLike]], n
         return np.ones(n, dtype=float)
 
     if np.isscalar(sample_weight):
-        w = np.full(n, float(sample_weight), dtype=float)
+        w = np.full(n, sample_weight, dtype=float)
     else:
         w = np.asarray(sample_weight, dtype=float)
 
@@ -191,7 +194,7 @@ def check_sample_weight(sample_weight: Optional[Union[float, int, ArrayLike]], n
         raise ValueError(f"sample_weight must be 1D with length {n}; got shape {w.shape}.")
     if not np.all(np.isfinite(w)):
         raise ValueError("sample_weight must contain only finite values.")
-    if np.any(w < 0):
+    if np.any(w < 0):  # type: ignore[operator]
         raise ValueError("sample_weight must be nonnegative.")
     return np.ascontiguousarray(w)
 

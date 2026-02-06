@@ -1,0 +1,196 @@
+\section{Supplementary derivations and theoretical extensions}
+\label{sec:appendix}
+
+This appendix collects derivations and complementary results that support the main development
+without altering the inferential scope.
+The emphasis is on (i) making key steps in the conjugate-exponential-family integration fully
+explicit, (ii) clarifying the probabilistic structure of factorizing partition priors, and (iii)
+recording a few boundary cases and identifiability remarks that are useful in practice.
+
+\subsection{Conjugate exponential families: detailed block evidence derivation}
+\label{app:conjugate}
+
+Section~\ref{sec:ef} states the closed form of the integrated segment evidence
+$A_{ij}^{(0)}=p(y_{(i,j]}\mid \text{hyper})$ for exponential-family likelihoods with a conjugate prior,
+and gives expressions for posterior moments needed by the Bayes regression curve.
+For completeness, we now provide a step-by-step derivation.
+
+\paragraph{Setup.}
+Fix a segment (block) $(i,j]$ and write its aggregated sufficient statistics
+$T_{ij}=\sum_{t=i+1}^j w_t T(y_t)$ and aggregated exposure $W_{ij}=\sum_{t=i+1}^j w_t$.
+Let $\eta\in\mathbb{R}^d$ denote the natural parameter and $A(\eta)$ its cumulant function.
+Assume the conditional likelihood factors as
+\begin{equation}
+ p\big(y_{(i,j]}\mid \eta\big)
+ \;=\; \prod_{t=i+1}^j \exp\big\{ w_t\,\langle \eta, T(y_t)\rangle - w_t A(\eta)\big\}\,h(y_t)^{w_t}
+ \;=\; \exp\big\{\langle \eta, T_{ij}\rangle - W_{ij}A(\eta)\big\}\,H_{ij},
+ \label{eq:app-ef-lik}
+\end{equation}
+where $H_{ij}:=\prod_{t=i+1}^j h(y_t)^{w_t}$ collects the base-measure terms.
+The standard Diaconis--Ylvisaker conjugate prior takes the form
+\begin{equation}
+ p(\eta\mid \tau,\nu) \;=\; \exp\big\{\langle \eta,\tau\rangle - \nu A(\eta) - \log Z(\tau,\nu)\big\},
+ \label{eq:app-ef-prior}
+\end{equation}
+where $(\tau,\nu)$ are hyperparameters and $Z(\tau,\nu)$ is the normalizer.
+
+\paragraph{Evidence integral.}
+Multiplying \eqref{eq:app-ef-lik} and \eqref{eq:app-ef-prior} yields
+\begin{align}
+ p\big(y_{(i,j]}\mid \eta\big)\,p(\eta\mid\tau,\nu)
+ &= H_{ij}\,\exp\Big\{\langle \eta, \tau+T_{ij}\rangle - (\nu+W_{ij})A(\eta) - \log Z(\tau,\nu)\Big\}.
+\end{align}
+Integrating over $\eta$ therefore gives
+\begin{align}
+ A^{(0)}_{ij}
+ &= \int p\big(y_{(i,j]}\mid \eta\big)\,p(\eta\mid\tau,\nu)\,d\eta \\
+ &= H_{ij}\,e^{-\log Z(\tau,\nu)}\int \exp\big\{\langle \eta, \tau+T_{ij}\rangle - (\nu+W_{ij})A(\eta)\big\}\,d\eta \\
+ &= H_{ij}\,\frac{Z\big(\tau+T_{ij},\nu+W_{ij}\big)}{Z(\tau,\nu)}.
+ \label{eq:app-evidence}
+\end{align}
+This is the same expression as in Theorem~\ref{thm:ef-integral}, written at the level of a fixed block.
+
+\paragraph{Posterior distribution and moments.}
+Bayes' rule shows that the posterior remains in the conjugate family:
+\begin{equation}
+ p(\eta\mid y_{(i,j]},\tau,\nu) \;\propto\; \exp\big\{\langle \eta,\tau+T_{ij}\rangle - (\nu+W_{ij})A(\eta)\big\}
+ \;=\; p\big(\eta\mid \tau+T_{ij},\nu+W_{ij}\big).
+ \label{eq:app-post}
+\end{equation}
+All posterior moments required by BayesBreak can be obtained by differentiating
+$\log Z(\tau,\nu)$.
+In particular, when $A(\eta)$ is the cumulant generating function,
+$\nabla_{\tau}\log Z(\tau,\nu)$ yields the prior mean of the expectation parameter,
+and higher derivatives yield higher cumulants.
+The block-specific moment numerators $A^{(1)}_{ij},A^{(2)}_{ij}$ used in
+Section~\ref{sec:ef} are obtained by multiplying these posterior moments by the evidence $A^{(0)}_{ij}$.
+
+\subsection{Factorizing partition priors as renewal processes}
+\label{app:renewal}
+
+Assumption~\ref{ass:factorizing-prior} states that, conditional on the segment count $k$,
+the boundary vector $t=(t_0,\dots,t_k)$ has a density proportional to a product of segment-length factors.
+This class coincides with renewal-process models on the discrete index set, and admits a hidden-Markov
+interpretation that helps motivate the DP recursion.
+
+\begin{definition}[Renewal-process segmentation prior]
+\label{def:renewal}
+Fix $k\ge1$.
+Let $L_1,\dots,L_k$ be positive integer-valued segment lengths with unnormalized mass function
+$\varphi(\ell)\propto g\big(x_{i+\ell}-x_i\big)$ for all admissible starts $i$.
+A \emph{renewal segmentation} draws lengths $(L_q)_{q=1}^k$ and sets boundaries
+$t_q := \sum_{r=1}^q L_r$ with the constraint $t_k=n$.
+\end{definition}
+
+\begin{proposition}[Equivalence of renewal and factorized boundary priors]
+\label{prop:renewal-equivalence}
+Under Definition~\ref{def:renewal}, the induced distribution on $t=(t_0,\dots,t_k)$ satisfies
+$p(t\mid k)\propto \prod_{q=1}^k g(x_{t_q}-x_{t_{q-1}})$.
+Conversely, any prior of the form \eqref{eq:lengthprior} can be realized as a renewal segmentation prior
+with appropriate unnormalized length mass $\varphi$.
+\end{proposition}
+
+\begin{proof}
+For a fixed boundary vector $t$, the corresponding length sequence is uniquely determined as
+$L_q=t_q-t_{q-1}$.
+The renewal construction assigns to that sequence mass proportional to
+$\prod_{q=1}^k \varphi(L_q)$.
+By definition of $\varphi$, this is proportional to $\prod_q g(x_{t_q}-x_{t_{q-1}})$, which proves the first claim.
+For the converse, take $\varphi(\ell):=g(x_{i+\ell}-x_i)$ (for any admissible start $i$) as an unnormalized length mass;
+then the renewal prior reproduces \eqref{eq:lengthprior} up to the shared normalizer $C_k$.
+\end{proof}
+
+\begin{remark}[Hidden-Markov interpretation]
+A renewal segmentation can be represented as an HMM whose latent state tracks the ``age'' within the current segment
+(or, equivalently, the last boundary location).
+The forward recursion in Section~\ref{sec:dp} (cf.\ Theorem~\ref{thm:dp-correctness}, Steps~1--2) coincides with the standard forward algorithm after integrating out
+segment parameters into block evidences.
+We do not rely on this viewpoint for correctness, but it provides useful intuition for numerical implementations
+and for extensions (e.g., adding covariate-dependent hazards).
+\end{remark}
+
+\subsection{Posterior boundary and segment-membership marginals}
+\label{app:marginals}
+
+Theorem~\ref{thm:dp-correctness} gives closed forms for boundary marginals and for the segment-membership probability
+$p\big(t\in(i,j],\,\text{segment }(i,j]\mid y,k\big)$.
+We spell out the algebra that leads to these expressions.
+
+\begin{proposition}[Boundary marginals from prefix/suffix evidences]
+\label{prop:boundary-marginals}
+Fix $k\ge1$ and suppose Assumption~\ref{ass:factorizing-prior} holds.
+Let $\widetilde{L}_{r,j}$ and $\widetilde{R}_{r,j}$ be the prefix and suffix evidences defined in \eqref{eq:LR}.
+Then for any $t\in\{1,\dots,n-1\}$,
+\begin{equation}
+ p(t\text{ is a boundary}\mid y,k)
+ \;=\; \sum_{r=1}^{k-1}\ \frac{\widetilde{L}_{r,t}\,\widetilde{R}_{k-r,t}}{\widetilde{L}_{k,n}}.
+ \label{eq:app-boundary-marginal}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+By definition, $t$ is a boundary at position $r$ iff $t_r=t$.
+For fixed $r$, summing the joint posterior over all boundary vectors with $t_r=t$ yields
+\begin{align}
+ p(t_r=t\mid y,k)
+ &\propto \sum_{\substack{0<t_1<\cdots<t_{k-1}<n\\ t_r=t}}
+ \prod_{q=1}^k \widetilde{A}^{(0)}_{t_{q-1},t_q}.
+\end{align}
+The constraint $t_r=t$ splits the product into a prefix part (segments $1{:}r$ ending at $t$) and a suffix part (segments $r+1{:}k$ starting at $t$).
+Summing over all admissible prefixes gives $\widetilde{L}_{r,t}$ by definition of the DP; summing over all admissible suffixes gives $\widetilde{R}_{k-r,t}$.
+Normalizing by the total evidence $\widetilde{L}_{k,n}$ yields \eqref{eq:app-boundary-marginal}.
+Finally, $p(t\text{ is a boundary}\mid y,k)=\sum_{r=1}^{k-1}p(t_r=t\mid y,k)$, giving the result.
+\end{proof}
+
+\subsection{Hazard prior boundary cases}
+\label{app:hazard-cases}
+
+The length-aware prior family includes hazard-process priors as a special case.
+It is sometimes useful to understand the limiting behavior as the hazard vanishes or becomes certain.
+
+\begin{proposition}[Degenerate hazard limits]
+\label{prop:hazard-limits}
+Consider the index-uniform design $x_t=t$ and a constant hazard $\rho\in(0,1)$ that induces a geometric length prior
+$g(\ell)=\rho(1-\rho)^{\ell-1}$ on segment lengths (up to the constraint that the last segment ends at $n$).
+Then:
+\begin{enumerate}[label=(\roman*)]
+\item As $\rho\downarrow 0$, the prior concentrates on $k=1$ (a single segment) and $p(t\mid k)$ becomes irrelevant.
+\item As $\rho\uparrow 1$, the prior concentrates on $k=n$ with unit-length segments, i.e., $t_q=q$ for all $q$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+For the geometric prior, $\mathbb{P}(L=1)=\rho$ and $\mathbb{P}(L>1)=(1-\rho)$.
+As $\rho\downarrow 0$, $\mathbb{P}(L>1)\to 1$ so the probability that a new segment starts at any interior index vanishes,
+which forces a single segment spanning $\{1,\dots,n\}$.
+As $\rho\uparrow 1$, $\mathbb{P}(L=1)\to 1$ and therefore all segments have length one almost surely, giving $t_q=q$.
+\end{proof}
+
+\subsection{Latent groups: identifiability and label switching}
+\label{app:label-switching}
+
+In the latent-group extension (Section~\ref{sec:latent-em}), the group labels are arbitrary.
+When the prior on segmentations and within-group hyperparameters is exchangeable across groups,
+posterior inference is invariant under permutations of the group labels.
+This is the familiar \emph{label switching} phenomenon.
+
+\begin{proposition}[Permutation invariance]
+\label{prop:perm-invariance}
+Assume a $G$-group latent model with an exchangeable prior over group-specific parameters and segmentations:
+$p\big((t^{(g)},\psi_g)_{g=1}^G\big)=p\big((t^{(\sigma(g))},\psi_{\sigma(g)})_{g=1}^G\big)$ for every permutation $\sigma$.
+Then the joint posterior over $(t^{(g)},\psi_g)_{g=1}^G$ and group assignments $z_{1:S}$ satisfies the same invariance.
+In particular, any MAP assignment is non-unique up to label permutation.
+\end{proposition}
+
+\begin{proof}
+The likelihood factors by subjects given assignments and group-specific parameters, and the prior is invariant by assumption.
+Therefore the unnormalized posterior is invariant under simultaneous permutation of group labels in both parameters and assignments.
+Normalizing preserves invariance.
+\end{proof}
+
+\begin{remark}
+Permutation invariance does not prevent accurate segmentation or clustering; it only implies that the label names carry no meaning.
+For reporting, one may impose an ordering constraint (e.g., by evidence, segment count, or a canonical parameter summary) or
+post-process posterior samples to align labels.
+The EM algorithm in Section~\ref{sec:latent-em} can converge to any one of the symmetric modes.
+\end{remark}

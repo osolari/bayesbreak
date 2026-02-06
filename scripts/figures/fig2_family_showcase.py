@@ -21,14 +21,19 @@ import argparse
 import sys
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 # Allow running the script from a source checkout without installation.
 _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT / "src"))
 
-from bayesbreak import BayesBreakBeta, BayesBreakBinomial, BayesBreakGaussian, BayesBreakPoisson  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+
+from bayesbreak import (  # noqa: E402
+    BayesBreakBeta,
+    BayesBreakBinomial,
+    BayesBreakGaussian,
+    BayesBreakPoisson,
+)
 
 
 def main(outdir: Path, seed: int) -> None:

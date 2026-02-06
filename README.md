@@ -1,6 +1,9 @@
 # BayesBreak
 
-BayesBreak implements Bayesian piecewise-constant regression (segmentation) via
+[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+BayesBreak implements **Bayesian piecewise-constant regression** (segmentation) via
 dynamic programming. The package is **distribution-aware** through a small set
 of conjugate likelihood families (Gaussian, Poisson, Binomial, Bernoulli, and
 Beta-valued fractional Beta--Binomial).
@@ -15,16 +18,25 @@ regression curves. It also supports:
   vector-valued observations (independent channels under a shared partition).
 - A grouped interface for **group-membership scoring** and MAP signal evaluation.
 
-## Installation (editable)
+## Installation
 
 ```bash
-pip install -e .
+pip install bayesbreak
 ```
 
-SciPy is optional but recommended for faster special functions:
+For development:
 
 ```bash
-pip install scipy
+git clone https://github.com/osolari/bayesbreak.git
+cd bayesbreak
+pip install -e ".[dev]"
+```
+
+Or using conda for environment management:
+
+```bash
+bash create_env.sh
+conda activate bayesbreak
 ```
 
 ## Quickstart
@@ -137,4 +149,3 @@ python scripts/make_all_artifacts.py
 ## Documentation
 
 Markdown documentation intended for MkDocs lives in `docs/`.
-

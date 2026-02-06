@@ -12,16 +12,16 @@ from ..utils import gammaln
 class BayesBreakBernoulli(BayesBreakBase):
     """Bernoulli segments with a Beta prior (a.k.a. Beta–Bernoulli).
 
-    This family is a special case of Beta–Binomial with n_i \equiv 1:
+    This family is a special case of Beta–Binomial with n_i \\equiv 1:
 
     .. math::
 
-        y_i \mid p \sim \mathrm{Bernoulli}(p),\qquad
-        p \sim \mathrm{Beta}(\alpha, \beta).
+        y_i \\mid p \\sim \\mathrm{Bernoulli}(p),\\qquad
+        p \\sim \\mathrm{Beta}(\alpha, \beta).
 
     ``sample_weight`` is supported as a power-likelihood:
     each observation contributes multiplicatively as
-    :math:`p(y_i\mid p)^{w_i}`. When ``w_i`` are integers, this is exactly
+    :math:`p(y_i\\mid p)^{w_i}`. When ``w_i`` are integers, this is exactly
     equivalent to repeating observation ``y_i`` ``w_i`` times.
 
     Hyperparameters
@@ -41,7 +41,9 @@ class BayesBreakBernoulli(BayesBreakBase):
         alpha: Optional[float] = None,
         beta: Optional[float] = None,
     ):
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         self.alpha = alpha
         self.beta = beta
 

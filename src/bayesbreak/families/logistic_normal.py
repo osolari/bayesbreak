@@ -34,13 +34,12 @@ For EP/quadrature we compute E[sigmoid(theta)] directly under the quadrature wei
 from __future__ import annotations
 
 import math
-from typing import Dict, Optional, Tuple, Literal
+from typing import Dict, Literal, Optional, Tuple
 
 import numpy as np
 
 from ..base import BayesBreakBase
 from ..utils import logsumexp
-
 
 Approx = Literal["laplace", "jj", "pg_vb", "pg-vb", "ep", "quadrature"]
 
@@ -241,7 +240,9 @@ class BayesBreakLogisticNormal(BayesBreakBase):
         gh_points: int = 25,
         max_iter: int = 50,
     ):
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         # Accept both "pg_vb" and "pg-vb" (paper notation).
         self.approx = str(approx).lower().replace("-", "_")
         self.nu = nu
@@ -251,7 +252,9 @@ class BayesBreakLogisticNormal(BayesBreakBase):
 
     # ----- hyperparameters (EB) -----
 
-    def _estimate_global_params(self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None) -> Dict[str, float]:
+    def _estimate_global_params(
+        self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
+    ) -> Dict[str, float]:
         # If estimate_hyper is False, but user provided nu/rho2, respect them.
         if not self.estimate_hyper and self.nu is not None and self.rho2 is not None:
             return {"nu": float(self.nu), "rho2": float(self.rho2)}
@@ -361,18 +364,26 @@ class BayesBreakLogisticNormal(BayesBreakBase):
         S = float(np.sum(w[a:b] * y[a:b]))
         N = float(np.sum(w[a:b]))
         if self.approx == "laplace":
-            logA0, m, v = _laplace_block(np.array([S]), np.array([N]), nu=nu, rho2=rho2, max_iter=self.max_iter)
+            logA0, m, v = _laplace_block(
+                np.array([S]), np.array([N]), nu=nu, rho2=rho2, max_iter=self.max_iter
+            )
             p_mean = float(_mackay_logistic_normal_mean(m, v)[0])
             return p_mean
         if self.approx in ("jj", "pg_vb"):
-            logA0, m, v = _jj_block(np.array([S]), np.array([N]), nu=nu, rho2=rho2, max_iter=self.max_iter)
+            logA0, m, v = _jj_block(
+                np.array([S]), np.array([N]), nu=nu, rho2=rho2, max_iter=self.max_iter
+            )
             p_mean = float(_mackay_logistic_normal_mean(m, v)[0])
             return p_mean
         if self.approx == "ep":
-            logA0, m, v, p_mean = _gh_moments_block(np.array([S]), np.array([N]), nu=nu, rho2=rho2, n_gh=self.gh_points)
+            logA0, m, v, p_mean = _gh_moments_block(
+                np.array([S]), np.array([N]), nu=nu, rho2=rho2, n_gh=self.gh_points
+            )
             return float(p_mean[0])
         if self.approx == "quadrature":
             n_gh = max(self.gh_points, 80)
-            logA0, m, v, p_mean = _gh_moments_block(np.array([S]), np.array([N]), nu=nu, rho2=rho2, n_gh=n_gh)
+            logA0, m, v, p_mean = _gh_moments_block(
+                np.array([S]), np.array([N]), nu=nu, rho2=rho2, n_gh=n_gh
+            )
             return float(p_mean[0])
         raise ValueError(f"Unknown approx={self.approx!r}")

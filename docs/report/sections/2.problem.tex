@@ -1,0 +1,140 @@
+\section{Problem formulation and inferential targets}
+\label{sec:problem}
+
+This section formalizes the inferential objects BayesBreak is designed to compute.
+We distinguish (i) the \emph{segmentation}---a discrete partition of an ordered design into
+contiguous blocks---from (ii) the \emph{segment parameters} that govern the observations within
+blocks.
+Section~\ref{sec:notation} introduces the detailed notation used throughout; here we state the
+model-agnostic objects and computational targets.
+
+\subsection{Single-sequence offline segmentation and Bayes regression}
+\label{sec:problem-single}
+
+We observe an ordered sample $\{(x_i,y_i)\}_{i=1}^n$ with strictly increasing design points
+$x_1 < \cdots < x_n$.
+We optionally associate nonnegative \emph{exposure/length weights} $w_i\ge 0$ with each
+observation; $w_i\equiv 1$ recovers the usual unweighted setting.
+
+A \emph{segmentation} (or \emph{partition}) of $\{1,\dots,n\}$ into $k$ contiguous segments is
+represented by a boundary vector
+\begin{equation}
+    0=b_0 < b_1 < \cdots < b_{k-1} < b_k=n,
+\end{equation}
+where segment $q\in\{1,\dots,k\}$ comprises indices
+\begin{equation}
+    I_q(b) \coloneqq \{b_{q-1}+1,\dots,b_q\}.
+\end{equation}
+We equivalently view segment $q$ as the half-open interval in \emph{design space}
+$[x_{b_{q-1}}, x_{b_q}]$, with the understanding that observations are discrete and ordered.
+
+Within each segment, the observations are assumed to follow a common parametric model
+$p(y\mid\theta)$ (potentially weighted by $w_i$) with an unknown segment parameter
+$\theta_q\in\Theta$.
+The latent ``signal'' is therefore piecewise constant: for any index $i\in I_q(b)$, the latent
+parameter at location $x_i$ equals $\theta_q$.
+Let $\theta_{1:k} = (\theta_1,\dots,\theta_k)$.
+The complete-data likelihood under segmentation $b$ factorizes as
+\begin{equation}
+    p(y_{1:n}\mid b, \theta_{1:k}) \,=\, \prod_{q=1}^k \prod_{i\in I_q(b)} p(y_i\mid \theta_q, w_i).
+    \label{eq:problem-lik}
+\end{equation}
+BayesBreak focuses on the class of models for which \emph{segment parameters can be integrated
+out analytically} (conjugate exponential-family blocks) or can be integrated out accurately
+via a local approximation (Section~\ref{sec:nonconj}).
+In either case, the central primitive becomes the \emph{single-block evidence}
+\begin{equation}
+    \mathcal{L}(i,j) \;\coloneqq\; p(y_{i:j}) \,=\, \int p(\theta)\prod_{t=i}^j p(y_t\mid \theta, w_t)\,\mathrm{d}\theta,
+    \qquad 1\le i\le j\le n,
+    \label{eq:problem-block-evidence}
+\end{equation}
+where $p(\theta)$ is the chosen segment-level prior and $y_{i:j}$ denotes the observations in
+indices $\{i,i+1,\dots,j\}$.
+
+The \emph{Bayesian offline segmentation problem} addressed by BayesBreak is to compute, for a
+user-specified maximum number of segments $k_{\max}$ and hyperparameters $\phi$ (likelihood and
+prior parameters), the following objects:
+\begin{enumerate}[label=(\roman*), leftmargin=2.3em]
+    \item the marginal likelihood (evidence)
+    \begin{equation}
+        p(y_{1:n}\mid \phi) \,=\, \sum_{k=1}^{k_{\max}} \sum_{b\in\mathcal{B}_k}
+        p(b\mid k,\phi)\prod_{q=1}^k \mathcal{L}(b_{q-1}{+}1, b_q),
+        \label{eq:problem-evidence}
+    \end{equation}
+    where $\mathcal{B}_k$ denotes the set of all $k$-segment boundary vectors;
+
+    \item the posterior distribution over the number of segments and boundaries,
+    $p(k,b\mid y_{1:n},\phi)$, as well as useful marginals such as
+    $p(k\mid y_{1:n},\phi)$ and boundary probabilities
+    $p(i\text{ is a boundary}\mid y_{1:n},\phi)$;
+
+    \item Bayes regression summaries of the latent piecewise-constant signal, including
+    the posterior mean curve and pointwise/segmentwise uncertainty bands.
+    Concretely, for each index $i$ we consider the posterior distribution of the segment
+    parameter governing $y_i$ under model averaging across all segmentations:
+    \begin{equation}
+        p(\theta_i\mid y_{1:n},\phi)\quad\text{and its moments such as}\quad
+        \mathbb{E}[\theta_i\mid y_{1:n},\phi],
+        \label{eq:problem-bayes-curve}
+    \end{equation}
+    where $\theta_i$ denotes the parameter of the (random) segment containing $i$;
+
+    \item point-estimate segmentations for downstream use (e.g., a MAP partition or a
+    posterior mode of $k$ together with a MAP boundary configuration), together with
+    calibrated uncertainty around the selected partition.
+\end{enumerate}
+
+A key requirement is that these objects be computed \emph{exactly} (up to floating-point
+roundoff) when the block evidences $\mathcal{L}(i,j)$ are available in closed form, and that
+the overall inference degrade gracefully when $\mathcal{L}(i,j)$ is approximated.
+
+\subsection{Multi-sequence pooling and hierarchical structure}
+\label{sec:problem-multiseq}
+
+Many applications comprise $S\ge 2$ related sequences that are observed on a common design grid
+(or have been aligned to a common ordered index), e.g., multiple subjects measured at common
+genomic loci.
+We denote sequence $s$ by $y^{(s)}_{1:n}$.
+BayesBreak supports the following hierarchical settings:
+
+\paragraph{Replicates with shared boundaries.}
+All sequences share a common segmentation $b$, but have sequence-specific segment parameters
+$\theta^{(s)}_{1:k}$.
+Conditional on $b$ and $k$, the sequences are independent:
+\begin{equation}
+    p(\{y^{(s)}\}_{s=1}^S\mid b, \{\theta^{(s)}\}) \,=\, \prod_{s=1}^S \prod_{q=1}^k
+    \prod_{i\in I_q(b)} p(y^{(s)}_i\mid \theta^{(s)}_q, w^{(s)}_i).
+\end{equation}
+This model pools information about boundary locations through block-level evidence
+combination, while preserving heterogeneity in within-segment parameters across sequences.
+
+\paragraph{Known groups.}
+Sequences are partitioned into known groups $g\in\{1,\dots,G\}$ (e.g., experimental
+conditions), and each group has its own segmentation $b^{(g)}$.
+Within a group, sequences share boundaries but have subject-specific segment parameters.
+
+\paragraph{Latent groups.}
+Sequences belong to unknown latent groups, with group indicators $z_s\in\{1,\dots,G\}$.
+Each group has its own segmentation and hyperparameters, and BayesBreak uses an EM procedure to
+estimate group membership probabilities and group-specific segmentations.
+
+For these multi-sequence settings, BayesBreak targets (i) group-conditional evidences and
+segmentation posteriors, (ii) posterior group assignment probabilities (when $z_s$ are latent),
+and (iii) posterior-predictive \emph{scoring} rules that quantify how likely a new sequence is
+under each group model (Section~\ref{sec:prediction}).
+
+\subsection{Computational objective}
+\label{sec:problem-computation}
+
+For a fixed maximum segment count $k_{\max}$, BayesBreak is designed to run in
+\begin{equation}
+    \mathcal{O}(n^2) \text{ precomputation time} \; + \; \mathcal{O}(k_{\max} n^2) \text{ DP time},
+\end{equation}
+with memory scaling that can be reduced to $\mathcal{O}(k_{\max}n)$ for the DP layer by
+streaming over $k$.
+The algorithmic core is therefore practical for moderate $n$ (hundreds to low thousands), and
+the framework is modular: new observation models enter only through the block-evidence routine
+$\mathcal{L}(i,j)$ and associated block posterior moments.
+Implementation details, complexity constants, and numerical stability considerations (log-space
+DP, normalization, and overflow/underflow safeguards) are discussed in
+Section~\ref{sec:algorithms}.

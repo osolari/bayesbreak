@@ -7,8 +7,8 @@ segment-specific success probability ``p_q``:
 
 .. math::
 
-    y_i \mid p_q \sim \mathrm{Binomial}(n_i, p_q),\quad
-    p_q \sim \mathrm{Beta}(\alpha,\beta).
+    y_i \\mid p_q \\sim \\mathrm{Binomial}(n_i, p_q),\\quad
+    p_q \\sim \\mathrm{Beta}(\alpha,\beta).
 
 The per-observation number of trials ``n_i`` can be a scalar or an array of
 length ``n``.
@@ -20,7 +20,7 @@ moment.
 from __future__ import annotations
 
 import math
-from typing import Dict, Optional, Tuple, Union, Literal
+from typing import Dict, Literal, Optional, Tuple, Union
 
 import numpy as np
 from numpy.typing import ArrayLike
@@ -58,8 +58,8 @@ class BayesBreakBinomial(BayesBreakBase):
 
     .. math::
 
-        \mu = \frac{\alpha}{\alpha+\beta},\qquad
-        \mathrm{Var}(p) = \frac{\mu(1-\mu)}{\alpha+\beta+1}.
+        \\mu = \frac{\alpha}{\alpha+\beta},\\qquad
+        \\mathrm{Var}(p) = \frac{\\mu(1-\\mu)}{\alpha+\beta+1}.
 
     We estimate a de-noised variance of per-observation proportions by
     subtracting the average Binomial noise term ``mu(1-mu)/n_i``.
@@ -75,7 +75,9 @@ class BayesBreakBinomial(BayesBreakBase):
         alpha: Optional[float] = None,
         beta: Optional[float] = None,
     ) -> None:
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         self.n_trials = n_trials
         self.alpha = alpha
         self.beta = beta
@@ -127,9 +129,7 @@ class BayesBreakBinomial(BayesBreakBase):
 
         # Binomial sampling noise contribution, weighted by replicate counts.
         denom_w = float(np.sum(w))
-        noise = float(
-            np.sum(w * (mu * (1.0 - mu)) / np.maximum(n_arr, 1.0)) / max(denom_w, 1e-12)
-        )
+        noise = float(np.sum(w * (mu * (1.0 - mu)) / np.maximum(n_arr, 1.0)) / max(denom_w, 1e-12))
         var_p = max(var_p_obs - noise, 1e-12)
 
         # Solve for tau = alpha+beta

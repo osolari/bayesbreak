@@ -36,7 +36,8 @@ def main() -> int:
 
     yhat = model.predict()
 
-    outdir = Path("results"); outdir.mkdir(exist_ok=True)
+    outdir = Path("results")
+    outdir.mkdir(exist_ok=True)
 
     plt.figure(figsize=(10, 3))
     plt.plot(y, label="y")

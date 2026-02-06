@@ -9,15 +9,14 @@ from sklearn.base import BaseEstimator, ClassifierMixin, clone
 
 from .base import BayesBreakBase
 from .families import (
-    BayesBreakBeta,
     BayesBreakBernoulli,
+    BayesBreakBeta,
     BayesBreakBinomial,
     BayesBreakGaussian,
     BayesBreakPoisson,
 )
 from .multivariate import BayesBreakMultivariate
 from .utils import check_sample_weight, logsumexp, require_fitted
-
 
 Array1D = np.ndarray
 Array2D = np.ndarray
@@ -46,9 +45,7 @@ def _as_sequence_list(X: Any) -> List[np.ndarray]:
     raise ValueError("X must be a list of 1D/2D arrays or a 1D/2D array.")
 
 
-def _as_weight_list(
-    sample_weight: Any, ys: List[np.ndarray]
-) -> List[Optional[np.ndarray]]:
+def _as_weight_list(sample_weight: Any, ys: List[np.ndarray]) -> List[Optional[np.ndarray]]:
     if sample_weight is None:
         return [None] * len(ys)
     if isinstance(sample_weight, list):
@@ -84,7 +81,9 @@ def _normalize_weights_for_sequence(y: np.ndarray, w: Optional[np.ndarray]) -> n
         if np.any(~np.isfinite(out)) or np.any(out < 0):
             raise ValueError("sample_weight contains NaN/inf or negative values.")
         return out
-    raise ValueError(f"sample_weight must be shape (n,) or (n,d); got {w.shape} for y shape {y.shape}.")
+    raise ValueError(
+        f"sample_weight must be shape (n,) or (n,d); got {w.shape} for y shape {y.shape}."
+    )
 
 
 @dataclass(frozen=True)
@@ -154,7 +153,7 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         # pooled weighted mean
         tot_w = 0.0
         tot_wy = 0.0
-        for y, w in zip(ys, ws):
+        for y, w in zip(ys, ws, strict=False):
             tot_w += float(np.sum(w))
             tot_wy += float(np.sum(w * y))
         if tot_w <= 0:
@@ -166,7 +165,7 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         # sigma^2 from within-sequence weighted finite differences
         num = 0.0
         den = 0.0
-        for y, w in zip(ys, ws):
+        for y, w in zip(ys, ws, strict=False):
             if y.size <= 1:
                 continue
             dy = np.diff(y)
@@ -178,7 +177,7 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         if tmpl.rho_estimation == "cov":
             num = 0.0
             den = 0.0
-            for y, w in zip(ys, ws):
+            for y, w in zip(ys, ws, strict=False):
                 if y.size <= 1:
                     continue
                 y0 = y[:-1] - nu
@@ -190,13 +189,17 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         else:
             num = 0.0
             den = 0.0
-            for y, w in zip(ys, ws):
+            for y, w in zip(ys, ws, strict=False):
                 yc = y - nu
                 num += float(np.sum(w * yc * yc))
                 den += float(np.sum(w))
             rho2 = num / max(den, 1e-12) if den > 0 else 1e-8
 
-        return {"nu": float(nu), "rho2": float(max(rho2, 1e-12)), "sigma2": float(max(sigma2, 1e-12))}
+        return {
+            "nu": float(nu),
+            "rho2": float(max(rho2, 1e-12)),
+            "sigma2": float(max(sigma2, 1e-12)),
+        }
 
     @staticmethod
     def _pool_poisson_hyper(
@@ -204,14 +207,14 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
     ) -> Dict[str, float]:
         tot_w = 0.0
         tot_wy = 0.0
-        for y, w in zip(ys, ws):
+        for y, w in zip(ys, ws, strict=False):
             tot_w += float(np.sum(w))
             tot_wy += float(np.sum(w * y))
         m = tot_wy / max(tot_w, 1e-12)
 
         # pooled weighted variance
         num = 0.0
-        for y, w in zip(ys, ws):
+        for y, w in zip(ys, ws, strict=False):
             num += float(np.sum(w * (y - m) ** 2))
         v = num / max(tot_w, 1e-12) if tot_w > 0 else max(1.0, m)
 
@@ -232,7 +235,7 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         # mean on pooled successes/trials
         tot_w = 0.0
         tot_wy = 0.0
-        for y, w in zip(ys, ws):
+        for y, w in zip(ys, ws, strict=False):
             tot_w += float(np.sum(w))
             tot_wy += float(np.sum(w * y))
         T = tot_w * n_trials_scalar
@@ -241,7 +244,7 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         # EB variance correction on proportions
         p_vals: List[np.ndarray] = []
         w_vals: List[np.ndarray] = []
-        for y, w in zip(ys, ws):
+        for y, w in zip(ys, ws, strict=False):
             p_vals.append(np.asarray(y, dtype=float) / max(n_trials_scalar, 1e-12))
             w_vals.append(w)
         p_all = np.concatenate(p_vals)
@@ -318,11 +321,12 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
                 raise TypeError("BayesBreakMultivariate.base_estimator must be a BayesBreakBase.")
             channel_estimators.append(self._set_fixed_hyper(ch_est, h))
 
+        # Use first channel estimator as prototype for multivariate wrapper
+        # Note: this assumes all channels use the same estimator type
         return BayesBreakMultivariate(
-            base_estimator=channel_estimators,
+            base_estimator=channel_estimators[0],
             combine=base.combine,
             k_max=base.k_max,
-            regression_curve=base.regression_curve,
         )
 
     # ---------------------------------------------------------------------
@@ -335,7 +339,7 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
             raise ValueError("X and y must have the same number of sequences.")
 
         ws_in = _as_weight_list(sample_weight, ys)
-        ws = [_normalize_weights_for_sequence(yy, ww) for yy, ww in zip(ys, ws_in)]
+        ws = [_normalize_weights_for_sequence(yy, ww) for yy, ww in zip(ys, ws_in, strict=False)]
 
         y_labels = np.asarray(list(y), dtype=object)
         classes, inv = np.unique(y_labels, return_inverse=True)
@@ -374,11 +378,15 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
                 proto = self._build_group_estimator_prototype_multivariate(hypers)
             else:
                 if not isinstance(self.base_estimator, BayesBreakBase):
-                    raise TypeError("base_estimator must be a BayesBreakBase or BayesBreakMultivariate.")
+                    raise TypeError(
+                        "base_estimator must be a BayesBreakBase or BayesBreakMultivariate."
+                    )
                 hyper = self._pool_hyper_from_template(self.base_estimator, ys_g, ws_g)
                 proto = self._build_group_estimator_prototype(hyper)
 
-            group_models.append(_GroupModel(label=g, prior_logprob=float(log_prior[gi]), estimator_prototype=proto))
+            group_models.append(
+                _GroupModel(label=g, prior_logprob=float(log_prior[gi]), estimator_prototype=proto)
+            )
 
         self.group_models_ = group_models
         return self
@@ -389,7 +397,9 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         # If user provided fixed values, honour them.
         if not tmpl.estimate_hyper:
             # Let the family decide whether its attributes are set sufficiently.
-            return tmpl._estimate_global_params(np.asarray(ys[0], dtype=float), np.asarray(ws[0], dtype=float))
+            return tmpl._estimate_global_params(
+                np.asarray(ys[0], dtype=float), np.asarray(ws[0], dtype=float)
+            )
 
         if isinstance(tmpl, BayesBreakGaussian):
             return self._pool_gaussian_hyper(tmpl, ys, ws)
@@ -412,7 +422,10 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         if float(np.sum(weights)) <= 0:
             weights = np.ones_like(weights)
         weights = weights / float(np.sum(weights))
-        hypers = [tmpl._estimate_global_params(np.asarray(y, dtype=float), np.asarray(w, dtype=float)) for y, w in zip(ys, ws)]
+        hypers = [
+            tmpl._estimate_global_params(np.asarray(y, dtype=float), np.asarray(w, dtype=float))
+            for y, w in zip(ys, ws, strict=False)
+        ]
         keys = hypers[0].keys() if hypers else []
         out: Dict[str, float] = {}
         for k in keys:
@@ -434,14 +447,14 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         require_fitted(self, ["group_models_", "classes_"])
         ys = _as_sequence_list(X)
         ws_in = _as_weight_list(sample_weight, ys)
-        ws = [_normalize_weights_for_sequence(yy, ww) for yy, ww in zip(ys, ws_in)]
+        ws = [_normalize_weights_for_sequence(yy, ww) for yy, ww in zip(ys, ws_in, strict=False)]
 
         group_models = self.group_models_  # type: ignore[assignment]
         log_evi = np.empty((len(ys), len(group_models)), dtype=float)
-        for i, (yy, ww) in enumerate(zip(ys, ws)):
+        for i, (yy, ww) in enumerate(zip(ys, ws, strict=False)):
             for g, gm in enumerate(group_models):
                 est = _fit_with_fixed_hyper(gm.estimator_prototype, yy, ww)
-                log_evi[i, g] = float(getattr(est, "log_evidence_"))
+                log_evi[i, g] = float(est.log_evidence_)
         return log_evi
 
     def predict_proba(self, X: Any, sample_weight: Any = None) -> np.ndarray:
@@ -485,13 +498,15 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         require_fitted(self, ["group_models_", "classes_"])
         ys = _as_sequence_list(X)
         ws_in = _as_weight_list(sample_weight, ys)
-        ws = [_normalize_weights_for_sequence(yy, ww) for yy, ww in zip(ys, ws_in)]
+        ws = [_normalize_weights_for_sequence(yy, ww) for yy, ww in zip(ys, ws_in, strict=False)]
 
         if group is None:
             groups = list(self.predict(X, sample_weight=sample_weight))
         elif isinstance(group, (list, tuple, np.ndarray)):
             if len(group) != len(ys):
-                raise ValueError("If group is a sequence, it must match the number of input sequences.")
+                raise ValueError(
+                    "If group is a sequence, it must match the number of input sequences."
+                )
             groups = list(group)
         else:
             groups = [group for _ in ys]
@@ -499,14 +514,16 @@ class BayesBreakGrouped(BaseEstimator, ClassifierMixin):
         gm_by_label = {gm.label: gm for gm in self.group_models_}  # type: ignore[union-attr]
         out: List[np.ndarray] = []
         bounds: List[List[int]] = []
-        for yy, ww, glab in zip(ys, ws, groups):
+        for yy, ww, glab in zip(ys, ws, groups, strict=False):
             if glab not in gm_by_label:
-                raise ValueError(f"Unknown group label: {glab!r}. Known: {list(gm_by_label.keys())}")
+                raise ValueError(
+                    f"Unknown group label: {glab!r}. Known: {list(gm_by_label.keys())}"
+                )
             est = _fit_with_fixed_hyper(gm_by_label[glab].estimator_prototype, yy, ww)
-            pc = getattr(est, "pc_fit_")
+            pc = est.pc_fit_
             out.append(np.asarray(pc))
             if return_boundaries:
-                bounds.append(list(getattr(est, "boundaries_")))
+                bounds.append(list(est.boundaries_))
 
         if return_boundaries:
             return out, bounds

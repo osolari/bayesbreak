@@ -19,7 +19,7 @@ def brute_force_L(lA0: np.ndarray, n: int, k: int) -> float:
         t = (0, *bps, n)
         total = 0.0
         ok = True
-        for a, b in zip(t[:-1], t[1:]):
+        for a, b in zip(t[:-1], t[1:], strict=False):
             val = lA0[a, b]
             if not np.isfinite(val):
                 ok = False

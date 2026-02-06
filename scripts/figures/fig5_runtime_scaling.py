@@ -52,7 +52,14 @@ def main(outdir: Path, seed: int, repeats: int) -> None:
     for k_max in k_maxs:
         for n in ns:
             times = [_fit_once(rng, n=n, k_max=k_max) for _ in range(repeats)]
-            rows.append((n, k_max, float(np.mean(times)), float(np.std(times, ddof=1)) if repeats > 1 else 0.0))
+            rows.append(
+                (
+                    n,
+                    k_max,
+                    float(np.mean(times)),
+                    float(np.std(times, ddof=1)) if repeats > 1 else 0.0,
+                )
+            )
 
     outdir.mkdir(parents=True, exist_ok=True)
 

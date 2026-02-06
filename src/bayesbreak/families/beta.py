@@ -1,4 +1,4 @@
-"""Continuous Beta-valued observations via a fractional Beta--Binomial.
+r"""Continuous Beta-valued observations via a fractional Beta--Binomial.
 
 This family targets real-valued observations in ``(0, 1)`` (e.g., methylation
 rates, probabilities, proportions) by mapping each observation to pseudo-counts
@@ -28,7 +28,7 @@ likelihood; however that breaks conjugacy and requires approximate inference.
 from __future__ import annotations
 
 import math
-from typing import Dict, Optional, Tuple, Literal
+from typing import Dict, Literal, Optional, Tuple
 
 import numpy as np
 
@@ -37,7 +37,7 @@ from bayesbreak.utils import gammaln
 
 
 class BayesBreakBeta(BayesBreakBase):
-    """Bayesian piecewise-constant regression for ``y in (0,1)``.
+    r"""Bayesian piecewise-constant regression for ``y in (0,1)``.
 
     Parameters
     ----------
@@ -67,7 +67,9 @@ class BayesBreakBeta(BayesBreakBase):
     ) -> None:
         if concentration <= 0:
             raise ValueError("concentration must be > 0")
-        super().__init__(k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve)
+        super().__init__(
+            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+        )
         self.concentration = float(concentration)
         self.alpha = alpha
         self.beta = beta

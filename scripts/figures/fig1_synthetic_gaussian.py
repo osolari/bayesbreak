@@ -1,4 +1,4 @@
-"""Figure 1: Synthetic Gaussian example.
+r"""Figure 1: Synthetic Gaussian example.
 
 This script generates a simple piecewise-constant latent mean sequence, corrupts
 it with Gaussian noise, and fits :class:`bayesbreak.BayesBreakGaussian`.
@@ -68,7 +68,7 @@ def _segment_mean_ci_gaussian(
 
     lo = np.empty(n, dtype=float)
     hi = np.empty(n, dtype=float)
-    for a, b in zip(boundaries[:-1], boundaries[1:]):
+    for a, b in zip(boundaries[:-1], boundaries[1:], strict=False):
         m = float(b - a)
         post_var = 1.0 / (1.0 / max(rho2, 1e-12) + m / max(sigma2, 1e-12))
         s = z * math.sqrt(max(post_var, 0.0))
@@ -93,7 +93,9 @@ def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> No
     hyper = model.hyper_ or {}
     rho2 = float(hyper.get("rho2", 1.0))
     sigma2 = float(hyper.get("sigma2", sigma * sigma))
-    lo, hi = _segment_mean_ci_gaussian(boundaries=boundaries, n=y.size, rho2=rho2, sigma2=sigma2, pc_fit=pc)
+    lo, hi = _segment_mean_ci_gaussian(
+        boundaries=boundaries, n=y.size, rho2=rho2, sigma2=sigma2, pc_fit=pc
+    )
 
     outdir.mkdir(parents=True, exist_ok=True)
 
