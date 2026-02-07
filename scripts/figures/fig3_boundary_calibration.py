@@ -14,6 +14,7 @@ Procedure
 Outputs
 -------
 - results/fig3_boundary_calibration.png
+- results/fig3_boundary_calibration.pdf
 """
 
 from __future__ import annotations
@@ -22,12 +23,19 @@ import argparse
 import sys
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 # Allow running the script from a source checkout without installation.
 _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
+
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from _style import (  # noqa: E402
+    COLORS,
+    get_figsize,
+    save_figure,
+    setup_style,
+)
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
 
@@ -146,26 +154,69 @@ def main(
 
     outdir.mkdir(parents=True, exist_ok=True)
 
-    fig, ax = plt.subplots(1, 1, figsize=(6, 6))
-    ax.plot([0.0, 1.0], [0.0, 1.0], linestyle="--", linewidth=1, label="perfect calibration")
-    ax.plot(p_bin, y_bin, marker="o", linewidth=1, label="BayesBreak")
-    ax.set_xlabel("Predicted boundary probability")
-    ax.set_ylabel("Empirical boundary frequency")
-    ax.set_title("Boundary posterior calibration")
-    ax.set_xlim(0.0, 1.0)
-    ax.set_ylim(0.0, 1.0)
-    ax.legend(loc="best")
+    # Setup publication style
+    setup_style(font_scale=1.1, style="paper")
+
+    figsize = get_figsize("single", aspect=1.0)
+    fig, ax = plt.subplots(1, 1, figsize=figsize)
+
+    # Perfect calibration line (diagonal)
+    ax.plot(
+        [0.0, 1.0],
+        [0.0, 1.0],
+        linestyle="-",
+        linewidth=1.5,
+        color=COLORS["grey"],
+        label="Perfect",
+        zorder=1,
+    )
+
+    # Reliability diagram with confidence intervals
+    n_bin_arr = np.array(n_bin)
+    y_bin_arr = np.array(y_bin)
+    p_bin_arr = np.array(p_bin)
+
+    # 95% Wilson score interval for binomial proportions
+    z = 1.96
+    ci_half = z * np.sqrt(y_bin_arr * (1 - y_bin_arr) / np.maximum(n_bin_arr, 1))
+
+    ax.errorbar(
+        p_bin_arr,
+        y_bin_arr,
+        yerr=ci_half,
+        marker="o",
+        markersize=8,
+        linewidth=2,
+        color=COLORS["blue"],
+        ecolor=COLORS["blue"],
+        capsize=4,
+        capthick=1.5,
+        label="BayesBreak",
+        zorder=2,
+    )
+
+    ax.set_xlabel("Predicted probability")
+    ax.set_ylabel("Observed frequency")
+    ax.set_xlim(-0.02, 1.02)
+    ax.set_ylim(-0.02, 1.02)
+    ax.set_aspect("equal", adjustable="box")
+    ax.legend(loc="lower right")
+
+    # Metrics annotation box
+    textstr = f"ECE = {ece:.3f}\nBrier = {brier:.3f}"
     ax.text(
-        0.02,
-        0.98,
-        f"n_seq={n_seq}\nECE={ece:.3f}\nBrier={brier:.3f}",
+        0.05,
+        0.95,
+        textstr,
         transform=ax.transAxes,
         va="top",
         ha="left",
+        fontsize=10,
+        bbox={"boxstyle": "round,pad=0.4", "facecolor": "white", "edgecolor": "0.7"},
     )
 
-    fig.tight_layout()
-    fig.savefig(outdir / "fig3_boundary_calibration.png", dpi=200)
+    # Save in multiple formats
+    save_figure(fig, outdir / "fig3_boundary_calibration", formats=("png", "pdf"))
     plt.close(fig)
 
 

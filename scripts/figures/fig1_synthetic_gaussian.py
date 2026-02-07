@@ -22,6 +22,7 @@ uncertainty visualisation.
 Outputs
 -------
 - results/fig1_synthetic_gaussian.png
+- results/fig1_synthetic_gaussian.pdf
 
 Usage
 -----
@@ -35,12 +36,20 @@ import math
 import sys
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 # Allow running the script from a source checkout without installation.
 _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
+
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from _style import (  # noqa: E402
+    COLORS,
+    add_panel_label,
+    get_figsize,
+    save_figure,
+    setup_style,
+)
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
 
@@ -78,6 +87,9 @@ def _segment_mean_ci_gaussian(
 
 
 def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> None:
+    # Setup publication style
+    setup_style(font_scale=1.1, style="paper")
+
     rng = np.random.default_rng(seed)
 
     mu = np.r_[np.zeros(n1), np.ones(n2), -0.5 * np.ones(n3)]
@@ -99,27 +111,86 @@ def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> No
 
     outdir.mkdir(parents=True, exist_ok=True)
 
-    fig, ax = plt.subplots(2, 1, figsize=(10, 6), sharex=True)
+    # Create figure with publication dimensions
+    figsize = get_figsize("double", aspect=0.55, nrows=2)
+    fig, axes = plt.subplots(2, 1, figsize=figsize, sharex=True)
 
-    # --- Top: boundary posteriors ---
+    # --- Top panel: boundary posteriors ---
+    ax0 = axes[0]
     x_b = np.arange(1, y.size)
-    ax[0].plot(x_b, d1, lw=1)
-    ax[0].set_ylabel("P(boundary at i | y)")
-    # Mark true boundaries for reference.
+    ax0.fill_between(x_b, 0, d1, alpha=0.4, color=COLORS["blue"], linewidth=0)
+    ax0.plot(x_b, d1, lw=2, color=COLORS["blue"])
+    ax0.set_ylabel("Boundary probability")
+    ax0.set_ylim(0, 1.05)
+    ax0.set_xlim(0, y.size)
+
+    # Mark true boundaries with vertical lines
     for tb in (n1, n1 + n2):
-        ax[0].axvline(tb, linestyle="--", linewidth=1)
+        ax0.axvline(
+            tb,
+            color=COLORS["red"],
+            linestyle="--",
+            linewidth=2,
+            alpha=0.8,
+            label="True boundary" if tb == n1 else None,
+        )
+    ax0.legend(loc="upper right")
+    add_panel_label(ax0, "A")
 
-    # --- Bottom: signal reconstruction + CI ---
-    ax[1].plot(y, lw=1, label="observed")
-    ax[1].plot(mu, lw=2, linestyle="--", label="true mean")
-    ax[1].plot(pc, lw=2, label="segment posterior mean")
-    ax[1].fill_between(np.arange(y.size), lo, hi, alpha=0.2, label="90% CI (segment mean)")
-    ax[1].set_xlabel("index")
-    ax[1].set_ylabel("signal")
-    ax[1].legend(loc="best")
+    # --- Bottom panel: signal reconstruction + CI ---
+    ax1 = axes[1]
 
-    fig.tight_layout()
-    fig.savefig(outdir / "fig1_synthetic_gaussian.png", dpi=200)
+    # Observations as scatter
+    ax1.scatter(
+        np.arange(y.size),
+        y,
+        s=25,
+        alpha=0.6,
+        color=COLORS["grey"],
+        edgecolors="none",
+        label="Observations",
+        zorder=1,
+    )
+
+    # Credible interval
+    ax1.fill_between(
+        np.arange(y.size),
+        lo,
+        hi,
+        alpha=0.3,
+        color=COLORS["blue"],
+        linewidth=0,
+        label="90% CI",
+        zorder=2,
+    )
+
+    # True signal
+    ax1.plot(
+        mu,
+        lw=2.5,
+        linestyle="--",
+        color=COLORS["black"],
+        label="True mean",
+        zorder=3,
+    )
+
+    # Posterior estimate
+    ax1.plot(
+        pc,
+        lw=2.5,
+        color=COLORS["blue"],
+        label="Posterior mean",
+        zorder=4,
+    )
+
+    ax1.set_xlabel("Time index")
+    ax1.set_ylabel("Signal value")
+    ax1.set_xlim(0, y.size)
+    ax1.legend(loc="upper right", ncol=2)
+    add_panel_label(ax1, "B")
+
+    # Save in multiple formats
+    save_figure(fig, outdir / "fig1_synthetic_gaussian", formats=("png", "pdf"))
     plt.close(fig)
 
 

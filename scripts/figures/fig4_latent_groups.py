@@ -13,6 +13,7 @@ BayesBreak) and visualises:
 Outputs
 -------
 - results/fig4_latent_groups.png
+- results/fig4_latent_groups.pdf
 """
 
 from __future__ import annotations
@@ -21,12 +22,19 @@ import argparse
 import sys
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 # Allow running the script from a source checkout without installation.
 _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
+
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from _style import (  # noqa: E402
+    COLORS,
+    add_panel_label,
+    save_figure,
+    setup_style,
+)
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
 from bayesbreak.mixture import BayesBreakMixture  # noqa: E402
@@ -110,41 +118,70 @@ def main(
 
     outdir.mkdir(parents=True, exist_ok=True)
 
-    fig = plt.figure(figsize=(12, 4))
-    gs = fig.add_gridspec(1, 3, width_ratios=[1.2, 1.0, 1.0])
+    # Setup publication style - use larger scale for this figure
+    setup_style(font_scale=1.0, style="paper")
 
-    # --- Responsibilities heatmap ---
+    # Larger figure size for 3-panel layout
+    fig = plt.figure(figsize=(10, 3.5))
+    gs = fig.add_gridspec(1, 3, width_ratios=[0.7, 1.0, 1.0], wspace=0.35)
+
+    # --- (A) Responsibilities heatmap ---
     ax0 = fig.add_subplot(gs[0, 0])
-    im = ax0.imshow(r_plot, aspect="auto", interpolation="nearest")
-    ax0.set_xlabel("group")
-    ax0.set_ylabel("sequence (sorted)")
-    ax0.set_title("Responsibilities")
-    fig.colorbar(im, ax=ax0, fraction=0.046, pad=0.04)
+    im = ax0.imshow(
+        r_plot,
+        aspect="auto",
+        interpolation="nearest",
+        cmap="RdBu_r",
+        vmin=0,
+        vmax=1,
+    )
+    ax0.set_xticks([0, 1])
+    ax0.set_xticklabels(["G0", "G1"])
+    ax0.set_ylabel("Sequence")
+    cbar = fig.colorbar(im, ax=ax0, fraction=0.08, pad=0.08, shrink=0.9)
+    cbar.set_label("Prob.")
+    add_panel_label(ax0, "A", offset=(-0.25, 1.05))
 
-    # --- Group boundary posteriors ---
+    # --- (B) Group boundary posteriors ---
     ax1 = fig.add_subplot(gs[0, 1])
     x_b = np.arange(1, n)
+    colors = [COLORS["blue"], COLORS["red"]]
     for g, st in enumerate(states):
-        ax1.plot(x_b, st.boundary_post, lw=1, label=f"group {g}")
-    ax1.set_title("Group boundary posterior")
-    ax1.set_xlabel("index")
-    ax1.set_ylabel("P(boundary | y)")
-    ax1.legend(loc="best")
+        ax1.fill_between(x_b, 0, st.boundary_post, alpha=0.3, color=colors[g], linewidth=0)
+        ax1.plot(x_b, st.boundary_post, lw=2, color=colors[g], label=f"Group {g}")
+    ax1.set_xlabel("Time index")
+    ax1.set_ylabel("Boundary probability")
+    ax1.set_ylim(0, 1.05)
+    ax1.set_xlim(0, n)
+    ax1.legend(loc="upper right")
+    add_panel_label(ax1, "B", offset=(-0.15, 1.05))
 
-    # --- Group Bayesian regression curves ---
+    # --- (C) Reconstructed signals (use simple segment means instead of BRC) ---
     ax2 = fig.add_subplot(gs[0, 2])
-    ax2.plot(mu0, linestyle="--", lw=1, label="true group 0")
-    ax2.plot(mu1, linestyle="--", lw=1, label="true group 1")
-    for g, st in enumerate(states):
-        if st.brc is not None:
-            ax2.plot(st.brc, lw=2, label=f"Bayes curve (group {g})")
-    ax2.set_title("Group Bayesian regression curves")
-    ax2.set_xlabel("index")
-    ax2.set_ylabel("signal")
-    ax2.legend(loc="best", fontsize=8)
 
-    fig.tight_layout()
-    fig.savefig(outdir / "fig4_latent_groups.png", dpi=200)
+    # Plot true signals
+    ax2.plot(mu0, linestyle="--", lw=1.5, color=COLORS["blue"], alpha=0.5, label="True G0")
+    ax2.plot(mu1, linestyle="--", lw=1.5, color=COLORS["red"], alpha=0.5, label="True G1")
+
+    # Compute group-averaged signals from the data
+    for g in range(len(states)):
+        # Get sequences assigned to this group (by max responsibility)
+        group_mask = np.argmax(r, axis=1) == perm[g]
+        if np.sum(group_mask) > 0:
+            group_mean = np.mean([ys[i] for i in range(n_seq) if group_mask[i]], axis=0)
+            # Smooth with simple moving average
+            window = 5
+            smoothed = np.convolve(group_mean, np.ones(window) / window, mode="same")
+            ax2.plot(smoothed, lw=2, color=colors[g], label=f"Avg G{g}")
+
+    ax2.set_xlabel("Time index")
+    ax2.set_ylabel("Signal")
+    ax2.set_xlim(0, n)
+    ax2.legend(loc="upper right", ncol=2, fontsize=8)
+    add_panel_label(ax2, "C", offset=(-0.15, 1.05))
+
+    # Save in multiple formats
+    save_figure(fig, outdir / "fig4_latent_groups", formats=("png", "pdf"))
     plt.close(fig)
 
 

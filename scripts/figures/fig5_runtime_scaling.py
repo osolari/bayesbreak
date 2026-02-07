@@ -12,6 +12,7 @@ rather than absolute performance claims.
 Outputs
 -------
 - results/fig5_runtime_scaling.png
+- results/fig5_runtime_scaling.pdf
 - results/fig5_runtime_scaling.csv
 """
 
@@ -22,12 +23,19 @@ import sys
 import time
 from pathlib import Path
 
-import matplotlib.pyplot as plt
-import numpy as np
-
 # Allow running the script from a source checkout without installation.
 _ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
+
+import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
+from _style import (  # noqa: E402
+    COLORS,
+    get_figsize,
+    save_figure,
+    setup_style,
+)
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
 
@@ -70,20 +78,46 @@ def main(outdir: Path, seed: int, repeats: int) -> None:
         for n, k_max, m, s in rows:
             f.write(f"{n},{k_max},{m:.6f},{s:.6f}\n")
 
-    # Plot.
-    fig, ax = plt.subplots(1, 1, figsize=(7, 4))
-    for k_max in k_maxs:
+    # Setup publication style
+    setup_style(font_scale=1.1, style="paper")
+
+    figsize = get_figsize("single", aspect=0.75)
+    fig, ax = plt.subplots(1, 1, figsize=figsize)
+
+    colors = [COLORS["blue"], COLORS["red"]]
+    markers = ["o", "s"]
+
+    for idx, k_max in enumerate(k_maxs):
         xs = [n for n, km, _, _ in rows if km == k_max]
         ys = [m for n, km, m, _ in rows if km == k_max]
         es = [s for n, km, _, s in rows if km == k_max]
-        ax.errorbar(xs, ys, yerr=es, marker="o", linewidth=1, label=f"k_max={k_max}")
+        ax.errorbar(
+            xs,
+            ys,
+            yerr=es,
+            marker=markers[idx],
+            markersize=8,
+            linewidth=2,
+            color=colors[idx],
+            ecolor=colors[idx],
+            capsize=4,
+            capthick=1.5,
+            label=f"$k_{{\\max}}={k_max}$",
+        )
 
-    ax.set_xlabel("series length n")
-    ax.set_ylabel("wall-clock time (s)")
-    ax.set_title("BayesBreak Gaussian runtime scaling")
-    ax.legend(loc="best")
-    fig.tight_layout()
-    fig.savefig(outdir / "fig5_runtime_scaling.png", dpi=200)
+    ax.set_xlabel("Series length $n$")
+    ax.set_ylabel("Time (seconds)")
+    ax.set_xscale("log", base=2)
+    ax.set_yscale("log")
+    ax.set_xticks(ns)
+    ax.set_xticklabels([str(n) for n in ns])
+    ax.legend(loc="upper left")
+
+    # Light grid for readability
+    ax.grid(True, which="major", linestyle="-", alpha=0.2, color=COLORS["grey"])
+
+    # Save in multiple formats
+    save_figure(fig, outdir / "fig5_runtime_scaling", formats=("png", "pdf"))
     plt.close(fig)
 
     print(f"Wrote {csv_path}")
