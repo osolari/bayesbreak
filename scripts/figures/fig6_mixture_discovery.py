@@ -1,17 +1,65 @@
 #!/usr/bin/env python
-"""
-Figure 6: Latent Group Discovery via BayesBreakMixture
+r"""Figure 6: Latent Group Discovery via BayesBreakMixture.
 
-Demonstrates the mixture model's ability to:
-1. Discover latent group structure from unlabeled sequences
-2. Pool information within groups to improve boundary estimation
-3. Recover correct changepoint patterns per group
+This is the most comprehensive mixture-model experiment in the paper.  It
+demonstrates three key capabilities of :class:`bayesbreak.BayesBreakMixture`:
 
-Experimental Setup:
-- Two groups with structurally distinct changepoint patterns
-- Group A: Oscillating pattern with 4 changepoints
-- Group B: Single changepoint in the middle
-- 20 sequences per group (40 total), shuffled
+1. **Unsupervised group discovery** — recovering which sequences belong to
+   which latent group without any labels.
+2. **Information pooling** — leveraging multiple sequences per group to improve
+   boundary estimation far beyond what is achievable with single-sequence fits.
+3. **Changepoint pattern recovery** — correctly identifying structurally
+   different changepoint patterns for each group.
+
+Experiment
+----------
+Two groups with *structurally distinct* changepoint patterns:
+
+- **Group A (oscillating)**: 5 segments with 4 changepoints at positions
+  20, 40, 60, 80 and alternating levels :math:`(-1.5, 1.5, -1.5, 1.5, -1.5)`.
+- **Group B (single step)**: 2 segments with 1 changepoint at position 50 and
+  levels :math:`(1.0, -1.0)`.
+
+20 sequences are generated per group (:math:`n=100`, :math:`\sigma=0.2`) and
+shuffled.  :class:`BayesBreakMixture` is fit with ``n_groups=2`` and multiple
+random restarts to avoid local optima.
+
+The resulting 6-panel (2×3) figure shows:
+
+- **Panel A** — Example sequences from each true group (3 per group), overlaid
+  with the true mean functions (dashed).
+- **Panel B** — Responsibility matrix (sorted by true label).  Columns are
+  discovered groups; each row is a sequence.  A clean block-diagonal pattern
+  indicates perfect assignment.
+- **Panel C** — Confusion matrix comparing true vs.\ predicted group labels.
+- **Panel D** — Marginal boundary posterior for Group A.  Peaks should align
+  with the 4 true changepoints (dashed vertical lines).
+- **Panel E** — Marginal boundary posterior for Group B.  A single dominant
+  peak at position 50.
+- **Panel F** — Pooling benefit: bar chart comparing mean boundary error for
+  independent single-sequence fits vs.\ the pooled mixture model.  Lower is
+  better.
+
+Interpretation
+--------------
+- **Accuracy annotation** on Panel B gives the fraction of sequences correctly
+  assigned (after resolving the label-permutation ambiguity).  Values ≥ 95%
+  indicate reliable group discovery.
+- **Boundary posteriors** (Panels D & E) should be sharp and well-localised.
+  If they are broad or multi-modal, the model is uncertain about changepoint
+  positions.
+- **Pooling benefit** (Panel F) quantifies the advantage of sharing information
+  across sequences within a group.  Large reductions in boundary error validate
+  the mixture-model approach.
+
+Outputs
+-------
+- results/fig6_mixture_discovery.png
+- results/fig6_mixture_discovery.pdf
+
+Usage
+-----
+python scripts/figures/fig6_mixture_discovery.py
 """
 
 from __future__ import annotations

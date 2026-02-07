@@ -1,27 +1,53 @@
-"""Table 4: Non-conjugate approximation trade-offs (logistic-normal).
+r"""Table 4: Non-conjugate approximation trade-offs (logistic-normal).
 
 BayesBreak supports non-conjugate likelihoods via per-block evidence
-approximations. For the Bernoulli / Binomial case with a logistic-normal
+approximations.  For the Bernoulli / Binomial case with a logistic-normal
 segment prior, the implementation offers several options:
 
-* ``quadrature`` (Gauss--Hermite reference)
-* ``laplace`` (Laplace approximation)
-* ``jj`` (Jaakkola--Jordan variational bound)
-* ``ep`` (Expectation Propagation)
-* ``pg_vb`` (Polya--Gamma variational Bayes)
+* ``quadrature`` — Gauss–Hermite numerical integration (high accuracy, slower).
+* ``laplace`` — second-order Laplace approximation around the posterior mode.
+* ``jj`` — Jaakkola–Jordan variational lower bound.
+* ``ep`` — Expectation Propagation.
+* ``pg_vb`` — Pólya–Gamma variational Bayes.
 
-This script compares these methods on a small synthetic Bernoulli sequence:
+Experiment
+----------
+A synthetic Bernoulli sequence (:math:`n=80`, 3 segments) with piecewise-
+constant log-odds :math:`\theta \in \{-2.0, 1.2, -0.7\}` is generated.  Each
+approximation method is used to fit :class:`bayesbreak.BayesBreakLogisticNormal`
+with ``k_max=10``.  The ``quadrature`` method (80 Gauss–Hermite points) serves
+as the reference.
 
-1) The maximum absolute discrepancy in per-block log evidence relative to the
-   quadrature reference.
-2) End-to-end runtime.
-3) Boundary F1 within tolerance ``tau``.
+This script compares the methods on three axes:
+
+1. **Block-evidence accuracy** — maximum absolute discrepancy in per-block log
+   evidence :math:`\max_{(i,j)} |\log A^0_{ij} - \log A^0_{ij,\text{ref}}|`
+   relative to the quadrature reference.  Smaller means the approximation
+   introduces less distortion in the DP table.
+2. **End-to-end runtime** — wall-clock fit time in seconds.
+3. **Boundary F1@τ** — whether the downstream segmentation is affected by the
+   approximation error.
+
+Interpretation
+--------------
+- The ``quadrature`` row always shows zero discrepancy (it *is* the reference).
+  Its runtime is the cost of high-accuracy integration.
+- ``laplace`` and ``jj`` are typically the fastest methods.  If their F1
+  matches quadrature, they are "good enough" for practical use.
+- A method with large block-evidence error but unchanged F1 suggests the DP
+  is robust to that level of noise in the evidence table.
+- A method that changes :math:`\hat{k}` relative to quadrature is shifting the
+  posterior over model complexity and should be treated with caution.
 
 Outputs
 -------
 - results/table4_nonconj_tradeoff.csv
 - results/table4_nonconj_tradeoff.md
 - results/table4_nonconj_tradeoff.tex
+
+Usage
+-----
+python scripts/tables/table4_nonconj_tradeoff.py [--gh-points 120]
 """
 
 from __future__ import annotations

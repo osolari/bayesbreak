@@ -92,11 +92,13 @@ def _betaobs_block_quadrature(
     Slog1my_col = Slog1my.reshape(-1, 1)
 
     log_w = np.log(w_grid).reshape(1, -1)
-    # mu-grid terms shape (1, n_quad)
-    grid_term = (log_prior + log_w + logG_phi - logG1 - logG2).reshape(1, -1)
+    # mu-grid Gamma terms that scale with block size (1, n_quad)
+    gamma_term = (logG_phi - logG1 - logG2).reshape(1, -1)
+    # Prior + quadrature weight: added once per block, NOT multiplied by Sw
+    once_term = (log_prior + log_w).reshape(1, -1)
     # block-varying linear terms in logs
     block_term = (a_minus_1.reshape(1, -1) * Slogy_col) + (b_minus_1.reshape(1, -1) * Slog1my_col)
-    log_integrand = Sw_col * grid_term + block_term
+    log_integrand = Sw_col * gamma_term + block_term + once_term
 
     # logA0 via log-sum-exp across grid
     logA0 = logsumexp(log_integrand, axis=1)

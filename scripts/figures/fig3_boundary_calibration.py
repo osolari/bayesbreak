@@ -1,20 +1,48 @@
-"""Figure 3: Calibration of boundary posterior probabilities.
+r"""Figure 3: Calibration of boundary posterior probabilities.
 
 This script tests whether the marginal posterior boundary probabilities
-``p(b_i=1 | y)`` produced by BayesBreak are empirically calibrated under a
-synthetic data-generating process (Gaussian segments).
+:math:`p(b_i=1 \mid y)` produced by BayesBreak are *empirically calibrated*
+under a synthetic data-generating process (Gaussian segments).
 
-Procedure
----------
-1) Simulate many piecewise-constant Gaussian sequences with random changepoints.
-2) Fit :class:`bayesbreak.BayesBreakGaussian` to each sequence.
-3) Collect predicted probabilities and binary "is-boundary" labels.
-4) Bin predictions and plot empirical frequency vs predicted probability.
+Experiment
+----------
+1. Simulate ``n_seq`` (default 80) independent piecewise-constant Gaussian
+   sequences.  Each sequence has :math:`k \sim \mathrm{Uniform}\{3,\dots,6\}`
+   segments with random changepoints (minimum segment length 10) and segment
+   means drawn :math:`\mu_k \sim \mathcal{N}(0,1)`.
+2. Fit :class:`bayesbreak.BayesBreakGaussian` (``k_max=15``) to each sequence.
+3. Collect all ``(predicted probability, true boundary indicator)`` pairs from
+   every interior index across all sequences.
+4. Bin the predicted probabilities into ``n_bins`` (default 10) equally-spaced
+   bins and plot the empirical fraction of true boundaries vs.\ the mean
+   predicted probability in each bin — a *reliability diagram*.
+
+Interpretation
+--------------
+A well-calibrated model should produce points that lie on or near the diagonal
+(grey line).  Deviations above the diagonal indicate *under-confidence*
+(the model says 0.3 but boundaries appear 50% of the time); deviations below
+indicate *over-confidence*.
+
+Two summary statistics are annotated on the plot:
+
+- **ECE** (Expected Calibration Error): weighted average absolute gap between
+  predicted and observed frequency across bins.  Lower is better; an ECE below
+  ~0.03 is typically considered well-calibrated.
+- **Brier score**: mean squared error between predicted probabilities and
+  binary labels.  Combines calibration and sharpness; lower is better.
+
+Error bars show 95% Wilson-score confidence intervals for the binomial
+proportion in each bin.
 
 Outputs
 -------
 - results/fig3_boundary_calibration.png
 - results/fig3_boundary_calibration.pdf
+
+Usage
+-----
+python scripts/figures/fig3_boundary_calibration.py [--n-seq 200 --n-bins 15]
 """
 
 from __future__ import annotations

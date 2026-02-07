@@ -159,8 +159,8 @@ def _jj_block(
     A = inv_rho2 + 2.0 * N * lam
     b = nu * inv_rho2 + (S - 0.5 * N)
 
-    # psi(x) = log(2 cosh(x/2))
-    psi_xi = np.logaddexp(xi / 2.0, -xi / 2.0) + math.log(2.0)
+    # psi(x) = log(2 cosh(x/2)) = logaddexp(x/2, -x/2)
+    psi_xi = np.logaddexp(xi / 2.0, -xi / 2.0)
 
     const = N * lam * (xi * xi) - N * psi_xi - 0.5 * (nu * nu) * inv_rho2
     logZ = (

@@ -1,30 +1,56 @@
-"""Table 3: Quantitative synthetic summary across conjugate families.
+r"""Table 3: Quantitative synthetic summary across conjugate families.
 
 The paper's results section references a compact quantitative check that the
-core BayesBreak inference behaves sensibly across conjugate exponential-family
-models.
+core BayesBreak inference behaves sensibly across all conjugate exponential-
+family models.
 
+Experiment
+----------
 This script runs a small synthetic benchmark for four built-in conjugate
 families:
 
-* Gaussian (Normal--Normal)
-* Poisson (Gamma--Poisson)
-* Binomial (Beta--Binomial)
-* Beta-valued (fractional Beta--Binomial)
+* **Gaussian** (Normal--Normal): levels :math:`(0, 1, -0.5)`,
+  :math:`\sigma=0.25`.
+* **Poisson** (Gamma--Poisson): rate levels :math:`(2, 8, 3)`.
+* **Binomial** (Beta--Binomial): probability levels :math:`(0.1, 0.7, 0.3)`,
+  :math:`n_{\mathrm{trials}}=20`.
+* **Beta-valued** (fractional Beta--Binomial): probability levels
+  :math:`(0.2, 0.85, 0.4)`, concentration :math:`\kappa=50`.
 
-For each family we simulate repeated sequences with known changepoints, fit the
-corresponding BayesBreak model, and report:
+For each family, ``n_rep`` (default 25) random repetitions are run on a
+three-segment sequence (:math:`n=120`).  Each repetition uses a fresh draw from
+the data-generating process.
 
-* boundary F1 within a tolerance ``tau``
-* mean absolute boundary error (MAE)
-* mean squared error (MSE) on the latent segment parameter
-* negative log evidence per observation: ``-log p(y)/n``
+Metrics (per family, averaged over repetitions):
+
+* **Boundary F1@τ** — harmonic mean of precision and recall for detected
+  boundaries within ``tau`` (default 2) positions of a true boundary.
+* **MAE** — mean absolute boundary error: average distance from each true
+  boundary to its nearest detected boundary.
+* **MSE** — mean squared error between the estimated and true latent parameter.
+* **−log p(y)/n** — normalised negative log marginal evidence (lower = better
+  fit given the data size).
+* **k_sel (median)** — median selected number of segments across repetitions.
+
+Interpretation
+--------------
+- F1 ≈ 1 and MAE ≈ 0 indicate that changepoints are reliably detected at the
+  correct positions across all families.
+- MSE close to the irreducible noise variance indicates good signal recovery.
+- Consistent k_sel = 3 (the true number) confirms that the Bayesian model
+  selection is neither over- nor under-segmenting.
+- Large standard deviations (shown in the CSV) warn of high sensitivity to
+  the particular random realisation and might motivate increasing ``n_rep``.
 
 Outputs
 -------
 - results/table3_conjugate_summary.csv
 - results/table3_conjugate_summary.md
 - results/table3_conjugate_summary.tex
+
+Usage
+-----
+python scripts/tables/table3_conjugate_summary.py [--n-rep 100 --tau 3]
 """
 
 from __future__ import annotations

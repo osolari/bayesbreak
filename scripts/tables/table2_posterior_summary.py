@@ -1,19 +1,44 @@
-"""Table 2: Posterior summary on a synthetic dataset.
+r"""Table 2: Posterior summary on a synthetic dataset.
 
-This script fits the Gaussian model and reports:
+This script fits :class:`bayesbreak.BayesBreakGaussian` on a single synthetic
+three-segment Gaussian sequence and reports key summary statistics of the
+posterior over the number of segments :math:`k`.
 
-- selected number of segments `k_ml_`
-- posterior mean number of segments E[k]
-- MAP number of segments argmax_k P(k | y)
-- log-evidence log P(y)
+Experiment
+----------
+A piecewise-constant signal with levels :math:`(0, 1, -0.5)` and equal-length
+segments (:math:`n/3` each) is generated with additive Gaussian noise
+(:math:`\sigma = 0.25`).  The model is fit with ``k_max`` (default 10).
+
+Quantities reported:
+
+- :math:`\hat{k}` (**selected k**): the maximum-likelihood number of segments
+  chosen by the DP.
+- :math:`\mathbb{E}[k]` (**posterior mean**): :math:`\sum_k k \cdot P(k \mid y)`.
+- :math:`\arg\max_k P(k \mid y)` (**MAP k**).
+- :math:`\log p(y)` (**log marginal evidence**): the normalising constant
+  computed as a by-product of the forward DP pass.
+
+Interpretation
+--------------
+This table is a quick "sanity check" for the posterior over :math:`k`:
+
+- For the default data-generating process (3 segments, low noise), we expect
+  :math:`\hat{k} = 3` and :math:`\mathbb{E}[k] \approx 3`.
+- Deviations after code changes indicate that hyperparameter estimation or
+  numerical stability may have been affected.
+- The log evidence is useful for comparing model fits across different
+  configurations or data sets; larger (less negative) values indicate a better
+  fit, penalised by model complexity.
 
 Outputs
 -------
 - results/table2_posterior_summary.md
 - results/table2_posterior_summary.tex
 
-This table is useful when checking that changes in hyperparameter estimation or
-numerical stability do not strongly affect the posterior over k.
+Usage
+-----
+python scripts/tables/table2_posterior_summary.py [--n 150 --k-max 15]
 """
 
 from __future__ import annotations

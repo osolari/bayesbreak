@@ -1,8 +1,29 @@
 """Table 0: Overview of metrics reported in the experiments section.
 
-This table is descriptive (it does not depend on random seeds) but we generate
-it via a script so that every table appearing in the report has a single source
-of truth in the repository.
+This table is purely descriptive (it does not depend on random seeds or data)
+but we generate it via a script so that every table appearing in the report has
+a single source of truth in the repository.
+
+Content
+-------
+The table lists the five evaluation axes used throughout the paper:
+
+1. **Boundary recovery** — Precision / Recall / F1 within a tolerance
+   :math:`\\tau` (number of index positions) around each true changepoint.
+2. **Signal recovery** — Mean squared error (MSE) between the estimated
+   piecewise-constant function and the true latent signal.
+3. **Posterior calibration** — Reliability diagram and expected calibration
+   error (ECE) for the marginal boundary probabilities :math:`p(b_i=1\\mid y)`.
+4. **Model fit quality** — Negative log marginal evidence :math:`-\\log p(y)`
+   or per-observation negative log-likelihood.
+5. **Runtime** — Wall-clock time as a function of :math:`n` and
+   :math:`k_{\\max}`.
+
+Interpretation
+--------------
+This table is a reference legend: it does not contain experimental results.
+It defines the metrics so that subsequent tables (1–4) can refer to short
+column headers (e.g., "F1@τ", "MSE") without repeating definitions.
 
 Outputs
 -------

@@ -1,19 +1,58 @@
-"""Figure 4: Latent-group pooling (mixture) demonstration.
+r"""Figure 4: Latent-group pooling (mixture) demonstration.
 
 This script simulates multiple Gaussian sequences from two latent groups with
 distinct changepoint locations and segment means. It then fits
 :class:`bayesbreak.BayesBreakMixture` (an EM-like latent-group extension of
-BayesBreak) and visualises:
+BayesBreak) and visualises the results.
 
-1. **Left panel**: posterior responsibilities (group membership probabilities)
-   for each sequence.
-2. **Right panels**: group-level marginal boundary posteriors and group-level
-   Bayesian regression curves.
+Experiment
+----------
+Two groups share the same series length :math:`n` but differ in their
+changepoint structure:
+
+- **Group 0**: three segments with boundaries at :math:`n/3` and :math:`2n/3`,
+  and levels :math:`(0, 1, -0.5)`.
+- **Group 1**: three segments with boundaries at :math:`n/4` and :math:`3n/4`,
+  and levels :math:`(0.5, -1, 0.8)`.
+
+``n_seq`` (default 12) sequences are drawn — half from each group — with
+additive Gaussian noise (:math:`\sigma=0.35`).  BayesBreakMixture is fit with
+``n_groups=2`` and modest iteration budget.
+
+The resulting three-panel figure shows:
+
+1. **Panel A — Responsibility heatmap**: rows are sequences (sorted by true
+   label); columns are groups.  A clearly bi-modal pattern (one block blue,
+   one block red) indicates successful group discovery.
+2. **Panel B — Boundary posteriors per group**: overlaid marginal boundary
+   posteriors for each discovered group.  Peaks should align with the true
+   changepoints for that group.
+3. **Panel C — Reconstructed group signals**: smoothed within-group average
+   signal (solid) compared with the true latent means (dashed).  Close
+   agreement indicates the model is pooling information correctly.
+
+Interpretation
+--------------
+The figure answers the question: *can the mixture model separate two groups
+with similar noise levels but different changepoint locations?*  Success is
+indicated by:
+
+- Near-binary responsibilities (sequences assigned with high confidence).
+- Boundary posteriors that peak at the correct group-specific changepoints.
+- Reconstructed signals that track the true latent means closely.
+
+If the responsibility heatmap shows mixed assignments or boundary posteriors
+that average the two patterns, the EM initialisation or iteration count may
+need adjustment.
 
 Outputs
 -------
 - results/fig4_latent_groups.png
 - results/fig4_latent_groups.pdf
+
+Usage
+-----
+python scripts/figures/fig4_latent_groups.py [--n-seq 20 --sigma 0.3]
 """
 
 from __future__ import annotations

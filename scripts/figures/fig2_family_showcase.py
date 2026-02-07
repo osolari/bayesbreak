@@ -1,19 +1,47 @@
-"""Figure 2: Likelihood family showcase.
+r"""Figure 2: Likelihood family showcase.
 
 This script demonstrates BayesBreak on four short synthetic series, one per
-supported family:
+supported conjugate family:
 
-- Gaussian (Normal--Normal)
-- Poisson (Gamma--Poisson)
-- Binomial (Beta--Binomial)
-- Beta-valued (fractional Beta--Binomial)
+- **Gaussian** (Normal--Normal conjugate):  continuous real-valued observations
+  with known noise variance and a normal prior on the segment mean.
+- **Poisson** (Gamma--Poisson conjugate):  non-negative count observations
+  with a Gamma prior on the segment rate :math:`\lambda`.
+- **Binomial** (Beta--Binomial conjugate):  success counts out of a known
+  number of trials with a Beta prior on the segment probability.
+- **Beta-valued** (fractional Beta--Binomial):  continuous :math:`(0,1)`-valued
+  observations treated as fractional pseudo-counts of a Beta--Binomial.
 
-The goal is to provide a sanity check and a visual reference for users.
+Experiment
+----------
+For each family a three-segment piecewise-constant latent parameter sequence
+(:math:`n=120`, segments of 40 observations each) is generated.  Observations
+are drawn from the corresponding likelihood, and BayesBreak is fit with
+``k_max=10``.  No hyperparameter tuning is performed; defaults are used.
+
+The resulting 2×2 grid shows, for every family:
+
+* **Grey dots** – raw observations.
+* **Dashed black line** – the *true* latent parameter sequence.
+* **Solid blue line** – the BayesBreak piecewise-constant posterior estimate.
+
+Interpretation
+--------------
+If BayesBreak is working correctly, the blue fit should closely overlay the
+dashed true signal and should *not* introduce spurious changepoints.  The
+panel titles indicate the family, so each sub-plot doubles as a visual
+regression test: any systematic bias (e.g., the Poisson fit consistently
+under-estimating high rates) would indicate a problem in the corresponding
+family's block-evidence computation.
 
 Outputs
 -------
 - results/fig2_family_showcase.png
 - results/fig2_family_showcase.pdf
+
+Usage
+-----
+python scripts/figures/fig2_family_showcase.py
 """
 
 from __future__ import annotations

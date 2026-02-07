@@ -1,16 +1,35 @@
-"""Table 1: Simple runtime scaling benchmark.
+r"""Table 1: Simple runtime scaling benchmark.
 
 This script measures wall-clock runtime of the Gaussian BayesBreak fit for a
-range of series lengths ``n`` and a fixed ``k_max``.
+range of series lengths :math:`n` and a fixed :math:`k_{\max}`.
 
-The results are saved as:
+Experiment
+----------
+For each :math:`n \in \{50, 100, 200, 400\}` the fit is repeated ``--repeats``
+times (default 5).  Each repetition uses a fresh random seed to avoid caching
+artefacts.  Mean and standard-deviation of elapsed wall-clock time (via
+``time.perf_counter``) are reported.
 
+Interpretation
+--------------
+Because the core DP algorithm is :math:`O(k_{\max} \cdot n^2)`:
+
+- Doubling :math:`n` should roughly quadruple the runtime.
+- The table is intentionally lightweight and is meant for *relative*
+  comparisons (e.g., verifying that a code refactor did not introduce a
+  performance regression) rather than absolute claims.
+- Large standard deviations may indicate GC pauses, memory allocation
+  overhead, or thermal throttling.
+
+Outputs
+-------
 - results/table1_runtime_scaling.csv
 - results/table1_runtime_scaling.md
 - results/table1_runtime_scaling.tex
 
-The benchmark is intentionally lightweight and is meant for relative comparisons
-(e.g., after code changes) rather than absolute performance claims.
+Usage
+-----
+python scripts/tables/table1_runtime_scaling.py [--k-max 20 --repeats 10]
 """
 
 from __future__ import annotations

@@ -1,19 +1,42 @@
-"""Figure 5: Runtime scaling benchmark.
+r"""Figure 5: Runtime scaling benchmark.
 
 This script times :class:`bayesbreak.BayesBreakGaussian` for a small grid of
-series lengths ``n`` and maximum segment counts ``k_max``. It produces a simple
-runtime plot suitable for inclusion in the paper.
+series lengths :math:`n` and maximum segment counts :math:`k_{\max}`.
 
-Notes
------
-The benchmark is meant for *relative* comparisons (e.g., after code changes)
-rather than absolute performance claims.
+Experiment
+----------
+For each ``(n, k_max)`` pair in
+:math:`n \in \{50, 100, 200, 400\} \times k_{\max} \in \{10, 20\}`,
+the fit is repeated ``--repeats`` times (default 5) and the wall-clock
+runtime (via ``time.perf_counter``) is recorded.  Mean ± std are reported.
+
+The resulting log–log plot with error bars shows how runtime scales with
+sequence length for two values of :math:`k_{\max}`.  The theoretical
+complexity of the DP algorithm is :math:`O(k_{\max} \cdot n^2)`, so on a
+log–log plot one should observe:
+
+- **Slope ≈ 2** (quadratic in :math:`n`).
+- **Vertical offset** between the two :math:`k_{\max}` curves proportional
+  to the ratio of their :math:`k_{\max}` values.
+
+Interpretation
+--------------
+- Points that deviate from a straight line (in log-scale) would suggest
+  overhead dominating at small :math:`n` or memory effects at large :math:`n`.
+- The error bars indicate run-to-run variability; large bars may signal GC
+  pauses or thermal throttling.
+- This benchmark is meant for *relative* comparisons (e.g., after code
+  changes) rather than absolute performance claims.
 
 Outputs
 -------
 - results/fig5_runtime_scaling.png
 - results/fig5_runtime_scaling.pdf
 - results/fig5_runtime_scaling.csv
+
+Usage
+-----
+python scripts/figures/fig5_runtime_scaling.py [--repeats 10]
 """
 
 from __future__ import annotations
