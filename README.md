@@ -3,6 +3,7 @@
 [![CI](https://github.com/osolari/bayesbreak/actions/workflows/ci.yml/badge.svg)](https://github.com/osolari/bayesbreak/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![arXiv](https://img.shields.io/badge/arXiv-2603.14681-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.14681)
 
 **Exact Bayesian segmentation with a scikit-learn compatible API.**
 
@@ -119,7 +120,22 @@ bayesbreak reproduce all
 
 ## Citing
 
-See [`CITATION.cff`](CITATION.cff) and `docs/report/bayesbreak.pdf`.
+If you use BayesBreak in your work, please cite the accompanying arXiv
+preprint: [arXiv:2603.14681](https://arxiv.org/abs/2603.14681).
+
+```bibtex
+@article{solari2026bayesbreak,
+  title   = {Generalized Hierarchical Bayesian Segmentation with Irregular Designs,
+             Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs},
+  author  = {Solari, Omid Shams},
+  journal = {arXiv preprint arXiv:2603.14681},
+  year    = {2026},
+  url     = {https://arxiv.org/abs/2603.14681},
+}
+```
+
+See also [`CITATION.cff`](CITATION.cff) and the full report at
+[`docs/report/bayesbreak.pdf`](docs/report/bayesbreak.pdf).
 
 ## Contributing
 
