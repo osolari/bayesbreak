@@ -1,10 +1,4 @@
 % \pdfobjcompresslevel=0
-% NOTE (compile fix): the SAIM class loads `nicematrix`, which performs an
-% internal array security test at \begin{document}. When `colortbl` is used,
-% that test can call \CT@end before \CT@start (due to hook ordering),
-% globally corrupting colortbl's internal macros and breaking `booktabs`
-% rules inside `longtable`. We disable that test (no-test-for-array),
-% which is safe here because we do not rely on the nicematrix security check.
 \documentclass[12pt]{saim}
 \input{math_commands.tex}
 
@@ -28,6 +22,8 @@
 
 \usepackage{amsmath, amssymb, amsfonts, amsthm, mathtools, bm, bbm}
 \usepackage{booktabs, longtable, tabularx}
+\usepackage{tikz}
+\usetikzlibrary{bayesnet,positioning,fit}
 
 \definecolor{gray94}{gray}{.94}
 \definecolor{gray90}{gray}{.90}
@@ -41,7 +37,7 @@
 \definecolor{MyGreen}{rgb}{0.13, 0.55, 0.13}
 
 \newtcolorbox{AIbox}[2][]{aibox,title=#2,#1}
-\newcommand\myeq{\stackrel{\mathclap{\small\mbox{def}}}{=}}
+% Unused macros removed (D-M1).
 
 \definecolor{rliableolive}{HTML}{BBCC33}
 \definecolor{rliableblue}{HTML}{77AADD}
@@ -77,56 +73,12 @@
 \newtheorem{corollary}[theorem]{Corollary}
 \newtheorem{definition}[theorem]{Definition}
 \newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
 \newtheorem{template}{Takeaway}
+
 \newtheorem{template2}{Finding}
 
-
-\usepackage{booktabs}
-\usepackage{hyperref}
-\usepackage{url}
-\usepackage{multirow}
-\usepackage{pifont}
-\usepackage{tablefootnote}
-\usepackage{enumitem}
-\usepackage{graphicx}
-\usepackage{makecell}
-\usepackage{epigraph}
-\usepackage{float}
-\usepackage{colortbl}
-\usepackage[most]{tcolorbox}
-\usepackage{xcolor}
-\usepackage{wrapfig}
-\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
-
-\usepackage{amsmath, amssymb, amsfonts, amsthm, mathtools, bm, bbm}
-\usepackage{booktabs, longtable, tabularx}
-
-\definecolor{gray94}{gray}{.94}
-\definecolor{gray90}{gray}{.90}
-\definecolor{basegray}{RGB}{245,245,245}
-\definecolor{rlvrblue}{RGB}{230,245,255}
-
-\definecolor{lightred}{RGB}{255,240,240}
-\definecolor{lightgreen}{RGB}{240,255,240}
-\definecolor{lightblue}{RGB}{240,245,255}
-\definecolor{lightgray}{RGB}{245,245,245}
-\definecolor{MyGreen}{rgb}{0.13, 0.55, 0.13}
-
-\definecolor{rliableolive}{HTML}{BBCC33}
-\definecolor{rliableblue}{HTML}{77AADD}
-\definecolor{rliablered}{HTML}{EE8866}
-\definecolor{SDEblue}{RGB}{28 58 88}
-\definecolor{cc1}{rgb}{1.0, 0.44, 0.37}
-\definecolor{cc2}{rgb}{0.0, 0.2, 0.6}
-\definecolor{cc3}{RGB}{255, 191, 0}
-\definecolor{cc4}{RGB}{0, 128, 128}
-
-% Define custom colors
-\definecolor{myblue}{RGB}{0,77,64} % dark greenish
-\definecolor{mybg}{RGB}{240,248,247} % light bluish background
-
-\title{
-\texttt{BayesBreak}: Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sample Hierarchies, and Grouped/Latent-Group Designs
+\title{Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs
 }
 
 \author[1]{Omid Shams Solari}
@@ -139,23 +91,18 @@
 
 % \correspondence{Hanqing Zhu at \email{zechunliu@meta.com}}
 \metadata[Author emails]{\email{omid.solari@saimai.com}}
+% \metadata[Date]{\today}
 
-\newcommand{\fix}{\marginpar{FIX}}
-\newcommand{\new}{\marginpar{NEW}}
-
-\newcommand{\az}[1]{{\color{red} {\bf [Atlas: #1]}}}
-\newcommand{\hz}[1]{{\color{purple} {\bf [hz: #1]}}}
-\newcommand{\zqg}[1]{{\color{blue} {\bf [zqg: #1]}}}
-\newcommand{\kst}[1]{{\color{blue} {\bf [kst: #1]}}}
-\newcommand{\hx}[1]{{\color{blue} {\bf [hx: #1]}}}
+% Reviewer/debug macros removed (D-E1).
 
 \input{sections/0-abstract}
 
-\begin{document}\maketitle
+\begin{document}
 
-\newpage
-
+\maketitle
 \tableofcontents
+\listoffigures
+\listoftables
 
 \newpage
 \input{sections/1.intro}
@@ -171,13 +118,14 @@
 % ----------------------------------------------------------------------------
 % Appendices (journal-style: full derivations, complementary proofs, extensions)
 % ----------------------------------------------------------------------------
-\appendix
-\input{sections/8.appendix}
+
 
 \newpage
 \bibliography{reference/cite}
-\bibliographystyle{iclr2026_conference}
+\bibliographystyle{plainnat}
 
-% \input{sections/6-app}
+\newpage
+\appendix
+\input{sections/8.appendix}
 
 \end{document}

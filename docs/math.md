@@ -1,76 +1,88 @@
-# Mathematical notes
+# Math notes
 
-This document summarizes the dynamic program implemented in `BayesBreakBase`.
+A short glossary mapping the report's notation to the implementation. See
+`docs/report/bayesbreak.pdf` for full derivations.
 
-## Segment integrals
+## Block evidence
 
-For each candidate segment `(i, j]` (with `0 ≤ i < j ≤ n`) the family-specific
-code computes:
+For every candidate block `(i, j]`:
 
-- `A0[i, j] = P(y_{(i, j]} | single segment)`
-- `A1[i, j] = A0[i, j] * E[μ | y_{(i, j]}]`
+- `A^0_{ij} = ∫ ∏_{t ∈ (i, j]} p(y_t | θ) π(θ) dθ` — single-segment evidence.
+- `A^1_{ij} = A^0_{ij} · E[μ(θ) | y_{(i,j]}]` — first moment numerator used by
+  the regression curve.
 
-The implementation stores `log A0` in `lA0_` and `A1` (linear domain) in `A1_`.
+Stored in `log_block_evidence_` (log) and `block_first_moment_` (linear).
 
-## Left recursion
+## Sum-product DP
 
-Define the left evidence:
+Forward / prefix table:
 
-`L[k, j] = P(y_{(0, j]} | k segments)`.
+```
+L[k, j] = log Σ_{0 = t_0 < t_1 < ... < t_k = j} Π_q A^0_{t_{q-1}, t_q}
+```
 
-With `L[0, 0] = 1` and `L[0, j>0] = 0`, the recursion is:
+Backward / suffix table `R[k, i]` analogously on the suffix `y_{i+1:n}`.
 
-`L[k+1, j] = Σ_{h=k..j-1} L[k, h] A0[h, j]`.
+Under a uniform prior over `k` and over boundary vectors given `k`,
 
-The code executes this recursion in log-space.
+```
+log P(k | y) ∝ L[k, n] − log C(n-1, k-1) − log k_max,
+log p(y) = log Σ_k exp log P(k | y).
+```
 
-## Right recursion
-
-Similarly define the right evidence:
-
-`R[k, i] = P(y_{(i, n]} | k segments)`.
-
-With `R[0, n] = 1` and `R[0, i<n] = 0`, the recursion is:
-
-`R[k+1, i] = Σ_{h=i+1..n-k} A0[i, h] R[k, h]`.
-
-## Posterior over k
-
-With a uniform prior over `k = 1..k_max`, the unnormalized log posterior is:
-
-`log C[k] = log P(y | k) - log binom(n-1, k-1) - log k_max`.
-
-The combinatorial term corresponds to a uniform prior over segmentations given `k`.
+Implemented in `bayesbreak.dp.{forward_backward, posterior_over_k}`.
 
 ## Boundary posteriors
 
-For an interior position `i` (a potential breakpoint after observation `i`) the
-posterior probability that `i` is **any** breakpoint is
+Per-boundary location posterior
 
-`d1[i] = Σ_{k=2..k_max} P(k | y) Σ_{p=1..k-1} P(t_p = i | k, y)`
+```
+P(t_p = h | y, k) = exp( L[p, h] + R[k − p, h] − L[k, n] ).
+```
 
-with
+Per-index boundary-event marginal (sums to `k − 1`)
 
-`P(t_p=i|k,y) = L[p, i] R[k-p, i] / L[k, n]`.
+```
+P(b_i = 1 | y) = Σ_k P(k | y) · Σ_{p=1..k−1} P(t_p = i | y, k).
+```
 
-The implementation returns `d1` as an array of length `n-1`.
+Implemented in `bayesbreak.dp.{boundary_location_posterior, boundary_event_marginals}`.
 
-## Boundary selection heuristic
+## Joint MAP segmentation
 
-The current implementation selects `k_ml` and then takes the `k_ml-1` positions
-with largest `d1` scores. This is a **MAP-like** but not exact MAP boundary set.
+The joint MAP `argmax_t p(t | y, k)` is **not** the marginal-top-`k−1` summary.
+It is recovered by max-sum DP with backtracking:
 
-Exact MAP boundaries under the model correspond to the highest-probability
-segmentation and can be recovered with a standard Viterbi-style DP; this is a
-planned extension.
+```
+M[q, j] = max_{h < j} (M[q-1, h] + log A^0_{hj}),
+t_q = argmax_h (...).
+```
+
+Implemented in `bayesbreak.dp.max_sum_segmentation`.
 
 ## Bayesian regression curve
 
-For a fixed `k`, the Bayesian regression curve at index `t` integrates over all
-segmentations with `k` segments. The code uses a difference-array trick to
-accumulate contributions from all `(i, j]` intervals.
+Difference-array trick that accumulates per-block contributions in `O(n²)`:
 
-Two options are provided:
+- `bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k)`
+- `bayes_regression_curve_mixed_k(..., posterior_k)` averages over `k`.
 
-- `regression_curve='fixed_k'`: use the selected `k_ml`.
-- `regression_curve='mix_k'`: average the fixed-k curve over `P(k|y)`.
+## Posterior predictive (§8)
+
+Per MAP block `B` with posterior hyperparameters `(α_B, β_B)`:
+
+```
+log p(y_new_B | M, t) = H^new_B
+                     + log Z(α_B + S^new_B, β_B + W^new_B)
+                     - log Z(α_B, β_B).
+```
+
+Implemented in `bayesbreak.prediction.posterior_predictive_logpdf` via the
+family-specific `posterior_predictive_logpdf_block` method.
+
+## Partition prior
+
+By default the prior is index-uniform: `p(t | k) = 1 / C(n-1, k-1)`. A design-
+aware prior `p(t | k) ∝ Π_q g(x_{t_q} − x_{t_{q-1}})` can be added as an
+additive `log_length_prior` matrix to the block evidences in
+`max_sum_segmentation`.

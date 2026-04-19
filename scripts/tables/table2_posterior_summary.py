@@ -33,8 +33,8 @@ This table is a quick "sanity check" for the posterior over :math:`k`:
 
 Outputs
 -------
-- results/table2_posterior_summary.md
-- results/table2_posterior_summary.tex
+- docs/report/tables/table2_posterior_summary.md
+- docs/report/tables/table2_posterior_summary.tex
 
 Usage
 -----
@@ -63,9 +63,9 @@ def main(outdir: Path, n: int, k_max: int, seed: int) -> None:
     mu = np.r_[np.zeros(n // 3), np.ones(n // 3), -0.5 * np.ones(n - 2 * (n // 3))]
     y = mu + 0.25 * rng.standard_normal(n)
 
-    m = BayesBreakGaussian(k_max=k_max).fit(y)
+    m = BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y)).reshape(-1, 1), y)
 
-    C = m.C_
+    C = m.k_posterior_
     k_grid = np.arange(1, C.size + 1)
     ek = float(np.sum(k_grid * C))
     k_map = int(k_grid[np.argmax(C)])
@@ -77,10 +77,10 @@ def main(outdir: Path, n: int, k_max: int, seed: int) -> None:
     md.append("\n")
     md.append("| Quantity | Value |\n")
     md.append("|---|---:|\n")
-    md.append(f"| Selected k (k_ml_) | {m.k_ml_} |\n")
+    md.append(f"| Selected k (k_ml_) | {m.k_map_} |\n")
     md.append(f"| Posterior mean E[k] | {ek:.3f} |\n")
     md.append(f"| MAP k | {k_map} |\n")
-    md.append(f"| log evidence log P(y) | {float(m.score()):.3f} |\n")
+    md.append(f"| log evidence log P(y) | {float(m.log_evidence_):.3f} |\n")
 
     (outdir / "table2_posterior_summary.md").write_text("".join(md))
 
@@ -88,17 +88,17 @@ def main(outdir: Path, n: int, k_max: int, seed: int) -> None:
     tex_lines = []
     tex_lines.append("\\begin{tabular}{lr}\\toprule\n")
     tex_lines.append("Quantity & Value\\\\\\midrule\n")
-    tex_lines.append(f"Selected $k$ (\\texttt{{k\\_ml\\_}}) & {m.k_ml_}\\\\\n")
+    tex_lines.append(f"Selected $k$ (\\texttt{{k\\_ml\\_}}) & {m.k_map_}\\\\\n")
     tex_lines.append(f"Posterior mean $\\mathbb{{E}}[k]$ & {ek:.3f}\\\\\n")
     tex_lines.append(f"MAP $k$ & {k_map}\\\\\n")
-    tex_lines.append(f"$\\log p(y)$ & {float(m.score()):.3f}\\\\\n")
+    tex_lines.append(f"$\\log p(y)$ & {float(m.log_evidence_):.3f}\\\\\n")
     tex_lines.append("\\bottomrule\\end{tabular}\n")
     (outdir / "table2_posterior_summary.tex").write_text("".join(tex_lines))
 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--k-max", type=int, default=15)
     ap.add_argument("--seed", type=int, default=0)

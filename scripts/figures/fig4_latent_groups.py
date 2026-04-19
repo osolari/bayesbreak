@@ -2,7 +2,7 @@ r"""Figure 4: Latent-group pooling (mixture) demonstration.
 
 This script simulates multiple Gaussian sequences from two latent groups with
 distinct changepoint locations and segment means. It then fits
-:class:`bayesbreak.BayesBreakMixture` (an EM-like latent-group extension of
+:class:`bayesbreak.BayesBreakMixtureClassifier` (an EM-like latent-group extension of
 BayesBreak) and visualises the results.
 
 Experiment
@@ -16,7 +16,7 @@ changepoint structure:
   and levels :math:`(0.5, -1, 0.8)`.
 
 ``n_seq`` (default 12) sequences are drawn — half from each group — with
-additive Gaussian noise (:math:`\sigma=0.35`).  BayesBreakMixture is fit with
+additive Gaussian noise (:math:`\sigma=0.35`).  BayesBreakMixtureClassifier is fit with
 ``n_groups=2`` and modest iteration budget.
 
 The resulting three-panel figure shows:
@@ -47,8 +47,8 @@ need adjustment.
 
 Outputs
 -------
-- results/fig4_latent_groups.png
-- results/fig4_latent_groups.pdf
+- docs/report/figures/fig4_latent_groups.png
+- docs/report/figures/fig4_latent_groups.pdf
 
 Usage
 -----
@@ -76,7 +76,7 @@ from _style import (  # noqa: E402
 )
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
-from bayesbreak.mixture import BayesBreakMixture  # noqa: E402
+from bayesbreak.mixture import BayesBreakMixtureClassifier  # noqa: E402
 
 
 def _make_piecewise_constant(n: int, boundaries: list[int], levels: list[float]) -> np.ndarray:
@@ -136,7 +136,7 @@ def main(
         ys.append(mu + sigma * rng.standard_normal(n))
 
     base = BayesBreakGaussian(k_max=k_max)
-    mix = BayesBreakMixture(
+    mix = BayesBreakMixtureClassifier(
         base_estimator=base,
         n_groups=2,
         k_max=k_max,
@@ -144,7 +144,7 @@ def main(
         tol=1e-4,
         regression_curve="mix_k",
         random_state=seed,
-    ).fit(ys)
+    ).fit(np.arange(len(ys)).reshape(-1, 1), ys)
 
     r = np.asarray(mix.responsibilities_, dtype=float)
     perm = _align_groups_by_truth(r, y_true)
@@ -158,7 +158,7 @@ def main(
     outdir.mkdir(parents=True, exist_ok=True)
 
     # Setup publication style - use larger scale for this figure
-    setup_style(font_scale=1.0, style="paper")
+    setup_style(font_scale=1.0)
 
     # Larger figure size for 3-panel layout
     fig = plt.figure(figsize=(10, 3.5))
@@ -226,7 +226,7 @@ def main(
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=0)
     # Defaults chosen to keep runtime modest while still illustrating
     # responsibility separation and group-specific boundary structure.

@@ -1,0 +1,51 @@
+{% set data = load_file_data("../pyproject.toml") %}
+{% set version = environ.get("GIT_DESCRIBE_TAG", "1.0.0").lstrip("v") %}
+
+package:
+  name: bayesbreak
+  version: "{{ version }}"
+
+source:
+  path: ..
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . -vv
+  entry_points:
+    - bayesbreak = bayesbreak.cli:main
+
+requirements:
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=68
+    - setuptools-scm >=8
+    - wheel
+  run:
+    - python >=3.10
+    - numpy >=1.23
+    - scipy >=1.9
+    - scikit-learn >=1.2
+
+test:
+  imports:
+    - bayesbreak
+  commands:
+    - bayesbreak --help
+
+about:
+  home: https://github.com/osolari/bayesbreak
+  license: MIT
+  license_file: LICENSE
+  summary: Exact Bayesian segmentation with a scikit-learn compatible interface.
+  description: |
+    BayesBreak computes exact posterior quantities for offline Bayesian
+    change-point / segmentation problems via block evidence + dynamic
+    programming. It supports Gaussian, Poisson, Binomial, Bernoulli, Beta,
+    Beta-observation, and Logistic-Normal block families, and exposes
+    scikit-learn compatible fit / predict / score / transform methods plus
+    classifier wrappers for known-group and latent-group settings.
+
+  doc_url: https://osolari.github.io/bayesbreak
+  dev_url: https://github.com/osolari/bayesbreak

@@ -41,9 +41,9 @@ Interpretation
 
 Outputs
 -------
-- results/table4_nonconj_tradeoff.csv
-- results/table4_nonconj_tradeoff.md
-- results/table4_nonconj_tradeoff.tex
+- docs/report/tables/table4_nonconj_tradeoff.csv
+- docs/report/tables/table4_nonconj_tradeoff.md
+- docs/report/tables/table4_nonconj_tradeoff.tex
 
 Usage
 -----
@@ -55,8 +55,8 @@ from __future__ import annotations
 import argparse
 import sys
 import time
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable
 
 import numpy as np
 
@@ -102,9 +102,11 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
 
     # Reference (quadrature).
     t0 = time.perf_counter()
-    ref = BayesBreakLogisticNormal(k_max=k_max, approx="quadrature", gh_points=gh_points).fit(y)
+    ref = BayesBreakLogisticNormal(k_max=k_max, approx="quadrature", gh_points=gh_points).fit(
+        np.arange(len(y)).reshape(-1, 1), y
+    )
     t_ref = time.perf_counter() - t0
-    lA0_ref = ref.lA0_
+    lA0_ref = ref.log_block_evidence_
     if lA0_ref is None:
         raise RuntimeError("Reference fit did not store lA0_")
 
@@ -121,26 +123,26 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
     rows = []
 
     # Record the reference row first.
-    pred_b = ref.get_boundaries()[1:-1]
+    pred_b = ref.map_boundaries_[1:-1]
     f1 = _boundary_f1(true_interior, pred_b, tau=tau)
-    rows.append(("quadrature", 0.0, t_ref, f1, int(ref.k_ml_)))
+    rows.append(("quadrature", 0.0, t_ref, f1, int(ref.k_map_)))
 
     # Compare approximations.
     for name, kwargs in methods[1:]:
         t0 = time.perf_counter()
-        m = BayesBreakLogisticNormal(k_max=k_max, **kwargs).fit(y)
+        m = BayesBreakLogisticNormal(k_max=k_max, **kwargs).fit(np.arange(len(y)).reshape(-1, 1), y)
         t_fit = time.perf_counter() - t0
 
-        lA0 = m.lA0_
+        lA0 = m.log_block_evidence_
         if lA0 is None:
             raise RuntimeError(f"{name} fit did not store lA0_")
 
         mask = np.isfinite(lA0_ref) & np.isfinite(lA0)
         max_abs = float(np.max(np.abs(lA0[mask] - lA0_ref[mask]))) if np.any(mask) else float("nan")
 
-        pred_b = m.get_boundaries()[1:-1]
+        pred_b = m.map_boundaries_[1:-1]
         f1 = _boundary_f1(true_interior, pred_b, tau=tau)
-        rows.append((name, max_abs, t_fit, f1, int(m.k_ml_)))
+        rows.append((name, max_abs, t_fit, f1, int(m.k_map_)))
 
     outdir.mkdir(parents=True, exist_ok=True)
 
@@ -174,7 +176,7 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=80)
     ap.add_argument("--k-max", type=int, default=10)

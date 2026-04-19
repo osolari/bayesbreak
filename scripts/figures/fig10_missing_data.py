@@ -45,8 +45,8 @@ Interpretation
 
 Outputs
 -------
-- results/fig10_missing_data.png
-- results/fig10_missing_data.pdf
+- docs/report/figures/fig10_missing_data.png
+- docs/report/figures/fig10_missing_data.pdf
 
 Usage
 -----
@@ -78,7 +78,7 @@ from bayesbreak import BayesBreakGaussian  # noqa: E402
 
 
 def main(outdir: Path, seed: int, n: int, miss_frac: float) -> None:
-    setup_style(font_scale=0.95, style="paper")
+    setup_style(font_scale=0.95)
     rng = np.random.default_rng(seed)
 
     levels = np.array([0.0, 2.0, -1.0])
@@ -90,8 +90,8 @@ def main(outdir: Path, seed: int, n: int, miss_frac: float) -> None:
     k_max = 10
 
     # Full data baseline.
-    m_full = BayesBreakGaussian(k_max=k_max).fit(y_full)
-    d1_full = m_full.get_boundary_posteriors()
+    m_full = BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y_full)).reshape(-1, 1), y_full)
+    d1_full = m_full.boundary_marginals_
 
     # Missingness masks.
     n_miss = int(miss_frac * n)
@@ -129,9 +129,11 @@ def main(outdir: Path, seed: int, n: int, miss_frac: float) -> None:
 
     for row, (mask, label) in enumerate(masks):
         # Fit with weights.
-        m_w = BayesBreakGaussian(k_max=k_max).fit(y_full, sample_weight=mask)
-        d1_w = m_w.get_boundary_posteriors()
-        pc_w = m_w.predict()
+        m_w = BayesBreakGaussian(k_max=k_max).fit(
+            np.arange(len(y_full)).reshape(-1, 1), y_full, sample_weight=mask
+        )
+        d1_w = m_w.boundary_marginals_
+        pc_w = m_w.predict(m_w.x_design_.reshape(-1, 1))
 
         # --- Left column: signal + fit ---
         ax = axes[row, 0]
@@ -205,7 +207,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--miss-frac", type=float, default=0.25)

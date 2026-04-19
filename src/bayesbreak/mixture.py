@@ -19,7 +19,7 @@ we implement an EM-like coordinate ascent scheme:
    - Convert scores into responsibilities with a softmax.
 
 This approach is designed to be:
-  - **Family-agnostic**: it works with any :class:`~bayesbreak.base.BayesBreakBase`
+  - **Family-agnostic**: it works with any :class:`~bayesbreak.base.BayesBreakSegmenter`
     family that can compute per-segment evidences.
   - **Sklearn-friendly**: ``fit/predict/predict_proba/score`` are provided.
 
@@ -39,14 +39,15 @@ specified generative mixture.
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Sequence, Tuple, Union
 
 import numpy as np
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.utils.validation import check_random_state
 
-from .base import BayesBreakBase
+from . import dp as _dp
+from .base import BayesBreakSegmenter
 from .families import (
     BayesBreakBernoulli,
     BayesBreakBeta,
@@ -56,18 +57,19 @@ from .families import (
     BayesBreakLogisticNormal,
     BayesBreakPoisson,
 )
-from .groups import BayesBreakGrouped
+from .groups import BayesBreakGroupedClassifier
 from .utils import log_binom, logsumexp
+from .validation import require_fitted  # noqa: F401
 
-ArrayLike1D = Union[np.ndarray, Sequence[float]]
-SequenceInput = Union[np.ndarray, Sequence[np.ndarray]]
+ArrayLike1D = np.ndarray | Sequence[float]
+SequenceInput = np.ndarray | Sequence[np.ndarray]
 
 
 @dataclass
 class _GroupState:
     """Internal container for per-group fitted quantities."""
 
-    hyper: Dict[str, float]
+    hyper: dict[str, float]
     lA0: np.ndarray
     A1: np.ndarray
     L: np.ndarray
@@ -77,21 +79,21 @@ class _GroupState:
     log_evidence: float
     k_ml: int
     boundary_post: np.ndarray
-    boundaries: List[int]
-    brc: Optional[np.ndarray]
+    boundaries: list[int]
+    brc: np.ndarray | None
     # Segment posterior probabilities for the fixed-k model used in E-step scoring.
     # Shape (n+1, n+1) on the upper triangle (i<j); zeros elsewhere.
     seg_post: np.ndarray
 
 
-def _as_list_of_1d_arrays(X: SequenceInput, *, name: str) -> List[np.ndarray]:
+def _as_list_of_1d_arrays(X: SequenceInput, *, name: str) -> list[np.ndarray]:
     """Coerce input into a list of 1D float arrays."""
     if isinstance(X, np.ndarray) and X.ndim == 2:
         return [np.asarray(row, dtype=float) for row in X]
     if isinstance(X, np.ndarray) and X.ndim == 1:
         return [np.asarray(X, dtype=float)]
-    if isinstance(X, (list, tuple)):
-        out: List[np.ndarray] = []
+    if isinstance(X, list | tuple):
+        out: list[np.ndarray] = []
         for i, arr in enumerate(X):
             a = np.asarray(arr, dtype=float)
             if a.ndim != 1:
@@ -104,8 +106,8 @@ def _as_list_of_1d_arrays(X: SequenceInput, *, name: str) -> List[np.ndarray]:
 
 
 def _as_list_of_weight_arrays(
-    sample_weight: Optional[SequenceInput], *, n_seq: int, n: int
-) -> List[Optional[np.ndarray]]:
+    sample_weight: SequenceInput | None, *, n_seq: int, n: int
+) -> list[np.ndarray | None]:
     """Coerce sample_weight into a list of per-sequence 1D arrays (or None)."""
     if sample_weight is None:
         return [None] * n_seq
@@ -121,10 +123,10 @@ def _as_list_of_weight_arrays(
         if sample_weight.shape[0] != n:
             raise ValueError(f"sample_weight length must be {n}, got {sample_weight.shape[0]}.")
         return [np.asarray(sample_weight, dtype=float)]
-    if isinstance(sample_weight, (list, tuple)):
+    if isinstance(sample_weight, list | tuple):
         if len(sample_weight) != n_seq:
             raise ValueError(f"sample_weight must have length {n_seq}, got {len(sample_weight)}.")
-        out: List[Optional[np.ndarray]] = []
+        out: list[np.ndarray | None] = []
         for i, w in enumerate(sample_weight):
             if w is None:
                 out.append(None)
@@ -138,11 +140,11 @@ def _as_list_of_weight_arrays(
 
 
 def _pool_flattened(
-    ys: List[np.ndarray],
-    ws: List[Optional[np.ndarray]],
+    ys: list[np.ndarray],
+    ws: list[np.ndarray | None],
     r: np.ndarray,
     g: int,
-) -> Tuple[np.ndarray, Optional[np.ndarray]]:
+) -> tuple[np.ndarray, np.ndarray | None]:
     """Flatten sequences for responsibility-weighted hyper estimation.
 
     Returns
@@ -155,7 +157,7 @@ def _pool_flattened(
     if all(w is None for w in ws):
         w_flat = None
     else:
-        w_parts: List[np.ndarray] = []
+        w_parts: list[np.ndarray] = []
         for s, y in enumerate(ys):
             rs = float(r[s, g])
             if ws[s] is None:
@@ -167,46 +169,46 @@ def _pool_flattened(
 
 
 def _pool_hyper_by_family(
-    template: BayesBreakBase,
+    template: BayesBreakSegmenter,
     ys: Sequence[np.ndarray],
-    ws: Sequence[Optional[np.ndarray]],
-) -> Dict[str, float]:
+    ws: Sequence[np.ndarray | None],
+) -> dict[str, float]:
     """Estimate hyperparameters from multiple sequences.
 
     For some families, naive concatenation can produce incorrect estimates
     (notably for the Gaussian sigma^2 estimator that uses first differences).
     Where available, we reuse the same pooling rules as
-    :class:`bayesbreak.groups.BayesBreakGrouped`.
+    :class:`bayesbreak.groups.BayesBreakGroupedClassifier`.
     """
 
     # Gaussian: avoid concatenation because the sigma2 estimator depends on
     # within-sequence differences.
     if isinstance(template, BayesBreakGaussian):
-        return BayesBreakGrouped._pool_gaussian_hyper(template, list(ys), list(ws))
+        return BayesBreakGroupedClassifier._pool_gaussian_hyper(template, list(ys), list(ws))
 
     # Poisson: pool alpha/beta via the group's moment heuristics.
     if isinstance(template, BayesBreakPoisson):
-        return BayesBreakGrouped._pool_poisson_hyper(template, list(ys), list(ws))
+        return BayesBreakGroupedClassifier._pool_poisson_hyper(template, list(ys), list(ws))
 
     # Binomial / Bernoulli: pool Beta prior parameters. Requires scalar n_trials.
-    if isinstance(template, (BayesBreakBinomial, BayesBreakBernoulli)):
+    if isinstance(template, BayesBreakBinomial | BayesBreakBernoulli):
         n_trials = getattr(template, "n_trials", 1.0)
         if not np.isscalar(n_trials):
             raise ValueError(
-                "BayesBreakMixture hyper pooling for Binomial/Bernoulli currently "
+                "BayesBreakMixtureClassifier hyper pooling for Binomial/Bernoulli currently "
                 "requires scalar n_trials."
             )
-        return BayesBreakGrouped._pool_beta_binom_hyper(
+        return BayesBreakGroupedClassifier._pool_beta_binom_hyper(
             template, list(ys), list(ws), float(n_trials)
         )
 
     # Beta surrogate (fractional) is treated as Beta prior pooling.
     if isinstance(template, BayesBreakBeta):
-        return BayesBreakGrouped._pool_beta_hyper(template, list(ys), list(ws))
+        return BayesBreakGroupedClassifier._pool_beta_hyper(template, list(ys), list(ws))
 
     # BetaObs and LogisticNormal do not rely on within-sequence differencing; we
     # can safely pool by concatenation.
-    if isinstance(template, (BayesBreakBetaObs, BayesBreakLogisticNormal)):
+    if isinstance(template, BayesBreakBetaObs | BayesBreakLogisticNormal):
         y_flat = np.concatenate([np.asarray(y, dtype=float) for y in ys], axis=0)
         if all(w is None for w in ws):
             w_flat = None
@@ -218,7 +220,7 @@ def _pool_hyper_by_family(
                 ],
                 axis=0,
             )
-        return template._estimate_global_params(y_flat, sample_weight=w_flat)
+        return template._estimate_hyperparameters(y_flat, sample_weight=w_flat)
 
     # Generic fallback.
     y_flat = np.concatenate([np.asarray(y, dtype=float) for y in ys], axis=0)
@@ -232,10 +234,10 @@ def _pool_hyper_by_family(
             ],
             axis=0,
         )
-    return template._estimate_global_params(y_flat, sample_weight=w_flat)
+    return template._estimate_hyperparameters(y_flat, sample_weight=w_flat)
 
 
-def _safe_weighted_sum_lA0(mats: List[np.ndarray], weights: np.ndarray) -> np.ndarray:
+def _safe_weighted_sum_lA0(mats: list[np.ndarray], weights: np.ndarray) -> np.ndarray:
     """Responsibility-weighted sum of log-evidence matrices.
 
     Avoids ``0 * (-inf) -> nan`` by masking finite entries.
@@ -252,7 +254,7 @@ def _safe_weighted_sum_lA0(mats: List[np.ndarray], weights: np.ndarray) -> np.nd
     return out
 
 
-def _safe_weighted_sum_A1(mats: List[np.ndarray], weights: np.ndarray) -> np.ndarray:
+def _safe_weighted_sum_A1(mats: list[np.ndarray], weights: np.ndarray) -> np.ndarray:
     if not mats:
         raise ValueError("mats must be non-empty")
     out = np.zeros_like(mats[0])
@@ -271,7 +273,7 @@ def _run_dp_from_stats(
     regression_curve: str,
     prior_k: str = "uniform",  # "uniform" or "geometric"
     geom_p: float = 0.5,
-) -> Tuple[
+) -> tuple[
     np.ndarray,
     np.ndarray,
     np.ndarray,
@@ -279,14 +281,14 @@ def _run_dp_from_stats(
     float,
     int,
     np.ndarray,
-    List[int],
-    Optional[np.ndarray],
+    list[int],
+    np.ndarray | None,
 ]:
     """Run the BayesBreak DP using precomputed segment statistics."""
     n = lA0.shape[0] - 1
     kk = min(max(1, n), int(k_max))
 
-    L, R = BayesBreakBase._compute_left_right_recursions(lA0, n, kk)
+    L, R = _dp.forward_backward(lA0, n, kk)
 
     # Posterior over k with an optional prior.
     #
@@ -294,7 +296,7 @@ def _run_dp_from_stats(
     # That induces a combinatorial normalizer C_k = binom(n-1, k-1) for the sum
     # over ordered partitions. Consequently
     #     log p(y|k) = log(sum over partitions) - log C_k
-    # which we implement exactly as in BayesBreakBase._posterior_over_k.
+    # which we implement exactly as in _dp.posterior_over_k.
     logC_raw = np.full(kk + 1, -np.inf, dtype=float)
     for k in range(1, kk + 1):
         logC_raw[k] = L[k, n] - log_binom(n - 1, k - 1)
@@ -313,19 +315,19 @@ def _run_dp_from_stats(
     C = np.zeros_like(logC)
     C[1 : kk + 1] = np.exp(logC[1 : kk + 1])
 
-    # k selection around E[k] (mirrors BayesBreakBase.fit)
+    # k selection around E[k] (mirrors BayesBreakSegmenter.fit)
     ek = float(np.sum((np.arange(1, kk + 1)) * C[1 : kk + 1]))
     valid = np.arange(1, kk + 1)
     k_ml = int(valid[np.argmin((valid - ek) ** 2)])
 
-    d1 = BayesBreakBase._boundary_posteriors_marginal(L, R, logC, n, kk)
-    boundaries = BayesBreakBase._select_boundaries_from_scores(d1, k_ml, n)
+    d1 = _dp.boundary_event_marginals(L, R, logC, n, kk)
+    boundaries = _dp.marginal_boundary_modes(d1, k_ml, n)
 
-    brc: Optional[np.ndarray] = None
+    brc: np.ndarray | None = None
     if regression_curve == "fixed_k":
-        brc = BayesBreakBase._bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k_ml)
+        brc = _dp.bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k_ml)
     elif regression_curve == "mix_k":
-        brc = BayesBreakBase._bayes_regression_curve_mixed_k(L, R, lA0, A1, n, kk, C)
+        brc = _dp.bayes_regression_curve_mixed_k(L, R, lA0, A1, n, kk, C)
     return L, R, logC, C, float(logE), k_ml, d1, boundaries, brc
 
 
@@ -356,7 +358,7 @@ def _segment_posterior_fixed_k(
     return P
 
 
-class BayesBreakMixture(BaseEstimator, ClassifierMixin):
+class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
     """Latent-group BayesBreak via an EM-like procedure.
 
     Parameters
@@ -400,7 +402,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
 
     def __init__(
         self,
-        base_estimator: BayesBreakBase,
+        base_estimator: BayesBreakSegmenter,
         n_groups: int = 2,
         k_max: int = 50,
         max_iter: int = 50,
@@ -408,7 +410,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
         regression_curve: str = "none",
         prior_k: str = "uniform",
         geom_p: float = 0.5,
-        random_state: Optional[int] = None,
+        random_state: int | None = None,
         verbose: bool = False,
     ):
         self.base_estimator = base_estimator
@@ -423,28 +425,30 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
         self.verbose = bool(verbose)
 
         # fitted
-        self.responsibilities_: Optional[np.ndarray] = None
-        self.pi_: Optional[np.ndarray] = None
-        self.group_states_: Optional[List[_GroupState]] = None
-        self.objective_: Optional[List[float]] = None
-        self.n_: Optional[int] = None
-        self.n_seq_: Optional[int] = None
+        self.responsibilities_: np.ndarray | None = None
+        self.pi_: np.ndarray | None = None
+        self.group_states_: list[_GroupState] | None = None
+        self.objective_: list[float] | None = None
+        self.n_: int | None = None
+        self.n_seq_: int | None = None
 
     # ----------------------- sklearn API -----------------------
 
     def fit(
         self,
         X: SequenceInput,
-        y: Optional[SequenceInput] = None,
-        sample_weight: Optional[SequenceInput] = None,
-    ) -> "BayesBreakMixture":
+        y: SequenceInput | None = None,
+        sample_weight: SequenceInput | None = None,
+    ) -> BayesBreakMixtureClassifier:
         # sklearn convention: if y is None, treat X as the observed sequences.
         Y_in = X if y is None else y
         ys = _as_list_of_1d_arrays(Y_in, name="y")
         S = len(ys)
         n = int(ys[0].shape[0])
         if any(int(arr.shape[0]) != n for arr in ys):
-            raise ValueError("All sequences must have the same length for BayesBreakMixture.")
+            raise ValueError(
+                "All sequences must have the same length for BayesBreakMixtureClassifier."
+            )
         ws = _as_list_of_weight_arrays(sample_weight, n_seq=S, n=n)
 
         if self.n_groups < 1:
@@ -465,15 +469,15 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
 
         pi = np.full(G, 1.0 / G, dtype=float)
 
-        objective: List[float] = []
-        group_states: List[_GroupState] = []
+        objective: list[float] = []
+        group_states: list[_GroupState] = []
 
         prev_obj = -np.inf
         for it in range(self.max_iter):
             group_states = []
             # Cache per-sequence block evidences under each group's current hyper
             # (used in the E-step scoring).
-            lA0_cache: List[List[np.ndarray]] = [[None for _ in range(S)] for _ in range(G)]
+            lA0_cache: list[list[np.ndarray]] = [[None for _ in range(S)] for _ in range(G)]
             # M-step: update group hyperparameters and pooled DPs.
             for g in range(G):
                 # --- hyper (empirical Bayes on responsibility-weighted pooled observations) ---
@@ -481,7 +485,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                 # Force hyper estimation on pooled data regardless of base_estimator.estimate_hyper.
                 est_h.set_params(estimate_hyper=True)
 
-                ws_scaled: List[np.ndarray] = []
+                ws_scaled: list[np.ndarray] = []
                 for s in range(S):
                     w_s = ws[s]
                     if w_s is None:
@@ -491,8 +495,8 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                 hyper_g = _pool_hyper_by_family(est_h, ys, ws_scaled)
 
                 # --- per-sequence segment stats under hyper_g ---
-                lA0_sg: List[np.ndarray] = []
-                A1_sg: List[np.ndarray] = []
+                lA0_sg: list[np.ndarray] = []
+                A1_sg: list[np.ndarray] = []
                 for s in range(S):
                     est_s = clone(self.base_estimator)
                     est_s.set_params(estimate_hyper=False)
@@ -503,7 +507,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                     w_s = ws[s]
                     if w_s is None:
                         w_s = np.ones(n, dtype=float)
-                    lA0, A1 = est_s._compute_single_segment_stats(ys[s], hyper_g, sample_weight=w_s)
+                    lA0, A1 = est_s._compute_block_evidence(ys[s], hyper_g, sample_weight=w_s)
                     lA0_cache[g][s] = lA0
                     lA0_sg.append(lA0)
                     A1_sg.append(A1)
@@ -572,7 +576,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
             objective.append(obj)
 
             if self.verbose:
-                print(f"[BayesBreakMixture] iter={it+1:03d} obj={obj:.6f}")
+                print(f"[BayesBreakMixtureClassifier] iter={it+1:03d} obj={obj:.6f}")
 
             if it > 0:
                 # Relative improvement.
@@ -592,8 +596,8 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
     def predict_proba(
         self,
         X: SequenceInput,
-        y: Optional[SequenceInput] = None,
-        sample_weight: Optional[SequenceInput] = None,
+        y: SequenceInput | None = None,
+        sample_weight: SequenceInput | None = None,
     ) -> np.ndarray:
         if self.group_states_ is None or self.pi_ is None:
             raise RuntimeError("Call fit() first.")
@@ -618,9 +622,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                 w_s = ws[s]
                 if w_s is None:
                     w_s = np.ones(n, dtype=float)
-                lA0_s, _A1_s = est_s._compute_single_segment_stats(
-                    ys[s], gs.hyper, sample_weight=w_s
-                )
+                lA0_s, _A1_s = est_s._compute_block_evidence(ys[s], gs.hyper, sample_weight=w_s)
                 score_sg = 0.0
                 for a, b in zip(gs.boundaries[:-1], gs.boundaries[1:], strict=False):
                     score_sg += float(lA0_s[a, b])
@@ -632,8 +634,8 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
     def predict(
         self,
         X: SequenceInput,
-        y: Optional[SequenceInput] = None,
-        sample_weight: Optional[SequenceInput] = None,
+        y: SequenceInput | None = None,
+        sample_weight: SequenceInput | None = None,
     ) -> np.ndarray:
         proba = self.predict_proba(X, y=y, sample_weight=sample_weight)
         return np.argmax(proba, axis=1)
@@ -641,8 +643,8 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
     def score(
         self,
         X: SequenceInput,
-        y: Optional[SequenceInput] = None,
-        sample_weight: Optional[SequenceInput] = None,
+        y: SequenceInput | None = None,
+        sample_weight: SequenceInput | None = None,
     ) -> float:
         """Return the mixture objective used during fitting (higher is better)."""
         proba = self.predict_proba(X, y=y, sample_weight=sample_weight)
@@ -652,7 +654,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
 
     # -------------------- convenience helpers --------------------
 
-    def get_group_boundaries(self, g: int) -> List[int]:
+    def get_group_boundaries(self, g: int) -> list[int]:
         if self.group_states_ is None:
             raise RuntimeError("Call fit() first.")
         return list(self.group_states_[g].boundaries)
@@ -662,7 +664,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
             raise RuntimeError("Call fit() first.")
         return self.group_states_[g].boundary_post.copy()
 
-    def get_group_regression_curve(self, g: int) -> Optional[np.ndarray]:
+    def get_group_regression_curve(self, g: int) -> np.ndarray | None:
         if self.group_states_ is None:
             raise RuntimeError("Call fit() first.")
         brc = self.group_states_[g].brc
@@ -671,11 +673,11 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
     def map_signal(
         self,
         X: SequenceInput,
-        group: Optional[Union[int, Sequence[int], np.ndarray]] = None,
+        group: int | Sequence[int] | np.ndarray | None = None,
         *,
         mode: str = "refit",
         return_curve: str = "pc",
-        sample_weight: Optional[SequenceInput] = None,
+        sample_weight: SequenceInput | None = None,
     ) -> np.ndarray:
         """Compute MAP/Bayes signal evaluations conditional on group membership.
 
@@ -710,7 +712,7 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
         if group is None:
             grp = self.predict(ys)
         else:
-            if isinstance(group, (int, np.integer)):
+            if isinstance(group, int | np.integer):
                 grp = np.full(S, int(group), dtype=int)
             else:
                 grp = np.asarray(group, dtype=int)
@@ -730,7 +732,9 @@ class BayesBreakMixture(BaseEstimator, ClassifierMixin):
                 # Preserve the mixture object's curve preference.
                 if "regression_curve" in est.get_params(deep=False):
                     est.set_params(regression_curve=self.regression_curve)
-                est.fit(ys[s], sample_weight=ws[s])
+                n_s = int(np.asarray(ys[s]).shape[0])
+                X_s = np.arange(n_s).reshape(-1, 1)
+                est.fit(X_s, ys[s], sample_weight=ws[s])
                 if return_curve == "brc":
                     curve = est.get_regression_curve()
                     if curve is None:

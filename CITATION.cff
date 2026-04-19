@@ -1,18 +1,12 @@
 cff-version: 1.2.0
-title: "BayesBreak: Generalized Hierarchical Bayes Process Segmentation"
+title: "BayesBreak: Generalized Hierarchical Bayesian Segmentation"
 authors:
   - family-names: Solari
-    given-names: Omid
-    email: solari@berkeley.edu
-    affiliation: "saim lab"
+    given-names: Omid Shams
+    email: omid.solari@saimai.com
+    affiliation: "sAIm Labs"
+repository-code: "https://github.com/osolari/bayesbreak"
 references:
-  - type: article
-      authors:
-        - family-names: Hutter
-          given-names: Marcus
-      title: "Bayesian Regression of Piecewise Constant Functions"
-      journal: "arXiv:math/0606315"
-      year: 2006
   - type: article
     authors:
       - family-names: Hutter
@@ -20,4 +14,10 @@ references:
     title: "Bayesian Regression of Piecewise Constant Functions"
     journal: "arXiv:math/0606315"
     year: 2006
-repository-code: "https://github.com/osolari/bayesbreak"
+  - type: article
+    authors:
+      - family-names: Fearnhead
+        given-names: Paul
+    title: "Exact and efficient Bayesian inference for multiple changepoint problems"
+    journal: "Statistics and Computing"
+    year: 2006

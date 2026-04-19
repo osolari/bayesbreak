@@ -1,6 +1,6 @@
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% A new style for Cerebras Systems pre-prints
-% Author: omid.solari@cerebreas.net
+% A new style for SAIM AI pre-prints
+% Author: omid.solari@saimaim.com
 % Version: 1.1
 % %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -83,32 +83,22 @@
 \captionsetup[sub]{singlelinecheck=true,format=custom,labelsep=custom,font=small}
 
 % Meta custom fonts %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% http://c.caignaert.free.fr/Install-ttf-Font.pdf
-
-% \renewcommand*\ttdefault{cmvtt}
-% \RequirePackage[T1]{fontenc}
-
-% \pdfmapline{+optimistic < assets/Optimistic.ttf <T1-WGL4.enc}
-% \renewcommand{\sfdefault}{optimistic}
-
-% \DeclareFontFamily{T1}{optimistic}{}
-% \DeclareFontShape{T1}{optimistic}{m}{n}{<-> s * [.88] assets/optimistic}{}
-% \pdfmapline{+optimistic < assets/Optimistic.ttf <T1-WGL4.enc}
-% \renewcommand{\sfdefault}{optimistic}
 
 \usepackage[T1]{fontenc}
-\usepackage{lmodern}  % Latin Modern: has bold + italics for all families
-\renewcommand*\ttdefault{cmvtt}  % keep your monospace choice if you like
+\usepackage{lmodern}
+\renewcommand*\ttdefault{cmvtt}
 
 % Authors, affiliations, infos %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\renewcommand\addtolist[5][]{
+\makeatletter
+\renewcommand\addtolist[5][]{%
   \begingroup
     \if\relax#3\relax\def\sep{}\else\def\sep{#5}\fi
     \let\protect\@unexpandable@protect
     \xdef#3{\expandafter{#3}\sep #4[#1]{#2}}%
   \endgroup
 }
+\makeatother
 
 \newcommand\authorlist{}
 \newcommand\authorformat[2][]{{\sffamily \bfseries #2$^{#1}$}}
@@ -126,7 +116,8 @@
 \newcommand\metadataformat[2][]{{\small {\sffamily \bfseries #1:} #2}}
 \newcommand\metadata[2][]{\addtolist[#1]{#2}{\metadatalist}{\metadataformat}{\par}}
 
-\renewcommand{\abstract}[1]{\def\abstractlist{{\color{saimfg} #1}}}
+\newcommand{\abstractlist}{}
+\renewcommand{\abstract}[1]{\gdef\abstractlist{{\color{saimfg} #1}}}
 \newcommand{\email}[1]{\href{mailto:#1}{\texttt{#1}}}
 
 \renewcommand\date[1]{\metadata[Date]{#1}}
@@ -138,24 +129,36 @@
 
 % Titlebox %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-
 \newcommand{\mymaketitle}{%
-  \tcbset{enhanced,frame hidden}
-  \tcbset{left=0.5cm}
-  \tcbset{right=0.5cm}
-  \tcbset{top=0.5cm}
-  \tcbset{bottom=0.5cm}
-  \tcbset{arc=10pt}
-  \tcbset{colback=saimbg}
-  \tcbset{before skip=0pt}
-  \tcbset{grow to left by=1.5pt}
-  \tcbset{grow to right by=1.5pt}
-  \tcbset{overlay={\node[
-    anchor=south east,
-    at= (frame.south east),
-    xshift=-0.5cm,
-    yshift=0.2cm] {\includegraphics[width=2cm]{assets/saim_logo.png}};}}
-  %
+  \tcbset{
+    enhanced,
+    frame hidden,
+    colback=saimbg,
+    arc=10pt,
+    left=0.5cm,
+    right=0.5cm,
+    top=0.5cm,
+    bottom=0.5cm,
+    before skip=0pt,
+    after skip=0pt,
+    grow to left by=1.5pt,
+    grow to right by=1.5pt,
+    breakable,
+    pad at break*=1mm,
+    segmentation hidden,
+    overlay unbroken={\node[
+      anchor=south east,
+      at=(frame.south east),
+      xshift=-0.5cm,
+      yshift=0.2cm] {\includegraphics[width=2cm]{assets/saim_logo.png}};},
+    overlay first={},
+    overlay middle={},
+    overlay last={\node[
+      anchor=south east,
+      at=(frame.south east),
+      xshift=-0.5cm,
+      yshift=0.2cm] {\includegraphics[width=2cm]{assets/saim_logo.png}};}
+  }
   \begin{tcolorbox}
     \setlength{\parindent}{0cm}
     \setlength{\parskip}{0.5cm}
@@ -163,25 +166,18 @@
       \setlength{\parskip}{0cm}
       \raggedright
       \nohyphens
-      %
       {
         \setstretch{1.618}
         \titlelist\par
       }
       \vskip 0.2cm
-      %
       \authorlist\par
       \vskip 0.2cm
-      %
       \affiliationlist\par
-      %
       \contributionlist\par
     }
-    %
     \abstractlist\par
-    %
     \vskip 0.5cm
-    %
     {
       \setlength{\parskip}{0cm}
       \ifdefempty{\metadatalist}{\vspace*{0.65cm}}{\metadatalist\par}
@@ -191,15 +187,15 @@
   \FloatBarrier
 }
 
-\if@twocolumn%
-\renewcommand{\maketitle}{
-\twocolumn[%
+\if@twocolumn
+\renewcommand{\maketitle}{%
+  \onecolumn
   \mymaketitle
   \vskip 0.38cm
-]
-}%
-\else%
-\renewcommand{\maketitle}{
+  \twocolumn
+}
+\else
+\renewcommand{\maketitle}{%
   \mymaketitle
-}%
+}
 \fi

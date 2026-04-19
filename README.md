@@ -1,151 +1,129 @@
 # BayesBreak
 
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![CI](https://github.com/osolari/bayesbreak/actions/workflows/ci.yml/badge.svg)](https://github.com/osolari/bayesbreak/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 
-BayesBreak implements **Bayesian piecewise-constant regression** (segmentation) via
-dynamic programming. The package is **distribution-aware** through a small set
-of conjugate likelihood families (Gaussian, Poisson, Binomial, Bernoulli, and
-Beta-valued fractional Beta--Binomial).
+**Exact Bayesian segmentation with a scikit-learn compatible API.**
 
-The public API follows scikit-learn conventions (`fit`, `predict`, `score`) and
-exposes additional posterior objects such as boundary posteriors and Bayesian
-regression curves. It also supports:
+BayesBreak turns the two-layer design of the accompanying report into a small,
+reusable library:
 
-- Per-observation `sample_weight` across all conjugate families (e.g., to model
-  heteroscedasticity, exposures, or missingness via zero weights).
-- A multivariate wrapper that performs **shared-boundary** segmentation for
-  vector-valued observations (independent channels under a shared partition).
-- A grouped interface for **group-membership scoring** and MAP signal evaluation.
+- **Block evidence** — a family-specific integrated single-segment marginal
+  likelihood `A^0_{ij}` (Gaussian, Poisson, Binomial, Bernoulli, Beta,
+  Beta-observation, Logistic-Normal).
+- **Dynamic programming** — a distribution-agnostic engine that delivers, from
+  that block matrix alone, the marginal evidence `p(y)`, the segment-count
+  posterior `P(k|y)`, boundary-event marginals, the joint MAP segmentation
+  (max-sum + backtracking), and the Bayesian regression curve.
 
-## Installation
+Every estimator inherits from `sklearn.base.BaseEstimator` and can live inside
+an `sklearn.pipeline.Pipeline`.
+
+## Install
 
 ```bash
-pip install bayesbreak
+pip install bayesbreak                # runtime + core deps
+pip install "bayesbreak[plots]"       # + matplotlib/seaborn
+pip install "bayesbreak[datasets]"    # + real-data loaders
+pip install "bayesbreak[dev]"         # + test/lint/type toolchain
 ```
 
-For development:
+Editable dev setup:
 
 ```bash
-git clone https://github.com/osolari/bayesbreak.git
-cd bayesbreak
-pip install -e ".[dev]"
-```
-
-Or using conda for environment management:
-
-```bash
-bash create_env.sh
-conda activate bayesbreak
+bash create_env.sh                    # conda env "bayesbreak" with Python 3.11
+bash create_env.sh --venv             # or a plain python -m venv
 ```
 
 ## Quickstart
 
 ```python
 import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from bayesbreak import BayesBreakGaussian
 
-# synthetic piecewise-constant signal
 rng = np.random.default_rng(0)
-y = np.r_[rng.normal(0.0, 0.4, 80), rng.normal(2.0, 0.4, 60), rng.normal(-1.0, 0.4, 70)]
+n = 200
+X = np.arange(n).reshape(-1, 1)
+y = np.r_[rng.normal(0, 0.3, 80), rng.normal(2, 0.3, 60), rng.normal(-1, 0.3, 60)]
 
-m = BayesBreakGaussian(k_max=15, regression_curve="mix_k")
-m.fit(y)
+pipe = Pipeline([("scale", StandardScaler()), ("seg", BayesBreakGaussian(k_max=10))])
+pipe.fit(X, y)
 
-print("k*:", m.get_segment_count())
-print("boundaries:", m.get_boundaries())
-
-pc = m.predict()                   # MAP-like piecewise-constant estimate
-brc = m.get_regression_curve()     # optional Bayesian regression curve
+seg = pipe.named_steps["seg"]
+print("MAP segment count:", seg.k_map_)
+print("MAP boundaries    :", seg.map_boundaries_)
+print("log p(y)          :", seg.log_evidence_)
+print("predictive score  :", pipe.score(X, y))  # mean posterior-predictive log-density
 ```
 
-## Sample weights
+Key fitted attributes (trailing underscore):
 
-All families accept `sample_weight` in `fit`. A common pattern is to encode
-heteroscedasticity (larger weight = higher confidence) or missingness (weight
-0.0) without changing array shapes.
+| Attribute | Meaning |
+|---|---|
+| `k_map_` | Posterior-mode segment count |
+| `map_boundaries_` | Joint MAP boundary vector `(0, t_1, …, n)` |
+| `map_segment_means_` | Posterior mean per MAP segment |
+| `k_posterior_` | `P(k \| y)` as an array of length `k_max` |
+| `boundary_marginals_` | `P(b_i=1 \| y)` for interior indices |
+| `log_evidence_` | `log p(y)` of the training sequence |
+| `bayes_curve_mean_` | Posterior-mean latent signal (when `regression_curve != "none"`) |
+
+## Supported families
 
 ```python
-import numpy as np
-from bayesbreak import BayesBreakGaussian
-
-y = np.array([0.0, 0.1, 4.0, 4.2, 4.1])
-w = np.array([1.0, 1.0, 0.2, 0.2, 0.2])  # downweight the high segment
-
-m = BayesBreakGaussian(k_max=10)
-m.fit(y, sample_weight=w)
-print(m.get_boundaries())
+from bayesbreak import (
+    BayesBreakGaussian,        # Normal-Normal (weighted)
+    BayesBreakPoisson,         # Poisson-Gamma (exposure)
+    BayesBreakBinomial,        # Beta-Binomial
+    BayesBreakBernoulli,       # Beta-Bernoulli
+    BayesBreakBeta,            # fractional Beta-Binomial for y in (0,1)
+    BayesBreakBetaObs,         # Beta likelihood + Beta prior (1-D quadrature)
+    BayesBreakLogisticNormal,  # Bernoulli + Normal prior on log-odds
+    make_bayesbreak,           # factory: make_bayesbreak("poisson", k_max=20)
+)
 ```
 
-## Bernoulli (Beta--Bernoulli)
+## Multivariate and hierarchical wrappers
 
-For binary sequences use `BayesBreakBernoulli`:
+- `SharedBoundaryMultivariateSegmenter` — single segmentation across channels.
+- `IndependentMultivariateSegmenter` — per-channel fit.
+- `BayesBreakGroupedClassifier` — supervised group classification with
+  group-specific block families (`predict_proba` returns `(n_sequences, G)`).
+- `BayesBreakMixtureClassifier` — latent-group EM mixture (see §4.7 of the
+  report for the template-mixture objective).
 
-```python
-import numpy as np
-from bayesbreak import BayesBreakBernoulli
+## How it maps to the paper
 
-y = np.r_[np.zeros(40), np.ones(40)]
-m = BayesBreakBernoulli(k_max=10)
-m.fit(y)
-print(m.get_boundaries())
-```
-
-## Multivariate wrapper
-
-Use `BayesBreakMultivariate` to segment vector-valued observations with shared
-boundaries under an independent-channel likelihood:
-
-```python
-import numpy as np
-from bayesbreak import BayesBreakGaussian, BayesBreakMultivariate
-
-rng = np.random.default_rng(0)
-n = 120
-y = np.c_[np.r_[np.zeros(60), np.ones(60)], np.r_[np.zeros(60), 2*np.ones(60)]]
-y = y + 0.2 * rng.standard_normal(y.shape)
-
-mv = BayesBreakMultivariate(BayesBreakGaussian(k_max=15))
-mv.fit(y)
-print(mv.get_boundaries())
-```
-
-## Group membership scoring and MAP signal evaluation
-
-`BayesBreakGrouped` trains group-specific hyperparameters from labeled
-sequences, scores new sequences by group marginal likelihood, and can produce
-group-conditional MAP fits:
-
-```python
-import numpy as np
-from bayesbreak import BayesBreakGaussian, BayesBreakGrouped
-
-rng = np.random.default_rng(0)
-X = [rng.normal(loc=-2.0, scale=0.5, size=80), rng.normal(loc=+2.0, scale=0.5, size=80)]
-y = np.array(["A", "B"], dtype=object)
-
-clf = BayesBreakGrouped(BayesBreakGaussian(k_max=10))
-clf.fit(X, y)
-
-test = rng.normal(loc=+2.0, scale=0.5, size=80)
-print("p(g|y):", clf.predict_proba([test])[0])
-print("pred:", clf.predict([test])[0])
-fit = clf.map_signal([test])[0]
-```
+| Paper equation / theorem | Implementation |
+|---|---|
+| Block evidence `A^0_{ij}` | `_compute_block_evidence` per family in `bayesbreak.families` |
+| Forward / backward sum-product (§4.3) | `bayesbreak.dp.forward_backward` |
+| `P(k \| y)`, `log p(y)` | `bayesbreak.dp.posterior_over_k` |
+| Boundary-event marginals | `bayesbreak.dp.boundary_event_marginals` |
+| Joint MAP via max-sum + backtracking (§4.4) | `bayesbreak.dp.max_sum_segmentation` |
+| Bayes regression curve (§4.3) | `bayesbreak.dp.bayes_regression_curve_{fixed,mixed}_k` |
+| Posterior-predictive (§8, Prop. `ef-predictive`) | `bayesbreak.prediction.posterior_predictive_logpdf` |
+| Latent-group EM (§4.7) | `bayesbreak.mixture.BayesBreakMixtureClassifier` |
+| Non-conjugate block approximations (§5) | `BayesBreakLogisticNormal(approx=...)`, `BayesBreakBetaObs` |
 
 ## Reproducing figures and tables
 
-All scripts for figures and tables live under `scripts/`:
-
-- `scripts/figures/` produces PNG/PDF figures into `artifacts/figures/`.
-- `scripts/tables/` produces CSV/Markdown tables into `artifacts/tables/`.
-
-Run everything:
-
 ```bash
-python scripts/make_all_artifacts.py
+bayesbreak reproduce figures   # runs scripts/figures/*.py → docs/report/{figures,tables}
+bayesbreak reproduce tables    # runs scripts/tables/*.py  → docs/report/{figures,tables}
+bayesbreak reproduce all
 ```
 
-## Documentation
+## Citing
 
-Markdown documentation intended for MkDocs lives in `docs/`.
+See [`CITATION.cff`](CITATION.cff) and `docs/report/bayesbreak.pdf`.
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md). The test suite (`pytest tests/`)
+includes conceptual-correctness tests — brute-force DP comparisons,
+closed-form predictive checks, EM convergence, and the full scikit-learn
+contract.

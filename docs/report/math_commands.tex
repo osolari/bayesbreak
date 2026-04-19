@@ -31,8 +31,8 @@
 \def\twosecrefs#1#2{sections \ref{#1} and \ref{#2}}
 % Reference to three sections.
 \def\secrefs#1#2#3{sections \ref{#1}, \ref{#2} and \ref{#3}}
-% Reference to an equation, lower-case.
-\def\eqref#1{equation~\ref{#1}}
+% Reference to an equation, lower-case. (D-E4: amsmath's \eqref preferred; override removed.)
+% \def\eqref#1{equation~\ref{#1}}
 % Reference to an equation, upper case
 \def\Eqref#1{Equation~\ref{#1}}
 % A raw reference to an equation---avoid using if possible
@@ -526,7 +526,8 @@
 \def\Secref#1{Section~\ref{#1}}
 \def\twosecrefs#1#2{sections \ref{#1} and \ref{#2}}
 \def\secrefs#1#2#3{sections \ref{#1}, \ref{#2} and \ref{#3}}
-\def\eqref#1{equation~\ref{#1}}
+% (D-E4: \eqref override removed; amsmath's \eqref handles this.)
+% \def\eqref#1{equation~\ref{#1}}
 \def\Eqref#1{Equation~\ref{#1}}
 \def\plaineqref#1{\ref{#1}}
 \def\chapref#1{chapter~\ref{#1}}

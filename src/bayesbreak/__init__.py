@@ -1,25 +1,25 @@
-"""BayesBreak: Bayesian piecewise-constant regression via dynamic programming.
+"""BayesBreak — exact Bayesian segmentation via block evidence + DP.
 
-Public API
-----------
-The package exposes a distribution-agnostic base class
-:class:`bayesbreak.base.BayesBreakBase` and several conjugate families:
+The public API follows strict scikit-learn conventions:
 
-- :class:`bayesbreak.families.gaussian.BayesBreakGaussian`
-- :class:`bayesbreak.families.poisson.BayesBreakPoisson`
-- :class:`bayesbreak.families.binomial.BayesBreakBinomial`
-- :class:`bayesbreak.families.beta.BayesBreakBeta`
-- :class:`bayesbreak.families.bernoulli.BayesBreakBernoulli`
+- Segmenters inherit :class:`sklearn.base.BaseEstimator` and
+  :class:`sklearn.base.RegressorMixin`. ``fit(X, y)``, ``predict(X)``,
+  ``score(X, y)``, ``transform(X)``.
+- Classifier-style wrappers (known / latent groups) inherit
+  :class:`sklearn.base.ClassifierMixin` and expose ``predict_proba``.
+- All constructor arguments are stored untouched; validation happens in
+  ``fit``.
 
-For convenience and backward compatibility, :class:`~bayesbreak.BayesBreak`
-aliases :class:`~bayesbreak.families.gaussian.BayesBreakGaussian`.
+See the accompanying report (``docs/report/bayesbreak.pdf``) for the
+mathematical background; this module is the reference implementation.
 """
 
 from __future__ import annotations
 
 from typing import Any
 
-from .base import BayesBreakBase
+from ._version import __version__  # noqa: F401
+from .base import BayesBreakSegmenter
 from .families import (
     BayesBreakBernoulli,
     BayesBreakBeta,
@@ -29,65 +29,56 @@ from .families import (
     BayesBreakLogisticNormal,
     BayesBreakPoisson,
 )
-from .groups import BayesBreakGrouped
-from .mixture import BayesBreakMixture
-from .multivariate import BayesBreakMultivariate
+from .groups import BayesBreakGroupedClassifier
+from .mixture import BayesBreakMixtureClassifier
+from .multivariate import (
+    IndependentMultivariateSegmenter,
+    SharedBoundaryMultivariateSegmenter,
+)
 
-# Backward-compatible alias used in earlier drafts.
-BayesBreak = BayesBreakGaussian
+_FAMILY_REGISTRY = {
+    ("gaussian", "normal"): BayesBreakGaussian,
+    ("poisson", "count"): BayesBreakPoisson,
+    ("binomial", "beta-binomial"): BayesBreakBinomial,
+    ("beta", "fractional"): BayesBreakBeta,
+    ("beta-obs", "beta_obs", "betaobservation", "beta-observation"): BayesBreakBetaObs,
+    ("bernoulli", "binary"): BayesBreakBernoulli,
+    (
+        "logistic-normal",
+        "logistic_normal",
+        "logit-normal",
+        "logit_normal",
+    ): BayesBreakLogisticNormal,
+}
 
 
-def make_bayesbreak(family: str, **kwargs: Any) -> BayesBreakBase:
-    """Create a BayesBreak estimator by family name.
+def make_bayesbreak(family: str, **kwargs: Any) -> BayesBreakSegmenter:
+    """Instantiate a BayesBreak segmenter by family name.
 
     Parameters
     ----------
-    family:
-        One of
-        ``{'gaussian', 'poisson', 'binomial', 'beta', 'bernoulli', 'logistic-normal', 'beta-obs'}``.
-
-    **kwargs:
-        Passed to the corresponding estimator constructor.
-
-    Returns
-    -------
-    BayesBreakBase
-        Instantiated estimator.
+    family : str
+        One of ``{"gaussian", "poisson", "binomial", "beta", "beta-obs",
+        "bernoulli", "logistic-normal"}`` (plus aliases; see source).
+    **kwargs
+        Forwarded to the estimator constructor.
 
     Raises
     ------
     ValueError
-        If ``family`` is unrecognized.
+        If the family name is unknown.
     """
 
     key = family.strip().lower()
-    if key in {"gaussian", "normal"}:
-        return BayesBreakGaussian(**kwargs)
-    if key in {"poisson", "count"}:
-        return BayesBreakPoisson(**kwargs)
-    if key in {"binomial", "beta-binomial"}:
-        return BayesBreakBinomial(**kwargs)
-    if key in {"beta", "fractional"}:
-        return BayesBreakBeta(**kwargs)
-    if key in {"beta-obs", "beta_obs", "betaobservation", "beta-observation"}:
-        return BayesBreakBetaObs(**kwargs)
-    if key in {"bernoulli", "binary", "logistic"}:
-        # "logistic" is accepted as a common shorthand for binary sequences.
-        return BayesBreakBernoulli(**kwargs)
-    if key in {"logistic-normal", "logistic_normal", "logit-normal", "logit_normal"}:
-        return BayesBreakLogisticNormal(**kwargs)
-    raise ValueError(
-        "Unknown family=%r. Expected one of: gaussian, poisson, binomial, beta, beta-obs, "
-        "bernoulli, logistic-normal." % (family,)
-    )
-
-
-# Alias retained for readability in user code and unit tests.
-make_model = make_bayesbreak
+    for aliases, cls in _FAMILY_REGISTRY.items():
+        if key in aliases:
+            return cls(**kwargs)
+    valid = sorted({a for aliases in _FAMILY_REGISTRY for a in aliases})
+    raise ValueError(f"Unknown family={family!r}. Valid families: {valid}")
 
 
 __all__ = [
-    "BayesBreakBase",
+    "BayesBreakSegmenter",
     "BayesBreakGaussian",
     "BayesBreakPoisson",
     "BayesBreakBinomial",
@@ -95,10 +86,10 @@ __all__ = [
     "BayesBreakBetaObs",
     "BayesBreakBernoulli",
     "BayesBreakLogisticNormal",
-    "BayesBreakMultivariate",
-    "BayesBreakGrouped",
-    "BayesBreakMixture",
-    "BayesBreak",
+    "SharedBoundaryMultivariateSegmenter",
+    "IndependentMultivariateSegmenter",
+    "BayesBreakGroupedClassifier",
+    "BayesBreakMixtureClassifier",
     "make_bayesbreak",
-    "make_model",
+    "__version__",
 ]

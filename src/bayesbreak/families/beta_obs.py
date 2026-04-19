@@ -19,15 +19,14 @@ segment-evidence interface.
 from __future__ import annotations
 
 import math
-from typing import Dict, Optional, Tuple
 
 import numpy as np
 
-from ..base import BayesBreakBase
+from ..base import BayesBreakSegmenter
 from ..utils import gammaln, logsumexp
 
 
-def _legendre_nodes_weights(n: int) -> Tuple[np.ndarray, np.ndarray]:
+def _legendre_nodes_weights(n: int) -> tuple[np.ndarray, np.ndarray]:
     """Return Gauss--Legendre nodes/weights on (0, 1)."""
     if n < 2:
         raise ValueError("Need at least 2 quadrature points.")
@@ -47,7 +46,7 @@ def _betaobs_block_quadrature(
     beta0: float,
     phi: float,
     n_quad: int,
-) -> Tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray]:
     """Compute (logA0, mu_post_mean) for many blocks via Gauss--Legendre quadrature.
 
     Each block is summarized by:
@@ -110,7 +109,7 @@ def _betaobs_block_quadrature(
     return logA0, mu_mean
 
 
-class BayesBreakBetaObs(BayesBreakBase):
+class BayesBreakBetaObs(BayesBreakSegmenter):
     """Beta observations with fixed precision and Beta prior on the segment mean.
 
     Parameters
@@ -137,9 +136,9 @@ class BayesBreakBetaObs(BayesBreakBase):
         *,
         phi: float = 50.0,
         quadrature_points: int = 32,
-        quad_points: Optional[int] = None,
-        alpha: Optional[float] = None,
-        beta: Optional[float] = None,
+        quad_points: int | None = None,
+        alpha: float | None = None,
+        beta: float | None = None,
     ):
         super().__init__(
             k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
@@ -156,9 +155,9 @@ class BayesBreakBetaObs(BayesBreakBase):
         self.beta = beta
 
     # ---- hyperparameters (EB) ----
-    def _estimate_global_params(
-        self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-    ) -> Dict[str, float]:
+    def _estimate_hyperparameters(
+        self, y: np.ndarray, sample_weight: np.ndarray | None = None
+    ) -> dict[str, float]:
         if (not self.estimate_hyper) and (self.alpha is not None) and (self.beta is not None):
             return {"alpha": float(self.alpha), "beta": float(self.beta), "phi": float(self.phi)}
 
@@ -186,12 +185,12 @@ class BayesBreakBetaObs(BayesBreakBase):
         return {"alpha": float(alpha0), "beta": float(beta0), "phi": float(self.phi)}
 
     # ---- segment stats via quadrature ----
-    def _compute_single_segment_stats(
+    def _compute_block_evidence(
         self,
         y: np.ndarray,
-        hyper: Dict[str, float],
-        sample_weight: Optional[np.ndarray] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        hyper: dict[str, float],
+        sample_weight: np.ndarray | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
         y = np.asarray(y, dtype=float)
         if np.any((y <= 0.0) | (y >= 1.0)):
             raise ValueError("BetaObs requires y in (0,1) (open interval).")
@@ -246,8 +245,8 @@ class BayesBreakBetaObs(BayesBreakBase):
         a: int,
         b: int,
         y: np.ndarray,
-        hyper: Dict[str, float],
-        sample_weight: Optional[np.ndarray] = None,
+        hyper: dict[str, float],
+        sample_weight: np.ndarray | None = None,
     ) -> float:
         y = np.asarray(y, dtype=float)
         alpha0 = float(hyper["alpha"])

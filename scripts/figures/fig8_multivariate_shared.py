@@ -48,8 +48,8 @@ Interpretation
 
 Outputs
 -------
-- results/fig8_multivariate_shared.png
-- results/fig8_multivariate_shared.pdf
+- docs/report/figures/fig8_multivariate_shared.png
+- docs/report/figures/fig8_multivariate_shared.pdf
 
 Usage
 -----
@@ -76,11 +76,11 @@ from _style import (  # noqa: E402
     setup_style,
 )
 
-from bayesbreak import BayesBreakGaussian, BayesBreakMultivariate  # noqa: E402
+from bayesbreak import BayesBreakGaussian, SharedBoundaryMultivariateSegmenter  # noqa: E402
 
 
 def main(outdir: Path, seed: int) -> None:
-    setup_style(font_scale=1.0, style="paper")
+    setup_style(font_scale=1.0)
     rng = np.random.default_rng(seed)
 
     n = 200
@@ -107,11 +107,15 @@ def main(outdir: Path, seed: int) -> None:
 
     # Fit shared-boundary model.
     base = BayesBreakGaussian(k_max=k_max)
-    mv_shared = BayesBreakMultivariate(base_estimator=base, combine="shared", k_max=k_max).fit(Y)
+    mv_shared = SharedBoundaryMultivariateSegmenter(base_estimator=base, k_max=k_max).fit(
+        np.arange(len(Y)).reshape(-1, 1), Y
+    )
 
     # Fit independent per-channel models.
-    mv_indep = BayesBreakMultivariate(base_estimator=base, combine="independent", k_max=k_max).fit(
-        Y
+    from bayesbreak import IndependentMultivariateSegmenter
+
+    mv_indep = IndependentMultivariateSegmenter(base_estimator=base, k_max=k_max).fit(
+        np.arange(len(Y)).reshape(-1, 1), Y
     )
 
     # ---- Plot ----
@@ -145,10 +149,10 @@ def main(outdir: Path, seed: int) -> None:
         ax.scatter(t, Y[:, c], s=6, alpha=0.3, color=COLORS["grey"], edgecolors="none", zorder=1)
         ax.plot(mu_true[:, c], lw=1.5, ls="--", color=COLORS["black"], zorder=2, label="True")
         # Shared fit
-        ax.plot(mv_shared.pc_fit_[:, c], lw=2, color=COLORS["blue"], label="Shared", zorder=3)
+        ax.plot(mv_shared.map_curve_[:, c], lw=2, color=COLORS["blue"], label="Shared", zorder=3)
         # Independent fit
         ax.plot(
-            mv_indep.pc_fit_[:, c],
+            mv_indep.map_curve_[:, c],
             lw=1.5,
             color=COLORS["red"],
             ls=":",
@@ -170,18 +174,18 @@ def main(outdir: Path, seed: int) -> None:
     ax.fill_between(
         x_b,
         0,
-        mv_shared.boundary_post_,
+        mv_shared.boundary_marginals_,
         alpha=0.35,
         color=COLORS["blue"],
         linewidth=0,
     )
-    ax.plot(x_b, mv_shared.boundary_post_, lw=2, color=COLORS["blue"], label="Shared")
+    ax.plot(x_b, mv_shared.boundary_marginals_, lw=2, color=COLORS["blue"], label="Shared")
 
     # Independent channel boundary posteriors
     ch_colors = [COLORS["orange"], COLORS["green"], COLORS["purple"]]
     for c in range(d):
         est_c = mv_indep.channel_estimators_[c]
-        d1_c = est_c.get_boundary_posteriors()
+        d1_c = est_c.boundary_marginals_
         ax.plot(x_b, d1_c, lw=1.2, color=ch_colors[c], alpha=0.7, label=f"Ch {c + 1} indep.")
 
     for tb in true_boundaries[1:-1]:
@@ -208,7 +212,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
     main(outdir=args.outdir, seed=args.seed)

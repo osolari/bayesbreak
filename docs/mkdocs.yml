@@ -1,16 +1,32 @@
 site_name: BayesBreak
-repo_name: bayesbreak
+site_description: Exact Bayesian segmentation with a scikit-learn compatible API.
+repo_url: https://github.com/osolari/bayesbreak
+repo_name: osolari/bayesbreak
+
+theme:
+  name: material
+  features:
+    - navigation.instant
+    - navigation.sections
+    - navigation.top
+    - content.code.copy
+    - toc.integrate
+
 nav:
   - Home: index.md
   - Quickstart: quickstart.md
   - Model families: models.md
-  - API: api.md
+  - API reference: api.md
   - Math notes: math.md
   - Reproducibility: reproducibility.md
 
-theme:
-  name: material
 markdown_extensions:
   - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.snippets
   - toc:
       permalink: true
+
+plugins:
+  - search

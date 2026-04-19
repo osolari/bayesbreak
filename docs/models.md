@@ -1,55 +1,61 @@
 # Model families
 
-BayesBreak is implemented as a distribution-agnostic dynamic program in
-`BayesBreakBase`. Model families subclass the base and provide closed-form
-segment integrals.
+Every family subclasses `BayesBreakSegmenter` and implements three hooks:
+`_estimate_hyperparameters`, `_compute_block_evidence`, and
+`_segment_posterior_mean` (plus `posterior_predictive_logpdf_block` for the
+prediction layer).
 
-All families share the public API:
+All families expose the full scikit-learn contract (`fit`, `predict`, `score`,
+`transform`) and the same posterior attributes.
 
-- `fit(X, y=None)`
-- `predict(X=None)`
-- `score(X=None, y=None)` (log-evidence)
+## Conjugate families
 
-and expose the same posterior objects:
+### `BayesBreakGaussian`
 
-- `get_segment_count()` (selected `k`)
-- `get_boundaries()`
-- `get_boundary_posteriors()`
-- `get_regression_curve()`
+Weighted Normal-Normal: `y_i | μ_q ~ N(μ_q, σ² / w_i)`, `μ_q ~ N(ν, ρ²)`.
 
-## Gaussian (`BayesBreakGaussian`)
+Hyperparameters: `nu`, `rho2`, `sigma2`. With `estimate_hyper=True` the code
+uses moment-type estimators (adjacent covariance for `rho2` by default).
 
-- Likelihood: Normal with segment mean
-- Prior: Normal prior on segment mean
+### `BayesBreakPoisson`
 
-Hyperparameters:
+`y_i | λ_q ~ Poisson(λ_q w_i)`, `λ_q ~ Gamma(α, β)`.
 
-- `nu`: prior mean
-- `rho2`: prior variance of segment means
-- `sigma2`: observation variance
+Hyperparameters: `alpha`, `beta` (shape, rate).
 
-When `estimate_hyper=True`, these are estimated via moment-type estimators; user-provided values override estimates.
+### `BayesBreakBinomial`
 
-## Poisson (`BayesBreakPoisson`)
+`y_i | p_q ~ Binomial(n_i, p_q)`, `p_q ~ Beta(α, β)`.
 
-- Likelihood: Poisson with rate `λ`
-- Prior: Gamma prior on `λ` (shape/rate)
+Hyperparameters: `alpha`, `beta`, `n_trials` (scalar or array).
 
-Hyperparameters: `alpha` (shape), `beta` (rate).
+### `BayesBreakBernoulli`
 
-## Binomial (`BayesBreakBinomial`)
+Special case of Binomial with `n_trials ≡ 1`.
 
-- Likelihood: Binomial with trials `n_i` and success probability `p`
-- Prior: Beta prior on `p`
+### `BayesBreakBeta`
 
-Hyperparameters: `alpha`, `beta`.
+Fractional Beta-Binomial on `y ∈ (0, 1)` — maps each `y_i` to pseudo-counts
+`(κ y_i, κ (1 - y_i))` and reuses Beta-Binomial conjugacy.
 
-`n_trials` can be a scalar (same trials per observation) or an array-like of length `n`.
+Hyperparameters: `alpha`, `beta`, `concentration` (`κ`).
 
-## Beta-valued (`BayesBreakBeta`)
+## Non-conjugate families
 
-Targets real-valued `y ∈ (0,1)` by introducing pseudo-counts using a concentration parameter `kappa`.
+### `BayesBreakBetaObs`
 
-Hyperparameters: `alpha`, `beta`, plus `concentration=kappa`.
+`y_i | μ_q ~ Beta(φ μ_q, φ (1 - μ_q))`, `μ_q ~ Beta(α, β)`. The segment-mean
+integral is computed via 1-D Gauss-Legendre quadrature on `(0, 1)`.
 
-This family is useful when the data represent noisy rates or proportions.
+### `BayesBreakLogisticNormal`
+
+`y_i | η_q ~ Bernoulli(sigmoid(η_q))`, `η_q ~ N(ν, ρ²)`. The segment-log-odds
+integral is not closed-form; pick one of:
+
+- `approx="laplace"` — Newton mode + Gaussian correction.
+- `approx="jj"` — Jaakkola-Jordan quadratic bound.
+- `approx="pg_vb"` — Pólya-Gamma variational Bayes (equivalent formulation).
+- `approx="ep"` — expectation propagation (Gauss-Hermite moment matching).
+- `approx="quadrature"` — high-accuracy Gauss-Hermite reference.
+
+See §5 of the report for the stability bound `|Δ log odds| ≤ (k + k') ε`.

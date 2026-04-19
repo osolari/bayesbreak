@@ -37,8 +37,8 @@ proportion in each bin.
 
 Outputs
 -------
-- results/fig3_boundary_calibration.png
-- results/fig3_boundary_calibration.pdf
+- docs/report/figures/fig3_boundary_calibration.png
+- docs/report/figures/fig3_boundary_calibration.pdf
 
 Usage
 -----
@@ -150,8 +150,8 @@ def main(
             mu[a:c] = float(mus[q])
 
         y = mu + sigma * rng.standard_normal(n)
-        m = BayesBreakGaussian(k_max=k_max).fit(y)
-        d1 = m.get_boundary_posteriors()  # length n-1, for i=1..n-1
+        m = BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y)).reshape(-1, 1), y)
+        d1 = m.boundary_marginals_  # length n-1, for i=1..n-1
 
         true_set = set(b[1:-1])  # interior true boundaries
         for i in range(1, n):
@@ -183,7 +183,7 @@ def main(
     outdir.mkdir(parents=True, exist_ok=True)
 
     # Setup publication style
-    setup_style(font_scale=1.1, style="paper")
+    setup_style(font_scale=1.1)
 
     figsize = get_figsize("single", aspect=1.0)
     fig, ax = plt.subplots(1, 1, figsize=figsize)
@@ -250,7 +250,7 @@ def main(
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=120)
     ap.add_argument("--n-seq", type=int, default=80)

@@ -23,9 +23,9 @@ Because the core DP algorithm is :math:`O(k_{\max} \cdot n^2)`:
 
 Outputs
 -------
-- results/table1_runtime_scaling.csv
-- results/table1_runtime_scaling.md
-- results/table1_runtime_scaling.tex
+- docs/report/tables/table1_runtime_scaling.csv
+- docs/report/tables/table1_runtime_scaling.md
+- docs/report/tables/table1_runtime_scaling.tex
 
 Usage
 -----
@@ -54,7 +54,7 @@ def _fit_once(n: int, k_max: int, seed: int) -> float:
     y = mu + 0.25 * rng.standard_normal(n)
 
     t0 = time.perf_counter()
-    BayesBreakGaussian(k_max=k_max).fit(y)
+    BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y)).reshape(-1, 1), y)
     t1 = time.perf_counter()
     return t1 - t0
 
@@ -101,7 +101,7 @@ def main(outdir: Path, k_max: int, repeats: int, seed: int) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outdir", type=Path, default=Path("results"))
+    parser.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
     parser.add_argument("--k-max", type=int, default=20)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)

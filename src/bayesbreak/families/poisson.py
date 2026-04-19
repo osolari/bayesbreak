@@ -1,55 +1,25 @@
-"""Poisson BayesBreak family.
-
-Model
------
-Within each segment ``q`` the observations are i.i.d. Poisson:
-
-.. math::
-
-    y_i \\mid \\lambda_q \\sim \\mathrm{Poisson}(\\lambda_q),\\quad
-    \\lambda_q \\sim \\mathrm{Gamma}(\alpha,\beta).
-
-We use the (shape, rate) Gamma parameterization.
-
-The segment marginal likelihood and first moment are available in closed form.
-"""
+"""Poisson BayesBreak family (Poisson--Gamma conjugate, exposure-weighted)."""
 
 from __future__ import annotations
 
 import math
-from typing import Dict, Literal, Optional, Tuple
+from typing import Literal
 
 import numpy as np
 
-from bayesbreak.base import BayesBreakBase
-from bayesbreak.utils import gammaln
+from ..base import BayesBreakSegmenter
+from ..utils import gammaln
 
 
-class BayesBreakPoisson(BayesBreakBase):
-    """Bayesian piecewise-constant Poisson regression.
+class BayesBreakPoisson(BayesBreakSegmenter):
+    r"""Piecewise-constant Poisson segmentation with a Gamma prior on the rate.
 
-    Parameters
-    ----------
-    k_max:
-        Maximum number of segments.
-    estimate_hyper:
-        If ``True`` (default), estimate ``alpha`` and ``beta`` using a simple
-        method-of-moments empirical Bayes procedure. If ``False``, the user must
-        provide both ``alpha`` and ``beta``.
-    regression_curve:
-        ``"none"`` (default), ``"fixed_k"`` or ``"mix_k"``.
-    alpha, beta:
-        Gamma prior parameters (shape, rate).
-
-    Notes
+    Model
     -----
-    The empirical Bayes estimator uses the Gamma--Poisson relationship
 
     .. math::
-
-        \\mathbb{E}[Y] = m,\\qquad \\mathrm{Var}(Y) = m + m^2/\alpha.
-
-    which implies ``alpha = m^2/(v - m)`` when ``v > m``.
+        y_i \mid \lambda_q \sim \mathrm{Poisson}(\lambda_q w_i), \quad
+        \lambda_q \sim \mathrm{Gamma}(\alpha, \beta).
     """
 
     def __init__(
@@ -58,8 +28,8 @@ class BayesBreakPoisson(BayesBreakBase):
         estimate_hyper: bool = True,
         regression_curve: Literal["none", "fixed_k", "mix_k"] = "none",
         *,
-        alpha: Optional[float] = None,
-        beta: Optional[float] = None,
+        alpha: float | None = None,
+        beta: float | None = None,
     ):
         super().__init__(
             k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
@@ -67,7 +37,9 @@ class BayesBreakPoisson(BayesBreakBase):
         self.alpha = alpha
         self.beta = beta
 
-    def _estimate_global_params(self, y: np.ndarray, sample_weight: np.ndarray) -> Dict[str, float]:
+    def _estimate_hyperparameters(
+        self, y: np.ndarray, sample_weight: np.ndarray
+    ) -> dict[str, float]:
         if not self.estimate_hyper:
             if self.alpha is None or self.beta is None:
                 raise ValueError("estimate_hyper=False requires alpha and beta to be set.")
@@ -76,7 +48,6 @@ class BayesBreakPoisson(BayesBreakBase):
         w = sample_weight
         w_sum = float(np.sum(w))
         if w_sum <= 0:
-            # Degenerate all-zero weights: fall back to unweighted estimates.
             w = np.ones_like(y, dtype=float)
             w_sum = float(y.size)
 
@@ -86,49 +57,39 @@ class BayesBreakPoisson(BayesBreakBase):
         if v > m + 1e-12:
             alpha_hat = max(1e-8, m * m / (v - m))
         else:
-            alpha_hat = 1e6  # nearly fixed-rate prior when no overdispersion
+            alpha_hat = 1e6
         beta_hat = max(1e-8, alpha_hat / max(m, 1e-12))
 
-        # User overrides take precedence.
         if self.alpha is not None:
             alpha_hat = float(self.alpha)
         if self.beta is not None:
             beta_hat = float(self.beta)
-
         return {"alpha": alpha_hat, "beta": beta_hat}
 
-    def _compute_single_segment_stats(
-        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _compute_block_evidence(
+        self, y: np.ndarray, hyper: dict[str, float], sample_weight: np.ndarray
+    ) -> tuple[np.ndarray, np.ndarray]:
         alpha, beta = hyper["alpha"], hyper["beta"]
         n = y.size
-
         w = sample_weight
 
-        # Prefix sums: counts and log-factorials.
         S = np.zeros(n + 1, dtype=float)
         S[1:] = np.cumsum(w * y)
-
         W = np.zeros(n + 1, dtype=float)
         W[1:] = np.cumsum(w)
-
         Lfac = np.zeros(n + 1, dtype=float)
         Lfac[1:] = np.cumsum(w * gammaln(y + 1.0))
 
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         A1 = np.zeros((n + 1, n + 1), dtype=float)
-
         log_beta_alpha = alpha * math.log(beta) - math.lgamma(alpha)
 
         for i in range(n):
             j = np.arange(i + 1, n + 1)
             Wsum = W[j] - W[i]
             Ssum = S[j] - S[i]
+            const = -(Lfac[j] - Lfac[i])
 
-            const = -(Lfac[j] - Lfac[i])  # -sum log(y!)
-
-            # log A^0 = -sum log y! + alpha log beta - log Gamma(alpha)
-            #          + log Gamma(alpha + S) - (alpha + S) log(beta + d)
             logA0 = (
                 const
                 + log_beta_alpha
@@ -136,20 +97,55 @@ class BayesBreakPoisson(BayesBreakBase):
                 - (alpha + Ssum) * np.log(beta + Wsum)
             )
             lA0[i, j] = logA0
-
-            # E[lambda | segment] = (alpha + S) / (beta + W)
             logE = np.log(alpha + Ssum) - np.log(beta + Wsum)
             A1[i, j] = np.exp(logA0 + logE)
 
-        idx = np.arange(n + 1)
-        lA0[idx, idx] = -np.inf
+        np.fill_diagonal(lA0, -np.inf)
         return lA0, A1
 
     def _segment_posterior_mean(
-        self, a: int, b: int, y: np.ndarray, hyper: Dict[str, float], sample_weight: np.ndarray
+        self, a: int, b: int, y: np.ndarray, hyper: dict[str, float], sample_weight: np.ndarray
     ) -> float:
         alpha, beta = hyper["alpha"], hyper["beta"]
         w = sample_weight
         Ssum = float(np.sum(w[a:b] * y[a:b]))
         Wsum = float(np.sum(w[a:b]))
         return (alpha + Ssum) / (beta + Wsum)
+
+    def posterior_predictive_logpdf_block(
+        self,
+        *,
+        a: int,
+        b: int,
+        y_new: np.ndarray,
+        w_new: np.ndarray,
+    ) -> np.ndarray:
+        """Negative-Binomial posterior-predictive density on block ``(a, b]``."""
+
+        assert (
+            self.hyper_ is not None
+            and self.sample_weight_ is not None
+            and self._y_train_ is not None
+        )
+        alpha, beta = self.hyper_["alpha"], self.hyper_["beta"]
+        w_train = self.sample_weight_[a:b]
+        y_train = self._y_train_[a:b]
+        S_post = float(np.sum(w_train * y_train))
+        W_post = float(np.sum(w_train))
+        alpha_post = alpha + S_post
+        beta_post = beta + W_post
+
+        y_new = np.asarray(y_new, dtype=float)
+        w_new = np.asarray(w_new, dtype=float)
+        # Negative-Binomial(log-mean = log(w_new) + log(alpha_post/beta_post), r=alpha_post)
+        # log p(y) = gammaln(alpha + y) - gammaln(y+1) - gammaln(alpha)
+        #            + alpha*log(beta/(beta+w)) + y*log(w/(beta+w))
+        r = alpha_post
+        p = beta_post / (beta_post + w_new)
+        return (
+            gammaln(r + y_new)
+            - gammaln(y_new + 1.0)
+            - math.lgamma(r)
+            + r * np.log(p)
+            + y_new * np.log(1.0 - p)
+        )

@@ -46,8 +46,8 @@ Interpretation
 
 Outputs
 -------
-- results/fig9_model_selection.png
-- results/fig9_model_selection.pdf
+- docs/report/figures/fig9_model_selection.png
+- docs/report/figures/fig9_model_selection.pdf
 
 Usage
 -----
@@ -78,7 +78,7 @@ from bayesbreak import BayesBreakGaussian  # noqa: E402
 
 
 def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int) -> None:
-    setup_style(font_scale=1.0, style="paper")
+    setup_style(font_scale=1.0)
     rng = np.random.default_rng(seed)
 
     levels = np.array([0.0, 1.5, -0.5])
@@ -98,9 +98,9 @@ def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int) -> None:
         Cs: list[np.ndarray] = []
         for _ in range(n_rep):
             y = mu + sigma * rng.standard_normal(n)
-            m = BayesBreakGaussian(k_max=k_max).fit(y)
+            m = BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y)).reshape(-1, 1), y)
             # Pad to k_max if C_ is shorter.
-            C = np.array(m.C_, dtype=float)
+            C = np.array(m.k_posterior_, dtype=float)
             if C.size < k_max:
                 C = np.pad(C, (0, k_max - C.size))
             Cs.append(C[:k_max])
@@ -181,7 +181,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=120)
     ap.add_argument("--n-rep", type=int, default=20)

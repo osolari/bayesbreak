@@ -21,8 +21,8 @@ uncertainty visualisation.
 
 Outputs
 -------
-- results/fig1_synthetic_gaussian.png
-- results/fig1_synthetic_gaussian.pdf
+- docs/report/figures/fig1_synthetic_gaussian.png
+- docs/report/figures/fig1_synthetic_gaussian.pdf
 
 Usage
 -----
@@ -88,17 +88,19 @@ def _segment_mean_ci_gaussian(
 
 def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> None:
     # Setup publication style
-    setup_style(font_scale=1.1, style="paper")
+    setup_style(font_scale=1.1)
 
     rng = np.random.default_rng(seed)
 
     mu = np.r_[np.zeros(n1), np.ones(n2), -0.5 * np.ones(n3)]
     y = mu + sigma * rng.standard_normal(mu.size)
 
-    model = BayesBreakGaussian(k_max=10, regression_curve="mix_k").fit(y)
-    pc = model.predict()
-    d1 = model.get_boundary_posteriors()
-    boundaries = model.get_boundaries()
+    model = BayesBreakGaussian(k_max=10, regression_curve="mix_k").fit(
+        np.arange(len(y)).reshape(-1, 1), y
+    )
+    pc = model.predict(model.x_design_.reshape(-1, 1))
+    d1 = model.boundary_marginals_
+    boundaries = model.map_boundaries_
 
     # Credible interval for the latent segment mean (conditional on selected
     # boundaries).
@@ -196,7 +198,7 @@ def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> No
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--outdir", type=Path, default=Path("results"))
+    p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n1", type=int, default=50)
     p.add_argument("--n2", type=int, default=50)

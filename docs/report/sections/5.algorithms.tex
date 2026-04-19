@@ -1,332 +1,3 @@
-% \section{Algorithmic implementation}
-% \label{sec:algorithms}
-
-% This section collects implementation-ready algorithms in \texttt{algorithm2e} style. The
-% algorithm section is organized to mirror the methods section: (i) block evidence computation,
-% (ii) DP inference, (iii) pooling and grouping extensions, and (iv) non-conjugate block
-% approximations.
-
-% \subsection{Core segmentation routines}
-
-% \paragraph{BayesBreak pipeline.}
-% Algorithm~\ref{alg:bayesbreak} implements the complete workflow.
-
-% \begin{algorithm}[H]
-% \caption{BayesBreak$(y,x,w,\texttt{model},\texttt{hyper},k_{\max},p(k),g)$}
-% \label{alg:bayesbreak}
-% \KwIn{
-%   Observations $y_{1:n}$ at locations $x_{1:n}$ (optional); exposures $w_{1:n}$ (default $w_i=x_i-x_{i-1}$);\\
-%   model family $\texttt{model}\in\{\texttt{Gaussian},\texttt{Poisson},\texttt{Binomial},\texttt{BetaObs},\dots\}$; \\
-%   hyperparameters $\texttt{hyper}$; maximum segment count $k_{\max}$; prior $p(k)$; length factor $g(\cdot)$ (default $g\equiv 1$).
-% }
-% \KwOut{
-%   Posterior $P(k\mid y)$; MAP $\widehat{k}$; MAP boundaries $\widehat{t}$; \\
-%   segment-level moments $\{\widehat{\mu}^{(r)}_q\}$; regression curve $\{\widehat{\mu}'_i\}$; (optional) evidence $P(y)$.
-% }
-% \BlankLine
-% \textbf{1. Precompute block evidences and moments}\;
-% \For{$0\le i<j\le n$}{
-%   Compute block summaries $(S_{ij},W_{ij},H_{ij})$ using prefix sums (or running sums)\;
-%   Call a family-specific routine to obtain $A^{(0)}_{ij},A^{(1)}_{ij},A^{(2)}_{ij}$\;
-%   Set $\widetilde{A}^{(r)}_{ij}\leftarrow A^{(r)}_{ij}\,g(x_j-x_i)$ for $r\in\{0,1,2\}$ (cf.\ \eqref{eq:Atilde})\;
-% }
-% Compute $C_k$ if $g\not\equiv 1$ using \eqref{eq:Ck-general} (DP with $A^{(0)}_{ij}\equiv 1$)\;
-% \BlankLine
-% \textbf{2. Run the dynamic program}\;
-% Compute $\widetilde{L}_{k j},\widetilde{R}_{k i}$ via \eqref{eq:LR} for $k=0,\dots,k_{\max}$ using $\widetilde{A}^{(0)}_{ij}$\;
-% Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ via \eqref{eq:post-k}; set $\widehat{k}\leftarrow \arg\max_k P(k\mid y)$\;
-% \BlankLine
-% \textbf{3. Boundary posteriors and MAP boundaries}\;
-% \For{$p=1$ \KwTo $\widehat{k}-1$}{
-%   For all $h\in\{p,\dots,n-(\widehat{k}-p)\}$, set
-%   $P(t_p=h\mid y,\widehat{k})\leftarrow \widetilde{L}_{p,h}\widetilde{R}_{\widehat{k}-p,h}/\widetilde{L}_{\widehat{k}n}$ (cf.\ \eqref{eq:boundary-post})\;
-%   $\widehat{t}_p\leftarrow \arg\max_h P(t_p=h\mid y,\widehat{k})$\;
-% }
-% Set $\widehat{t}_0\leftarrow 0$, $\widehat{t}_{\widehat{k}}\leftarrow n$\;
-% \BlankLine
-% \textbf{4. Segment-level posterior moments (MAP segmentation)}\;
-% \For{$q=1$ \KwTo $\widehat{k}$}{
-%   Let $(i,j]\leftarrow (\widehat{t}_{q-1},\widehat{t}_q]$\;
-%   For $r\in\{1,2\}$ set $\widehat{\mu}^{(r)}_q \leftarrow \widetilde{A}^{(r)}_{ij}/\widetilde{A}^{(0)}_{ij}$ (cf.\ \eqref{eq:segmom-seg})\;
-% }
-% \BlankLine
-% \textbf{5. Bayes regression curve within $\widehat{k}$}\;
-% Using $\widetilde{L},\widetilde{R},\widetilde{A}^{(r)}$ and \eqref{eq:segmom}, compute $\widehat{\mu}'_i$ and $\mathbb{V}[\mu'_i\mid y,\widehat{k}]$ for $i=1,\dots,n$\;
-% \BlankLine
-% \textbf{6. Optional: pooling/groups}\;
-% If multiple subjects or groups are present, pool block evidences (Theorem~\ref{thm:multisubject}) and/or run EM (Section~\ref{sec:latent-em}), then repeat Steps 2--5.
-% \end{algorithm}
-
-% \paragraph{Generic DP for EF segmentation.}
-% Algorithm~\ref{alg:dp-core} implements \eqref{eq:LR}, \eqref{eq:post-k}, and \eqref{eq:boundary-post}.
-
-% \begin{algorithm}[H]
-% \caption{Generic DP for EF segmentation (prefix/suffix form)}
-% \label{alg:dp-core}
-% \KwIn{Block evidences $\widetilde{A}^{(0)}_{ij}$ for $0\le i<j\le n$; $k_{\max}$; $C_k$ (default $C_k=\binom{n-1}{k-1}$)}
-% Initialize $\widetilde{L}_{0,0}=1$, $\widetilde{L}_{0,j>0}=0$; $\widetilde{R}_{0,n}=1$, $\widetilde{R}_{0,i<n}=0$\;
-% \For{$k=0$ \KwTo $k_{\max}-1$}{
-%   \For{$j=1$ \KwTo $n$}{
-%     $\widetilde{L}_{k+1,j}\leftarrow \sum_{h=k}^{j-1} \widetilde{L}_{k,h}\widetilde{A}^{(0)}_{h j}$\;
-%   }
-%   \For{$i=0$ \KwTo $n-1$}{
-%     $\widetilde{R}_{k+1,i}\leftarrow \sum_{h=i+1}^{n-k} \widetilde{A}^{(0)}_{i h} \widetilde{R}_{k,h}$\;
-%   }
-% }
-% Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ (cf.\ \eqref{eq:post-k}) and choose $\widehat{k}$\;
-% \For{$p=1$ \KwTo $\widehat{k}-1$}{
-%   For $h\in\{p,\dots,n-(\widehat{k}-p)\}$ set $P(t_p=h\mid y,\widehat{k})\leftarrow \widetilde{L}_{p,h}\widetilde{R}_{\widehat{k}-p,h}/\widetilde{L}_{\widehat{k}n}$\;
-%   $\widehat{t}_p\leftarrow \arg\max_h P(t_p=h\mid y,\widehat{k})$\;
-% }
-% \KwOut{$\{\widetilde{L}_{k j}\}$, $\{\widetilde{R}_{k i}\}$, $P(k\mid y)$, $\widehat{k}$, $\widehat{t}$}
-% \end{algorithm}
-
-% \subsection{Pooling and latent-group EM}
-
-% \begin{algorithm}[H]
-% \caption{Multi-subject pooling and latent-group EM}
-% \label{alg:multi-em}
-% \KwIn{Per-subject block evidences $\{A^{(0)}_{ij,s}\}_{s=1}^S$; number of groups $G$; $k_{\max}$}
-% Initialize mixing weights $\{\pi_g\}_{g=1}^G$ and group parameters (e.g.\ initial pooled evidences)\;
-% \Repeat{until convergence of $\mathcal{L}$}{
-%   \textbf{E-step:}\;
-%   \For{$s=1$ \KwTo $S$}{
-%     \For{$g=1$ \KwTo $G$}{
-%       Compute $p(y^{(s)}\mid \Theta_g)$ by running DP on group-$g$ evidences\;
-%       $r_{sg}\leftarrow \pi_g\,p(y^{(s)}\mid \Theta_g)$\;
-%     }
-%     Normalize $r_{s1},\dots,r_{sG}$ to sum to 1\;
-%   }
-%   \textbf{M-step:}\;
-%   $\pi_g\leftarrow S^{-1}\sum_s r_{sg}$ for each $g$\;
-%   \For{$g=1$ \KwTo $G$}{
-%     $\log A^{(0)}_{ij,g}\leftarrow \sum_s r_{sg}\log A^{(0)}_{ij,s}$ for all $i<j$ (cf.\ \eqref{eq:resp-pool})\;
-%     Run DP with $\{A^{(0)}_{ij,g}\}$ to update group posterior and MAP $(\widehat{k}_g,\widehat{t}^{(g)})$\;
-%   }
-% }
-% \KwOut{$\{\pi_g\}$, $\{A^{(0)}_{ij,g}\}$, $\{\widehat{k}_g,\widehat{t}^{(g)}\}$, $\{r_{sg}\}$}
-% \end{algorithm}
-
-% \subsection{Conjugate (and 1D quadrature) block routines}
-
-% \subsubsection{GaussianBlock.}
-% \begin{algorithm}[H]
-% \caption{GaussianBlock$(y,w,i,j,\nu,\rho^2,\sigma^2)$}
-% \label{alg:gaussian-block}
-% \KwIn{Block indices $(i,j]$; observations $y_{i+1:j}$; weights $w_{i+1:j}$}
-% $n\leftarrow j-i$;\quad $W\leftarrow \sum_{t=i+1}^j w_t$;\quad $S\leftarrow \sum_{t=i+1}^j w_t y_t$;\quad $Q\leftarrow \sum_{t=i+1}^j w_t (y_t-\nu)^2$\;
-% $\kappa \leftarrow \rho^2 W+\sigma^2$\;
-% $\log A0 \leftarrow -\tfrac{1}{2}n\log(2\pi)
-% -\tfrac{1}{2}\sum_{t=i+1}^j \log(\sigma^2/w_t)
-% -\tfrac{Q}{2\sigma^2}
-% +\tfrac{(S-\nu W)^2}{2(\sigma^2 W+\sigma^4/\rho^2)}
-% -\tfrac{1}{2}\log\big(1+\tfrac{\rho^2}{\sigma^2}W\big)$\;
-% $A0\leftarrow \exp(\log A0)$\;
-% $\mu_{\text{mean}}\leftarrow (\rho^2 S+\sigma^2\nu)/\kappa$;\quad
-% $\mu_{\text{var}}\leftarrow \sigma^2\rho^2/\kappa$\;
-% \KwOut{$A0$, $\mu_{\text{mean}}$, $\mu_{\text{var}}$}
-% \end{algorithm}
-
-% \subsubsection{PoissonBlock.}
-% \begin{algorithm}[H]
-% \caption{PoissonBlock$(y,w,i,j,a_0,b_0)$}
-% \label{alg:poisson-block}
-% \KwIn{Block $(i,j]$; counts $y_{i+1:j}$; exposures $w_{i+1:j}$}
-% $C\leftarrow \sum_{t=i+1}^j y_t$;\quad $W\leftarrow \sum_{t=i+1}^j w_t$\;
-% $\log A0 \leftarrow \sum_{t=i+1}^j y_t\log w_t
-% - \sum_{t=i+1}^j \log(y_t!)
-% + a_0\log b_0
-% + \log\Gamma(a_0+C)
-% - \log\Gamma(a_0)
-% - (a_0+C)\log(b_0+W)$\;
-% $A0\leftarrow \exp(\log A0)$\;
-% $\lambda_{\text{mean}}\leftarrow (a_0+C)/(b_0+W)$;\quad
-% $\lambda_{\text{var}}\leftarrow (a_0+C)/(b_0+W)^2$\;
-% \KwOut{$A0$, $\lambda_{\text{mean}}$, $\lambda_{\text{var}}$}
-% \end{algorithm}
-
-% \subsubsection{BinomialBlock.}
-% \begin{algorithm}[H]
-% \caption{BinomialBlock$(y,m,i,j,a_0,b_0)$}
-% \label{alg:binomial-block}
-% \KwIn{Block $(i,j]$; successes $y_{i+1:j}$; trials $m_{i+1:j}$}
-% $C\leftarrow \sum_{t=i+1}^j y_t$;\quad $M\leftarrow \sum_{t=i+1}^j m_t$\;
-% $\log A0 \leftarrow \sum_{t=i+1}^j \log \binom{m_t}{y_t}
-% + \log B(a_0+C,b_0+M-C)
-% - \log B(a_0,b_0)$\;
-% $A0\leftarrow \exp(\log A0)$\;
-% $p_{\text{mean}}\leftarrow (a_0+C)/(a_0+b_0+M)$\;
-% $p_{\text{var}}\leftarrow \frac{(a_0+C)(b_0+M-C)}
-% {(a_0+b_0+M)^2(a_0+b_0+M+1)}$\;
-% \KwOut{$A0$, $p_{\text{mean}}$, $p_{\text{var}}$}
-% \end{algorithm}
-
-% \subsubsection{BetaObsBlock (quadrature).}
-% \begin{algorithm}[H]
-% \caption{BetaObsBlock$(y,i,j,\phi,a_0,b_0,\{\mu_g,w_g\}_{g=1}^G)$}
-% \label{alg:betaobs-block}
-% \KwIn{Block $(i,j]$; observations $y_{i+1:j}\in(0,1)$; precision $\phi$; Beta prior $(a_0,b_0)$; quadrature nodes $\{\mu_g,w_g\}$}
-% $S_0\leftarrow 0$, $S_1\leftarrow 0$, $S_2\leftarrow 0$\;
-% \For{$g=1$ \KwTo $G$}{
-%   $\log \ell_g \leftarrow \sum_{t=i+1}^j \log \mathrm{BetaPDF}\big(y_t\mid \phi\mu_g,\phi(1-\mu_g)\big)$\;
-%   $\log \pi_g \leftarrow \log \mathrm{BetaPDF}(\mu_g\mid a_0,b_0)$\;
-%   $v_g \leftarrow \exp(\log \ell_g + \log \pi_g)$\;
-%   $S_0 \leftarrow S_0 + w_g v_g$;\quad
-%   $S_1 \leftarrow S_1 + w_g v_g \mu_g$;\quad
-%   $S_2 \leftarrow S_2 + w_g v_g \mu_g^2$\;
-% }
-% $A0\leftarrow S_0$;\quad
-% $\mu_{\text{mean}}\leftarrow S_1/S_0$;\quad
-% $\mu_{\text{var}}\leftarrow S_2/S_0 - (\mu_{\text{mean}})^2$\;
-% \KwOut{$A0$, $\mu_{\text{mean}}$, $\mu_{\text{var}}$}
-% \end{algorithm}
-
-% \subsection{Non-conjugate GLM block routines}
-
-% \subsubsection{GLMBlock\_Laplace.}
-% \begin{algorithm}[H]
-% \caption{GLMBlock\_Laplace$(y,w,i,j,\texttt{b},\texttt{prior})$}
-% \label{alg:laplace}
-% \KwIn{$y_{i+1:j}$, weights $w_{i+1:j}$; cumulant $b(\theta)$; prior $\pi(\theta)$}
-% Compute $S\leftarrow \sum_{t=i+1}^j w_t y_t$;\quad $W\leftarrow \sum_{t=i+1}^j w_t$;\quad $H\leftarrow \sum_{t=i+1}^j \log h(y_t,w_t)$\;
-% Define $\Psi(\theta)=H + S\theta - W b(\theta) + \log \pi(\theta)$ and its derivatives\;
-% Initialize $\theta^{(0)}$ (e.g., solve $b'(\theta)=S/W$ or use prior mean)\;
-% \For{$m=0,1,\dots$ until convergence}{
-%   $g\leftarrow S - W b'(\theta^{(m)}) + (\log\pi)'(\theta^{(m)})$\;
-%   $h\leftarrow - W b''(\theta^{(m)}) + (\log\pi)''(\theta^{(m)})$\;
-%   \uIf{$|g|/|h|<\varepsilon_{\text{newton}}$}{break}
-%   $\theta^{(m+1)} \leftarrow \theta^{(m)} - g/h$\;
-% }
-% $\hat\theta\leftarrow \theta^{(m)}$;\quad $H^\star\leftarrow -\,\Psi''(\hat\theta)$\;
-% $\log \widehat{A}^{(0)}_{ij}\leftarrow \Psi(\hat\theta) + \tfrac{1}{2}\log(2\pi) - \tfrac{1}{2}\log H^\star$\;
-% \KwOut{$\widehat{A}^{(0)}_{ij}$ and (optional) moments via \eqref{eq:laplace-moment}}
-% \end{algorithm}
-
-% \subsubsection{LogisticBlock\_JJ.}
-% \begin{algorithm}[H]
-% \caption{LogisticBlock\_JJ$(y,m,w,i,j,\texttt{prior})$ \quad (variational lower bound)}
-% \label{alg:jj}
-% \KwIn{Binomial counts $y_t\sim\mathrm{Binom}(m_t,p)$, logit link; prior $\pi(\theta)$}
-% Initialize $\xi$ and a Gaussian $q(\theta)=\mathcal{N}(\mu_q,\sigma_q^2)$\;
-% \Repeat{converged}{
-%   Update the quadratic bound parameter $\xi\leftarrow \sqrt{\mathbb{E}_q[\theta^2]}$\;
-%   Update Gaussian $q(\theta)$ by maximizing the block ELBO $\mathcal{L}_{ij}(q)$ (closed-form for quadratic surrogate)\;
-% }
-% Return $\underline{A}^{(0)}_{ij}=\exp\{\mathcal{L}_{ij}(q)\}$ and moments from $q$.
-% \end{algorithm}
-
-% \subsubsection{GLMBlock\_PG\_VB.}
-% \begin{algorithm}[H]
-% \caption{GLMBlock\_PG\_VB$(y,m,w,i,j,\nu,\rho^2)$ \quad (Gaussian prior, PG mean-field)}
-% \label{alg:pg-vb}
-% \KwIn{Binomial/logistic block; Gaussian prior $\mathcal{N}(\nu,\rho^2)$}
-% Initialize $q(\omega_t)$ and $q(\theta)=\mathcal{N}(\mu,\sigma^2)$\;
-% \Repeat{ELBO converged}{
-%   $\sigma^{-2}\leftarrow \rho^{-2} + \sum_{t=i+1}^j w_t \mathbb{E}_q[\omega_t]$\;
-%   $\mu \leftarrow \sigma^2 \left(\rho^{-2}\nu + \sum_{t=i+1}^j w_t\big(y_t-\tfrac{m_t}{2}\big)\right)$\;
-%   \ForEach{$t$}{
-%     Update $q(\omega_t)$ using current $\mathbb{E}_q[\theta^2]$ (closed-form for mean of PG)\;
-%   }
-% }
-% Return a lower bound $\underline{A}^{(0)}_{ij}$ and approximate moments from $q(\theta)$.
-% \end{algorithm}
-
-% \subsubsection{GLMBlock\_EP.}
-% \begin{algorithm}[H]
-% \caption{GLMBlock\_EP$(y,w,i,j,\texttt{prior})$}
-% \label{alg:ep}
-% \KwIn{Canonical GLM; prior $\pi(\theta)$}
-% Initialize site parameters $\{a_t,b_t\}_{t=i+1}^j$; approximate posterior $\tilde p(\theta)\propto\pi(\theta)\prod \tilde t_t(\theta)$\;
-% \Repeat{moments stable}{
-%   \For{$t=i+1$ \KwTo $j$}{
-%     Form cavity $\tilde p^{\setminus t}(\theta)\propto \tilde p(\theta)/\tilde t_t(\theta)$\;
-%     Form tilted $p^{\text{tilt}}(\theta)\propto \tilde p^{\setminus t}(\theta)\,p(y_t\mid\theta)$\;
-%     Moment-match $p^{\text{tilt}}$ and update site $\tilde t_t(\theta)$\;
-%   }
-% }
-% Return approximate evidence $\tilde A^{(0)}_{ij}=\int \tilde p(\theta)\,d\theta$ and moments from $\tilde p$.
-% \end{algorithm}
-
-% \begin{algorithm}[H]
-% \caption{Precompute block evidences for non-conjugate GLMs}
-% \label{alg:precompute-nonconj}
-% \KwIn{$\{(x_t,y_t,w_t)\}_{t=1}^n$, method $\in\{$Laplace, JJ, PG--VB, EP$\}$}
-% \For{$i=0$ \KwTo $n-1$}{
-%   Initialize running summaries (as needed)\;
-%   \For{$j=i+1$ \KwTo $n$}{
-%     Update block summaries for $(i,j]$\;
-%     Call chosen block routine to compute $\widehat{A}^{(0)}_{ij}$ (and optional moments)\;
-%   }
-% }
-% Run DP (Algorithm~\ref{alg:dp-core}) with resulting block evidences.
-% \end{algorithm}
-
-% \subsection{Algorithms for prediction}
-% \label{sec:prediction-algorithms}
-
-% \begin{algorithm}[H]
-% \caption{PredictGroup$(\{\mathcal{M}_g\}_{g=1}^G,\ \mathcal{D}^{\text{new}},\ \pi)$}
-% \label{alg:predict-group}
-% \KwIn{
-% Trained group models $\{\mathcal{M}_g\}$; new data $\mathcal{D}^{\text{new}}$ (Case A or Case B);
-% group prior weights $\pi$ (default uniform)
-% }
-% \KwOut{
-% Log-likelihoods $\{\ell_g\}$ and posterior membership probabilities $\{P(g\mid \text{new})\}$;
-% if Case B, also unit responsibilities $\{r_{u g}\}$
-% }
-% \BlankLine
-% \For{$g=1$ \KwTo $G$}{
-%   \eIf{\textbf{Case A (pointwise)}}
-%   {
-%     Assign each $(x_i^{\text{new}},y_i^{\text{new}})$ to a MAP segment $B(i;g)$ under $\widehat{t}^{(g)}$\;
-%     Accumulate segment summaries $(S_B^{\text{new}},W_B^{\text{new}},H_B^{\text{new}})$\;
-%     Compute $\ell_g \leftarrow \sum_B \Big[ H_B^{\text{new}} + \log Z(\alpha_B^{(g)},\beta_B^{(g)})
-%       - \log Z(\alpha_B^{(g)}+S_B^{\text{new}},\beta_B^{(g)}+W_B^{\text{new}})\Big]$\;
-%   }
-%   {
-%     \tcp{Case B (multivariate/set-valued units)}
-%     \For{$u=1$ \KwTo $U$}{
-%       Partition unit $u$ internal pairs by MAP segments of group $g$; compute per-segment summaries\;
-%       Compute $\ell_{u g}$ via \eqref{eq:unit-lik} using \eqref{eq:pp-seg}\;
-%     }
-%     $\ell_g \leftarrow \sum_{u=1}^U \ell_{u g}$\;
-%   }
-% }
-% Compute $P(g\mid \text{new}) \propto \pi_g\exp(\ell_g)$ and normalize over $g$\;
-% \If{\textbf{Case B}}{
-%   Compute unit responsibilities $r_{u g}\propto \pi_g\exp(\ell_{u g})$ and normalize over $g$ for each $u$ (cf.\ \eqref{eq:unit-resp})\;
-% }
-% \end{algorithm}
-
-% \begin{algorithm}[H]
-% \caption{PredictMAPSignal$(\mathcal{M}_g,\ X^\star,\ \texttt{mode})$}
-% \label{alg:predict-map}
-% \KwIn{
-% A group model $\mathcal{M}_g$ with exported MAP segmentation $\widehat{t}^{(g)}$ and/or Bayes curve;
-% query points $X^\star=\{x^\star_1,\dots,x^\star_M\}$; mode $\in\{\texttt{MAP},\texttt{Bayes}\}$
-% }
-% \KwOut{
-% Predicted signal values at $X^\star$ (and optionally uncertainty)
-% }
-% \BlankLine
-% \eIf{\texttt{mode}=\texttt{MAP}}{
-%   \ForEach{$x^\star$ in $X^\star$}{
-%     Find containing MAP segment $B(x^\star;g)$ (binary search on breakpoint coordinates)\;
-%     Return $\widehat{f}^{\text{MAP}}_g(x^\star)=\widehat{\mu}^{(g)}_{B(x^\star;g)}$\;
-%   }
-% }{
-%   Evaluate/interpolate the exported Bayes regression curve at $X^\star$; optionally return posterior variances\;
-% }
-% \end{algorithm}
-
-% \subsection{Complexity}
-% For Case A, prediction under a fixed group is $\mathcal{O}(m)$ after segment assignment
-% ($\mathcal{O}(m\log k)$ worst case via binary search; often $\mathcal{O}(m)$ with a streaming pointer).
-% For Case B, it is $\mathcal{O}(\sum_u R_u)$ per group, plus segment assignment for internal points.
-% Vector-valued responses add a factor of $d$ in the factorized EF construction. Importantly,
-% prediction does \emph{not} require rerunning the DP unless the optional resegmentation scoring
-% mode is enabled.
 \section{Algorithms, complexity, and numerical considerations}
 \label{sec:algorithms}
 
@@ -342,8 +13,9 @@ Bayes curves) without relying on undocumented conventions.
 
 For conjugate exponential-family blocks, Theorem~\ref{thm:ef-integral} shows that the single
 block evidence and moments can be expressed as functions of aggregated sufficient statistics.
-This enables an \emph{exact} $\mathcal{O}(n^2)$ precomputation of all candidate blocks
-$(i,j)$ with $1\le i\le j\le n$.
+This enables an \emph{exact} $\mathcal{O}(n^2)$ precomputation of all candidate blocks $(i,j]$
+with $0\le i<j\le n$. Throughout this section we use the body convention: a block $(i,j]$ has
+length $j-i$ and contains the indices $i+1,\dots,j$.
 
 In practice, it is numerically preferable to store \emph{log} block evidences,
 \begin{equation}
@@ -359,21 +31,20 @@ Section~\ref{sec:families}.
 \label{alg:block-precompute}
 \KwIn{Ordered observations $\{(x_i,y_i,w_i)\}_{i=1}^n$ (with $w_i\equiv 1$ if unweighted);
 family-specific routine \texttt{BlockRoutine} implementing Theorem~\ref{thm:ef-integral}.}
-\KwOut{Matrices of log-block evidences $\ell^{(0)}_{ij}=\log \widetilde{A}^{(0)}_{ij}$ and
+\KwOut{Matrices of log-block evidences $\ell^{(0)}_{ij}=\log \widetilde{A}^{(0)}_{ij}$ on the index set $\{0\le i<j\le n\}$ and
 (optional) moment numerators $\ell^{(r)}_{ij}=\log \widetilde{A}^{(r)}_{ij}$ for $r\in\{1,2,\dots\}$.}
 \BlankLine
 \textbf{1. Prefix summaries}\;
-Compute prefix cumulative sufficient statistics and weights required by \texttt{BlockRoutine};
-for example, for a scalar response EF one typically stores
-$W_j\coloneqq\sum_{t=1}^j w_t$, $S_j\coloneqq\sum_{t=1}^j w_t\,T(y_t)$, and any additional
-family-specific terms (e.g., $Q_j\coloneqq\sum_{t=1}^j w_t y_t^2$ for Gaussian).
+Compute prefix cumulative sufficient statistics and weights required by \texttt{BlockRoutine}:
+store $W_j\coloneqq\sum_{t=1}^j w_t$, $S_j\coloneqq\sum_{t=1}^j w_t\,T(y_t)$, and any additional
+family-specific terms (e.g., $Q_j\coloneqq\sum_{t=1}^j w_t y_t^2$ for Gaussian). Set $W_0=S_0=Q_0=0$.
 \BlankLine
 \textbf{2. Enumerate blocks}\;
-\For{$i\leftarrow 1$ \KwTo $n$}{
-  \For{$j\leftarrow i$ \KwTo $n$}{
-    Extract block summaries for $y_{i:j}$ from prefixes (constant time);
+\For{$i\leftarrow 0$ \KwTo $n-1$}{
+  \For{$j\leftarrow i+1$ \KwTo $n$}{
+    Extract block summaries for $y_{i+1:j}$ via $W_{ij}=W_j-W_i$, $S_{ij}=S_j-S_i$, $Q_{ij}=Q_j-Q_i$ (constant time);
     \texttt{BlockRoutine} returns $\log A^{(0)}_{ij}$ and any moment numerators $\log A^{(r)}_{ij}$;
-    Add any length factor $\log g(x_j-x_{i-1})$ and hazard constants as in \eqref{eq:Atilde};
+    Add any length factor $\log g(x_j-x_i)$ and hazard constants as in \eqref{eq:Atilde};
     Store $\ell^{(0)}_{ij}\leftarrow \log \widetilde{A}^{(0)}_{ij}$ and, if needed,
     $\ell^{(r)}_{ij}\leftarrow \log \widetilde{A}^{(r)}_{ij}$.
   }
@@ -399,7 +70,7 @@ Algorithm~\ref{alg:dp-log} presents a log-space version of the recursions in
 \begin{algorithm}[H]
 \caption{DPLog$(\ell^{(0)}_{ij},k_{\max},\log p(k),\log C_k)$}
 \label{alg:dp-log}
-\KwIn{Log block evidences $\ell^{(0)}_{ij}=\log \widetilde{A}^{(0)}_{ij}$ for all $1\le i\le j\le n$;
+\KwIn{Log block evidences $\ell^{(0)}_{ij}=\log \widetilde{A}^{(0)}_{ij}$ on the index set $\{0\le i<j\le n\}$ (block $(i,j]$);
 maximum segments $k_{\max}$;
 log prior on $k$, $\log p(k)$;
 log normalizers $\log C_k$ (with $\log C_k\equiv 0$ if $g\equiv 1$).}
@@ -412,16 +83,15 @@ set $\log \widetilde{R}_{0,n}\leftarrow 0$ and $\log \widetilde{R}_{0,i}\leftarr
 \BlankLine
 \textbf{2. Forward recursion}\;
 \For{$k\leftarrow 1$ \KwTo $k_{\max}$}{
-  \For{$j\leftarrow 1$ \KwTo $n$}{
-    $\log \widetilde{L}_{k,j}\leftarrow \texttt{logsumexp}_{h\in\{k-1,\dots,j-1\}}\big(\log \widetilde{L}_{k-1,h} + \ell^{(0)}_{h+1,j}\big)$;
+  \For{$j\leftarrow k$ \KwTo $n$}{
+    $\log \widetilde{L}_{k,j}\leftarrow \texttt{logsumexp}_{h\in\{k-1,\dots,j-1\}}\big(\log \widetilde{L}_{k-1,h} + \ell^{(0)}_{h,j}\big)$;
   }
 }
 \BlankLine
 \textbf{3. Backward recursion}\;
 \For{$k\leftarrow 1$ \KwTo $k_{\max}$}{
-  \For{$t\leftarrow 0$ \KwTo $n-1$}{
-    $i\leftarrow n-1-t$\;
-    $\log \widetilde{R}_{k,i}\leftarrow \texttt{logsumexp}_{h\in\{i+1,\dots,n-k+1\}}\big(\ell^{(0)}_{i+1,h} + \log \widetilde{R}_{k-1,h}\big)$;
+  \For{$i\leftarrow n-k$ \KwTo $0$ (decreasing)}{
+    $\log \widetilde{R}_{k,i}\leftarrow \texttt{logsumexp}_{h\in\{i+1,\dots,n-k+1\}}\big(\ell^{(0)}_{i,h} + \log \widetilde{R}_{k-1,h}\big)$;
   }
 }
 \BlankLine
@@ -448,12 +118,27 @@ The DP used for evidences can be augmented to recover a MAP segmentation in
 $\mathcal{O}(k_{\max}n^2)$ time.
 During the forward recursion, one stores, for each $(k,j)$, the maximizing split point
 \begin{equation}
-    h^\star(k,j)\in\arg\max_{h\in\{k-1,\dots,j-1\}} \Big\{\log \widetilde{L}_{k-1,h}+\ell^{(0)}_{h+1,j}\Big\},
+    h^\star(k,j)\in\arg\max_{h\in\{k-1,\dots,j-1\}} \Big\{M_{k-1,h}+\ell^{(0)}_{h,j}\Big\},
     \label{eq:map-backpointer}
 \end{equation}
-and then backtracks from $(\widehat{k},n)$ to recover the boundary vector
+where $M_{k,j}$ is the max-sum message defined in \eqref{eq:max-sum-inline}.
+Algorithm~\ref{alg:map-forward} computes $M_{k,j}$ and the backpointers; Algorithm~\ref{alg:map-backtrack} then backtracks from $(\widehat{k},n)$ to recover the boundary vector
 $\widehat{b}=(\widehat{b}_0,\dots,\widehat{b}_{\widehat{k}})$.
-Algorithm~\ref{alg:map-backtrack} makes this explicit.
+
+\begin{algorithm}[H]
+\caption{MAPForward$(\ell^{(0)}_{ij},k_{\max})$}
+\label{alg:map-forward}
+\KwIn{Log block evidences $\ell^{(0)}_{ij}$ on $\{0\le i<j\le n\}$; $k_{\max}$.}
+\KwOut{Max-sum messages $M_{k,j}$ and backpointers $h^\star(k,j)$ for $k\le k_{\max}$.}
+\BlankLine
+Set $M_{0,0}\leftarrow 0$, $M_{0,j}\leftarrow -\infty$ for $j\ge 1$\;
+\For{$k\leftarrow 1$ \KwTo $k_{\max}$}{
+  \For{$j\leftarrow k$ \KwTo $n$}{
+    $h^\star(k,j)\leftarrow \arg\max_{h\in\{k-1,\dots,j-1\}}\{M_{k-1,h}+\ell^{(0)}_{h,j}\}$\;
+    $M_{k,j}\leftarrow M_{k-1,h^\star(k,j)}+\ell^{(0)}_{h^\star(k,j),j}$\;
+  }
+}
+\end{algorithm}
 
 \begin{algorithm}[H]
 \caption{MAPBacktrack$(h^\star,\widehat{k})$}
@@ -484,18 +169,20 @@ The resulting pooled matrices can be passed unchanged to Algorithm~\ref{alg:dp-l
 \subsection{Latent-group EM implementation notes}
 \label{sec:alg-em}
 
-Section~\ref{sec:latent-em} derives an EM algorithm for latent groups.
-From an implementation perspective, the key point is that the M-step for each group is a
-standard BayesBreak DP run with \emph{responsibility-weighted} block evidences.
-If $r_{sg}$ denotes the responsibility of subject $s$ for group $g$, then the effective pooled
-log-block evidence for group $g$ is
+Section~\ref{sec:latent-em} formulates latent groups as a \emph{template mixture}: each group has one
+exported segmentation template, while subject-specific segment parameters have already been integrated out in
+subject-level block evidences. From an implementation perspective, the M-step for each group is therefore a
+standard max-sum BayesBreak backtracking run with a responsibility-weighted score matrix.
+If $r_{sg}$ denotes the responsibility of subject $s$ for group $g$, then the effective block score is
 \begin{equation}
-    \ell^{(0,g)}_{ij} \;=\; \sum_{s=1}^S r_{sg}\, \ell^{(0,s)}_{ij},
+    B^{(g)}_{ij}
+    \;=\; \log g(x_j-x_i) + \sum_{s=1}^S r_{sg}\, \ell^{(0,s)}_{ij},
 \end{equation}
-with corresponding weighted sufficient statistics inside \texttt{BlockRoutine}.
-The monotonicity guarantee in Theorem~\ref{thm:em-monotone} ensures that these updates increase
-the variational evidence lower bound when responsibilities are recomputed from the current
-group models.
+where $\ell^{(0,s)}_{ij}=\log A^{(0,s)}_{ij}$ is the subject-level log-block evidence.
+Running the max-sum DP over this score matrix for each $k$ and then adding the count-specific offset
+$\log p(k)-\log C_k$ yields the exact template update for group $g$.
+The monotonicity guarantee in Theorem~\ref{thm:em-monotone} applies precisely because these E- and M-step
+updates are exact for the stated template-mixture objective.
 
 \subsection{Complexity summary and stability}
 \label{sec:alg-complexity}
@@ -513,3 +200,33 @@ Finally, we emphasize two numerical practices that are essential in realistic da
 reduce catastrophic cancellation in moment computations.
 These practices do not affect correctness, but they materially improve stability when $n$ is
 in the hundreds or thousands.
+
+\subsection{A numerical-implementation checklist}
+\label{sec:alg-checklist}
+
+The following checklist distills the common pitfalls we have encountered and addresses them
+pre-emptively. Each item is cheap to implement and pays for itself on even moderate-sized
+problems.
+
+\begin{enumerate}\itemsep2pt
+\item \textbf{Log space everywhere.} Store all block evidences, moment numerators, and DP
+messages as $\log$ values from the start. Convert to linear space only for display.
+\item \textbf{logsumexp with a stable shift.} Implement \texttt{logsumexp} as
+$\mathrm{lse}(x)=m+\log\sum\exp(x_i-m)$ with $m=\max_i x_i$ \citep{blanchard2021lse}. Cache the
+maximum once and reuse for both numerator and denominator when normalizing.
+\item \textbf{Prefix sums in the right order.} Compute prefix sums of $w_t$, $w_t T(y_t)$, and
+(for Gaussian) $w_t y_t^2$ \emph{before} enumerating blocks. Store them as double-precision arrays
+of length $n+1$ initialized at index 0. Block summaries then cost one subtraction per block.
+\item \textbf{Numerical sanity checks.} After the forward recursion, verify that
+$\log\widetilde L_{0,0}=0$ and $\log\widetilde L_{k,j}=-\infty$ for $j<k$; after the backward
+recursion, verify the analogous boundary conditions on $\log\widetilde R$. Verify that
+$\log\widetilde L_{k,n}=\log\widetilde R_{k,0}$ up to floating-point tolerance.
+\item \textbf{Moment overflow.} When computing Bayes regression curves via \eqref{eq:segmom},
+subtract a block-specific shift (e.g., the block posterior-mean estimate) before exponentiating
+to reduce dynamic range, then add the shift back at the end.
+\item \textbf{Degenerate blocks.} Guard against $W_{ij}=0$ (missing-data blocks) by returning
+$\log A^{(0)}_{ij}=-\infty$ or a user-specified fallback. Guard against $Q_{ij}$ numerically
+negative (from catastrophic cancellation) by clamping to zero.
+\item \textbf{Reproducibility.} Fix a seed for EM initializations and record it in the run
+metadata; record the exact version of every family-specific \texttt{BlockRoutine} used.
+\end{enumerate}

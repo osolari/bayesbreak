@@ -30,9 +30,9 @@ Interpretation
 
 Outputs
 -------
-- results/fig5_runtime_scaling.png
-- results/fig5_runtime_scaling.pdf
-- results/fig5_runtime_scaling.csv
+- docs/report/figures/fig5_runtime_scaling.png
+- docs/report/figures/fig5_runtime_scaling.pdf
+- docs/report/figures/fig5_runtime_scaling.csv
 
 Usage
 -----
@@ -68,7 +68,7 @@ def _fit_once(rng: np.random.Generator, n: int, k_max: int) -> float:
     y = mu + 0.25 * rng.standard_normal(n)
 
     t0 = time.perf_counter()
-    BayesBreakGaussian(k_max=k_max).fit(y)
+    BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y)).reshape(-1, 1), y)
     t1 = time.perf_counter()
     return t1 - t0
 
@@ -102,7 +102,7 @@ def main(outdir: Path, seed: int, repeats: int) -> None:
             f.write(f"{n},{k_max},{m:.6f},{s:.6f}\n")
 
     # Setup publication style
-    setup_style(font_scale=1.1, style="paper")
+    setup_style(font_scale=1.1)
 
     figsize = get_figsize("single", aspect=0.75)
     fig, ax = plt.subplots(1, 1, figsize=figsize)
@@ -148,7 +148,7 @@ def main(outdir: Path, seed: int, repeats: int) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--repeats", type=int, default=5)
     args = ap.parse_args()

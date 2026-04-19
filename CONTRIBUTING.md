@@ -1,109 +1,59 @@
 # Contributing to BayesBreak
 
-Thank you for your interest in contributing to BayesBreak! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing! The codebase is small and
+organized around a two-layer design — block evidence (per family) + generic
+DP (`bayesbreak.dp`) — so most changes touch one of those layers.
 
-## Code of Conduct
-
-Please be respectful and constructive in all interactions.
-
-## Getting Started
-
-### 1. Fork and Clone
+## Development setup
 
 ```bash
-git clone https://github.com/your-username/bayesbreak.git
+git clone https://github.com/osolari/bayesbreak.git
 cd bayesbreak
-```
-
-### 2. Set Up Development Environment
-
-```bash
-cd env
-bash create_env.sh
+bash create_env.sh              # conda env "bayesbreak", Python 3.11
 conda activate bayesbreak
-```
-
-### 3. Install Pre-commit Hooks
-
-```bash
 pre-commit install
 ```
 
-This ensures code quality checks run before each commit.
+`create_env.sh --venv` uses `python -m venv` instead of conda.
 
-## Development Workflow
+## Tooling
 
-### Code Style
+- **ruff** (`ruff check`, `ruff format`) — lint + format.
+- **mypy** — type checks on `src/bayesbreak/`.
+- **pytest** — test suite under `tests/`, including conceptual-correctness
+  tests (brute-force DP, closed-form predictive checks, sklearn contract).
+- **pre-commit** — enforces the above on every commit.
 
-We use:
-- **Black** for code formatting (100 character line length)
-- **Ruff** for linting
-- **MyPy** for type checking
-
-These are configured in `pyproject.toml` and enforced via pre-commit hooks.
-
-Format code before committing:
+Run everything at once:
 
 ```bash
-black src/ tests/
-ruff check --fix src/ tests/
+pre-commit run --all-files
+mypy src/bayesbreak
+pytest tests/
 ```
 
-### Testing
+## Code style
 
-Run tests with coverage:
+- Type-hint public functions and classes; NumPyDoc docstrings.
+- Follow the scikit-learn estimator contract: store constructor args untouched,
+  validate inside `fit`, trailing-underscore fitted attributes.
+- No backwards-compatibility shims. Breaking changes are documented in
+  `CHANGELOG.md`.
+- Tests must live alongside new functionality. Prefer conceptual-correctness
+  tests (closed-form comparisons, brute-force DP on small `n`) over pure
+  smoke tests.
 
-```bash
-pytest --cov=src/bayesbreak tests/
-```
+## Pull request checklist
 
-Ensure new code has corresponding tests.
+1. Create a feature branch.
+2. Implement your change with tests.
+3. `pre-commit run --all-files` passes.
+4. `pytest tests/` passes (`-m "not network"` for offline runs).
+5. Update `CHANGELOG.md`.
+6. Open the PR with a short motivation and a test-plan section.
 
-### Type Hints
+## Reporting issues
 
-Add type hints to new functions and classes:
-
-```python
-def compute_segment_stats(
-    y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-) -> Tuple[float, float]:
-    """Compute segment statistics.
-
-    Parameters
-    ----------
-    y : np.ndarray
-        Observations
-    sample_weight : Optional[np.ndarray]
-        Per-observation weights
-
-    Returns
-    -------
-    Tuple[float, float]
-        Mean and variance
-    """
-```
-
-### Documentation
-
-- Add docstrings in NumPy format to all public functions and classes
-- Update relevant documentation in `docs/` when adding features
-- Add examples to docstrings for key functions
-
-## Pull Request Process
-
-1. Create a feature branch: `git checkout -b feature/your-feature-name`
-2. Make your changes with tests
-3. Run tests and code checks: `pytest` and `pre-commit run --all-files`
-4. Commit with clear messages
-5. Push to your fork and open a pull request
-6. Respond to feedback
-
-## Reporting Issues
-
-- Use GitHub Issues for bug reports and feature requests
-- Include reproducible examples when possible
-- Specify Python version and environment details
-
-## Questions?
-
-Feel free to open a discussion or issue for questions.
+- GitHub Issues for bug reports and feature requests.
+- Include a minimal reproducer (`X`, `y`, estimator call), Python version, and
+  scikit-learn / numpy versions.

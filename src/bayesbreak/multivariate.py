@@ -1,313 +1,271 @@
+r"""Multivariate (vector-valued) BayesBreak segmentation.
+
+Two distinct modes share boundaries or fit independently per channel:
+
+- :class:`SharedBoundaryMultivariateSegmenter`: a single segmentation is
+  inferred from the joint block evidence
+  :math:`\log \mathcal{L}_{ij} = \sum_c \log \mathcal{L}^{(c)}_{ij}` under
+  conditional independence across channels given segment parameters.
+- :class:`IndependentMultivariateSegmenter`: each channel is segmented
+  independently by cloning the base estimator.
+
+Both expose a strict sklearn ``fit(X, y)`` API where ``y`` has shape ``(n, d)``.
+"""
+
 from __future__ import annotations
 
-import math
 from dataclasses import dataclass
-from typing import Any, List, Literal, Optional
 
 import numpy as np
+from numpy.typing import ArrayLike, NDArray
 from sklearn.base import BaseEstimator, RegressorMixin, clone
 
-from .base import BayesBreakBase
-from .utils import check_sample_weight, logsumexp, require_fitted
+from . import dp as _dp
+from .base import BayesBreakSegmenter
+from .validation import check_sample_weight, check_segmentation_input, require_fitted
+
+FloatArray = NDArray[np.floating]
 
 
-def _normalize_multivariate_weights(
-    sample_weight: Optional[np.ndarray], n: int, d: int
-) -> np.ndarray:
-    """Return a dense (n, d) weight matrix.
-
-    Accepts:
-      - None -> all ones
-      - 1D (n,) -> broadcast to (n, d)
-      - 2D (n, d) -> used as-is
-      - scalar -> broadcast
-    """
-
+def _normalize_multivariate_weights(sample_weight: ArrayLike | None, n: int, d: int) -> FloatArray:
     if sample_weight is None or np.isscalar(sample_weight):
         w1 = check_sample_weight(sample_weight, n)
         return np.repeat(w1[:, None], d, axis=1)
-
     w = np.asarray(sample_weight, dtype=float)
     if w.ndim == 1:
         if w.shape[0] != n:
             raise ValueError(f"sample_weight has length {w.shape[0]}, expected {n}.")
-        if np.any(~np.isfinite(w)) or np.any(w < 0):
-            raise ValueError("sample_weight must be finite and non-negative.")
         return np.repeat(w[:, None], d, axis=1)
     if w.ndim == 2:
         if w.shape != (n, d):
             raise ValueError(f"sample_weight has shape {w.shape}, expected {(n, d)}.")
-        if np.any(~np.isfinite(w)) or np.any(w < 0):
-            raise ValueError("sample_weight must be finite and non-negative.")
         return w
-    raise ValueError("sample_weight must be None, scalar, 1D (n,) or 2D (n,d).")
+    raise ValueError("sample_weight must be None, scalar, 1-D (n,) or 2-D (n, d).")
 
 
 @dataclass
 class _ChannelState:
-    est: BayesBreakBase
+    est: BayesBreakSegmenter
     hyper: dict
-    lA0: np.ndarray
-    A1: np.ndarray
+    lA0: FloatArray
+    A1: FloatArray
 
 
-class BayesBreakMultivariate(BaseEstimator, RegressorMixin):
-    r"""Multivariate wrapper for BayesBreak.
+class SharedBoundaryMultivariateSegmenter(BaseEstimator, RegressorMixin):
+    """Multivariate segmenter with a single shared segmentation across channels.
 
-    This wrapper supports *shared-boundary* segmentation for vector-valued
-    observations :math:`y_t \in \mathbb{R}^d` under a conditional independence
-    assumption across channels given segment parameters.
+    Parameters
+    ----------
+    base_estimator : BayesBreakSegmenter
+        Univariate block family template (cloned per channel).
+    k_max : int, optional
+        Maximum segment count. Defaults to ``base_estimator.k_max``.
 
-    Two modes are supported:
-
-    - ``combine='shared'``: a *single* segmentation is inferred using the joint
-      block evidence :math:`\log \mathcal{L}_{ij} = \sum_{c=1}^d \log \mathcal{L}^{(c)}_{ij}`.
-      Segment-wise posterior means are then computed per channel.
-    - ``combine='independent'``: each channel is segmented independently by
-      fitting a cloned estimator per channel.
-
-    The base estimator must be a univariate :class:`~bayesbreak.base.BayesBreakBase`
-    instance (Gaussian/Poisson/Binomial/Beta/Bernoulli, or a custom subclass).
-
-    Notes
-    -----
-    - ``BayesBreakMultivariate`` implements the sklearn-style ``fit/predict/score``
-      interface.
-    - For ``combine='shared'``, the returned ``pc_fit_`` has shape ``(n, d)``.
+    Attributes
+    ----------
+    n_, d_ : int
+        Sample / channel counts.
+    k_map_ : int
+        Posterior-mode segment count.
+    map_boundaries_ : list of int
+        Joint MAP boundary vector (shared across channels).
+    boundary_marginals_ : ndarray of shape (n-1,)
+        Marginal boundary-event probabilities.
+    map_segment_means_ : ndarray of shape (k_map, d)
+        Per-channel posterior means on MAP segments.
+    map_curve_ : ndarray of shape (n, d)
+        Piecewise-constant fit.
+    bayes_curve_mean_ : ndarray of shape (n, d) or None
+        Optional posterior-mean curve.
+    log_evidence_ : float
+        Joint log marginal likelihood.
     """
 
     def __init__(
         self,
-        base_estimator: BayesBreakBase,
+        base_estimator: BayesBreakSegmenter,
         *,
-        combine: Literal["shared", "independent"] = "shared",
-        k_max: Optional[int] = None,
+        k_max: int | None = None,
     ):
         self.base_estimator = base_estimator
-        self.combine = combine
         self.k_max = k_max
 
-        # fitted attributes
-        self.n_: Optional[int] = None
-        self.d_: Optional[int] = None
-        self.k_ml_: Optional[int] = None
-        self.boundaries_: Optional[List[int]] = None
-        self.boundary_post_: Optional[np.ndarray] = None
-        self.pc_fit_: Optional[np.ndarray] = None
-        self.brc_: Optional[np.ndarray] = None
-        self.log_evidence_: Optional[float] = None
-        self.channel_estimators_: Optional[List[BayesBreakBase]] = None
-
-    # ---------------------------------------------------------------------
-    # sklearn API
-    # ---------------------------------------------------------------------
-
-    def fit(self, X=None, y=None, sample_weight=None):
-        # accept y or use X as y (mirrors BayesBreakBase)
-        if y is None:
-            if X is None:
-                raise ValueError("Provide y (preferred) or X as a 2D array-like of shape (n, d).")
-            y_arr = np.asarray(X, dtype=float)
-        else:
-            y_arr = np.asarray(y, dtype=float)
-        if y_arr.ndim != 2:
-            raise ValueError("Multivariate y must be 2D with shape (n, d).")
+    def fit(
+        self,
+        X: ArrayLike,
+        y: ArrayLike,
+        *,
+        sample_weight: ArrayLike | None = None,
+    ) -> SharedBoundaryMultivariateSegmenter:
+        x_design, y_arr, _ = check_segmentation_input(X, y, multivariate=True)
         n, d = y_arr.shape
         self.n_, self.d_ = int(n), int(d)
+        self.x_design_ = x_design
 
-        # per-channel weights
         w_mat = _normalize_multivariate_weights(sample_weight, n, d)
-
-        if self.combine == "independent":
-            self.channel_estimators_ = []
-            pc = np.zeros((n, d), dtype=float)
-            brc = []
-            loge = 0.0
-            for c in range(d):
-                est_c = clone(self.base_estimator)
-                if self.k_max is not None:
-                    est_c.k_max = int(self.k_max)
-                est_c.fit(y_arr[:, c], sample_weight=w_mat[:, c])
-                self.channel_estimators_.append(est_c)
-                pc[:, c] = est_c.predict(None)
-                if getattr(est_c, "brc_", None) is not None:
-                    brc.append(est_c.get_regression_curve())
-                loge += float(est_c.score())
-            self.pc_fit_ = pc
-            self.brc_ = np.column_stack(brc) if brc else None
-            self.log_evidence_ = float(loge)
-            # boundaries are per-channel in this mode
-            self.boundaries_ = None
-            self.boundary_post_ = None
-            self.k_ml_ = None
-            return self
-
-        if self.combine != "shared":
-            raise ValueError("combine must be either 'shared' or 'independent'.")
-
-        # Shared-boundary: build channel states and combine block evidences.
-        k_max = (
-            int(self.k_max)
-            if self.k_max is not None
-            else int(getattr(self.base_estimator, "k_max", 50))
-        )
+        k_max = int(self.k_max) if self.k_max is not None else int(self.base_estimator.k_max)
         k_max = min(max(1, n), k_max)
 
-        channel_states: List[_ChannelState] = []
-        lA0_joint = None
+        channel_states: list[_ChannelState] = []
+        lA0_joint: FloatArray | None = None
         for c in range(d):
             est_c = clone(self.base_estimator)
-            # We do not call est_c.fit() here to avoid running DP d times.
-            # Instead we only build its block evidences.
-            hyper_c = est_c._estimate_global_params(y_arr[:, c], w_mat[:, c])
-            lA0_c, A1_c = est_c._compute_single_segment_stats(y_arr[:, c], hyper_c, w_mat[:, c])
+            hyper_c = est_c._estimate_hyperparameters(y_arr[:, c], w_mat[:, c])
+            lA0_c, A1_c = est_c._compute_block_evidence(y_arr[:, c], hyper_c, w_mat[:, c])
             channel_states.append(_ChannelState(est=est_c, hyper=hyper_c, lA0=lA0_c, A1=A1_c))
-            if lA0_joint is None:
-                lA0_joint = lA0_c.copy()
-            else:
-                lA0_joint = lA0_joint + lA0_c
-
+            lA0_joint = lA0_c.copy() if lA0_joint is None else lA0_joint + lA0_c
         assert lA0_joint is not None
 
-        # Run DP on joint evidences (reuse BayesBreakBase internals)
-        L, R = BayesBreakBase._compute_left_right_recursions(lA0_joint, n, k_max)
-        logC, C, logE = BayesBreakBase._posterior_over_k(L, n, k_max)
-        self.log_evidence_ = float(logE)
+        log_left, log_right = _dp.forward_backward(lA0_joint, n, k_max)
+        log_post_k, post_k, log_evidence = _dp.posterior_over_k(log_left, n, k_max)
+        self.log_evidence_ = float(log_evidence)
 
-        # choose k_ml around E[k]
-        ek = float(np.sum((np.arange(1, k_max + 1)) * C))
-        valid = np.where(np.isfinite(logC))[0] + 1
-        self.k_ml_ = int(valid[np.argmin((valid - ek) ** 2)])
+        valid = np.arange(1, k_max + 1)[np.isfinite(log_post_k)]
+        self.k_map_ = int(valid[int(np.argmax(log_post_k[valid - 1]))])
+        self.boundary_marginals_ = _dp.boundary_event_marginals(
+            log_left, log_right, log_post_k, n, k_max
+        )
+        map_boundaries, _log_joint = _dp.max_sum_segmentation(lA0_joint, self.k_map_)
+        self.map_boundaries_ = list(map_boundaries)
+        self.boundaries_internal_ = np.asarray(self.map_boundaries_, dtype=int)
 
-        # boundary posteriors averaged over k
-        d1 = BayesBreakBase._boundary_posteriors_marginal(L, R, logC, n, k_max)
-        self.boundary_post_ = d1
-
-        # MAP-like boundaries = top (k_ml-1) by d1
-        boundaries = BayesBreakBase._select_boundaries_from_scores(d1, self.k_ml_, n)
-        self.boundaries_ = boundaries
-
-        # per-channel piecewise-constant fit
+        means = np.zeros((self.k_map_, d), dtype=float)
         pc = np.zeros((n, d), dtype=float)
-        for a, b in zip(boundaries[:-1], boundaries[1:], strict=False):
+        for s, (a, b) in enumerate(
+            zip(self.map_boundaries_[:-1], self.map_boundaries_[1:], strict=False)
+        ):
             for c, st in enumerate(channel_states):
-                mu = st.est._segment_posterior_mean(a, b, y_arr[:, c], st.hyper, w_mat[:, c])
-                pc[a:b, c] = mu
-        self.pc_fit_ = pc
+                mu = st.est._segment_posterior_mean(
+                    int(a), int(b), y_arr[:, c], st.hyper, w_mat[:, c]
+                )
+                means[s, c] = float(mu)
+                pc[int(a) : int(b), c] = mu
+        self.map_segment_means_ = means
+        self.map_curve_ = pc
 
-        # optional Bayesian regression curve (per-channel)
-        self.brc_ = None
+        self.bayes_curve_mean_ = None
         rc = getattr(self.base_estimator, "regression_curve", "none")
         if rc in {"fixed_k", "mix_k"}:
             brc = np.zeros((n, d), dtype=float)
             for c, st in enumerate(channel_states):
                 A1_joint_c = self._make_channel_A1_joint(st, lA0_joint)
                 if rc == "fixed_k":
-                    brc[:, c] = self._bayes_regression_curve_fixed_k(
-                        L, R, A1_joint_c, n, self.k_ml_
+                    brc[:, c] = _dp.bayes_regression_curve_fixed_k(
+                        log_left, log_right, lA0_joint, A1_joint_c, n, self.k_map_
                     )
                 else:
-                    brc[:, c] = self._bayes_regression_curve_mixed_k(L, R, A1_joint_c, n, k_max, C)
-            self.brc_ = brc
+                    brc[:, c] = _dp.bayes_regression_curve_mixed_k(
+                        log_left, log_right, lA0_joint, A1_joint_c, n, k_max, post_k
+                    )
+            self.bayes_curve_mean_ = brc
 
-        # store fitted per-channel estimators in case callers want channel hyperparameters
         self.channel_estimators_ = [st.est for st in channel_states]
         return self
 
-    def predict(self, X: Any = None) -> np.ndarray:
-        require_fitted(self, ["pc_fit_"])
-        if self.pc_fit_ is None:
-            raise RuntimeError("pc_fit_ is None")
-        return np.array(self.pc_fit_, copy=True)
+    def predict(self, X: ArrayLike) -> FloatArray:
+        """Piecewise-constant multivariate fit at query points ``X``."""
 
-    def score(self, X: Any = None, y: Any = None) -> float:
+        require_fitted(self, ["map_curve_", "x_design_"])
+        X_arr = np.asarray(X, dtype=float)
+        x_new = X_arr[:, 0] if X_arr.ndim == 2 else X_arr.ravel()
+        idx = self._nearest_training_index(x_new)
+        seg = np.searchsorted(self.boundaries_internal_, idx, side="right") - 1
+        seg = np.clip(seg, 0, self.map_segment_means_.shape[0] - 1)
+        return self.map_segment_means_[seg]
+
+    def score(self, X: ArrayLike, y: ArrayLike) -> float:
+        """Mean log marginal-likelihood evaluation on training data (scalar)."""
+
         require_fitted(self, ["log_evidence_"])
-        if self.log_evidence_ is None:
-            raise RuntimeError("log_evidence_ is None")
-        return float(self.log_evidence_)
+        return float(self.log_evidence_) / max(1, int(self.n_))
 
-    # ---------------------------------------------------------------------
-    # Convenience getters
-    # ---------------------------------------------------------------------
-
-    def get_boundaries(self) -> List[int]:
-        require_fitted(self, ["boundaries_"])
-        if self.boundaries_ is None:
-            raise RuntimeError("Boundaries are undefined for combine='independent'.")
-        return list(self.boundaries_)
-
-    def get_boundary_posteriors(self) -> np.ndarray:
-        require_fitted(self, ["boundary_post_"])
-        if self.boundary_post_ is None:
-            raise RuntimeError("Boundary posteriors are undefined for combine='independent'.")
-        return np.array(self.boundary_post_, copy=True)
-
-    def get_regression_curve(self) -> Optional[np.ndarray]:
-        return None if self.brc_ is None else np.array(self.brc_, copy=True)
-
-    # ---------------------------------------------------------------------
-    # Internal helpers
-    # ---------------------------------------------------------------------
+    def _nearest_training_index(self, x_new: FloatArray) -> NDArray[np.intp]:
+        order = np.argsort(self.x_design_)
+        sorted_x = self.x_design_[order]
+        pos = np.searchsorted(sorted_x, x_new, side="right") - 1
+        pos = np.clip(pos, 0, len(sorted_x) - 1)
+        return order[pos]
 
     @staticmethod
-    def _make_channel_A1_joint(st: _ChannelState, lA0_joint: np.ndarray) -> np.ndarray:
-        """Construct A1 for one channel under the *joint* evidence.
-
-        In the univariate algorithm we use ``A1[i,j] = A0[i,j] * E[mu | y_(i,j]]``.
-        For the multivariate shared-boundary model, the DP is run using
-        ``A0_joint[i,j] = prod_c A0_c[i,j]``. The posterior mean for a channel
-        parameter depends only on the data in that channel, therefore we use
-        ``A1_joint^{(c)}[i,j] = A0_joint[i,j] * E[mu_c | y_c(i,j]]``.
-
-        We obtain ``E[mu_c | ...]`` via ``A1_c / A0_c`` where possible.
-
-        This construction is numerically safe for the sizes used in the unit tests
-        and example scripts. For large ``n`` and/or large ``d``, users may want a
-        log-domain implementation.
-        """
-
-        lA0_c = st.lA0
-        A1_c = st.A1
-
-        # mu_hat = A1_c / exp(lA0_c) on the valid upper triangle.
+    def _make_channel_A1_joint(st: _ChannelState, lA0_joint: FloatArray) -> FloatArray:
         with np.errstate(over="ignore", under="ignore", invalid="ignore", divide="ignore"):
-            mu_hat = A1_c * np.exp(-lA0_c)
+            mu_hat = st.A1 * np.exp(-st.lA0)
             A1_joint = np.exp(lA0_joint) * mu_hat
         A1_joint[~np.isfinite(A1_joint)] = 0.0
         return A1_joint
 
-    @staticmethod
-    def _bayes_regression_curve_fixed_k(
-        L: np.ndarray, R: np.ndarray, A1: np.ndarray, n: int, k: int
-    ) -> np.ndarray:
-        """Bayesian regression curve for fixed k.
 
-        This mirrors :meth:`bayesbreak.base.BayesBreakBase._bayes_regression_curve_fixed_k`.
-        """
+class IndependentMultivariateSegmenter(BaseEstimator, RegressorMixin):
+    """Multivariate segmenter that fits each channel independently.
 
-        denom = L[k, n]
-        diff = np.zeros(n + 1, dtype=float)
-        for i in range(0, n):
-            Li = L[0:k, i]
-            for j in range(i + 1, n + 1):
-                Rj = R[k - 1 :: -1, j]
-                log_w_ij = float(logsumexp(Li + Rj) - denom)
-                F1 = math.exp(log_w_ij) * float(A1[i, j])
-                if F1 != 0.0:
-                    diff[i] += F1
-                    diff[j] -= F1
-        mu = np.cumsum(diff)
-        return mu[:n]
+    Each channel gets its own boundary vector.
 
-    @staticmethod
-    def _bayes_regression_curve_mixed_k(
-        L: np.ndarray, R: np.ndarray, A1: np.ndarray, n: int, k_max: int, C: np.ndarray
-    ) -> np.ndarray:
-        out = np.zeros(n, dtype=float)
-        for k in range(1, k_max + 1):
-            if C[k - 1] == 0.0 or not np.isfinite(L[k, n]):
-                continue
-            out += float(C[k - 1]) * BayesBreakMultivariate._bayes_regression_curve_fixed_k(
-                L, R, A1, n, k
-            )
-        return out
+    Attributes
+    ----------
+    channel_estimators_ : list of BayesBreakSegmenter
+        Fitted per-channel segmenters.
+    map_curve_ : ndarray of shape (n, d)
+        Concatenated piecewise-constant fits.
+    log_evidence_ : float
+        Sum of per-channel ``log_evidence_`` values.
+    """
+
+    def __init__(
+        self,
+        base_estimator: BayesBreakSegmenter,
+        *,
+        k_max: int | None = None,
+    ):
+        self.base_estimator = base_estimator
+        self.k_max = k_max
+
+    def fit(
+        self,
+        X: ArrayLike,
+        y: ArrayLike,
+        *,
+        sample_weight: ArrayLike | None = None,
+    ) -> IndependentMultivariateSegmenter:
+        x_design, y_arr, _ = check_segmentation_input(X, y, multivariate=True)
+        n, d = y_arr.shape
+        self.n_, self.d_ = int(n), int(d)
+        self.x_design_ = x_design
+        w_mat = _normalize_multivariate_weights(sample_weight, n, d)
+
+        X_col = x_design.reshape(-1, 1)
+        self.channel_estimators_ = []
+        pc = np.zeros((n, d), dtype=float)
+        brcs: list[FloatArray] = []
+        loge = 0.0
+        for c in range(d):
+            est_c = clone(self.base_estimator)
+            if self.k_max is not None:
+                est_c.k_max = int(self.k_max)
+            est_c.fit(X_col, y_arr[:, c], sample_weight=w_mat[:, c])
+            self.channel_estimators_.append(est_c)
+            pc[:, c] = est_c.predict(X_col)
+            if est_c.bayes_curve_mean_ is not None:
+                brcs.append(est_c.bayes_curve_mean_)
+            loge += float(est_c.log_evidence_)
+        self.map_curve_ = pc
+        self.bayes_curve_mean_ = np.column_stack(brcs) if brcs else None
+        self.log_evidence_ = float(loge)
+        return self
+
+    def predict(self, X: ArrayLike) -> FloatArray:
+        require_fitted(self, ["channel_estimators_"])
+        X_arr = np.asarray(X, dtype=float)
+        x_new = X_arr[:, 0] if X_arr.ndim == 2 else X_arr.ravel()
+        X_col = x_new.reshape(-1, 1)
+        cols = [est.predict(X_col) for est in self.channel_estimators_]
+        return np.column_stack(cols)
+
+    def score(self, X: ArrayLike, y: ArrayLike) -> float:
+        require_fitted(self, ["channel_estimators_"])
+        y_arr = np.asarray(y, dtype=float)
+        if y_arr.ndim == 1:
+            y_arr = y_arr.reshape(-1, 1)
+        total = 0.0
+        for c, est in enumerate(self.channel_estimators_):
+            total += float(est.score(X, y_arr[:, c]))
+        return total / max(1, self.d_)

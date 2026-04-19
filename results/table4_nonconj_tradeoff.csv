@@ -1,6 +1,0 @@
-method,max_abs_block_log_evidence_error,fit_seconds,boundary_f1,k_sel
-quadrature,0.000000,0.1068,0.5000,7
-laplace,4.080908,0.0643,0.5000,7
-jj,56.596085,0.0858,0.6667,5
-ep,17.654265,0.0751,0.5000,7
-pg_vb,56.596085,0.0869,0.6667,5

@@ -1,8 +1,8 @@
 #!/usr/bin/env python
-r"""Figure 6: Latent Group Discovery via BayesBreakMixture.
+r"""Figure 6: Latent Group Discovery via BayesBreakMixtureClassifier.
 
 This is the most comprehensive mixture-model experiment in the paper.  It
-demonstrates three key capabilities of :class:`bayesbreak.BayesBreakMixture`:
+demonstrates three key capabilities of :class:`bayesbreak.BayesBreakMixtureClassifier`:
 
 1. **Unsupervised group discovery** — recovering which sequences belong to
    which latent group without any labels.
@@ -21,7 +21,7 @@ Two groups with *structurally distinct* changepoint patterns:
   levels :math:`(1.0, -1.0)`.
 
 20 sequences are generated per group (:math:`n=100`, :math:`\sigma=0.2`) and
-shuffled.  :class:`BayesBreakMixture` is fit with ``n_groups=2`` and multiple
+shuffled.  :class:`BayesBreakMixtureClassifier` is fit with ``n_groups=2`` and multiple
 random restarts to avoid local optima.
 
 The resulting 6-panel (2×3) figure shows:
@@ -54,8 +54,8 @@ Interpretation
 
 Outputs
 -------
-- results/fig6_mixture_discovery.png
-- results/fig6_mixture_discovery.pdf
+- docs/report/figures/fig6_mixture_discovery.png
+- docs/report/figures/fig6_mixture_discovery.pdf
 
 Usage
 -----
@@ -75,7 +75,7 @@ sys.path.insert(0, str(Path(__file__).parents[2] / "src"))
 from _style import COLORS, add_panel_label, save_figure, setup_style  # noqa: E402
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
-from bayesbreak.mixture import BayesBreakMixture  # noqa: E402
+from bayesbreak.mixture import BayesBreakMixtureClassifier  # noqa: E402
 
 
 # --------------------------------------------------------------------------- #
@@ -154,7 +154,7 @@ def make_figure(outdir: Path):
     best_mix = None
     best_acc = 0.0
     for seed in [0, 1, 2, 3, 5, 10, 42, 100, 123]:
-        mix = BayesBreakMixture(
+        mix = BayesBreakMixtureClassifier(
             base_estimator=BayesBreakGaussian(k_max=10),
             n_groups=2,
             k_max=10,
@@ -162,7 +162,7 @@ def make_figure(outdir: Path):
             tol=1e-8,
             regression_curve="none",
             random_state=seed,
-        ).fit(ys)
+        ).fit(np.arange(len(ys)).reshape(-1, 1), ys)
 
         r_tmp = np.asarray(mix.responsibilities_)
         pred_tmp = np.argmax(r_tmp, axis=1)
@@ -319,8 +319,8 @@ def make_figure(outdir: Path):
 
     for y_obs, true_label in zip(ys, y_true, strict=False):
         # Fit independently
-        ind_model = BayesBreakGaussian(k_max=10).fit(y_obs)
-        ind_bounds = ind_model.boundaries_[1:-1]
+        ind_model = BayesBreakGaussian(k_max=10).fit(np.arange(len(y_obs)).reshape(-1, 1), y_obs)
+        ind_bounds = ind_model.map_boundaries_[1:-1]
 
         # True boundaries for this sequence
         true_bounds = bounds_A[1:-1] if true_label == 0 else bounds_B[1:-1]
@@ -373,7 +373,7 @@ if __name__ == "__main__":
     import argparse
 
     p = argparse.ArgumentParser()
-    p.add_argument("--outdir", type=Path, default=Path("results"))
+    p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     args = p.parse_args()
     args.outdir.mkdir(parents=True, exist_ok=True)
     make_figure(args.outdir)

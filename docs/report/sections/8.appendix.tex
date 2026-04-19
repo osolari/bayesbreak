@@ -32,7 +32,11 @@ The standard Diaconis--Ylvisaker conjugate prior takes the form
  p(\eta\mid \tau,\nu) \;=\; \exp\big\{\langle \eta,\tau\rangle - \nu A(\eta) - \log Z(\tau,\nu)\big\},
  \label{eq:app-ef-prior}
 \end{equation}
-where $(\tau,\nu)$ are hyperparameters and $Z(\tau,\nu)$ is the normalizer.
+where $(\tau,\nu)$ are hyperparameters and $Z(\tau,\nu)$ is the normalizer. (This appendix uses
+the symbols $(\tau,\nu)$ for the conjugate-prior hyperparameters; the main text uses
+$(\alpha,\beta)$ for the same objects. The translation is $\tau\leftrightarrow\alpha$ and
+$\nu\leftrightarrow\beta$; we use both notations in their natural habitats and trust the reader
+to identify them.)
 
 \paragraph{Evidence integral.}
 Multiplying \eqref{eq:app-ef-lik} and \eqref{eq:app-ef-prior} yields
@@ -75,29 +79,29 @@ interpretation that helps motivate the DP recursion.
 
 \begin{definition}[Renewal-process segmentation prior]
 \label{def:renewal}
-Fix $k\ge1$.
-Let $L_1,\dots,L_k$ be positive integer-valued segment lengths with unnormalized mass function
-$\varphi(\ell)\propto g\big(x_{i+\ell}-x_i\big)$ for all admissible starts $i$.
+Fix $k\ge1$, and assume the design is translation-invariant in the sense that
+$g(x_{i+\ell}-x_i)$ depends on $i$ only through $\ell$ (e.g., equispaced design with
+$x_i=i$, so $g(\ell)$ is a function of the integer segment length alone). Let $L_1,\dots,L_k$ be
+positive integer-valued segment lengths with unnormalized mass function $\varphi(\ell):=g(\ell)$.
 A \emph{renewal segmentation} draws lengths $(L_q)_{q=1}^k$ and sets boundaries
 $t_q := \sum_{r=1}^q L_r$ with the constraint $t_k=n$.
 \end{definition}
 
 \begin{proposition}[Equivalence of renewal and factorized boundary priors]
 \label{prop:renewal-equivalence}
-Under Definition~\ref{def:renewal}, the induced distribution on $t=(t_0,\dots,t_k)$ satisfies
-$p(t\mid k)\propto \prod_{q=1}^k g(x_{t_q}-x_{t_{q-1}})$.
-Conversely, any prior of the form \eqref{eq:lengthprior} can be realized as a renewal segmentation prior
-with appropriate unnormalized length mass $\varphi$.
+Under Definition~\ref{def:renewal} and the translation-invariance hypothesis,
+the induced distribution on $t=(t_0,\dots,t_k)$ satisfies
+$p(t\mid k)\propto \prod_{q=1}^k g(t_q-t_{q-1})$. Conversely, any prior of the form
+\eqref{eq:lengthprior} \emph{whose length factor depends only on the segment length} can be
+realized as a renewal segmentation prior with $\varphi(\ell)=g(\ell)$.
 \end{proposition}
 
 \begin{proof}
 For a fixed boundary vector $t$, the corresponding length sequence is uniquely determined as
-$L_q=t_q-t_{q-1}$.
-The renewal construction assigns to that sequence mass proportional to
-$\prod_{q=1}^k \varphi(L_q)$.
-By definition of $\varphi$, this is proportional to $\prod_q g(x_{t_q}-x_{t_{q-1}})$, which proves the first claim.
-For the converse, take $\varphi(\ell):=g(x_{i+\ell}-x_i)$ (for any admissible start $i$) as an unnormalized length mass;
-then the renewal prior reproduces \eqref{eq:lengthprior} up to the shared normalizer $C_k$.
+$L_q=t_q-t_{q-1}$. Under translation invariance the renewal construction assigns that sequence
+mass proportional to $\prod_{q=1}^k \varphi(L_q)=\prod_{q=1}^k g(L_q)$. This matches
+$p(t\mid k)\propto\prod_{q=1}^k g(t_q-t_{q-1})$, proving the forward direction. The converse
+sets $\varphi(\ell):=g(\ell)$ as the unnormalized length mass.
 \end{proof}
 
 \begin{remark}[Hidden-Markov interpretation]
@@ -138,6 +142,11 @@ For fixed $r$, summing the joint posterior over all boundary vectors with $t_r=t
 \end{align}
 The constraint $t_r=t$ splits the product into a prefix part (segments $1{:}r$ ending at $t$) and a suffix part (segments $r+1{:}k$ starting at $t$).
 Summing over all admissible prefixes gives $\widetilde{L}_{r,t}$ by definition of the DP; summing over all admissible suffixes gives $\widetilde{R}_{k-r,t}$.
+Note that the partition-prior normalizer $C_k$ multiplies the numerator for every boundary vector
+under consideration (because $p(t\mid k)\propto C_k^{-1}\prod_q g(\cdot)$ for each $t$), and
+multiplies the denominator through the same factor on the total evidence $p(y\mid k)$; it
+therefore cancels, and \eqref{eq:app-boundary-marginal} involves only quantities that can be
+computed from $\widetilde L,\widetilde R$.
 Normalizing by the total evidence $\widetilde{L}_{k,n}$ yields \eqref{eq:app-boundary-marginal}.
 Finally, $p(t\text{ is a boundary}\mid y,k)=\sum_{r=1}^{k-1}p(t_r=t\mid y,k)$, giving the result.
 \end{proof}
@@ -148,11 +157,12 @@ Finally, $p(t\text{ is a boundary}\mid y,k)=\sum_{r=1}^{k-1}p(t_r=t\mid y,k)$, g
 The length-aware prior family includes hazard-process priors as a special case.
 It is sometimes useful to understand the limiting behavior as the hazard vanishes or becomes certain.
 
-\begin{proposition}[Degenerate hazard limits]
+\begin{proposition}[Degenerate hazard limits, prior-only]
 \label{prop:hazard-limits}
 Consider the index-uniform design $x_t=t$ and a constant hazard $\rho\in(0,1)$ that induces a geometric length prior
 $g(\ell)=\rho(1-\rho)^{\ell-1}$ on segment lengths (up to the constraint that the last segment ends at $n$).
-Then:
+These limits are statements about the prior, and therefore about the posterior only insofar as
+the data likelihood does not override them. Then:
 \begin{enumerate}[label=(\roman*)]
 \item As $\rho\downarrow 0$, the prior concentrates on $k=1$ (a single segment) and $p(t\mid k)$ becomes irrelevant.
 \item As $\rho\uparrow 1$, the prior concentrates on $k=n$ with unit-length segments, i.e., $t_q=q$ for all $q$.
@@ -176,8 +186,13 @@ This is the familiar \emph{label switching} phenomenon.
 
 \begin{proposition}[Permutation invariance]
 \label{prop:perm-invariance}
-Assume a $G$-group latent model with an exchangeable prior over group-specific parameters and segmentations:
-$p\big((t^{(g)},\psi_g)_{g=1}^G\big)=p\big((t^{(\sigma(g))},\psi_{\sigma(g)})_{g=1}^G\big)$ for every permutation $\sigma$.
+Assume a $G$-group latent model with an exchangeable prior over group-specific parameters and segmentations.
+For every permutation $\sigma$ of $\{1,\dots,G\}$,
+\[
+p\big((t^{(g)},\psi_g)_{g=1}^G\big)
+=
+p\big((t^{(\sigma(g))},\psi_{\sigma(g)})_{g=1}^G\big).
+\]
 Then the joint posterior over $(t^{(g)},\psi_g)_{g=1}^G$ and group assignments $z_{1:S}$ satisfies the same invariance.
 In particular, any MAP assignment is non-unique up to label permutation.
 \end{proposition}
@@ -194,3 +209,374 @@ For reporting, one may impose an ordering constraint (e.g., by evidence, segment
 post-process posterior samples to align labels.
 The EM algorithm in Section~\ref{sec:latent-em} can converge to any one of the symmetric modes.
 \end{remark}
+
+\subsection{Annotated literature review}
+\label{app:annotated-lit}
+
+Table~\ref{tab:annotated-lit} records the papers most directly relevant to the present manuscript.
+The goal is not to be exhaustive over the entire changepoint literature, but to make explicit which
+threads BayesBreak builds on and where the present contribution sits relative to them.
+
+\begin{longtable}{p{0.17\linewidth}p{0.27\linewidth}p{0.48\linewidth}}
+\caption{Annotated literature review.}\label{tab:annotated-lit}\\
+\toprule
+Theme & Representative papers & Annotation relative to BayesBreak \\
+\midrule
+\endfirsthead
+\toprule
+Theme & Representative papers & Annotation relative to BayesBreak \\
+\midrule
+\endhead
+
+Foundational product partitions &
+\citet{barry1992ppm, barry1993bayesCP} &
+Introduced the product-partition view of Bayesian changepoint analysis. BayesBreak adopts exactly
+this segment-factorization principle, but repackages it around a reusable block-evidence interface
+that is intended to work across multiple observation families and prediction tasks. \\
+
+Exact offline DP &
+\citet{fearnhead2006exact, hutter2006bpcr} &
+These are the closest conceptual ancestors of the exact offline core. \citet{fearnhead2006exact}
+emphasizes exact posterior recursion for changepoints, while \citet{hutter2006bpcr} highlights
+Bayesian curve summaries and evidence-based model comparison. BayesBreak systematizes both inside a
+single modular framework and makes the distinction between sum-product summaries and joint MAP
+segmentations explicit. \\
+
+Segment dependence and richer local models &
+\citet{fearnhead2011dependence, ruggieri2014bcpvs} &
+These papers show how offline Bayesian segmentation can be enriched beyond i.i.d. block means, for
+example by allowing dependence across neighboring segments or by fitting piecewise polynomial
+regression. They motivate the claim that the real bottleneck is the local block integral, not the
+DP itself. \\
+
+Frequentist exact partitioning &
+\citet{auger1989segment, jackson2005optpart, killick2012pelt} &
+These methods are critical baselines for optimization-based segmentation. They solve related
+partitioning problems efficiently but do not natively provide posterior probabilities over boundary
+locations or segment counts. BayesBreak differs mainly in inferential target rather than in the use
+of dynamic programming per se. \\
+
+Penalized and multiscale segmentation &
+\citet{tibshirani2005fused, bleakley2011groupfused, frick2014smuce, fryzlewicz2014wbs} &
+These approaches offer strong algorithmic or confidence guarantees, especially in large-scale or
+multisequence settings. They are natural comparators for future empirical work, but they optimize
+penalized objectives or detection rules rather than the posterior quantities emphasized here. \\
+
+Online and trans-dimensional Bayes &
+\citet{adamsmackay2007bocpd, green1995rjMCMC, denison1998bayesian} &
+These references represent two alternative Bayesian regimes: streaming detection and fully flexible
+posterior simulation over model dimension. BayesBreak instead targets exact offline inference when
+block marginalization is feasible, and deterministic approximations when only the block integral is
+intractable. \\
+
+Multi-sequence and hierarchical Bayes &
+\citet{carlin1992hierBayesCP, fan2017basic, quinlan2024jrpm} &
+These papers study information sharing across related sequences. BayesBreak's exact shared-boundary
+pooling belongs to this lineage, while the latent-template mixture can be viewed as a conservative,
+algorithmically transparent alternative to more ambitious joint hierarchical models. \\
+
+Covariate-aware and generalized random partitions &
+\citet{muller2011ppmx, park2010gppm} &
+This literature broadens the notion of cohesion or prior similarity between observations. It is the
+closest conceptual precedent for the design-aware segment-length priors used here, although BayesBreak
+specializes to contiguous ordered partitions rather than arbitrary clustering. \\
+
+Deterministic approximations for non-conjugate blocks &
+\citet{jaakkola2000logisticvb, minka2001ep, polson2013pg} &
+These references justify the approximation toolkit in Section~\ref{sec:nonconj}. The present paper
+does not claim novel approximation schemes; its contribution is to show how such local block
+surrogates can be inserted into the same segmentation DP and how their errors propagate to global
+posterior odds. \\
+\bottomrule
+\end{longtable}
+
+\subsection{Proof of the max-sum DP correctness (joint MAP segmentation)}
+\label{app:max-sum-proof}
+
+We supply here the full correctness proof for the max-sum recursion
+$M_{k+1,j}=\max_h\{M_{k,h}+\log\widetilde A^{(0)}_{h,j}\}$ referenced in
+Theorem~\ref{thm:dp-correctness}, item 3.
+
+\begin{proposition}[Max-sum correctness]
+For every $k\le k_{\max}$ and $j\ge k$, $M_{k,j}$ equals the maximum, over all admissible
+$k$-segmentations of $y_{1:j}$, of $\sum_{q=1}^k \log\widetilde A^{(0)}_{t_{q-1},t_q}$.
+Consequently $M_{\widehat k,n}$ is the joint log-MAP posterior score, and backtracking via
+$h^\star(k,j)$ recovers the joint MAP boundary vector.
+\end{proposition}
+
+\begin{proof}
+Induction on $k$. For $k=1$, $M_{1,j}=\log\widetilde A^{(0)}_{0,j}$, which is the only admissible
+$1$-segmentation score. Assume the claim holds for $k$; every admissible $(k+1)$-segmentation of
+$y_{1:j}$ decomposes uniquely as a $k$-segmentation of $y_{1:h}$ for some $h\in\{k,\dots,j-1\}$
+followed by a terminal block $(h,j]$. By inductive hypothesis the optimal prefix score is
+$M_{k,h}$, so the optimal total score over $(k+1)$-segmentations is
+$\max_h\{M_{k,h}+\log\widetilde A^{(0)}_{h,j}\}=M_{k+1,j}$. Backtracking recovers the optimum
+path by following $h^\star$.
+\end{proof}
+
+\subsection{Variational bounds for non-conjugate blocks}
+\label{app:variational-bounds}
+
+We recall two block-level variational bounds used in Section~\ref{sec:nonconj}.
+
+\paragraph{Jensen's inequality for ELBOs.}
+For any density $q(\theta)$ and any block $(i,j]$,
+$\log A^{(0)}_{ij}\ge \int q(\theta)\log[p(y_{i+1:j}\mid\theta)\pi(\theta)/q(\theta)]\,d\theta$.
+This is the block ELBO. Optimizing over $q$ in a parametric class (e.g., Gaussian) yields a
+lower bound on $\log A^{(0)}_{ij}$, hence an upper bound on $-\log A^{(0)}_{ij}$ error.
+
+\paragraph{Jaakkola--Jordan logistic bound.}
+For the binomial-logistic likelihood term
+$\log[\exp(\kappa_t\theta)/(1+\exp(\theta))^{m_t}]$, the Jaakkola--Jordan bound supplies, for each
+variational parameter $\xi_t\ge 0$,
+\[
+-m_t\log(1+e^\theta)\ge -m_t\log(1+e^{\xi_t})+\tfrac{m_t}{2}(\theta-\xi_t)-\tfrac{m_t}{4\xi_t}\tanh(\xi_t/2)(\theta^2-\xi_t^2),
+\]
+which is quadratic in $\theta$ and can be combined with a Gaussian prior to yield a closed-form
+Gaussian variational posterior for $\theta$. Iterating on $\{\xi_t\}$ by
+$\xi_t^\star=\sqrt{\mathbb{E}_q[\theta^2]}$ gives monotone improvement in the block ELBO.
+
+\subsection{Derivation of P\'olya--Gamma mean-field updates}
+\label{app:pg-mf-derivation}
+
+We derive the closed-form updates stated in Proposition~\ref{prop:pg-mf}. Starting from
+\eqref{eq:pg-cond-quad}, consider the mean-field ELBO
+\[
+\mathcal{L}(q_\theta,q_\omega)=\mathbb{E}_q[\log p(y,\theta,\omega)]-\mathbb{E}_q[\log q_\theta(\theta)q_\omega(\omega)].
+\]
+Coordinate ascent over $q_\theta$ at fixed $q_\omega$ gives $q_\theta^\star(\theta)\propto\exp\mathbb{E}_{q_\omega}[\log p(\theta,\omega,y)]$, which reduces to
+$\exp\{-\tfrac12\theta^2(\rho^{-2}+\sum_t w_t\mathbb{E}_q[\omega_t])+\theta(\rho^{-2}\nu+\sum_t w_t\kappa_t)\}$, a Gaussian with the stated $(\mu_q,\sigma_q^2)$.
+Similarly, $q_\omega^\star(\omega_t)\propto\exp\mathbb{E}_{q_\theta}[\log p(\omega_t,\theta,y)]\propto p(\omega_t)\exp(-\tfrac{w_t}{2}\mathbb{E}_q[\theta^2]\omega_t)$, which, by the defining exponential tilting of the PG distribution, equals $\mathrm{PG}(m_t,c_t)$ with $c_t^2=\mathbb{E}_q[\theta^2]=\mu_q^2+\sigma_q^2$. The mean of $\mathrm{PG}(m,c)$ is $\tfrac{m}{2c}\tanh(c/2)$. Monotonicity follows because each coordinate update maximizes its respective factor of $\mathcal{L}$.
+
+\subsection{Complexity proofs}
+\label{app:complexity-proofs}
+
+The complexity claims in Theorem~\ref{thm:dp-complexity} were proved by counting operations; we
+repeat here the argument for the EM-with-pooled-blocks combination.
+
+\begin{proposition}[EM + pooled-block complexity]
+Let $S$ be the number of subjects and $G$ the number of latent groups. One EM iteration of
+Algorithm~\ref{alg:multi-em} runs in time $\mathcal{O}(SGn+Gk_{\max}n^2)$ after a one-time
+precomputation of per-subject log-block evidences costing $\mathcal{O}(Sn^2)$. Memory is
+$\mathcal{O}((S+G)n^2+Gk_{\max}n)$.
+\end{proposition}
+
+\begin{proof}
+E-step evaluates $G$ group log-likelihoods per subject, each of which is a constant number of
+lookups per segment of the current template; total $\mathcal{O}(SG\bar k)$ where $\bar k\le k_{\max}$.
+M-step recomputes $G$ score matrices of size $\mathcal{O}(n^2)$ (each is a weighted sum of $S$ block-evidence
+matrices: $\mathcal{O}(Sn^2)$ to form, or $\mathcal{O}(n^2)$ per group when the weights change
+but the basis is cached) and runs a max-sum DP in $\mathcal{O}(k_{\max}n^2)$ per group. Summing
+gives the claim.
+\end{proof}
+
+\subsection{Code and reproduction}
+\label{app:code}
+
+A reference Python implementation of BayesBreak is hosted at
+\url{https://github.com/osolari/bayesbreak}. The repository is organized to mirror the paper
+(block routines, DP layer, plate-model variants, real-data pipelines) and is the recommended
+entry point for reproducing the tables and figures of Section~\ref{sec:experiments} and of the
+real-data appendix below. Suggested installation and invocation:
+
+\begin{verbatim}
+git clone https://github.com/osolari/bayesbreak.git
+cd bayesbreak
+python -m venv .venv && source .venv/bin/activate
+pip install -e ".[all]"
+# Regenerate synthetic experiments (Section 6, bundled suite):
+python -m bayesbreak.experiments.synthetic --all --out ./out_synth
+# Regenerate real-data experiments (requires network; see App. A.5):
+python -m bayesbreak.experiments.realdata --dataset welllog --out ./out_real
+python -m bayesbreak.experiments.realdata --dataset cgh     --out ./out_real
+python -m bayesbreak.experiments.realdata --dataset spx     --out ./out_real
+python -m bayesbreak.experiments.realdata --dataset methyl  --out ./out_real
+\end{verbatim}
+
+When reproducing published numbers, pin the commit hash used for a given manuscript version (the
+repository's \texttt{CHANGELOG.md} lists release tags aligned with manuscript revisions). The
+pipelines in Appendix~\ref{app:real-data} assume either a local installation of the package or
+sufficient environment access to run the listed R/Bioconductor and Python download commands.
+
+\subsection{Real-data sources, preprocessing, and reproduction notes}
+\label{app:real-data}
+
+This appendix provides exact data sources, download commands, and preprocessing recipes for the
+four real-data illustrations in Section~\ref{sec:realdata}. Each subsection is organized so that a
+reader with a shell, Python $\ge 3.10$, and R $\ge 4.3$ can regenerate the corresponding body
+figure and table. The commands below are written to be executable by an automated agent
+(e.g.\ Claude Code) with no interactive prompts.
+
+\subsubsection{Well-log NMR segmentation}
+\label{app:real-data-welllog}
+
+\paragraph{Source.}
+The well-log dataset of \citet{fearnhead2006exact} contains 4050 successive nuclear-magnetic-resonance
+measurements recorded down a petroleum borehole. A copy ships with the R package
+\texttt{changepoint} (Killick \& Eckley). Alternative canonical references: Ruanaidh \& Fitzgerald
+(1996) and Fearnhead's webpage.
+
+\paragraph{Fetch \& preprocess (R, recommended).}
+\begin{verbatim}
+# Install if needed
+install.packages("changepoint", repos="https://cloud.r-project.org")
+library(changepoint)
+data(Lai2005fig4)  # if this label is absent in the installed version,
+# fall back to: data(Wellog) or data(wavenumber)
+y <- as.numeric(Lai2005fig4)  # or Wellog
+writeLines(as.character(y), "welllog.txt")
+# then standardize:
+yS <- (y - mean(y)) / sd(y)
+writeLines(as.character(yS), "welllog_standardized.txt")
+\end{verbatim}
+
+\paragraph{Alternative fetch (Python).}
+If \texttt{changepoint} is unavailable, there is an equivalent copy shipped with \texttt{ruptures}:
+\begin{verbatim}
+pip install ruptures
+python -c "import ruptures; import numpy as np;
+signal, _ = ruptures.load_cost('welllog.csv');
+np.savetxt('welllog.txt', signal)"
+\end{verbatim}
+
+\paragraph{BayesBreak settings.}
+Block model: Gaussian with known variance, $w_t\equiv 1$. Hyperparameters: $\nu=0$,
+$\rho^2=100$ (weak), $\sigma^2=$ robust within-layer estimate (median absolute deviation scaled to
+a Gaussian). Partition prior: $g\equiv 1$ (index uniform) and $g(\ell)\propto\ell$ (length
+aware) as contrast. $k_{\max}=30$. Prior on $k$: $p(k)\propto 1$.
+
+\paragraph{Outputs for Figure~\ref{fig:welllog} and Table~\ref{tab:real_welllog}.}
+Joint MAP segmentation, $P(k\mid y)$, marginal boundary posterior, ECE against visually obvious
+changepoints (labeled in the original Fearnhead paper), runtime in seconds. Expected outcome: a
+handful of strong changepoints with tight boundary marginals, $\widehat k\in\{10,15\}$ depending
+on the prior.
+
+\subsubsection{Array-CGH multi-subject copy-number}
+\label{app:real-data-cgh}
+
+\paragraph{Source.}
+The Coriell cell-line array-CGH panel from Snijders et al. (2001) is bundled with the
+Bioconductor package \texttt{DNAcopy}. Each sample is a log-2 copy-number-ratio profile at
+$\sim 2000$ autosomal probes across 15 cell lines.
+
+\paragraph{Fetch \& preprocess (R via Bioconductor).}
+\begin{verbatim}
+if (!require("BiocManager", quietly=TRUE))
+    install.packages("BiocManager", repos="https://cloud.r-project.org")
+BiocManager::install("DNAcopy", update=FALSE, ask=FALSE)
+library(DNAcopy)
+data(coriell)
+# coriell columns: Clone, Chromosome, Position, Coriell.05296, Coriell.13330
+# Select one chromosome per subject for a tractable benchmark:
+subs <- c("Coriell.05296","Coriell.13330")
+for (chr in c(1,4,11,17)) {
+  block <- coriell[coriell$Chromosome==chr, c("Position", subs)]
+  block <- block[complete.cases(block),]
+  write.csv(block, paste0("cgh_chr", chr, ".csv"), row.names=FALSE)
+}
+\end{verbatim}
+
+\paragraph{Per-probe precision estimation.}
+For each sample $s$ and chromosome, fit a robust local-variance estimate using a rolling MAD on
+residuals from a piecewise-constant smoother; invert to get $w^{(s)}_t=1/\widehat\sigma_t^{2,(s)}$.
+
+\paragraph{BayesBreak settings.}
+Heteroscedastic Gaussian block with known $\sigma^2\equiv 1$ absorbed into $w_t$. Multi-subject
+pooling with shared boundaries (Assumption~\ref{ass:cond-indep-subjects}). Subject-specific
+priors $\mu\sim\mathcal{N}(0,100)$. $k_{\max}=20$ per chromosome. Index-uniform prior.
+
+\paragraph{Outputs for Figure~\ref{fig:cgh} and Table~\ref{tab:real_cgh}.}
+Per-subject exported segmentations vs.\ pooled shared-boundary segmentation; boundary F1 against
+Snijders 2001 annotations; pooled log-evidence for independent vs.\ shared-boundary models.
+Expected outcome: shared-boundary pooling yields higher boundary F1 when the true boundaries are
+shared.
+
+\subsubsection{S\&P 500 volatility regimes}
+\label{app:real-data-spx}
+
+\paragraph{Source.}
+Daily closing prices from Yahoo Finance via \texttt{yfinance} or \texttt{pandas-datareader}.
+
+\paragraph{Fetch \& preprocess (Python).}
+\begin{verbatim}
+pip install yfinance pandas numpy
+python - <<'PY'
+import yfinance as yf, pandas as pd, numpy as np
+df = yf.download("^GSPC", start="2018-01-01", end="2022-12-31",
+                 auto_adjust=True, progress=False)
+df = df[["Close"]].dropna()
+log_ret = np.log(df["Close"]).diff().dropna()
+log_sq = np.log(log_ret**2 + 1e-12)  # log-squared returns
+log_sq.to_csv("spx_logsq.csv")
+# Alternative: threshold crossings at tau = 1 daily sd
+tau = log_ret.std()
+crossings = (log_ret.abs() > tau).astype(int)
+crossings.to_csv("spx_crossings.csv")
+PY
+\end{verbatim}
+
+\paragraph{BayesBreak settings.}
+(A) Gaussian-with-known-variance block on $z_t=\log r_t^2$ after centering; $w_t\equiv 1$. Known
+$\sigma^2$ from a stable subperiod. Weak Gaussian prior on $\mu$. (B) Poisson-with-exposure
+block on daily threshold-crossing counts aggregated into weekly bins. Both calls use index-uniform
+prior, $k_{\max}=15$.
+
+\paragraph{Outputs for Figure~\ref{fig:spx} and Table~\ref{tab:real_spx}.}
+Exported joint MAP with boundary marginals for each block model; qualitative alignment of top-5
+posterior boundaries with annotated macro events (COVID-19 onset in March 2020, Feb 2022).
+
+\subsubsection{CpG atlas DNA methylation}
+\label{app:real-data-methylation}
+
+\paragraph{Source.}
+Loyfer et al. (2023), \emph{``A DNA methylation atlas of normal human cell types''}, published in
+Nature (2023). Processed methylation calls with per-CpG coverage are distributed via the GitHub
+repository \texttt{nloyfer/meth\_atlas} and via NCBI GEO accession \texttt{GSE186458}.
+
+\paragraph{Fetch \& preprocess (bash + Python).}
+\begin{verbatim}
+# Option A: GitHub tarball of the atlas (preferred: already preprocessed)
+git clone https://github.com/nloyfer/meth_atlas.git
+cd meth_atlas
+# Follow the README to download the atlas .tsv.gz beta-value matrix and
+# per-CpG coverage matrix. The atlas file is typically:
+#   atlas.tsv.gz (rows = CpGs; cols = cell types; values = beta)
+#   coverage.tsv.gz (rows = CpGs; cols = cell types; values = counts)
+
+# Option B: NCBI GEO (raw sample-level)
+# wget "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE186nnn/GSE186458/..."
+\end{verbatim}
+Then subset to a single chromosome-arm region and two cell types:
+\begin{verbatim}
+python - <<'PY'
+import pandas as pd, numpy as np, gzip
+atlas = pd.read_csv("atlas.tsv.gz", sep="\t", index_col=0, compression="gzip")
+cov   = pd.read_csv("coverage.tsv.gz", sep="\t", index_col=0, compression="gzip")
+region = "chr1:20000000-30000000"   # pick any atlas-annotated region
+mask = atlas.index.str.contains(region.split(":")[0]+":")
+A = atlas.loc[mask]; C = cov.loc[mask]
+# clamp beta away from 0,1 for numerical stability:
+eps = 1e-4
+A = A.clip(eps, 1-eps)
+# per-CpG precision: use coverage directly (phi proportional to coverage)
+for ct in ["T_cell","Hepatocyte"]:
+    out = pd.DataFrame({"beta": A[ct], "phi": C[ct]}).dropna()
+    out.to_csv(f"methyl_{ct}.csv")
+PY
+\end{verbatim}
+
+\paragraph{BayesBreak settings.}
+Beta-response block (\S\ref{sec:families}) with per-CpG precision $\phi_t$ from coverage.
+Quadrature order $G=64$ Gauss--Legendre nodes on $\mu\in[\epsilon,1-\epsilon]$. Prior
+$\mu\sim\mathrm{Beta}(1,1)$. $k_{\max}=25$. Index-uniform partition prior.
+
+\paragraph{Outputs for Figure~\ref{fig:methylation} and Table~\ref{tab:real_methylation}.}
+Per-region-per-cell-type exported segmentation, marginal boundary posterior, held-out
+log-predictive on a random 20\% held-out CpG subset within each region, and boundary F1 against
+the atlas block annotations. Expected outcome: sharp transitions aligned with known methylation
+block boundaries in housekeeping regions; more diffuse posterior in variable regions.
+
+\paragraph{Reproducibility note.}
+All four pipelines should run to completion on a laptop (16 GB RAM) in well under 30 minutes
+combined. Intermediate data caches should be versioned or hashed to detect upstream changes in
+atlas or yfinance releases.

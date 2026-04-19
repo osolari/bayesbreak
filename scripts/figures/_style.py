@@ -1,200 +1,152 @@
-"""Publication-quality matplotlib styling for BayesBreak figures.
+"""Publication-quality matplotlib + seaborn styling for BayesBreak figures.
 
-This module provides consistent, high-quality styling suitable for academic
-publications (e.g., NeurIPS, ICML, ICLR).
+Every figure script calls :func:`setup_style` once at the top. This module
+enforces consistent typography, colour palette, line weights, and figure sizes
+across all figures shipped with the report.
+
+The palette is a colour-blind-safe variation of Paul Tol's bright palette.
 """
 
 from __future__ import annotations
 
 import logging
 import warnings
+from pathlib import Path
 
-# Suppress fontTools warnings about font metadata timestamps (benign)
 warnings.filterwarnings("ignore", category=UserWarning, module="fontTools")
 warnings.filterwarnings("ignore", message=".*timestamp.*")
 warnings.filterwarnings("ignore", message=".*extra bytes.*")
 logging.getLogger("fontTools").setLevel(logging.ERROR)
 
 import matplotlib as mpl  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
 import seaborn as sns  # noqa: E402
 
-# ══════════════════════════════════════════════════════════════════════════════
-# Publication-quality defaults
-# ══════════════════════════════════════════════════════════════════════════════
-
-# Figure sizes (inches) - typical single/double column widths
-SINGLE_COL_WIDTH = 3.25  # ~83mm (Nature/Science single column)
-DOUBLE_COL_WIDTH = 6.75  # ~171mm (Nature/Science double column)
+# Column widths (inches) following a ~170 mm text width.
+SINGLE_COL_WIDTH = 3.5
+DOUBLE_COL_WIDTH = 7.0
 FULL_PAGE_WIDTH = 7.0
 
-# Color palette - vibrant but professional
-COLORS = {
-    "blue": "#0077BB",  # Strong blue
-    "red": "#CC3311",  # Strong red
-    "green": "#009988",  # Teal green
-    "orange": "#EE7733",  # Orange
-    "purple": "#AA4499",  # Purple
-    "cyan": "#33BBEE",  # Cyan
-    "grey": "#888888",  # Medium grey
-    "lightgrey": "#DDDDDD",  # Light grey for backgrounds
-    "black": "#000000",
-}
-
-# Ordered color cycle (high contrast)
-COLOR_CYCLE = [
-    COLORS["blue"],
-    COLORS["red"],
-    COLORS["green"],
-    COLORS["orange"],
-    COLORS["purple"],
-    COLORS["cyan"],
-]
-
-# Standard DPI for different outputs
 DPI_SCREEN = 150
 DPI_PRINT = 300
+
+
+# Paul Tol's "bright" palette, colour-blind safe.
+_BRIGHT_PALETTE = [
+    "#4477AA",  # blue
+    "#EE6677",  # red
+    "#228833",  # green
+    "#CCBB44",  # yellow
+    "#66CCEE",  # cyan
+    "#AA3377",  # purple
+    "#BBBBBB",  # grey
+]
+
+COLORS = {
+    "blue": _BRIGHT_PALETTE[0],
+    "red": _BRIGHT_PALETTE[1],
+    "green": _BRIGHT_PALETTE[2],
+    "yellow": _BRIGHT_PALETTE[3],
+    "cyan": _BRIGHT_PALETTE[4],
+    "purple": _BRIGHT_PALETTE[5],
+    "grey": _BRIGHT_PALETTE[6],
+    "black": "#222222",
+    "lightgrey": "#DDDDDD",
+    "orange": "#EE7733",
+}
+
+COLOR_CYCLE = _BRIGHT_PALETTE[:6]
 
 
 def setup_style(
     *,
     font_scale: float = 1.0,
     use_tex: bool = False,
-    style: str = "paper",
     context: str = "paper",
+    despine: bool = True,
 ) -> None:
-    """Configure matplotlib for publication-quality figures.
+    """Set matplotlib + seaborn defaults for publication figures.
 
     Parameters
     ----------
     font_scale : float
-        Multiplier for all font sizes.
+        Multiplier applied to all font sizes.
     use_tex : bool
-        If True, use LaTeX for text rendering (slower but better math).
-    style : str
-        One of 'paper' (tight, minimal), 'presentation' (larger fonts/lines).
+        If True, render text via LaTeX (slower but crisper math).
     context : str
-        Seaborn context: 'paper', 'notebook', 'talk', 'poster'.
+        Seaborn context ("paper", "notebook", "talk", "poster").
+    despine : bool
+        Remove the top and right spines by default (seaborn-style).
     """
-    # Use seaborn's clean style as base
+
     sns.set_theme(
         style="ticks",
         context=context,
+        palette=_BRIGHT_PALETTE,
         font_scale=font_scale,
         rc={
             "font.family": "sans-serif",
-            "font.sans-serif": ["Arial", "Helvetica", "DejaVu Sans"],
+            "font.sans-serif": ["Helvetica", "Arial", "DejaVu Sans"],
         },
     )
 
-    # Custom overrides for publication quality
-    if style == "presentation":
-        base_fontsize = 14
-        linewidth = 2.5
-        markersize = 10
-    else:  # paper
-        base_fontsize = 10
-        linewidth = 1.8
-        markersize = 6
-
-    base_fontsize *= font_scale
-
-    params = {
-        # Figure
+    base = 9.5 * font_scale
+    params: dict = {
         "figure.dpi": DPI_SCREEN,
         "figure.facecolor": "white",
-        "figure.edgecolor": "white",
-        "figure.autolayout": False,
         "figure.constrained_layout.use": True,
-        # Fonts
-        "font.size": base_fontsize,
-        "axes.labelsize": base_fontsize + 1,
-        "axes.titlesize": base_fontsize + 2,
-        "axes.titleweight": "bold",
-        "xtick.labelsize": base_fontsize,
-        "ytick.labelsize": base_fontsize,
-        "legend.fontsize": base_fontsize - 1,
-        "legend.title_fontsize": base_fontsize,
-        # Lines - thicker for visibility
-        "lines.linewidth": linewidth,
-        "lines.markersize": markersize,
-        "patch.linewidth": 1.0,
-        # Axes
-        "axes.linewidth": 1.2,
-        "axes.spines.top": False,
-        "axes.spines.right": False,
+        "font.size": base,
+        "axes.labelsize": base + 0.5,
+        "axes.titlesize": base + 1.5,
+        "axes.titleweight": "medium",
+        "axes.labelweight": "regular",
+        "axes.linewidth": 0.9,
+        "axes.edgecolor": "#333333",
+        "axes.spines.top": not despine,
+        "axes.spines.right": not despine,
         "axes.prop_cycle": mpl.cycler(color=COLOR_CYCLE),
-        "axes.grid": False,
-        "axes.axisbelow": True,
-        "axes.labelweight": "medium",
-        # Ticks
+        "xtick.labelsize": base - 0.5,
+        "ytick.labelsize": base - 0.5,
         "xtick.direction": "out",
         "ytick.direction": "out",
-        "xtick.major.width": 1.2,
-        "ytick.major.width": 1.2,
-        "xtick.major.size": 5,
-        "ytick.major.size": 5,
-        "xtick.minor.visible": False,
-        "ytick.minor.visible": False,
-        # Legend
-        "legend.frameon": True,
-        "legend.framealpha": 0.95,
-        "legend.fancybox": False,
-        "legend.edgecolor": "0.7",
-        "legend.borderpad": 0.4,
-        # Savefig
+        "xtick.major.width": 0.9,
+        "ytick.major.width": 0.9,
+        "xtick.major.size": 3.5,
+        "ytick.major.size": 3.5,
+        "lines.linewidth": 1.5,
+        "lines.markersize": 4.5,
+        "legend.fontsize": base - 0.5,
+        "legend.frameon": False,
+        "legend.borderaxespad": 0.3,
+        "legend.handlelength": 1.5,
         "savefig.dpi": DPI_PRINT,
         "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.05,
+        "savefig.pad_inches": 0.03,
         "savefig.transparent": False,
-        "savefig.facecolor": "white",
-        # PDF/PS - use TrueType for editability
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
+        "pdf.compression": 9,
     }
-
     if use_tex:
-        params.update(
-            {
-                "text.usetex": True,
-                "text.latex.preamble": r"\usepackage{amsmath}\usepackage{amssymb}",
-                "font.family": "serif",
-            }
-        )
+        params["text.usetex"] = True
+        params["text.latex.preamble"] = r"\usepackage{amsmath}\usepackage{amssymb}"
+        params["font.family"] = "serif"
 
     mpl.rcParams.update(params)
 
 
 def get_figsize(
     width: str | float = "single",
-    aspect: float = 0.65,
+    aspect: float = 0.62,
     nrows: int = 1,
     ncols: int = 1,
 ) -> tuple[float, float]:
-    """Calculate figure size maintaining aspect ratio.
+    """Compute (width, height) in inches for a grid of subplots."""
 
-    Parameters
-    ----------
-    width : str or float
-        'single', 'double', 'full', or a numeric width in inches.
-    aspect : float
-        Height-to-width ratio for each subplot.
-    nrows, ncols : int
-        Number of subplot rows/columns.
-
-    Returns
-    -------
-    tuple[float, float]
-        (width, height) in inches.
-    """
-    if width == "single":
-        w = SINGLE_COL_WIDTH
-    elif width == "double":
-        w = DOUBLE_COL_WIDTH
-    elif width == "full":
-        w = FULL_PAGE_WIDTH
+    if isinstance(width, str):
+        w = {"single": SINGLE_COL_WIDTH, "double": DOUBLE_COL_WIDTH, "full": FULL_PAGE_WIDTH}[width]
     else:
         w = float(width)
-
     h = w * aspect * (nrows / ncols)
     return (w, h)
 
@@ -202,38 +154,26 @@ def get_figsize(
 def add_panel_label(
     ax,
     label: str,
-    loc: str = "upper left",
+    title: str | None = None,
+    *,
     fontsize: float | None = None,
-    fontweight: str = "bold",
-    offset: tuple[float, float] = (-0.12, 1.05),
+    offset: tuple[float, float] = (-0.14, 1.05),
 ) -> None:
-    """Add a panel label (A), (B), etc. to an axes.
+    """Add a small bold panel label (``A``, ``B``, …), optionally with a title."""
 
-    Parameters
-    ----------
-    ax : matplotlib.axes.Axes
-    label : str
-        The label text, e.g. 'A', 'B', etc.
-    loc : str
-        Location hint (currently unused, offset used directly).
-    fontsize : float, optional
-        Font size; defaults to axes title size + 2.
-    fontweight : str
-        Font weight.
-    offset : tuple[float, float]
-        (x, y) in axes coordinates.
-    """
-    fs = fontsize or (mpl.rcParams["axes.titlesize"] + 2)
+    fs = fontsize if fontsize is not None else mpl.rcParams["axes.titlesize"] + 1
     ax.text(
         offset[0],
         offset[1],
         label,
         transform=ax.transAxes,
         fontsize=fs,
-        fontweight=fontweight,
+        fontweight="bold",
         va="top",
         ha="left",
     )
+    if title:
+        ax.set_title(title, loc="left", fontsize=mpl.rcParams["axes.titlesize"])
 
 
 def save_figure(
@@ -242,25 +182,30 @@ def save_figure(
     *,
     formats: tuple[str, ...] = ("png", "pdf"),
     dpi: int | None = None,
+    despine: bool = True,
 ) -> None:
-    """Save figure in multiple formats.
+    """Save a figure in multiple formats. PDF is vector; PNG is 300 dpi by default."""
 
-    Parameters
-    ----------
-    fig : matplotlib.figure.Figure
-    path : Path or str
-        Base path without extension.
-    formats : tuple of str
-        File formats to save (e.g., 'png', 'pdf', 'svg').
-    dpi : int, optional
-        Override DPI for raster formats.
-    """
-    from pathlib import Path
-
+    if despine:
+        sns.despine(fig=fig)
     path = Path(path)
     base = path.parent / path.stem
-
     for fmt in formats:
         out = base.with_suffix(f".{fmt}")
-        save_dpi = dpi if dpi else DPI_PRINT
-        fig.savefig(out, format=fmt, dpi=save_dpi)
+        fig.savefig(out, format=fmt, dpi=(dpi or DPI_PRINT))
+    plt.close(fig)
+
+
+__all__ = [
+    "COLORS",
+    "COLOR_CYCLE",
+    "DPI_PRINT",
+    "DPI_SCREEN",
+    "DOUBLE_COL_WIDTH",
+    "FULL_PAGE_WIDTH",
+    "SINGLE_COL_WIDTH",
+    "add_panel_label",
+    "get_figsize",
+    "save_figure",
+    "setup_style",
+]

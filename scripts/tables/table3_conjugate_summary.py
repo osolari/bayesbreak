@@ -44,9 +44,9 @@ Interpretation
 
 Outputs
 -------
-- results/table3_conjugate_summary.csv
-- results/table3_conjugate_summary.md
-- results/table3_conjugate_summary.tex
+- docs/report/tables/table3_conjugate_summary.csv
+- docs/report/tables/table3_conjugate_summary.md
+- docs/report/tables/table3_conjugate_summary.tex
 
 Usage
 -----
@@ -57,8 +57,8 @@ from __future__ import annotations
 
 import argparse
 import sys
+from collections.abc import Iterable
 from pathlib import Path
-from typing import Iterable, Tuple
 
 import numpy as np
 
@@ -107,7 +107,7 @@ def _boundary_mae(true_b: Iterable[int], pred_b: Iterable[int], n: int) -> float
     return float(np.mean(d))
 
 
-def _summarise(values: np.ndarray) -> Tuple[float, float]:
+def _summarise(values: np.ndarray) -> tuple[float, float]:
     return float(np.mean(values)), float(np.std(values, ddof=1)) if values.size > 1 else 0.0
 
 
@@ -134,13 +134,13 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
     for _ in range(n_rep):
         mu = np.repeat(mu_levels, [n // 3, n // 3, n - 2 * (n // 3)])
         y = mu + sigma * rng.standard_normal(n)
-        m = BayesBreakGaussian(k_max=12).fit(y)
-        pred_b = m.get_boundaries()[1:-1]
+        m = BayesBreakGaussian(k_max=12).fit(np.arange(len(y)).reshape(-1, 1), y)
+        pred_b = m.map_boundaries_[1:-1]
         f1s.append(_boundary_f1(true_b, pred_b, tau=tau))
         maes.append(_boundary_mae(true_b, pred_b, n=n))
-        mses.append(float(np.mean((m.predict() - mu) ** 2)))
-        nlls.append(float(-m.score() / n))
-        k_sels.append(int(m.k_ml_))
+        mses.append(float(np.mean((m.predict(m.x_design_.reshape(-1, 1)) - mu) ** 2)))
+        nlls.append(float(-m.log_evidence_ / n))
+        k_sels.append(int(m.k_map_))
 
     rows.append(
         (
@@ -167,13 +167,13 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
     lam_true = np.repeat(lam_levels, [n // 3, n // 3, n - 2 * (n // 3)])
     for _ in range(n_rep):
         y = rng.poisson(lam_true)
-        m = BayesBreakPoisson(k_max=12).fit(y)
-        pred_b = m.get_boundaries()[1:-1]
+        m = BayesBreakPoisson(k_max=12).fit(np.arange(len(y)).reshape(-1, 1), y)
+        pred_b = m.map_boundaries_[1:-1]
         f1s.append(_boundary_f1(true_b, pred_b, tau=tau))
         maes.append(_boundary_mae(true_b, pred_b, n=n))
-        mses.append(float(np.mean((m.predict() - lam_true) ** 2)))
-        nlls.append(float(-m.score() / n))
-        k_sels.append(int(m.k_ml_))
+        mses.append(float(np.mean((m.predict(m.x_design_.reshape(-1, 1)) - lam_true) ** 2)))
+        nlls.append(float(-m.log_evidence_ / n))
+        k_sels.append(int(m.k_map_))
     rows.append(
         (
             "Poisson",
@@ -200,13 +200,13 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
     k_sels = []
     for _ in range(n_rep):
         y = rng.binomial(n_trials, p_true)
-        m = BayesBreakBinomial(k_max=12, n_trials=n_trials).fit(y)
-        pred_b = m.get_boundaries()[1:-1]
+        m = BayesBreakBinomial(k_max=12, n_trials=n_trials).fit(np.arange(len(y)).reshape(-1, 1), y)
+        pred_b = m.map_boundaries_[1:-1]
         f1s.append(_boundary_f1(true_b, pred_b, tau=tau))
         maes.append(_boundary_mae(true_b, pred_b, n=n))
-        mses.append(float(np.mean((m.predict() - p_true) ** 2)))
-        nlls.append(float(-m.score() / n))
-        k_sels.append(int(m.k_ml_))
+        mses.append(float(np.mean((m.predict(m.x_design_.reshape(-1, 1)) - p_true) ** 2)))
+        nlls.append(float(-m.log_evidence_ / n))
+        k_sels.append(int(m.k_map_))
     rows.append(
         (
             "Binomial",
@@ -234,13 +234,15 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
     for _ in range(n_rep):
         s = rng.binomial(kappa, p_true)
         y = (s + 0.5) / (kappa + 1.0)  # avoid exact 0/1
-        m = BayesBreakBeta(k_max=12, concentration=float(kappa)).fit(y)
-        pred_b = m.get_boundaries()[1:-1]
+        m = BayesBreakBeta(k_max=12, concentration=float(kappa)).fit(
+            np.arange(len(y)).reshape(-1, 1), y
+        )
+        pred_b = m.map_boundaries_[1:-1]
         f1s.append(_boundary_f1(true_b, pred_b, tau=tau))
         maes.append(_boundary_mae(true_b, pred_b, n=n))
-        mses.append(float(np.mean((m.predict() - p_true) ** 2)))
-        nlls.append(float(-m.score() / n))
-        k_sels.append(int(m.k_ml_))
+        mses.append(float(np.mean((m.predict(m.x_design_.reshape(-1, 1)) - p_true) ** 2)))
+        nlls.append(float(-m.log_evidence_ / n))
+        k_sels.append(int(m.k_map_))
     rows.append(
         (
             "Beta-valued",
@@ -298,7 +300,7 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n-rep", type=int, default=25)
     ap.add_argument("--tau", type=int, default=2)

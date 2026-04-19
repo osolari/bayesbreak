@@ -36,8 +36,8 @@ family's block-evidence computation.
 
 Outputs
 -------
-- results/fig2_family_showcase.png
-- results/fig2_family_showcase.pdf
+- docs/report/figures/fig2_family_showcase.png
+- docs/report/figures/fig2_family_showcase.pdf
 
 Usage
 -----
@@ -75,7 +75,7 @@ from bayesbreak import (  # noqa: E402
 
 def main(outdir: Path, seed: int) -> None:
     # Setup publication style
-    setup_style(font_scale=1.1, style="paper")
+    setup_style(font_scale=1.1)
 
     rng = np.random.default_rng(seed)
 
@@ -85,16 +85,16 @@ def main(outdir: Path, seed: int) -> None:
     n = 120
     mu = np.r_[np.zeros(40), 1.5 * np.ones(40), -0.5 * np.ones(40)]
     y_gauss = mu + 0.35 * rng.standard_normal(n)
-    m_gauss = BayesBreakGaussian(k_max=10).fit(y_gauss)
-    pc_gauss = m_gauss.predict()
+    m_gauss = BayesBreakGaussian(k_max=10).fit(np.arange(len(y_gauss)).reshape(-1, 1), y_gauss)
+    pc_gauss = m_gauss.predict(m_gauss.x_design_.reshape(-1, 1))
 
     # ----------------
     # Poisson example
     # ----------------
     lam = np.r_[2.0 * np.ones(40), 8.0 * np.ones(40), 3.0 * np.ones(40)]
     y_pois = rng.poisson(lam)
-    m_pois = BayesBreakPoisson(k_max=10).fit(y_pois)
-    pc_pois = m_pois.predict()
+    m_pois = BayesBreakPoisson(k_max=10).fit(np.arange(len(y_pois)).reshape(-1, 1), y_pois)
+    pc_pois = m_pois.predict(m_pois.x_design_.reshape(-1, 1))
 
     # ----------------
     # Binomial example
@@ -102,8 +102,10 @@ def main(outdir: Path, seed: int) -> None:
     n_trials = 20
     p = np.r_[0.1 * np.ones(40), 0.7 * np.ones(40), 0.3 * np.ones(40)]
     y_binom = rng.binomial(n_trials, p)
-    m_binom = BayesBreakBinomial(k_max=10, n_trials=n_trials).fit(y_binom)
-    pc_binom = m_binom.predict()
+    m_binom = BayesBreakBinomial(k_max=10, n_trials=n_trials).fit(
+        np.arange(len(y_binom)).reshape(-1, 1), y_binom
+    )
+    pc_binom = m_binom.predict(m_binom.x_design_.reshape(-1, 1))
 
     # ----------------
     # Beta-valued example
@@ -112,8 +114,10 @@ def main(outdir: Path, seed: int) -> None:
     p_beta = np.r_[0.2 * np.ones(40), 0.85 * np.ones(40), 0.4 * np.ones(40)]
     s = rng.binomial(kappa, p_beta)
     y_beta = (s + 0.5) / (kappa + 1.0)
-    m_beta = BayesBreakBeta(k_max=10, concentration=kappa).fit(y_beta)
-    pc_beta = m_beta.predict()
+    m_beta = BayesBreakBeta(k_max=10, concentration=kappa).fit(
+        np.arange(len(y_beta)).reshape(-1, 1), y_beta
+    )
+    pc_beta = m_beta.predict(m_beta.x_design_.reshape(-1, 1))
 
     outdir.mkdir(parents=True, exist_ok=True)
 
@@ -200,7 +204,7 @@ def main(outdir: Path, seed: int) -> None:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--outdir", type=Path, default=Path("results"))
+    p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     main(args.outdir, args.seed)

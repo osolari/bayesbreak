@@ -4,7 +4,7 @@
 
 | Quantity | Value |
 |---|---:|
-| Selected k (k_ml_) | 5 |
+| Selected k (k_ml_) | 4 |
 | Posterior mean E[k] | 4.742 |
 | MAP k | 4 |
 | log evidence log P(y) | -18.031 |

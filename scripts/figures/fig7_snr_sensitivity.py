@@ -46,8 +46,8 @@ Interpretation
 
 Outputs
 -------
-- results/fig7_snr_sensitivity.png
-- results/fig7_snr_sensitivity.pdf
+- docs/report/figures/fig7_snr_sensitivity.png
+- docs/report/figures/fig7_snr_sensitivity.pdf
 
 Usage
 -----
@@ -96,7 +96,7 @@ def _boundary_f1(true_b: list[int], pred_b: list[int], tau: int) -> float:
 
 
 def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int, tau: int) -> None:
-    setup_style(font_scale=1.1, style="paper")
+    setup_style(font_scale=1.1)
     rng = np.random.default_rng(seed)
 
     levels = np.array([0.0, 1.5, -0.5])
@@ -114,11 +114,11 @@ def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int, tau: int) -> N
         f1s, mses, ks = [], [], []
         for _ in range(n_rep):
             y = mu + sigma * rng.standard_normal(n)
-            m = BayesBreakGaussian(k_max=k_max).fit(y)
-            pred_b = m.get_boundaries()[1:-1]
+            m = BayesBreakGaussian(k_max=k_max).fit(np.arange(len(y)).reshape(-1, 1), y)
+            pred_b = m.map_boundaries_[1:-1]
             f1s.append(_boundary_f1(true_b, pred_b, tau=tau))
-            mses.append(float(np.mean((m.predict() - mu) ** 2)))
-            ks.append(int(m.k_ml_))
+            mses.append(float(np.mean((m.predict(m.x_design_.reshape(-1, 1)) - mu) ** 2)))
+            ks.append(int(m.k_map_))
 
         f1_arr = np.asarray(f1s)
         mse_arr = np.asarray(mses)
@@ -186,7 +186,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("results"))
+    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--n-rep", type=int, default=30)

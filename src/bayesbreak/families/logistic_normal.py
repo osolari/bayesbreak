@@ -34,11 +34,11 @@ For EP/quadrature we compute E[sigmoid(theta)] directly under the quadrature wei
 from __future__ import annotations
 
 import math
-from typing import Dict, Literal, Optional, Tuple
+from typing import Literal
 
 import numpy as np
 
-from ..base import BayesBreakBase
+from ..base import BayesBreakSegmenter
 from ..utils import logsumexp
 
 Approx = Literal["laplace", "jj", "pg_vb", "pg-vb", "ep", "quadrature"]
@@ -72,7 +72,7 @@ def _laplace_block(
     rho2: float,
     max_iter: int = 25,
     tol: float = 1e-10,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Vectorised 1D Laplace approximation for many blocks.
 
     Returns
@@ -127,7 +127,7 @@ def _jj_block(
     rho2: float,
     max_iter: int = 50,
     tol: float = 1e-10,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """JJ variational bound for binomial-logistic with normal prior (1D).
 
     Returns (logA0_bound, m, v) where logA0_bound is a lower bound on log A0.
@@ -179,7 +179,7 @@ def _gh_moments_block(
     nu: float,
     rho2: float,
     n_gh: int,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """Gauss--Hermite quadrature for logA0 and posterior moments.
 
     Returns (logA0, m, v, p_mean) where p_mean = E[sigmoid(theta) | data].
@@ -211,7 +211,7 @@ def _gh_moments_block(
     return logZ, m, v, p_mean
 
 
-class BayesBreakLogisticNormal(BayesBreakBase):
+class BayesBreakLogisticNormal(BayesBreakSegmenter):
     """BayesBreak for Bernoulli data with a Normal prior on the log-odds.
 
     Parameters
@@ -235,8 +235,8 @@ class BayesBreakLogisticNormal(BayesBreakBase):
         estimate_hyper: bool = True,
         approx: Approx = "laplace",
         regression_curve: Literal["none", "fixed_k", "mix_k"] = "none",
-        nu: Optional[float] = None,
-        rho2: Optional[float] = None,
+        nu: float | None = None,
+        rho2: float | None = None,
         gh_points: int = 25,
         max_iter: int = 50,
     ):
@@ -252,9 +252,9 @@ class BayesBreakLogisticNormal(BayesBreakBase):
 
     # ----- hyperparameters (EB) -----
 
-    def _estimate_global_params(
-        self, y: np.ndarray, sample_weight: Optional[np.ndarray] = None
-    ) -> Dict[str, float]:
+    def _estimate_hyperparameters(
+        self, y: np.ndarray, sample_weight: np.ndarray | None = None
+    ) -> dict[str, float]:
         # If estimate_hyper is False, but user provided nu/rho2, respect them.
         if not self.estimate_hyper and self.nu is not None and self.rho2 is not None:
             return {"nu": float(self.nu), "rho2": float(self.rho2)}
@@ -287,9 +287,9 @@ class BayesBreakLogisticNormal(BayesBreakBase):
 
     # ----- per-segment evidence and A1 -----
 
-    def _compute_single_segment_stats(
-        self, y: np.ndarray, hyper: Dict[str, float], sample_weight: Optional[np.ndarray] = None
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def _compute_block_evidence(
+        self, y: np.ndarray, hyper: dict[str, float], sample_weight: np.ndarray | None = None
+    ) -> tuple[np.ndarray, np.ndarray]:
         y = np.asarray(y, dtype=float)
         if y.ndim != 1:
             raise ValueError("y must be 1D")
@@ -350,8 +350,8 @@ class BayesBreakLogisticNormal(BayesBreakBase):
         a: int,
         b: int,
         y: np.ndarray,
-        hyper: Dict[str, float],
-        sample_weight: Optional[np.ndarray] = None,
+        hyper: dict[str, float],
+        sample_weight: np.ndarray | None = None,
     ) -> float:
         y = np.asarray(y, dtype=float)
         nu = float(hyper["nu"])
