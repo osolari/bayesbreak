@@ -110,6 +110,26 @@ from bayesbreak import (
 | Latent-group EM (§4.7) | `bayesbreak.mixture.BayesBreakMixtureClassifier` |
 | Non-conjugate block approximations (§5) | `BayesBreakLogisticNormal(approx=...)`, `BayesBreakBetaObs` |
 
+## Real-data loaders
+
+`bayesbreak.datasets` ships four loaders — `load_welllog()`, `load_cgh()`,
+`load_spx()`, `load_methylation()` — that return a uniform `DatasetBundle`
+(`X`, `y`, `sample_weight`, `true_boundaries`, `source`, `description`). Each
+one prefers the real dataset (`pooch`-cached GitHub mirror or `yfinance`) and
+automatically falls back to a seed-pinned simulated analog when the download
+or dependency is unavailable:
+
+```python
+from bayesbreak import BayesBreakGaussian
+from bayesbreak.datasets import load_welllog
+
+bundle = load_welllog()     # tries TCPD; falls back to simulated
+BayesBreakGaussian(k_max=20).fit(bundle.X, bundle.y)
+```
+
+See [docs/datasets.md](docs/datasets.md) for the full schema and caching
+policy.
+
 ## Reproducing figures and tables
 
 ```bash

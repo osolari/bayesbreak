@@ -18,6 +18,7 @@ nav:
   - Model families: models.md
   - API reference: api.md
   - Math notes: math.md
+  - Real-data loaders: datasets.md
   - Reproducibility: reproducibility.md
 
 markdown_extensions:

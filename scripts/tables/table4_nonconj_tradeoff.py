@@ -159,6 +159,10 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
         for name, max_abs, t_fit, f1, k_sel in rows:
             f.write(f"| {name} | {max_abs:.3f} | {t_fit:.3f} | {f1:.3f} | {k_sel} |\n")
 
+    def _tex_escape(s: str) -> str:
+        # Method names contain underscores (e.g. "pg_vb") that need escaping in text mode.
+        return s.replace("_", r"\_")
+
     tex_path = outdir / "table4_nonconj_tradeoff.tex"
     with tex_path.open("w", encoding="utf-8") as f:
         f.write("\\begin{tabular}{lrrrr}\\toprule\n")
@@ -166,7 +170,7 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
             "Method & $\\max|\\Delta \\log A^0|$ & time (s) & F1@$\\tau$ & $\\hat{k}$\\\\\\midrule\n"
         )
         for name, max_abs, t_fit, f1, k_sel in rows:
-            f.write(f"{name} & {max_abs:.3f} & {t_fit:.3f} & {f1:.3f} & {k_sel}\\\\\n")
+            f.write(f"{_tex_escape(name)} & {max_abs:.3f} & {t_fit:.3f} & {f1:.3f} & {k_sel}\\\\\n")
         f.write("\\bottomrule\\end{tabular}\n")
 
     print(f"Wrote {csv_path}")
