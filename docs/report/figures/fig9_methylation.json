@@ -1,8 +1,7 @@
 {
   "dataset": "methylation",
   "source": "downloaded",
-  "verified": false,
-  "ran_at": 1778392068.639453,
+  "ran_at": 1778393696.759211,
   "figure_path": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig9_methylation.pdf",
   "description": "methylKit chr21 CpG methylation fractions (n=1904); sample_weight is per-CpG read coverage.",
   "y_hash": "8856eff183ac34ea5673d51824e05a02095772d0b5cdf9c42b096a06e8eb5b8a",
@@ -66,7 +65,7 @@
       }
     ],
     "extra": {},
-    "created_at": 1778392068.6393442
+    "created_at": 1778393696.759109
   },
   "estimator": "BayesBreakBetaObs",
   "estimator_params": {

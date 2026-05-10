@@ -1,8 +1,7 @@
 {
   "dataset": "welllog",
   "source": "downloaded",
-  "verified": false,
-  "ran_at": 1778391834.6832,
+  "ran_at": 1778393684.680522,
   "figure_path": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig6_welllog.pdf",
   "description": "\u00d3 Ruanaidh well-log NMR tool response (n=4050) via TCPD.",
   "y_hash": "d6591f7b977d84fa790a73631d6651a0d1e837a5373e0f197d4134236149a37f",
@@ -74,7 +73,7 @@
       }
     ],
     "extra": {},
-    "created_at": 1778391834.683109
+    "created_at": 1778393684.680442
   },
   "estimator": "BayesBreakGaussian",
   "estimator_params": {

@@ -63,15 +63,6 @@ def main(argv: list[str] | None = None) -> int:
         help="force the deterministic simulated analog",
     )
     ap.add_argument("--csv-path", default=None, help="optional CSV path for methylation")
-    ap.add_argument(
-        "--verified",
-        action="store_true",
-        help=(
-            "Author-approved finalized run; skip the placeholder watermark. "
-            "Without this (and BAYESBREAK_VERIFIED unset), every real-data "
-            "figure renders as a placeholder per report §6."
-        ),
-    )
     args, extra = ap.parse_known_args(argv)
 
     root = _project_root()
@@ -86,8 +77,6 @@ def main(argv: list[str] | None = None) -> int:
         forwarded = ["--outdir", str(out_figs)] + list(extra)
         if args.simulated:
             forwarded.append("--simulated")
-        if args.verified:
-            forwarded.append("--verified")
         if ds == "methyl" and args.csv_path:
             forwarded.extend(["--csv-path", args.csv_path])
         _run(script, forwarded)

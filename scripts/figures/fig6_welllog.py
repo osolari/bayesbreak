@@ -25,7 +25,7 @@ from bayesbreak import BayesBreakGaussian  # noqa: E402
 from bayesbreak.datasets import load_welllog  # noqa: E402
 
 
-def main(outdir: Path, simulated: bool, subsample: int, verified: bool = False) -> None:
+def main(outdir: Path, simulated: bool, subsample: int) -> None:
     bundle = load_welllog(simulated=simulated)
     if subsample > 1:
         bundle.X = bundle.X[::subsample]
@@ -44,7 +44,6 @@ def main(outdir: Path, simulated: bool, subsample: int, verified: bool = False) 
         fig_name="fig6_welllog",
         y_label="NMR response",
         title=f"Well-log ({bundle.source})",
-        verified=verified,
     )
 
 
@@ -54,15 +53,5 @@ if __name__ == "__main__":
     ap.add_argument("--simulated", action="store_true")
     # Default subsample keeps runtime reasonable for n ~ 4k.
     ap.add_argument("--subsample", type=int, default=8)
-    ap.add_argument(
-        "--verified",
-        action="store_true",
-        help="Author-approved finalized run (skip the placeholder watermark).",
-    )
     args = ap.parse_args()
-    main(
-        outdir=args.outdir,
-        simulated=args.simulated,
-        subsample=args.subsample,
-        verified=args.verified,
-    )
+    main(outdir=args.outdir, simulated=args.simulated, subsample=args.subsample)

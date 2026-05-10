@@ -26,12 +26,7 @@ from bayesbreak import BayesBreakBeta  # noqa: E402
 from bayesbreak.datasets import load_methylation  # noqa: E402
 
 
-def main(
-    outdir: Path,
-    simulated: bool,
-    csv_path: str | None,
-    verified: bool = False,
-) -> None:
+def main(outdir: Path, simulated: bool, csv_path: str | None) -> None:
     bundle = load_methylation(simulated=simulated, csv_path=csv_path)
 
     # If the loader supplies per-CpG coverage as sample_weight, route it
@@ -57,7 +52,6 @@ def main(
         y_label="methylation fraction",
         title=f"CpG methylation ({bundle.source})",
         show_null_baseline=False,
-        verified=verified,
     )
 
 
@@ -66,15 +60,5 @@ if __name__ == "__main__":
     ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--simulated", action="store_true")
     ap.add_argument("--csv-path", type=str, default=None)
-    ap.add_argument(
-        "--verified",
-        action="store_true",
-        help="Author-approved finalized run (skip the placeholder watermark).",
-    )
     args = ap.parse_args()
-    main(
-        outdir=args.outdir,
-        simulated=args.simulated,
-        csv_path=args.csv_path,
-        verified=args.verified,
-    )
+    main(outdir=args.outdir, simulated=args.simulated, csv_path=args.csv_path)

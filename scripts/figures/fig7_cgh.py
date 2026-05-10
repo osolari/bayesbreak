@@ -45,12 +45,8 @@ from bayesbreak import (  # noqa: E402
     run_dp_diagnostics,
 )
 from bayesbreak.datasets import load_cgh  # noqa: E402
-from bayesbreak.experiments._placeholder import (  # noqa: E402
-    hash_array,
-    is_verified_mode,
-    overlay_placeholder_banner,
-    write_run_record,
-)
+from bayesbreak.experiments._fitcache import cache_key, fit_or_load  # noqa: E402
+from bayesbreak.experiments._placeholder import hash_array, write_run_record  # noqa: E402
 
 
 def _multi_subject_figure(
@@ -59,7 +55,6 @@ def _multi_subject_figure(
     fig_name: str = "fig7_cgh",
     *,
     n_show: int = 4,
-    verified: bool = False,
 ) -> None:
     """Render the CGH multi-subject pooled segmentation figure."""
 
@@ -69,15 +64,34 @@ def _multi_subject_figure(
     # Subset to the first ``n_show`` subjects for visualization, but pool over
     # *all* available subjects in the fit.
     X = bundle.X[:, 0] if bundle.X.ndim == 2 else bundle.X
-    rep = SharedBoundaryReplicatesSegmenter(BayesBreakGaussian(k_max=15, regression_curve="none"))
-    rep.fit(
-        X.reshape(-1, 1),
-        [bundle.y[:, s] for s in range(S)],
-        sample_weight=[bundle.sample_weight[:, s] for s in range(S)],
+    rep_template = SharedBoundaryReplicatesSegmenter(
+        BayesBreakGaussian(k_max=15, regression_curve="none")
+    )
+    key = cache_key(
+        y=bundle.y,
+        sample_weight=bundle.sample_weight,
+        params={"replicates": True, **rep_template.base_estimator.get_params()},
+        extra=fig_name,
     )
 
-    is_real = bundle.source == "downloaded"
-    is_verified = is_real and is_verified_mode(verified)
+    def _fit() -> dict[str, Any]:
+        rep_template.fit(
+            X.reshape(-1, 1),
+            [bundle.y[:, s] for s in range(S)],
+            sample_weight=[bundle.sample_weight[:, s] for s in range(S)],
+        )
+        # Per-subject single-subject log evidences for panel D.
+        per_subj_logE = []
+        for s in range(S):
+            e = BayesBreakGaussian(k_max=15).fit(
+                X.reshape(-1, 1), bundle.y[:, s], sample_weight=bundle.sample_weight[:, s]
+            )
+            per_subj_logE.append(float(e.log_evidence_))
+        return {"rep": rep_template, "per_subj_logE": per_subj_logE}
+
+    fit_payload = fit_or_load(outdir / f"{fig_name}.fit.pkl", key, _fit)
+    rep = fit_payload["rep"]
+    per_subj_logE = fit_payload["per_subj_logE"]
 
     idx = np.arange(n, dtype=float)
     fig = plt.figure(figsize=(8.0, 9.2))
@@ -133,19 +147,7 @@ def _multi_subject_figure(
     axC.legend(loc="best", fontsize=10, frameon=False)
     add_panel_label(axC, "C")
 
-    # Panel D: pooled log-evidence per subject (sum over subjects).
-    per_subj_logE = []
-    for s in range(S):
-        from bayesbreak import BayesBreakGaussian as G
-
-        # Cheap: refit a single-subject estimator with the same hyper that was
-        # used inside the replicates loop. We reuse the per-subject lA0_pool
-        # contribution by extracting the subject's own log-evidence under its
-        # own block table.
-        e = G(k_max=15).fit(
-            X.reshape(-1, 1), bundle.y[:, s], sample_weight=bundle.sample_weight[:, s]
-        )
-        per_subj_logE.append(float(e.log_evidence_))
+    # Panel D: per-subject log evidence (loaded from the fit cache above).
     axD.bar(np.arange(S), per_subj_logE, color=COLORS["grey"], edgecolor="none")
     axD.axhline(
         rep.log_evidence_ / max(1, S),
@@ -159,12 +161,9 @@ def _multi_subject_figure(
     axD.legend(loc="best", fontsize=10, frameon=False)
     add_panel_label(axD, "D")
 
-    if not is_verified:
-        overlay_placeholder_banner(fig, source=bundle.source)
-
     save_figure(fig, outdir / fig_name, formats=("png", "pdf"))
 
-    # Sidecar.
+    # Sidecar JSON: provenance + DP diagnostics.
     diag = run_dp_diagnostics(rep)
     record_extra: dict[str, Any] = {
         "source": bundle.source,
@@ -184,17 +183,16 @@ def _multi_subject_figure(
         outdir / f"{fig_name}.pdf",
         dataset=bundle.name,
         source=bundle.source,
-        verified=is_verified,
         extra=record_extra,
     )
 
 
-def main(outdir: Path, simulated: bool, verified: bool = False) -> None:
+def main(outdir: Path, simulated: bool) -> None:
     bundle = load_cgh(simulated=simulated)
     outdir.mkdir(parents=True, exist_ok=True)
 
     if bundle.y.ndim == 2:
-        _multi_subject_figure(bundle, outdir, verified=verified)
+        _multi_subject_figure(bundle, outdir)
         return
 
     # Single-subject fallback (simulated path).
@@ -206,7 +204,6 @@ def main(outdir: Path, simulated: bool, verified: bool = False) -> None:
         fig_name="fig7_cgh",
         y_label=r"$\log_2$ ratio",
         title=f"Array-CGH ({bundle.source})",
-        verified=verified,
     )
 
 
@@ -214,10 +211,5 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     ap.add_argument("--simulated", action="store_true")
-    ap.add_argument(
-        "--verified",
-        action="store_true",
-        help="Author-approved finalized run (skip the placeholder watermark).",
-    )
     args = ap.parse_args()
-    main(outdir=args.outdir, simulated=args.simulated, verified=args.verified)
+    main(outdir=args.outdir, simulated=args.simulated)

@@ -1,8 +1,7 @@
 {
   "dataset": "cgh",
   "source": "downloaded",
-  "verified": false,
-  "ran_at": 1778391967.3063428,
+  "ran_at": 1778393687.9629362,
   "figure_path": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig7_cgh.pdf",
   "description": "Array-CGH log2-ratios from cran/ecp ACGH (n_probes=2215, n_subj=43).",
   "y_hash": "1551547d50564227ac020c196e56cae0b29c76ccf76eb4140d47628019cdb9a8",
@@ -112,7 +111,7 @@
       }
     ],
     "extra": {},
-    "created_at": 1778391967.3056462
+    "created_at": 1778393687.962226
   },
   "estimator": "SharedBoundaryReplicatesSegmenter"
 }

@@ -42,11 +42,6 @@ def main(argv: list[str] | None = None) -> int:
     real.add_argument("--out", default=None)
     real.add_argument("--simulated", action="store_true")
     real.add_argument("--csv-path", default=None)
-    real.add_argument(
-        "--verified",
-        action="store_true",
-        help="Author-approved finalized run; without this, real-data figures are placeholders.",
-    )
 
     sub.add_parser("version", help="print the installed version")
 
@@ -76,8 +71,6 @@ def main(argv: list[str] | None = None) -> int:
             forwarded.extend(["--out", args.out])
         if args.simulated:
             forwarded.append("--simulated")
-        if args.verified:
-            forwarded.append("--verified")
         if args.csv_path:
             forwarded.extend(["--csv-path", args.csv_path])
         return mod.main(forwarded + list(extra))

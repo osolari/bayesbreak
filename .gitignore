@@ -51,3 +51,8 @@ docs/_build/
 # Jupyter
 .ipynb_checkpoints/
 notebooks/
+
+
+# fit cache (pickle of fitted real-data estimators; may be large)
+*.fit.pkl
+.cache/

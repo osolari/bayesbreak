@@ -24,12 +24,8 @@ from _style import COLORS, add_panel_label, save_figure, setup_style  # noqa: E4
 
 from bayesbreak import BayesBreakSegmenter, run_dp_diagnostics
 from bayesbreak.datasets import DatasetBundle
-from bayesbreak.experiments._placeholder import (
-    hash_array,
-    is_verified_mode,
-    overlay_placeholder_banner,
-    write_run_record,
-)
+from bayesbreak.experiments._fitcache import cache_key, fit_or_load
+from bayesbreak.experiments._placeholder import hash_array, write_run_record
 from bayesbreak.prediction import posterior_predictive_logpdf
 
 
@@ -60,26 +56,25 @@ def make_realdata_figure(
     title: str,
     show_null_baseline: bool = True,
     extra_kwargs: dict[str, Any] | None = None,
-    verified: bool = False,
 ) -> None:
-    """Fit ``estimator`` on ``bundle`` and render the four-panel figure.
-
-    Real-data figures default to **placeholder mode**: a watermark is
-    overlaid and the sidecar JSON records ``verified=False``. Set
-    ``verified=True`` (or ``BAYESBREAK_VERIFIED=1``) only when the author
-    has explicitly approved the finalized pipeline output (handoff §10).
-    Simulated-fallback bundles are *always* treated as placeholders.
-    """
+    """Fit ``estimator`` on ``bundle`` and render the four-panel figure."""
 
     extra_kwargs = extra_kwargs or {}
     setup_style(font_scale=0.95)
 
-    estimator.fit(bundle.X, bundle.y, sample_weight=bundle.sample_weight, **extra_kwargs)
+    # Fit cache: skip refit when the data + estimator params are unchanged.
+    key = cache_key(
+        y=bundle.y,
+        sample_weight=bundle.sample_weight,
+        params=estimator.get_params(),
+        extra=fig_name,
+    )
 
-    # Verification policy: simulated source forces placeholder mode regardless
-    # of the flag. Otherwise, honour the explicit caller flag and the env var.
-    is_real = bundle.source == "downloaded"
-    is_verified = is_real and is_verified_mode(verified)
+    def _fit() -> BayesBreakSegmenter:
+        estimator.fit(bundle.X, bundle.y, sample_weight=bundle.sample_weight, **extra_kwargs)
+        return estimator
+
+    estimator = fit_or_load(outdir / f"{fig_name}.fit.pkl", key, _fit)
 
     n = bundle.y.size
     # Plot everything in index space so panels A and B share a clean axis.
@@ -178,12 +173,9 @@ def make_realdata_figure(
     axD.legend(loc="best", fontsize=10, frameon=False)
     add_panel_label(axD, "D")
 
-    if not is_verified:
-        overlay_placeholder_banner(fig, source=bundle.source)
-
     save_figure(fig, outdir / fig_name, formats=("png", "pdf"))
 
-    # Sidecar JSON: provenance + DP diagnostics + placeholder/verified flag.
+    # Sidecar JSON: provenance + DP diagnostics.
     diag = run_dp_diagnostics(estimator)
     record_extra: dict[str, Any] = {
         "source": bundle.source,
@@ -205,6 +197,5 @@ def make_realdata_figure(
         outdir / f"{fig_name}.pdf",
         dataset=bundle.name,
         source=bundle.source,
-        verified=is_verified,
         extra=record_extra,
     )

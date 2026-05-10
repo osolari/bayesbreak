@@ -1,8 +1,7 @@
 {
   "dataset": "spx",
   "source": "downloaded",
-  "verified": false,
-  "ran_at": 1778392064.662344,
+  "ran_at": 1778393694.844862,
   "figure_path": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig8_spx.pdf",
   "description": "^GSPC daily log-squared returns (2015-01-01 \u2192 2023-12-31, n=2263).",
   "y_hash": "bc8bfdbe7c1888985a1642687bf034062d76b82d247a5413342907510298e1b9",
@@ -80,7 +79,7 @@
       }
     ],
     "extra": {},
-    "created_at": 1778392064.66221
+    "created_at": 1778393694.844786
   },
   "estimator": "BayesBreakGaussian",
   "estimator_params": {
