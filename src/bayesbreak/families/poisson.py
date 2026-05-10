@@ -3,9 +3,11 @@
 from __future__ import annotations
 
 import math
+from collections.abc import Callable
 from typing import Literal
 
 import numpy as np
+from numpy.typing import ArrayLike
 
 from ..base import BayesBreakSegmenter
 from ..utils import gammaln
@@ -27,12 +29,20 @@ class BayesBreakPoisson(BayesBreakSegmenter):
         k_max: int = 50,
         estimate_hyper: bool = True,
         regression_curve: Literal["none", "fixed_k", "mix_k"] = "none",
+        length_prior: Callable[[float], float] | None = None,
+        boundary_coordinates: ArrayLike | None = None,
+        prior_k: Callable[[int], float] | None = None,
         *,
         alpha: float | None = None,
         beta: float | None = None,
     ):
         super().__init__(
-            k_max=k_max, estimate_hyper=estimate_hyper, regression_curve=regression_curve
+            k_max=k_max,
+            estimate_hyper=estimate_hyper,
+            regression_curve=regression_curve,
+            length_prior=length_prior,
+            boundary_coordinates=boundary_coordinates,
+            prior_k=prior_k,
         )
         self.alpha = alpha
         self.beta = beta

@@ -8,6 +8,7 @@ admissible partitions on small problem sizes.
 from __future__ import annotations
 
 import itertools
+import math
 
 import numpy as np
 import pytest
@@ -87,10 +88,12 @@ class TestSumProduct:
         la, n = random_log_block_evidence
         k_max = 4
         L, R = dp.forward_backward(la, n=n, k_max=k_max)
-        log_post_k, _, _ = dp.posterior_over_k(L, n=n, k_max=k_max)
-        d1 = dp.boundary_event_marginals(L, R, log_post_k, n=n, k_max=k_max)
-        assert d1.shape == (n - 1,)
-        assert np.all((d1 >= -1e-12) & (d1 <= 1.0 + 1e-12))
+        for k in range(2, k_max + 1):
+            d1 = dp.boundary_event_marginals_fixed_k(L, R, n=n, k=k)
+            assert d1.shape == (n - 1,)
+            assert np.all((d1 >= -1e-12) & (d1 <= 1.0 + 1e-12))
+            # Sums to k - 1 by construction.
+            assert float(np.sum(d1)) == pytest.approx(k - 1, abs=1e-10)
 
 
 class TestMaxSum:
@@ -103,31 +106,44 @@ class TestMaxSum:
             assert score == pytest.approx(expected_score, abs=1e-12)
 
     def test_map_distinct_from_marginal_topk(self):
-        """A designed counterexample showing joint MAP != marginal-topk boundaries.
+        """Joint-MAP-vs-marginal-mode counterexample from §`rem:marg-vs-joint`.
 
-        We construct a block-evidence table where the marginal argmax at each
-        position does not correspond to the globally optimal partition.
+        For ``n = 5`` and ``k = 3``, place the joint posterior on four ordered
+        configurations with weights ``0.30, 0.28, 0.22, 0.20`` on
+        ``(1,4),(2,3),(2,4),(3,4)``. The marginal modes are then ``t1=2`` and
+        ``t2=4``, so the marginal-mode vector ``(2,4)`` is feasible but is *not*
+        the joint MAP ``(1,4)``.
         """
 
-        n = 4
+        n = 5
         la = np.full((n + 1, n + 1), -np.inf)
-        # Two candidate 2-segment partitions: [0,2,4] and [0,3,4].
-        # Marginal boundary-event favors index 2 via many high-evidence blocks
-        # passing through it, but the JOINT optimum is [0, 3, 4].
-        la[0, 2] = -1.0
-        la[2, 4] = -1.0
-        la[0, 3] = -0.5
-        la[3, 4] = -0.5
-        la[0, 4] = -5.0  # 1-segment option dominated
-        la[0, 1] = -3.0
-        la[1, 4] = -3.0
-        la[1, 2] = -2.0
-        la[2, 3] = -2.0
-        la[1, 3] = -2.0
+        # Used blocks (path-specific assignment so that the four target paths
+        # have log-scores log(0.30), log(0.28), log(0.22), log(0.20)).
+        la[0, 1] = 0.0
+        la[0, 2] = 0.0
+        la[0, 3] = 0.0
+        la[1, 4] = math.log(0.30) - math.log(0.20)  # 0.4054651
+        la[2, 3] = 0.0
+        la[2, 4] = math.log(0.22) - math.log(0.20)  # 0.0953102
+        la[3, 4] = 0.0
+        la[3, 5] = math.log(0.28)  # -1.2729657
+        la[4, 5] = math.log(0.20)  # -1.6094379
 
-        bnd, score = dp.max_sum_segmentation(la, k=2)
-        assert bnd == [0, 3, 4]
-        assert score == pytest.approx(-1.0, abs=1e-12)
+        # Joint MAP under k=3.
+        bnd, score = dp.max_sum_segmentation(la, k=3)
+        assert bnd == [0, 1, 4, 5]
+        assert score == pytest.approx(math.log(0.30), abs=1e-9)
+
+        # Marginal modes diverge from the joint MAP.
+        L, R = dp.forward_backward(la, n=n, k_max=3)
+        bp = dp.boundary_location_posterior(L, R, n=n, k=3)
+        assert int(np.argmax(bp[0])) == 2  # marginal mode of t1
+        assert int(np.argmax(bp[1])) == 4  # marginal mode of t2
+
+        # Boundary-event marginals are also consistent with the constructed
+        # joint posterior: index 4 has the largest event probability (~0.72).
+        d1 = dp.boundary_event_marginals_fixed_k(L, R, n=n, k=3)
+        assert int(np.argmax(d1)) == 3  # 0-indexed: position 4 → index 3
 
     def test_invalid_k_raises(self, random_log_block_evidence):
         la, n = random_log_block_evidence

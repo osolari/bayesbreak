@@ -22,7 +22,7 @@ The block evidence $A^{(0)}_{ij}$ is obtained by marginalizing $\theta$ out of \
   \edge {w} {y};
   \plate {plate1} {(y)} {$t\in(i,j]$};
 \end{tikzpicture}
-\caption{Plate model for a single conjugate EF block. Shaded nodes are observed; unshaded are latent; point nodes are fixed hyperparameters/exposures. Marginalizing $\theta$ gives $A^{(0)}_{ij}$.}
+\caption[Single conjugate EF block plate model]{Plate model for a single conjugate EF block. Shaded nodes are observed; unshaded are latent; point nodes are fixed hyperparameters/exposures. Marginalizing $\theta$ gives $A^{(0)}_{ij}$.}
 \label{fig:plate-ef}
 \end{figure}
 
@@ -163,9 +163,9 @@ Initialize $\widetilde{L}_{0,0}=1$, $\widetilde{L}_{0,j>0}=0$; $\widetilde{R}_{0
 Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ (cf.\ \eqref{eq:post-k}) and choose $\widehat{k}$\;
 \For{$p=1$ \KwTo $\widehat{k}-1$}{
   For $h\in\{p,\dots,n-(\widehat{k}-p)\}$ set $P(t_p=h\mid y,\widehat{k})\leftarrow \widetilde{L}_{p,h}\widetilde{R}_{\widehat{k}-p,h}/\widetilde{L}_{\widehat{k}n}$\;
-  $\widehat{t}_p\leftarrow \arg\max_h P(t_p=h\mid y,\widehat{k})$\;
+  Record the marginal mode $\arg\max_h P(t_p=h\mid y,\widehat{k})$ as a diagnostic only\;
 }
-\KwOut{$\{\widetilde{L}_{k j}\}$, $\{\widetilde{R}_{k i}\}$, $P(k\mid y)$, $\widehat{k}$, $\widehat{t}$}
+\KwOut{$\{\widetilde{L}_{k j}\}$, $\{\widetilde{R}_{k i}\}$, $P(k\mid y)$, $\widehat{k}$, and boundary-marginal diagnostics}
 \end{algorithm}
 
 
@@ -174,15 +174,15 @@ Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ (cf.\ \eqref{eq:post-k
 
 Suppose the boundary prior given $k$ factorizes over segment lengths as in \eqref{eq:lengthprior}:
 \[
-p(t\mid k) = \frac{1}{C_k}\prod_{q=1}^k g(x_{t_q}-x_{t_{q-1}}),
+p(t\mid k) = \frac{1}{C_k}\prod_{q=1}^k g(\Delta_x(t_{q-1},t_q)),
 \qquad
-C_k := \sum_{t:\,0=t_0<\cdots<t_k=n}\ \prod_{q=1}^k g(x_{t_q}-x_{t_{q-1}}).
+C_k := \sum_{t:\,0=t_0<\cdots<t_k=n}\ \prod_{q=1}^k g(\Delta_x(t_{q-1},t_q)).
 \]
 Then we can absorb $g$ into block evidences by defining
 \begin{equation}
-\widetilde{A}^{(0)}_{ij} := A^{(0)}_{ij}\,g(x_j-x_i),
+\widetilde{A}^{(0)}_{ij} := A^{(0)}_{ij}\,g(\Delta_x(i,j)),
 \qquad
-\widetilde{A}^{(r)}_{ij} := A^{(r)}_{ij}\,g(x_j-x_i).
+\widetilde{A}^{(r)}_{ij} := A^{(r)}_{ij}\,g(\Delta_x(i,j)).
 \label{eq:Atilde}
 \end{equation}
 Running the DP \eqref{eq:LR} with $\widetilde{A}^{(0)}_{ij}$ computes $\widetilde{L}_{k n}$,
@@ -190,15 +190,15 @@ the \emph{unnormalized} evidence sum over all segmentations weighted by $g$. The
 $C_k$ can be computed by the same DP with $A^{(0)}_{ij}\equiv 1$:
 \begin{equation}
 C_k
- = \sum_{t}\prod_{q=1}^k g(x_{t_q}-x_{t_{q-1}})
+ = \sum_{t}\prod_{q=1}^k g(\Delta_x(t_{q-1},t_q))
  = L^{(g)}_{k n},
 \quad\text{where}\quad
-L^{(g)}_{k+1,j}=\sum_{h=k}^{j-1}L^{(g)}_{k,h}\,g(x_j-x_h),\ L^{(g)}_{0,0}=1.
+L^{(g)}_{k+1,j}=\sum_{h=k}^{j-1}L^{(g)}_{k,h}\,g(\Delta_x(h,j)),\ L^{(g)}_{0,0}=1.
 \label{eq:Ck-general}
 \end{equation}
 In the index-uniform case $g\equiv 1$, \eqref{eq:Ck-general} reduces to $C_k=\binom{n-1}{k-1}$.
 
-\subsection{Posteriors over $k$, boundary marginals, and joint MAP segmentations}
+\subsection[Posteriors over segment counts, boundary marginals, and joint MAP segmentations]{Posteriors over $k$, boundary marginals, and joint MAP segmentations}
 Let $p(k)$ be a prior on segment count. Under index-uniform $p(t\mid k)$ we have
 $C_k=\binom{n-1}{k-1}$ and
 \[
@@ -242,7 +242,7 @@ the posterior probability that interior index $i$ coincides with \emph{some} bou
 conditioning on which boundary. The objects $P(t_p=h\mid y,k)$ and $P(b_i=1\mid y,k)$ are
 distinct: the former is a probability distribution over $h$ for each fixed $p$ (and sums to $1$ over
 $h$), while the latter is a per-index Bernoulli probability summing to $k-1$ over $i$. Calibration
-experiments in Section~\ref{sec:experiments} target $P(b_i=1\mid y,k)$; a full derivation appears
+experiments in Section~\ref{sec:experiments} target $P(b_i=1\mid y,k)$; a full derivation is given
 in Appendix~\ref{app:marginals}.
 \end{remark}
 
@@ -256,14 +256,12 @@ general, does \emph{not} recover the joint MAP segmentation.
 
 \begin{remark}[A small counterexample]
 \label{rem:marg-vs-joint}
-Consider $n=4$, $k=2$, and suppose the block log-evidences $\log A^{(0)}_{ij}$ are such that the
-posterior over $t=(t_1)\in\{1,2,3\}$ assigns
-$P(t_1=1\mid y,2)=0.40$, $P(t_1=2\mid y,2)=0.35$, $P(t_1=3\mid y,2)=0.25$.
-The marginal boundary mode is $t_1=1$. Now add a second boundary $t_2$ with the joint posterior
-mass concentrated on $(t_1,t_2)=(2,3)$ — consistent with the marginal $P(t_1=2)=0.35$ — while the
-mass on $t_1=1$ is split across several $t_2$ values. Then the joint MAP is $(2,3)$, not
-$(1,\cdot)$; equivalently, the marginal-mode boundary $t_1=1$ is part of no high-probability joint
-configuration. This is exactly the kind of discrepancy the max-sum DP resolves.
+Consider $n=5$ and $k=3$, so the two interior boundaries satisfy $1\le t_1<t_2\le4$.
+For example, let the joint posterior put masses $0.30,0.28,0.22,0.20$ on the four ordered
+configurations $(1,4),(2,3),(2,4),(3,4)$, respectively. The marginal modes are then
+$t_1=2$ and $t_2=4$, so the independently selected marginal-mode vector is $(2,4)$, even though
+the joint MAP configuration is $(1,4)$. This is exactly the kind of discrepancy the max-sum DP
+resolves.
 \end{remark}
 
 The joint MAP segmentation is the solution of
@@ -299,7 +297,7 @@ $(i,j]=(t_{q-1},t_q]$. Then
 \qquad r=1,2,\dots,
 \label{eq:segmom-seg}
 \end{equation}
-where the final equality holds because the prior factor $g(x_j-x_i)$ cancels. In particular, for
+where the final equality holds because the prior factor $g(\Delta_x(i,j))$ cancels. In particular, for
 an exported joint MAP segmentation $\widehat{t}^{\,\mathrm{MAP}}$, the segment summaries are obtained by
 setting $t=\widehat{t}^{\,\mathrm{MAP}}$ in \eqref{eq:segmom-seg}.
 
@@ -324,12 +322,18 @@ that actually covers $t$:
 In particular, $\widehat{\mu}'_t := \widehat{\mu}'^{(1)}_t$ is the Bayes regression curve and
 $\mathbb{V}[\mu'_t\mid y,k]
  = \widehat{\mu}'^{(2)}_t - (\widehat{\mu}'^{(1)}_t)^2$.
+If a fully $k$-marginalized curve is desired, compute the same conditional curve for each admissible
+$k$ and average the resulting moments using $P(k\mid y)$ from \eqref{eq:post-k}. The empirical
+sections report curves conditional on the selected $\widehat k$ unless explicitly stated otherwise.
 
 \begin{theorem}[Correctness of the DP]
 \label{thm:dp-correctness}
-Under the EF–conjugate single–segment model of Section~\ref{sec:ef} (and under any
-segment-factorized boundary prior absorbed via \eqref{eq:Atilde}), the recursions
-\eqref{eq:LR} compute exact marginal evidences for all prefixes/suffixes:
+Assume finite block evidences on all admissible blocks, a finite segment-count range, and a
+segment-factorized conditional partition prior satisfying Assumption~\ref{ass:factorizing-prior}
+with the boundary-coordinate convention of Section~\ref{sec:notation}. Under the EF--conjugate
+single-segment model of Section~\ref{sec:ef}, or under any other block model whose exact evidence
+array is supplied, the recursions \eqref{eq:LR} compute exact marginal evidences for all
+prefixes/suffixes:
 $\widetilde{L}_{k j}$ and $\widetilde{R}_{k i}$ are exact evidence sums over all
 $k$-segmentations of the corresponding prefix/suffix. Moreover:
 \begin{enumerate}
@@ -398,10 +402,16 @@ $\widetilde{L}_{k n}$ yields \eqref{eq:boundary-post}.
 \paragraph{Step 6: moment formulas.}
 For a fixed block $(i,j]$, Theorem~\ref{thm:ef-integral} gives
 $A^{(r)}_{ij}=A^{(0)}_{ij}\,\mathbb{E}[m(\theta)^r\mid(i,j]]$. Since the segmentation prior factor
-$g(x_j-x_i)$ cancels in the ratio, \eqref{eq:segmom-seg} holds. The regression-curve moment formula
+$g(\Delta_x(i,j))$ cancels in the ratio, \eqref{eq:segmom-seg} holds. The regression-curve moment formula
 \eqref{eq:segmom} follows by averaging over all segmentations and grouping contributions by the
 block $(i,j]$ that contains index $t$.
 \end{proof}
+
+\paragraph{Posterior-evidence sanity checks.}
+After every DP run, verify four invariants: normalized segment-count weights
+sum to one; the full-sequence forward and backward evidences agree, $\widetilde L_{kn}=\widetilde
+R_{k0}$; boundary-event marginals satisfy $\sum_{i=1}^{n-1}P(b_i=1\mid y,k)=k-1$; and the
+max-sum backtracking score equals the stored terminal max-sum value.
 
 \begin{theorem}[Time and space complexity]
 \label{thm:dp-complexity}
@@ -448,25 +458,14 @@ evidences on demand during the DP sweep at cost $\mathcal{O}(k_{\max}n^2)$ total
 per block via prefix sums).
 \end{remark}
 
-\begin{proposition}[Monotonicity of evidence in $k$]
+\begin{remark}[Evidence across segment counts need not be monotone]
 \label{prop:mono-k}
-Assume $A^{(0)}_{ij}>0$ for every $0\le i<j\le n$. Then the prefix evidence sum is non-decreasing
-in the segment count, up to a positive multiplicative factor: for every $k$,
-\[
-L_{k+1,n} \ge \min_{0<h<n} A^{(0)}_{hn}\cdot L_{k,h}\Big/A^{(0)}_{hn}
-\]
-(interpreted pathwise: every $(k+1)$-segmentation extends a $k$-segmentation by inserting one
-boundary). In particular, reporting the unweighted max ratio
-$\sup_{h,k}\;L_{k,h}/L_{k+1,h}$ quantifies how much ``adding one more boundary'' changes the
-evidence and can be used as a diagnostic for the prior $p(k)$.
-\end{proposition}
-
-\begin{proof}
-Every $(k+1)$-segmentation of $y_{1:n}$ can be obtained from a $k$-segmentation of $y_{1:h}$ by
-appending the terminal block $(h,n]$, so
-$L_{k+1,n}=\sum_h L_{k,h}A^{(0)}_{hn}\ge \min_h A^{(0)}_{hn}\cdot\sum_h L_{k,h}/A^{(0)}_{hn}\cdot A^{(0)}_{hn}$.
-The qualitative monotonicity statement follows from positivity of all $A^{(0)}_{hn}$.
-\end{proof}
+The fixed-$k$ evidence $P(y\mid k)=\widetilde L_{kn}/C_k$ is not monotone in general. Adding a boundary changes both the set of admissible partitions and
+the product of block evidences, while the normalized conditional prior contributes the normalizer
+$C_k$. Consequently, diagnose segment-count behavior through the normalized evidences
+$P(y\mid k)$ and posterior weights $P(k\mid y)$ rather than through an unnormalized pathwise
+``add one boundary'' heuristic.
+\end{remark}
 
 
 \subsection{End-to-end BayesBreak inference routine}\label{sec:dp-alg}
@@ -493,9 +492,9 @@ approximates) block evidences $\log \mathcal{L}_{ij}$ and, when needed, block mo
 \For{$0\le i<j\le n$}{
   Compute block summaries $(S_{ij},W_{ij},H_{ij})$ using prefix sums (or running sums)\;
   Call a family-specific routine to obtain $A^{(0)}_{ij},A^{(1)}_{ij},A^{(2)}_{ij}$\;
-  Set $\widetilde{A}^{(r)}_{ij}\leftarrow A^{(r)}_{ij}\,g(x_j-x_i)$ for $r\in\{0,1,2\}$ (cf.\ \eqref{eq:Atilde})\;
+  Set $\widetilde{A}^{(r)}_{ij}\leftarrow A^{(r)}_{ij}\,g(\Delta_x(i,j))$ for $r\in\{0,1,2\}$ (cf.\ \eqref{eq:Atilde})\;
 }
-Compute $C_k$ if $g\not\equiv 1$ using \eqref{eq:Ck-general} (DP with $A^{(0)}_{ij}\equiv 1$)\;
+Compute $C_k$ under the same admissibility and length-prior convention used in the score array; for $g\equiv1$, use $C_k=\binom{n-1}{k-1}$, and otherwise use \eqref{eq:Ck-general} (DP with $A^{(0)}_{ij}\equiv 1$)\;
 \BlankLine
 \textbf{2. Run the sum-product dynamic program}\;
 Compute $\widetilde{L}_{k j},\widetilde{R}_{k i}$ via \eqref{eq:LR} for $k=0,\dots,k_{\max}$ using $\widetilde{A}^{(0)}_{ij}$\;
@@ -529,8 +528,8 @@ If multiple subjects or groups are present, pool block evidences (Theorem~\ref{t
 BayesBreak separates computation into a \emph{local} stage (building the block-evidence array) and a \emph{global} stage (running DP over partitions).
 For conjugate exponential-family models, block evidences can be evaluated in $\mathcal{O}(1)$ amortized time per block once cumulative sufficient-statistic arrays are constructed, yielding $\mathcal{O}(n^2)$ total preprocessing.
 The DP recursions over $(k,t)$ states are $\mathcal{O}(k_{\max} n^2)$ in the worst case for explicit segment-count posteriors; in many regimes, pruning and/or marginalization of $k$ can reduce the effective complexity, but BayesBreak's design prioritizes exactness and transparency of posterior quantities.
-All forward/backward computations are performed in log-space with stable \texttt{logsumexp} operations, and practitioners should cache cumulative summaries (e.g., prefix sums of sufficient statistics) to avoid redundant work.
-When storing the full forward table is memory-prohibitive, one may checkpoint layers or recompute forward messages on demand during backward passes, trading memory for additional passes through the DP.
+All forward/backward computations are performed in log-space with stable \texttt{logsumexp} operations, and implementations cache cumulative summaries (e.g., prefix sums of sufficient statistics) to avoid redundant work.
+When storing the full forward table is memory-prohibitive, checkpoint layers or recompute forward messages on demand during backward passes, trading memory for additional passes through the DP.
 
 
 
@@ -538,18 +537,18 @@ When storing the full forward table is memory-prohibitive, one may checkpoint la
 \label{sec:irregular}
 
 Irregularly spaced designs enter BayesBreak in two logically distinct places.
-First, the observation model itself may contain \emph{likelihood weights} or exposures $w_t$,
-for example Poisson exposures, known Gaussian precisions, or Binomial trial counts. These are
-part of the sampling model and should be supplied only when substantively justified by the data-
+First, likelihood weights or exposures $w_t$ belong to the observation model when they encode
+Poisson exposures, known Gaussian precisions, or Binomial trial counts. These quantities are
+part of the sampling model; supply them only when substantively justified by the data-
 generating process. Second, the geometry of the design points $x_1<\dots<x_n$ can enter through
-a \emph{partition prior} that depends on physical segment lengths $x_j-x_i$. In most irregular-grid
+a \emph{partition prior} that depends on physical segment lengths $\Delta_x(i,j)$. In most irregular-grid
 applications, this second mechanism is the default one: irregular spacing by itself does not imply
-that the likelihood should be reweighted.
+that the likelihood is reweighted.
 
 Accordingly, a clean default is to leave the observation model unchanged (often $w_t\equiv 1$) and
 encode design geometry through the segment-factorized prior
 \[
-p(t\mid k) \propto \prod_{q=1}^k g(x_{t_q}-x_{t_{q-1}}),
+p(t\mid k) \propto \prod_{q=1}^k g(\Delta_x(t_{q-1},t_q)),
 \]
 with $g$ chosen to reflect prior beliefs about physical segment lengths. This is particularly natural
 in genomics, spatial statistics, and event-time data, where the scientifically meaningful notion of
@@ -557,26 +556,26 @@ in genomics, spatial statistics, and event-time data, where the scientifically m
 
 \begin{proposition}[Homogeneous Poisson-process prior: regular-grid index-uniform as a special case]
 \label{prop:pp-index-uniform}
-Partition the continuous interval $(x_0,x_n)$ into the $n$ inter-point intervals
-$(x_{i-1},x_i]$ of lengths $\Delta x_i:=x_i-x_{i-1}$. Consider a homogeneous Poisson process
-of rate $\lambda$ on $(x_0,x_n)$ and condition on the event that exactly $k-1$ events occur
+Partition the continuous interval $(u_0,u_n)$ into the $n$ candidate boundary intervals
+$(u_{i-1},u_i]$ of lengths $\Delta u_i:=u_i-u_{i-1}$. Consider a homogeneous Poisson process
+of rate $\lambda$ on $(u_0,u_n)$ and condition on the event that exactly $k-1$ events occur
 and that no two events fall in the same inter-point interval. Then the induced discrete prior
 on the selected set of $(k-1)$ boundary \emph{intervals} is proportional to the product of
-their lengths, $\prod_{\ell\in\mathcal{I}} \Delta x_\ell$. In particular, on a regular grid
-(all $\Delta x_\ell$ equal), the induced discrete prior is index-uniform.
+their lengths, $\prod_{\ell\in\mathcal{I}} \Delta u_\ell$. In particular, on a regular grid
+(all $\Delta u_\ell$ equal), the induced discrete prior is index-uniform.
 \end{proposition}
 
 \begin{proof}
 For a homogeneous Poisson process, counts in disjoint intervals are independent and
-$\#\{\text{events in }(x_{i-1},x_i]\}\sim\mathrm{Pois}(\lambda\Delta x_i)$. Conditioning on
+$\#\{\text{events in }(u_{i-1},u_i]\}\sim\mathrm{Pois}(\lambda\Delta u_i)$. Conditioning on
 the event that exactly one event occurs in each selected interval $\ell\in\mathcal{I}$ and
 zero events occur in other intervals yields conditional probability proportional to
 \[
-\prod_{\ell\in\mathcal{I}} (\lambda\Delta x_\ell)e^{-\lambda\Delta x_\ell}
-\prod_{\ell\notin\mathcal{I}} e^{-\lambda\Delta x_\ell}
-\ \propto\ \prod_{\ell\in\mathcal{I}} \Delta x_\ell,
+\prod_{\ell\in\mathcal{I}} (\lambda\Delta u_\ell)e^{-\lambda\Delta u_\ell}
+\prod_{\ell\notin\mathcal{I}} e^{-\lambda\Delta u_\ell}
+\ \propto\ \prod_{\ell\in\mathcal{I}} \Delta u_\ell,
 \]
-since the global factor $e^{-\lambda\sum_\ell \Delta x_\ell}$ cancels. If $\Delta x_\ell$ are
+since the global factor $e^{-\lambda\sum_\ell \Delta u_\ell}$ cancels. If $\Delta u_\ell$ are
 all equal, all $(k-1)$-subsets $\mathcal{I}$ have equal probability, giving index-uniformity.
 \end{proof}
 
@@ -601,7 +600,7 @@ boundary at the pseudo-index and satisfies
   = \prod_q \widetilde{A}^{(0)}_{\tilde t_{q-1}\tilde t_q}
 \]
 for the likelihood contribution of the inherited partition. If, in addition, the partition prior is a
-function of physical segment lengths $x_{t_q}-x_{t_{q-1}}$, then the prior weight of this inherited
+function of physical segment lengths $\Delta_x(t_{q-1},t_q)$, then the prior weight of this inherited
 partition is unchanged as well.
 \end{proposition}
 
@@ -632,10 +631,9 @@ must compete block-evidence differences against a flat prior. Under the length-a
 $g(\ell)\propto \ell$ (proportional to physical segment length, cf.\
 Proposition~\ref{prop:pp-index-uniform}), the boundary index $i=4$ (separating the tight cluster
 from the far pair) carries much larger prior mass, consistent with the physical intuition that
-the natural segment boundary is likely at the large gap. This example foreshadows the
-experimental point that the choice of $g$ can shift posterior boundary mass by an order of
-magnitude without changing the likelihood; a quantitative sanity check is provided in
-Section~\ref{sec:experiments}.
+the prior favors a boundary at the large gap. This example is a qualitative prior-sensitivity illustration: changing $g$ shifts posterior
+boundary mass without changing the likelihood. A larger quantitative sensitivity study is specified
+as planned empirical work.
 \end{example}
 
 \section{Replicates and multi-subject pooling (shared boundaries)}
@@ -666,7 +664,7 @@ where $q(i)$ is the segment index containing observation $i$ under $t$.
   \plate {pseg} {(th)} {$q=1{:}k$};
   \plate {psubj} {(pseg)(y)(ab)(w)} {$s=1{:}S$};
 \end{tikzpicture}
-\caption{Plate model for multi-subject pooling under shared boundaries. The boundary vector $t$ is shared across subjects; each subject has its own segment parameters $\theta^{(s)}_q$ and exposures $w^{(s)}_i$.}
+\caption[Shared-boundary multi-subject plate model]{Plate model for multi-subject pooling under shared boundaries. The boundary vector $t$ is shared across subjects; each subject has its own segment parameters $\theta^{(s)}_q$ and exposures $w^{(s)}_i$.}
 \label{fig:plate-replicates}
 \end{figure}
 
@@ -674,7 +672,7 @@ Suppose we observe $S$ independent subjects, each with its own observations
 $\{(x^{(s)}_i,y^{(s)}_i)\}$ and exposure weights $w^{(s)}_i$, but we wish to model them as
 sharing a common segmentation (boundary locations) while allowing subject-specific segment
 parameters. For simplicity of exposition, assume a common index grid $i=1,\dots,n$ (e.g., after
-alignment/union of grids); subject $s$ may have missing observations, handled by setting $w^{(s)}_i=0$
+alignment/union of grids); subject-specific missing observations are handled by setting $w^{(s)}_i=0$
 at missing indices.
 
 Let $(i,j]$ denote a block and write subject-specific block sums as
@@ -700,8 +698,9 @@ A^{(0)}_{ij,\mathrm{pool}}
 \]
 Equivalently, $\log A^{(0)}_{ij,\mathrm{pool}}=\sum_s \log A^{(0)}_{ij,s}$. Running the DP
 recursions \eqref{eq:LR}--\eqref{eq:segmom} with $A^{(0)}_{ij}$ replaced by
-$A^{(0)}_{ij,\mathrm{pool}}$ yields the exact joint posterior over shared boundaries and all
-subject-specific segment parameters.
+$A^{(0)}_{ij,\mathrm{pool}}$ yields the exact posterior over shared boundaries. Conditional on any
+selected or averaged boundary configuration, the subject-specific segment-parameter posteriors are
+then recovered from the corresponding subject-level conjugate updates.
 \end{theorem}
 
 \begin{proof}
@@ -717,8 +716,9 @@ $A^{(0)}_{ij,\mathrm{pool}}=\prod_s A^{(0)}_{ij,s}$, giving the stated form.
 
 \ProofStep{Step 3: DP correctness under pooled evidences.}
 The DP in Section~\ref{sec:dp} depends only on the block evidence matrix. Replacing
-$A^{(0)}_{ij}$ by $A^{(0)}_{ij,\mathrm{pool}}$ therefore computes the exact posterior for the
-pooled model.
+$A^{(0)}_{ij}$ by $A^{(0)}_{ij,\mathrm{pool}}$ therefore computes the exact shared-boundary
+posterior for the pooled model; parameter posteriors remain available conditionally on boundaries
+from the subject-specific block updates.
 \end{proof}
 
 \section{Groups with known membership}
@@ -749,12 +749,12 @@ y^{(s)}_i\mid z_s=g, t^{(g)}, \theta^{(g,s)}_{q(i)} \stackrel{\mathrm{ind}}{\sim
   \plate {pseg} {(thgs)} {$q=1{:}k_g$};
   \plate {psubj} {(pseg)(y)(z)} {$s=1{:}S$};
 \end{tikzpicture}
-\caption{Plate model with known group memberships $z_s$. Each group has its own segmentation template $t^{(g)}$; subjects within a group share that template but retain subject-specific segment parameters $\theta^{(g,s)}_q$.}
+\caption[Known-group plate model]{Plate model with known group memberships $z_s$. Each group has its own segmentation template $t^{(g)}$; subjects within a group share that template but retain subject-specific segment parameters $\theta^{(g,s)}_q$.}
 \label{fig:plate-knowngroups}
 \end{figure}
 
 In some applications subjects can be partitioned into groups $g=1,\dots,G$ (e.g.\ experimental
-conditions), and we may wish to allow each group to have its own segmentation while still
+conditions), and we allow each group to have its own segmentation while still
 pooling within groups. When group memberships are known, BayesBreak handles this case by
 applying the pooled DP of Section~\ref{sec:replicates} independently within each group.
 
@@ -764,8 +764,10 @@ $A^{(0)}_{ij,g}$ using Theorem~\ref{thm:multisubject}, then run the DP recursion
 \eqref{eq:LR}--\eqref{eq:segmom} with $A^{(0)}_{ij}=A^{(0)}_{ij,g}$. This yields group-specific
 $P_g(k\mid y)$, boundary posteriors $P_g(t_p\mid y,k)$, and segment/regression-curve moments.
 The total computational cost is $G$ times the single-group cost, since DP runs are independent
-across groups; block-evidence matrices can share a common prefix-sum precomputation whenever the
-underlying design and exposures are common.
+across groups conditional on the observed labels; block-evidence matrices can share a common
+prefix-sum precomputation only when the underlying design, weights, and missingness pattern permit
+it. This known-group construction is the supervised counterpart of the latent-template mixture in
+Section~\ref{sec:latent-em}.
 
 \section{Latent groups and an EM algorithm}
 \label{sec:latent-em}
@@ -798,7 +800,7 @@ y^{(s)}_i\mid z_s,\tau_{z_s},\theta^{(z_s,s)}_{q(i)}\stackrel{\mathrm{ind}}{\sim
   \plate {pseg} {(thgs)} {$q=1{:}k_g$};
   \plate {psubj} {(pseg)(y)(z)} {$s=1{:}S$};
 \end{tikzpicture}
-\caption{Plate model for the latent-group template mixture. Unshaded $z_s$ are latent; EM alternates between exact E-step responsibilities $p(z_s=g\mid y^{(s)},\pi,\tau)$ and M-step max-sum updates of the templates $\tau_g$.}
+\caption[Latent-group template-mixture plate model]{Plate model for the latent-group template mixture. Unshaded $z_s$ are latent; EM alternates between exact E-step responsibilities $p(z_s=g\mid y^{(s)},\pi,\tau)$ and M-step max-sum updates of the templates $\tau_g$.}
 \label{fig:plate-latent-em}
 \end{figure}
 
@@ -809,20 +811,23 @@ setting in which EM updates remain exact and interpretable.
 
 Let $\tau_g=(k_g,t^{(g)})$ denote the template of group $g$, where
 $1\le k_g\le k_{\max}$ and $0=t^{(g)}_0<\cdots<t^{(g)}_{k_g}=n$. Conditional on membership in group $g$,
-subject $s$ has marginal likelihood
+subject $s$ is assigned the positive prior-weighted template score
 \begin{equation}
-p\big(y^{(s)}\mid \tau_g\big)
+S_g\big(y^{(s)};\tau_g\big)
  = \frac{p(k_g)}{C_{k_g}}
    \prod_{q=1}^{k_g} \widetilde{A}^{(0,s)}_{t^{(g)}_{q-1}t^{(g)}_q},
 \label{eq:template-lik}
 \end{equation}
-where $\widetilde{A}^{(0,s)}_{ij}=A^{(0,s)}_{ij}g(x_j-x_i)$ is the subject-specific block evidence with any
-length factor already absorbed. The group mixture weights are $\pi_g>0$ with $\sum_g \pi_g=1$.
+where $\widetilde{A}^{(0,s)}_{ij}=A^{(0,s)}_{ij}g(\Delta_x(i,j))$ is the subject-specific block evidence with any
+length factor already absorbed. This score defines the finite template-mixture objective optimized
+below; it is distinct from a fully Bayesian posterior over all group segmentations. The
+group mixture weights are nonnegative with $\sum_g \pi_g=1$; implementations either deactivate
+empty groups with $\pi_g=0$ or use a small Dirichlet pseudocount/floor to keep every group active.
 
 Introduce latent indicators $z_{sg}\in\{0,1\}$ with $\sum_g z_{sg}=1$. The complete-data log-likelihood is
 \[
-\log p(y,z\mid\pi,\tau)
- = \sum_{s=1}^S\sum_{g=1}^G z_{sg}\bigl[\log\pi_g + \log p(y^{(s)}\mid \tau_g)\bigr].
+\mathcal{J}(z,\pi,\tau)
+ = \sum_{s=1}^S\sum_{g=1}^G z_{sg}\bigl[\log\pi_g + \log S_g(y^{(s)};\tau_g)\bigr].
 \]
 Let $r_{sg}:=\mathbb{E}[z_{sg}\mid y,\pi,\tau]$ denote the usual responsibilities.
 
@@ -830,7 +835,7 @@ Let $r_{sg}:=\mathbb{E}[z_{sg}\mid y,\pi,\tau]$ denote the usual responsibilitie
 Given current $(\pi,\tau)$,
 \begin{equation}
 r_{sg}
- = \frac{\pi_g\,p(y^{(s)}\mid\tau_g)}{\sum_{g'=1}^G \pi_{g'}\,p(y^{(s)}\mid\tau_{g'})}.
+ = \frac{\pi_g\,S_g(y^{(s)};\tau_g)}{\sum_{g'=1}^G \pi_{g'}\,S_{g'}(y^{(s)};\tau_{g'})}.
 \label{eq:template-resp}
 \end{equation}
 
@@ -841,26 +846,31 @@ For fixed responsibilities,
 \]
 
 \paragraph{M-step for group templates.}
-For fixed $r$, the $\tau_g$-dependent part of the EM auxiliary function is
+For fixed $r$, write $n_g(r):=\sum_{s=1}^S r_{sg}$. The $\tau_g$-dependent part of the EM
+auxiliary function is
 \[
 Q_g(\tau_g)
- = \sum_{s=1}^S r_{sg}\log p(y^{(s)}\mid\tau_g)
- = \log p(k_g)-\log C_{k_g} + \sum_{q=1}^{k_g} B^{(g)}_{t^{(g)}_{q-1}t^{(g)}_q},
+ = \sum_{s=1}^S r_{sg}\log S_g(y^{(s)};\tau_g)
+ = n_g(r)\{\log p(k_g)-\log C_{k_g}\}
+   + \sum_{q=1}^{k_g} B^{(g)}_{t^{(g)}_{q-1}t^{(g)}_q},
 \]
 where the responsibility-weighted block score is
 \begin{equation}
 B^{(g)}_{ij}
- := \log g(x_j-x_i) + \sum_{s=1}^S r_{sg}\,\log A^{(0,s)}_{ij}.
+ := n_g(r)\log g(\Delta_x(i,j)) + \sum_{s=1}^S r_{sg}\,\log A^{(0,s)}_{ij}.
 \label{eq:template-blockscore}
 \end{equation}
-Hence, for each group $g$, maximizing $Q_g(\tau_g)$ is exactly the same max-sum segmentation problem as in
-Section~\ref{sec:algorithms}, except that the block score is replaced by $B^{(g)}_{ij}$ and the count-specific
-offset $\log p(k)-\log C_k$ is added when selecting $k_g$. In other words, the M-step is an exact
-responsibility-weighted backtracking DP.
+Thus the template-prior normalizer and the length factor are scaled by the same effective group
+size $n_g(r)$ as the rest of the prior-weighted score. For each group $g$, maximizing
+$Q_g(\tau_g)$ is then exactly the same max-sum segmentation problem as in
+Section~\ref{sec:algorithms}, except that the block score is replaced by $B^{(g)}_{ij}$ and the
+count-specific offset $n_g(r)\{\log p(k)-\log C_k\}$ is added when selecting $k_g$. In other
+words, the M-step is an exact responsibility-weighted backtracking DP for the stated finite
+objective.
 
 \begin{theorem}[Monotone EM updates for the template mixture]
 \label{thm:em-monotone}
-For the latent template-mixture model defined by \eqref{eq:template-lik}, the EM iteration
+For the finite template-mixture objective defined by \eqref{eq:template-lik}, the EM iteration
 consisting of, in order,
 (i) the exact responsibility update \eqref{eq:template-resp} given current $(\pi^{(t)},\tau^{(t)})$
 to produce $r^{(t+1)}$;
@@ -868,63 +878,65 @@ to produce $r^{(t+1)}$;
 $\pi^{(t+1)} = \arg\max_\pi Q(\pi,\tau^{(t)};r^{(t+1)})$; and
 (iii) the exact max-sum DP update of each template
 $\tau^{(t+1)} = \arg\max_\tau Q(\pi^{(t+1)},\tau;r^{(t+1)})$ via \eqref{eq:template-blockscore}
-does not decrease the observed-data log-likelihood
+does not decrease the finite-mixture objective
 \[
-\ell(\pi,\tau) = \sum_{s=1}^S \log\Big(\sum_{g=1}^G \pi_g p(y^{(s)}\mid \tau_g)\Big).
+\ell_\star(\pi,\tau) = \sum_{s=1}^S \log\Big(\sum_{g=1}^G \pi_g S_g(y^{(s)};\tau_g)\Big).
 \]
-Any fixed point of these updates is a coordinatewise maximizer of the EM auxiliary function.
+Any fixed point of these updates, with deterministic tie-breaking for equal-scoring templates, is a
+coordinatewise maximizer of the EM auxiliary function. Across restarts, the selected solution is the
+run with the largest achieved finite-mixture objective.
 \end{theorem}
 
 \begin{proof}
-The E-step with current $(\pi^{(t)},\tau^{(t)})$ computes the exact posterior responsibilities
-$r^{(t+1)}_{sg}=p(z_{sg}=1\mid y^{(s)},\pi^{(t)},\tau^{(t)})$, which by construction maximizes the
-standard EM lower bound $\mathcal{Q}(q\parallel(\pi^{(t)},\tau^{(t)}))$ with respect to $q$ for
-fixed parameters. The M-step maximizes the auxiliary function
-$Q(\pi,\tau;r^{(t+1)}):=\sum_{s,g}r^{(t+1)}_{sg}[\log\pi_g+\log p(y^{(s)}\mid\tau_g)]$ in two
+The E-step with current $(\pi^{(t)},\tau^{(t)})$ computes the exact conditional responsibilities
+for the current finite set of template scores, which maximizes the standard EM lower bound for
+$\ell_\star$ with respect to the assignment distribution $q$ for fixed parameters. The M-step
+maximizes the auxiliary function
+$Q(\pi,\tau;r^{(t+1)}):=\sum_{s,g}r^{(t+1)}_{sg}[\log\pi_g+\log S_g(y^{(s)};\tau_g)]$ in two
 coordinates: (ii) over $\pi\in\Delta^{G-1}$ (closed-form simplex maximizer
-$\pi_g^{(t+1)}=S^{-1}\sum_s r^{(t+1)}_{sg}$), and (iii) over each $\tau_g$ independently (each
-is an additive max-sum segmentation objective, exactly maximizable by DP + backtracking). Since
-each coordinate update exactly maximizes its factor, we have
-$Q(\pi^{(t+1)},\tau^{(t+1)};r^{(t+1)})\ge Q(\pi^{(t)},\tau^{(t)};r^{(t+1)})$. The observed-data
-log-likelihood $\ell$ is non-decreasing by the generalized EM monotonicity theorem
-\citep{dempster1977em}: $\ell(\pi^{(t+1)},\tau^{(t+1)})\ge \ell(\pi^{(t)},\tau^{(t)})$. A fixed
-point of the iteration satisfies the coordinatewise maximization conditions, from which
-stationarity of $\ell$ follows.
+$\pi_g^{(t+1)}=S^{-1}\sum_s r^{(t+1)}_{sg}$ when no pseudocount is used), and (iii) over each
+$\tau_g$ independently. The latter is an additive max-sum segmentation objective with block score
+\eqref{eq:template-blockscore} and count offset $n_g(r)\{\log p(k)-\log C_k\}$, exactly
+maximizable by DP and backtracking. Since each coordinate update exactly maximizes its factor,
+$Q(\pi^{(t+1)},\tau^{(t+1)};r^{(t+1)})\ge Q(\pi^{(t)},\tau^{(t)};r^{(t+1)})$, and the finite-mixture
+objective $\ell_\star$ is non-decreasing by the generalized EM monotonicity theorem
+\citep{dempster1977em}. A fixed point satisfies the coordinatewise maximization conditions for the
+auxiliary function, rather than differentiable stationarity in a continuous template space.
 \end{proof}
 
 \paragraph{Implementation.}
 Algorithm~\ref{alg:multi-em} emphasizes the separation between
 (i) exact responsibility updates that use current group templates and
 (ii) exact template updates obtained from responsibility-weighted block scores.
-Because the template space is discrete while the mixture weights are continuous, multiple local optima are
-possible. We recommend at least $R\ge 5$ restarts from either (a) a $k$-means clustering of the
+Because the template space is discrete while the mixture weights are continuous, multiple local optima occur. Use at least $R\ge 5$ restarts from either (a) a $k$-means clustering of the
 per-subject pooled block-evidence matrices, (b) templates drawn from the partition prior, or
 (c) a warm start derived from a known-groups solution on a small labeled subset when available.
-Convergence should be declared when (i) no template changes between two successive iterations
-\emph{and} (ii) the observed-data log-likelihood change falls below a user tolerance
-(e.g., $10^{-6}$ relative). Because the template space is discrete, criterion (i) alone already
-certifies a fixed point of the M-step.
+Declare convergence when (i) no template changes between two successive iterations,
+(ii) the finite-mixture objective change falls below a user tolerance (e.g., $10^{-6}$ relative),
+and (iii) deterministic tie-breaking would choose the same templates if the weighted score matrix
+were recomputed. Template stability alone is a useful diagnostic but does not by itself certify
+that all objective and tie-handling conditions have been met.
 
 \begin{algorithm}[H]
 \caption{Latent-template EM for grouped segmentation (log-space)}
 \label{alg:multi-em}
 \KwIn{Per-subject log block evidences $\{\ell^{(0,s)}_{ij}:=\log A^{(0,s)}_{ij}\}_{s=1}^S$; number of groups $G$; $k_{\max}$; prior $\log p(k)$; length factor $g$; tolerance $\epsilon$}
 Initialize mixture weights $\{\pi_g\}_{g=1}^G$ and template segmentations $\{\tau_g=(k_g,t^{(g)})\}_{g=1}^G$ (several restarts; cf.\ initialization guidance above)\;
-\Repeat{template vector stable AND $|\ell^{(t+1)}-\ell^{(t)}|<\epsilon(1+|\ell^{(t)}|)$}{
+\Repeat{template vector stable AND $|\ell_\star^{(t+1)}-\ell_\star^{(t)}|<\epsilon(1+|\ell_\star^{(t)}|)$}{
   \textbf{E-step (log-space; order: responsibilities first):}\;
   \For{$s=1$ \KwTo $S$}{
     \For{$g=1$ \KwTo $G$}{
-      $\log p(y^{(s)}\mid \tau_g) \leftarrow \log p(k_g) - \log C_{k_g} + \sum_{q=1}^{k_g}\ell^{(0,s)}_{t^{(g)}_{q-1}t^{(g)}_q} + \sum_{q=1}^{k_g}\log g(x_{t^{(g)}_q}-x_{t^{(g)}_{q-1}})$\;
-      $\log u_{sg}\leftarrow \log\pi_g + \log p(y^{(s)}\mid \tau_g)$\;
+      $\log S_g(y^{(s)};\tau_g) \leftarrow \log p(k_g) - \log C_{k_g} + \sum_{q=1}^{k_g}\ell^{(0,s)}_{t^{(g)}_{q-1}t^{(g)}_q} + \sum_{q=1}^{k_g}\log g(\Delta_x(t^{(g)}_{q-1},t^{(g)}_q))$\;
+      $\log u_{sg}\leftarrow \log\pi_g + \log S_g(y^{(s)};\tau_g)$\;
     }
     $\log r_{sg}\leftarrow \log u_{sg} - \texttt{logsumexp}_{g'}(\log u_{sg'})$;\quad $r_{sg}\leftarrow \exp(\log r_{sg})$\;
   }
-  Accumulate observed-data log-likelihood $\ell^{(t+1)}\leftarrow \sum_s \texttt{logsumexp}_g(\log u_{sg})$\;
+  Accumulate finite-mixture objective $\ell_\star^{(t+1)}\leftarrow \sum_s \texttt{logsumexp}_g(\log u_{sg})$\;
   \textbf{M-step (in the order weights then templates):}\;
   $\pi_g\leftarrow S^{-1}\sum_s r_{sg}$ for each $g$\;
   \For{$g=1$ \KwTo $G$}{
-    Form weighted log block scores $B^{(g)}_{ij} = \log g(x_j-x_i) + \sum_{s=1}^S r_{sg}\,\ell^{(0,s)}_{ij}$\;
-    Run max-sum DP/backtracking over $k\in\{1,\dots,k_{\max}\}$ using score matrix $B^{(g)}$ and offset $\log p(k)-\log C_k$\;
+    Set $n_g\leftarrow\sum_s r_{sg}$ and form scores $B^{(g)}_{ij} = n_g\log g(\Delta_x(i,j)) + \sum_{s=1}^S r_{sg}\,\ell^{(0,s)}_{ij}$\;
+    Run max-sum DP/backtracking over $k\in\{1,\dots,k_{\max}\}$ using score matrix $B^{(g)}$ and offset $n_g\{\log p(k)-\log C_k\}$\;
     Update $\tau_g=(k_g,t^{(g)})$ to the maximizing template\;
   }
 }
@@ -934,11 +946,14 @@ Initialize mixture weights $\{\pi_g\}_{g=1}^G$ and template segmentations $\{\ta
 \section{Family-specific derivations}
 \label{sec:families}
 
-We now instantiate \eqref{eq:A0}–\eqref{eq:Ar} for three closed-form conjugate families
-(Gaussian, Poisson, and Binomial) and one low-dimensional quadrature example for $(0,1)$-valued
-responses. In each case we give (i) the segment model and prior, (ii) posterior hyperparameters,
-(iii) the block evidence $A^{(0)}_{ij}$, and (iv) first two posterior moments of the segment-level
-mean parameter. Implementation routines are provided immediately after each derivation
+We now instantiate \eqref{eq:A0}--\eqref{eq:Ar} for three closed-form conjugate families
+(Gaussian, Poisson, and Binomial), an overdispersed count model with a conjugate distributional
+parameter, and one low-dimensional quadrature example for $(0,1)$-valued responses. In each case
+we give (i) the segment model and prior, (ii) posterior hyperparameters, (iii) the block evidence
+$A^{(0)}_{ij}$, and (iv) first two posterior moments on the scale used by the Bayes-curve
+interface. For non-Gaussian families this scale must be stated explicitly: natural-parameter,
+distribution-parameter, and observation-mean moments are not interchangeable.
+Implementation routines are provided immediately after each derivation
 (Algorithms~\ref{alg:gaussian-block}--\ref{alg:betaobs-block}).
 
 \subsection{Gaussian with known variance (heteroscedastic via weights)}
@@ -950,11 +965,13 @@ y_t\mid \mu \sim \mathcal{N}\!\big(\mu,\sigma^2/w_t\big),\qquad
 with known $\sigma^2$ and positive weights $w_t$ (e.g.\ inverse known variances or exposure).
 For a block $(i,j]$, define
 \[
-n_{ij}:=j-i,\quad
-W_{ij} := \sum_{t=i+1}^j w_t,\quad
-S_{ij} := \sum_{t=i+1}^j w_t y_t,\quad
-Q_{ij} := \sum_{t=i+1}^j w_t (y_t-\nu)^2,\quad
-\kappa_{ij} := \rho^2 W_{ij} + \sigma^2.
+\begin{aligned}
+n_{ij}&:=j-i, &
+W_{ij}&:=\sum_{t=i+1}^j w_t, &
+S_{ij}&:=\sum_{t=i+1}^j w_t y_t,\\
+Q_{ij}&:=\sum_{t=i+1}^j w_t (y_t-\nu)^2, &
+\kappa_{ij}&:=\rho^2 W_{ij}+\sigma^2.
+\end{aligned}
 \]
 Then
 \[
@@ -1117,20 +1134,27 @@ $r>0$ and treats the success probability $p\in(0,1)$ per segment with a conjugat
 \[
 y_t\mid p \sim \mathrm{NegBin}(r, p),\qquad p\sim\mathrm{Beta}(a_0,b_0),
 \]
-where $\mathrm{NegBin}(r,p)$ has pmf $\binom{y+r-1}{y}(1-p)^y p^r$ (mean $r(1-p)/p$). For a block
-$(i,j]$, set $C_{ij}:=\sum_{t=i+1}^j y_t$, $N_{ij}:=\sum_{t=i+1}^j r$ (if $r$ varies by $t$,
-replace by the summed dispersion), and
-$H_{ij}:=\sum_{t=i+1}^j \log\binom{y_t+r-1}{y_t}$. Beta-NegBin conjugacy gives the posterior
-$p\mid(i,j]\sim\mathrm{Beta}(a_0+N_{ij},\,b_0+C_{ij})$ (note: the roles of the sufficient
-statistics differ from Binomial), so
+where $\mathrm{NegBin}(r,p)$ has pmf $\binom{y+r-1}{y}(1-p)^y p^r$ and count mean
+$r(1-p)/p$. For a block $(i,j]$, set $C_{ij}:=\sum_{t=i+1}^j y_t$, $N_{ij}:=\sum_{t=i+1}^j r_t$
+(with $r_t\equiv r$ in the fixed-dispersion case), and
+$H_{ij}:=\sum_{t=i+1}^j \log\binom{y_t+r_t-1}{y_t}$. Beta--NegBin conjugacy gives
+$p\mid(i,j]\sim\mathrm{Beta}(a_B,b_B)$ with $a_B=a_0+N_{ij}$ and $b_B=b_0+C_{ij}$, so
 \[
-\mathbb{E}[p\mid(i,j]]=\frac{a_0+N_{ij}}{a_0+b_0+N_{ij}+C_{ij}},
-\qquad
-A^{(0)}_{ij}=\exp\{H_{ij}\}\,\frac{B(a_0+N_{ij},\,b_0+C_{ij})}{B(a_0,b_0)},
+A^{(0)}_{ij}=\exp\{H_{ij}\}\,\frac{B(a_B,b_B)}{B(a_0,b_0)}.
 \]
-and moment numerators $A^{(1)}_{ij}, A^{(2)}_{ij}$ follow from $A^{(0)}_{ij}$ by multiplying by
-the corresponding Beta moments. When $r$ is unknown, a semi-conjugate EM or a 1D quadrature in $r$
-can be layered on top; we omit the details.
+The Beta posterior moments of $p$ are useful diagnostics, but the Bayes-curve target on the
+observation scale is a count mean. For a future count with dispersion $r_\ast$, this target is
+$m_\ast(p)=r_\ast(1-p)/p$, giving
+\begin{align*}
+\mathbb{E}[m_\ast(p)\mid(i,j]]
+&=r_\ast\frac{b_B}{a_B-1}\quad(a_B>1),\\
+\mathbb{V}[m_\ast(p)\mid(i,j]]
+&=r_\ast^2\frac{b_B(a_B+b_B-1)}{(a_B-1)^2(a_B-2)}\quad(a_B>2).
+\end{align*}
+Moment numerators $A^{(1)}_{ij}$ and $A^{(2)}_{ij}$ therefore multiply $A^{(0)}_{ij}$ by
+the corresponding observation-mean moments, not by raw Beta moments of $p$, unless the exported
+quantity is explicitly labeled as parameter-scale. When $r$ is unknown, a semi-conjugate EM or a
+one-dimensional quadrature in $r$ can be layered on top; we omit the details.
 
 \paragraph{Implementation.}
 Algorithm~\ref{alg:nb-block} summarizes the Negative-Binomial block computation in the same
@@ -1143,26 +1167,27 @@ interface as Algorithms~\ref{alg:gaussian-block}--\ref{alg:binomial-block}.
 $C\leftarrow\sum_{t=i+1}^j y_t$;\quad $N\leftarrow\sum_{t=i+1}^j r_t$\;
 $\log A0\leftarrow \sum_{t=i+1}^j \log\binom{y_t+r_t-1}{y_t} + \log B(a_0+N, b_0+C) - \log B(a_0,b_0)$\;
 $A0\leftarrow\exp(\log A0)$\;
-$p_{\mathrm{mean}}\leftarrow (a_0+N)/(a_0+b_0+N+C)$;\quad $p_{\mathrm{var}}\leftarrow \frac{(a_0+N)(b_0+C)}{(a_0+b_0+N+C)^2(a_0+b_0+N+C+1)}$\;
-\KwOut{$A0,p_{\mathrm{mean}},p_{\mathrm{var}}$}
+$a_B\leftarrow a_0+N$;\quad $b_B\leftarrow b_0+C$\;
+$\texttt{mean\_per\_disp}\leftarrow b_B/(a_B-1)$ if $a_B>1$;\quad
+$\texttt{var\_per\_disp}\leftarrow b_B(a_B+b_B-1)/\{(a_B-1)^2(a_B-2)\}$ if $a_B>2$\;
+\KwOut{$A0$, posterior summaries for $p$, and observation-mean moments $r_\ast\times\texttt{mean\_per\_disp}$ when a prediction dispersion $r_\ast$ is specified}
 \end{algorithm}
 
 
-\subsection{Beta-distributed observations with fixed precision}
-Assume $y_t\in(0,1)$ with latent mean $\mu$ constant within a block and fixed precision $\phi>0$:
+\subsection{Beta-distributed observations with known precision}
+Assume $y_t\in(0,1)$ with latent mean $\mu$ constant within a block and known precision
+$\phi_t>0$ (with $\phi_t\equiv\phi$ as the fixed-precision special case):
 \[
-y_t\mid \mu \sim \mathrm{Beta}(\phi\mu,\phi(1-\mu)),\qquad
+y_t\mid \mu \sim \mathrm{Beta}(\phi_t\mu,\phi_t(1-\mu)),\qquad
 \mu\sim\mathrm{Beta}(a_0,b_0).
 \]
-Conjugacy in $\mu$ is not available, but all integrals are one-dimensional and can be computed
-accurately by quadrature. The log-posterior $\Psi_{ij}(\mu)=\ell_{ij}(\mu)+\log\pi(\mu)$ is
-log-concave in $\mu$ on $(0,1)$ whenever $\phi\ge 1$, because both terms contribute nonpositive
-second derivatives in that regime; this justifies Gauss--Legendre quadrature on
-$[\epsilon,1-\epsilon]$ and guarantees that even moderately small node counts (e.g., $G\in\{32,64\}$)
-yield accurate moments. For a block $(i,j]$ define
+Conjugacy in $\mu$ is not available, but all integrals remain one-dimensional and can be computed
+by deterministic quadrature. We do not require or claim global log-concavity of the induced
+posterior in $\mu$; instead, implementations check quadrature stability by increasing the
+node count and by controlling behavior near the endpoints of $(0,1)$. For a block $(i,j]$ define
 \[
 \ell_{ij}(\mu)
-:= \sum_{t=i+1}^j \log \mathrm{BetaPDF}\big(y_t\mid \phi\mu,\phi(1-\mu)\big),
+:= \sum_{t=i+1}^j \log \mathrm{BetaPDF}\big(y_t\mid \phi_t\mu,\phi_t(1-\mu)\big),
 \qquad
 \log\pi(\mu) := \log \mathrm{BetaPDF}(\mu\mid a_0,b_0).
 \]
@@ -1179,15 +1204,15 @@ A^{(r)}_{ij} \approx \sum_{g=1}^G w_g\,\mu_g^{\,r}\,
 
 
 \paragraph{Implementation.}
-Algorithm~\ref{alg:betaobs-block} implements this one-dimensional quadrature routine. It is useful for continuous proportions and other $(0,1)$-valued signals, but it should be viewed as a deterministic non-conjugate block integral rather than as a conjugate closed form.
+Algorithm~\ref{alg:betaobs-block} implements this one-dimensional quadrature routine. It is useful for continuous proportions and other $(0,1)$-valued signals, and is a deterministic non-conjugate block integral rather than a conjugate closed form.
 
 \begin{algorithm}[H]
-\caption{BetaObsBlock$(y,i,j,\phi,a_0,b_0,\{\mu_g,w_g\}_{g=1}^G)$}
+\caption{BetaObsBlock$(y,\phi,i,j,a_0,b_0,\{\mu_g,w_g\}_{g=1}^G)$}
 \label{alg:betaobs-block}
-\KwIn{Block $(i,j]$; observations $y_{i+1:j}\in(0,1)$; precision $\phi$; Beta prior $(a_0,b_0)$; quadrature nodes $\{\mu_g,w_g\}$}
+\KwIn{Block $(i,j]$; observations $y_{i+1:j}\in(0,1)$; known precisions $\phi_{i+1:j}$; Beta prior $(a_0,b_0)$; quadrature nodes $\{\mu_g,w_g\}$}
 $S_0\leftarrow 0$, $S_1\leftarrow 0$, $S_2\leftarrow 0$\;
 \For{$g=1$ \KwTo $G$}{
-  $\log \ell_g \leftarrow \sum_{t=i+1}^j \log \mathrm{BetaPDF}\big(y_t\mid \phi\mu_g,\phi(1-\mu_g)\big)$\;
+  $\log \ell_g \leftarrow \sum_{t=i+1}^j \log \mathrm{BetaPDF}\big(y_t\mid \phi_t\mu_g,\phi_t(1-\mu_g)\big)$\;
   $\log \pi_g \leftarrow \log \mathrm{BetaPDF}(\mu_g\mid a_0,b_0)$\;
   $v_g \leftarrow \exp(\log \ell_g + \log \pi_g)$\;
   $S_0 \leftarrow S_0 + w_g v_g$;\quad
@@ -1203,9 +1228,10 @@ $\mu_{\text{var}}\leftarrow S_2/S_0 - (\mu_{\text{mean}})^2$\;
 \subsection{Summary of block families}
 \label{sec:families-summary}
 Table~\ref{tab:family-summary} collects the block families derived in this section in a single
-reference view. In each row, the block evidence $A^{(0)}_{ij}$ has the same algebraic shape (a
-single ratio of normalizers times a base-measure factor), confirming that the DP layer of
-Section~\ref{sec:dp} is invariant to the choice of family.
+reference view. The conjugate rows expose closed-form ratios of normalizers, while the
+Beta-observation row supplies deterministic quadrature values. In both cases the DP layer of
+Section~\ref{sec:dp} only requires a compatible block-evidence array and is invariant to the
+family used to fill that array.
 
 \begin{table}[H]
 \centering
@@ -1218,15 +1244,16 @@ Family & Prior & Posterior & Block evidence $A^{(0)}_{ij}$ & Mean $\mathbb{E}[m(
 Gaussian$(\mu,\sigma^2/w)$ & $\mathcal{N}(\nu,\rho^2)$ & $\mathcal{N}(\nu_B,\rho_B^2)$ & closed-form normal ratio & $(\rho^2 S+\sigma^2\nu)/\kappa$ \\
 Poisson$(\lambda w)$ & $\mathrm{Gamma}(a_0,b_0)$ & $\mathrm{Gamma}(a_0+C,b_0+W)$ & $\propto b_0^{a_0}\Gamma(a_0+C)/(b_0+W)^{a_0+C}$ & $(a_0+C)/(b_0+W)$ \\
 Binomial$(m,p)$ & $\mathrm{Beta}(a_0,b_0)$ & $\mathrm{Beta}(a_0+C,b_0+M-C)$ & $B(a_0+C,b_0+M-C)/B(a_0,b_0)$ & $(a_0+C)/(a_0+b_0+M)$ \\
-NegBin$(r,p)$ & $\mathrm{Beta}(a_0,b_0)$ & $\mathrm{Beta}(a_0+N,b_0+C)$ & $B(a_0+N,b_0+C)/B(a_0,b_0)$ & $(a_0+N)/(a_0+b_0+N+C)$ \\
-Beta-obs$(\mu,\phi)$ & $\mathrm{Beta}(a_0,b_0)$ & (1D quadrature) & Gauss--Legendre nodes & from quadrature \\
+NegBin$(r,p)$ & $\mathrm{Beta}(a_0,b_0)$ & $\mathrm{Beta}(a_B,b_B)$ & $B(a_B,b_B)/B(a_0,b_0)$ & $r_\ast b_B/(a_B-1)$ \\
+Beta-obs$(\mu,\phi_t)$ & $\mathrm{Beta}(a_0,b_0)$ & (1D quadrature) & Gauss--Legendre nodes & from quadrature \\
 \bottomrule
 \end{tabular}%
 }
 \caption{Block families derived in Section~\ref{sec:families}. Base-measure factor
-$\exp\{H_{ij}\}$ is implicit in each row. All families share the ratio-of-normalizers structure
-required by Theorem~\ref{thm:ef-integral}; the Beta-obs row is non-conjugate and uses 1D
-quadrature but remains compatible with the DP layer.}
+$\exp\{H_{ij}\}$ is implicit in the conjugate rows. The first three rows are closed-form
+conjugate examples; the Negative-Binomial row distinguishes parameter-scale Beta moments from the
+observation-mean target; and the Beta-observation row is non-conjugate but remains compatible with
+the DP layer through one-dimensional quadrature.}
 \label{tab:family-summary}
 \end{table}
 
@@ -1297,7 +1324,9 @@ model—for example, log-normal priors for positive means, heavy-tailed shrinkag
 logistic/negative-binomial links with structural offsets. This section develops a plug-in
 toolkit for computing approximate block evidences $A^{(0)}_{ij}$ and moments $A^{(r)}_{ij}$
 when conjugacy is unavailable, while keeping the dynamic-programming layer of
-Section~\ref{sec:dp} unchanged.
+Section~\ref{sec:dp} unchanged. When approximate block evidences are used, the DP is exact for
+the approximate block-score model; additional error statements require explicit blockwise
+approximation control.
 
 We focus on one-dimensional (or low-dimensional) canonical GLMs, where for a block $(i,j]$ we
 must approximate integrals of the form
@@ -1346,15 +1375,17 @@ and
 
 \begin{lemma}[Strict log-concavity and uniqueness]
 \label{lem:concave-unique}
-Suppose $b''(\theta)>0$ for all $\theta$ (canonical GLM) and the prior is log-concave:
-$(\log\pi)''(\theta)\le 0$. If $W_{ij}>0$, then $\Psi_{ij}''(\theta)<0$ for all $\theta$, so
-$\Psi_{ij}$ is strictly concave and admits a unique maximizer $\hat\theta_{ij}$.
+Suppose $b''(\theta)>0$ for all $\theta$ (canonical GLM), the prior is log-concave
+$((\log\pi)''(\theta)\le 0)$, and $W_{ij}>0$. Then $\Psi_{ij}$ is strictly concave. If, in
+addition, $\Psi_{ij}$ is proper and attains its supremum on the parameter domain (for example by
+coercive tails or compact-domain truncation), the maximizer $\hat\theta_{ij}$ exists and is unique.
 \end{lemma}
 
 \begin{proof}
 Since $W_{ij}>0$ and $b''(\theta)>0$, we have $-W_{ij}b''(\theta)<0$. Adding
-$(\log\pi)''(\theta)\le 0$ yields $\Psi_{ij}''(\theta)<0$ for all $\theta$, so $\Psi_{ij}$ is
-strictly concave and has a unique maximizer.
+$(\log\pi)''(\theta)\le 0$ yields $\Psi_{ij}''(\theta)<0$ wherever the derivatives exist, so
+$\Psi_{ij}$ is strictly concave. Strict concavity gives uniqueness of any maximizer; existence is
+provided by the stated attainment assumption.
 \end{proof}
 
 \subsection{Laplace approximation for single-block evidence}
@@ -1369,10 +1400,10 @@ unique interior maximizer $\hat\theta_{ij}$;
 \item[(A2)] $H_{ij}^{\star}:=-\Psi_{ij}''(\hat\theta_{ij})>0$ and $H_{ij}^{\star}\asymp W_{ij}$ as $W_{ij}\to\infty$;
 \item[(A3)] $|\Psi_{ij}^{(3)}(\theta)|\le C W_{ij}$ on a neighborhood of $\hat\theta_{ij}$ for a constant $C$
 independent of $(i,j)$;
-\item[(A4)] the contribution of the integral outside that neighborhood is exponentially negligible
-relative to the local quadratic contribution. For canonical GLMs with log-concave priors this
-holds because $\exp\Psi_{ij}$ has Gaussian-like tails with curvature scaling as $W_{ij}$, so the
-tail mass decays as $\exp\{-c W_{ij}\}$ for some $c>0$.
+\item[(A4)] the contribution of the integral outside that neighborhood is negligible at the stated
+Laplace order relative to the local quadratic contribution. This is an assumption on the block and
+prior; log-concavity helps with uniqueness but does not by itself provide the required tail bound
+without additional coercivity or compact-domain control.
 \end{enumerate}
 Then the block evidence admits the first-order Laplace expansion
 \begin{equation}
@@ -1411,7 +1442,7 @@ Gaussian factor $(2\pi/H_{ij}^{\star})^{1/2}$, while the remainder contributes a
 $\mathcal{O}(W_{ij}^{-1})$ correction by the standard Laplace method; Assumption~(A4) controls the tails and
 establishes \eqref{eq:laplace-A0-mult}--\eqref{eq:laplace-A0}. Applying the same expansion to the numerator
 $M^{[g]}_{ij}$ and using a second-order Taylor expansion of $g$ around $\hat\theta_{ij}$ yields
-\eqref{eq:laplace-moment}. We intentionally state only the first-order ratio result: any explicit second-order
+\eqref{eq:laplace-moment}. We state the first-order ratio result: any explicit second-order
 correction depends jointly on derivatives of $g$ and of $\Psi_{ij}$ and is not captured by a universal
 $g''/(2H_{ij}^{\star})$ term.
 \end{proof}
@@ -1470,12 +1501,13 @@ and apply Jensen:
 For Bernoulli/logistic likelihoods, a standard quadratic bound yields a tractable Gaussian
 variational posterior. One convenient form (for sigmoid $\sigma$) is:
 \[
-\log\sigma(\theta)\ \ge\ \frac{\theta}{2}-\lambda(\xi)(\theta^2-\xi^2)-c(\xi),
+\log\sigma(z)\ \ge\ \log\sigma(\xi)+\frac{z-\xi}{2}-\lambda(\xi)(z^2-\xi^2),
 \qquad
 \lambda(\xi)=\frac{\tanh(\xi/2)}{4\xi},
 \]
-with variational parameter $\xi>0$. This yields a quadratic surrogate in $\theta$, so the
-optimal Gaussian $q(\theta)$ and $\xi$ admit closed-form coordinate updates.
+with variational parameter $\xi>0$. Applying this bound to the appropriate signed linear
+predictors yields a quadratic surrogate in $\theta$, so the optimal Gaussian $q(\theta)$ and
+$\xi$ admit closed-form coordinate updates.
 
 \begin{proposition}[Monotone improvement of variational block bounds]
 \label{prop:var-monotone}
@@ -1540,12 +1572,14 @@ Return approximate evidence $\tilde A^{(0)}_{ij}=\int \tilde p(\theta)\,d\theta$
 \subsection{Pólya–Gamma augmentation (logistic and negative-binomial)}
 \begin{theorem}[P\'olya--Gamma identity and conditional conjugacy]
 \label{thm:pg}
-For binomial logistic blocks with counts $m_t$ and successes $y_t$, introduce latent
-$\omega_t\sim\mathrm{PG}(m_t,0)$ and define $\kappa_t=y_t-\tfrac{m_t}{2}$. Then the logistic
-likelihood term admits the Gaussian scale-mixture representation
+For binomial logistic blocks with counts $m_t$ and successes $y_t$, let $w_t\ge 0$ denote either
+one or a declared likelihood-power/replication weight, define
+$b_t=w_t m_t$ and $\kappa_t=w_t(y_t-\tfrac{m_t}{2})$, and introduce latent
+$\omega_t\sim\mathrm{PG}(b_t,0)$. Then the weighted logistic likelihood term admits the Gaussian
+scale-mixture representation
 \begin{equation}
-\frac{(e^\theta)^{y_t}}{(1+e^\theta)^{m_t}}
- = 2^{-m_t} e^{\kappa_t\theta}
+\left\{\frac{(e^\theta)^{y_t}}{(1+e^\theta)^{m_t}}\right\}^{w_t}
+ = 2^{-b_t} e^{\kappa_t\theta}
    \int_0^\infty e^{-\omega_t\theta^2/2}\,p(\omega_t)\,d\omega_t.
 \label{eq:pg-identity}
 \end{equation}
@@ -1553,8 +1587,8 @@ Conditionally on $\omega_{i+1:j}$, the block likelihood is quadratic in $\theta$
 \begin{equation}
 \log p(y_{i+1:j}\mid \theta,\omega)
  =
- -\tfrac{1}{2}\theta^2 \sum_{t=i+1}^j w_t\omega_t
- + \theta \sum_{t=i+1}^j w_t\kappa_t
+ -\tfrac{1}{2}\theta^2 \sum_{t=i+1}^j \omega_t
+ + \theta \sum_{t=i+1}^j \kappa_t
  + \mathrm{const}.
 \label{eq:pg-cond-quad}
 \end{equation}
@@ -1569,8 +1603,9 @@ Equation \eqref{eq:pg-identity} is the defining P\'olya--Gamma augmentation of
 $\theta$.
 
 \ProofStep{Step 2: condition on $\omega$ and collect quadratic terms.}
-Given $\omega_t$, each term contributes $\kappa_t\theta - \tfrac12\omega_t\theta^2$ up to
-constants. Summing over $t$ and including weights $w_t$ yields \eqref{eq:pg-cond-quad}.
+Given $\omega_t$, each weighted term contributes $\kappa_t\theta-\tfrac12\omega_t\theta^2$ up to
+constants, where the weight has already been absorbed into $b_t$ and $\kappa_t$. Summing over $t$
+yields \eqref{eq:pg-cond-quad}.
 
 \ProofStep{Step 3: combine with a Gaussian prior.}
 Multiplying the quadratic-in-$\theta$ conditional likelihood by a Gaussian prior produces a
@@ -1583,10 +1618,10 @@ Under the same setup as Theorem~\ref{thm:pg} and a Gaussian prior $\pi(\theta)=\
 the mean-field factorization $q(\theta,\omega)=q(\theta)\prod_{t=i+1}^j q(\omega_t)$ admits the
 following closed-form coordinate-ascent updates:
 (i) $q(\theta)=\mathcal{N}(\mu_q,\sigma_q^2)$ with
-$\sigma_q^{-2}=\rho^{-2}+\sum_t w_t\mathbb{E}_q[\omega_t]$ and
-$\mu_q=\sigma_q^2(\rho^{-2}\nu+\sum_t w_t\kappa_t)$;
-(ii) $q(\omega_t)=\mathrm{PG}(m_t, c_t)$ with $c_t^2=\mathbb{E}_q[\theta^2]=\mu_q^2+\sigma_q^2$,
-giving $\mathbb{E}_q[\omega_t]=\tfrac{m_t}{2 c_t}\tanh(c_t/2)$. These updates are monotone in the
+$\sigma_q^{-2}=\rho^{-2}+\sum_t \mathbb{E}_q[\omega_t]$ and
+$\mu_q=\sigma_q^2(\rho^{-2}\nu+\sum_t \kappa_t)$;
+(ii) $q(\omega_t)=\mathrm{PG}(b_t, c_t)$ with $c_t^2=\mathbb{E}_q[\theta^2]=\mu_q^2+\sigma_q^2$,
+giving $\mathbb{E}_q[\omega_t]=\tfrac{b_t}{2 c_t}\tanh(c_t/2)$. These updates are monotone in the
 block ELBO.
 \end{proposition}
 
@@ -1601,15 +1636,16 @@ see Appendix~\ref{app:pg-mf-derivation} for the full derivation and ELBO monoton
 Algorithm~\ref{alg:pg-vb} gives a Pólya--Gamma variational Bayes (PG-VB) routine for logistic (and related) blocks, which yields a tractable surrogate block evidence by alternating between Gaussian updates and latent-variable expectations.
 
 \begin{algorithm}[H]
-\caption{GLMBlock\_PG\_VB$(y,m,w,i,j,\nu,\rho^2)$ \quad (Gaussian prior, PG mean-field)}
+\caption{GLMBlock\_PG\_VB$(y,m,i,j,\nu,\rho^2)$ \quad (Gaussian prior, PG mean-field)}
 \label{alg:pg-vb}
-\KwIn{Binomial/logistic block; Gaussian prior $\mathcal{N}(\nu,\rho^2)$}
+\KwIn{Binomial/logistic block with trial counts $m_t$; Gaussian prior $\mathcal{N}(\nu,\rho^2)$}
 Initialize $q(\omega_t)$ and $q(\theta)=\mathcal{N}(\mu,\sigma^2)$\;
 \Repeat{ELBO converged}{
-  $\sigma^{-2}\leftarrow \rho^{-2} + \sum_{t=i+1}^j w_t \mathbb{E}_q[\omega_t]$\;
-  $\mu \leftarrow \sigma^2 \left(\rho^{-2}\nu + \sum_{t=i+1}^j w_t\big(y_t-\tfrac{m_t}{2}\big)\right)$\;
+  Set $b_t\leftarrow w_t m_t$ and $\kappa_t\leftarrow w_t(y_t-m_t/2)$ if likelihood-power weights are used; otherwise $w_t=1$\;
+  $\sigma^{-2}\leftarrow \rho^{-2} + \sum_{t=i+1}^j \mathbb{E}_q[\omega_t]$\;
+  $\mu \leftarrow \sigma^2 \left(\rho^{-2}\nu + \sum_{t=i+1}^j \kappa_t\right)$\;
   \ForEach{$t$}{
-    Update $q(\omega_t)$ using current $\mathbb{E}_q[\theta^2]$ (closed-form for mean of PG)\;
+    Update $q(\omega_t)=\mathrm{PG}(w_t m_t,c_t)$ using current $\mathbb{E}_q[\theta^2]$\;
   }
 }
 Return a lower bound $\underline{A}^{(0)}_{ij}$ and approximate moments from $q(\theta)$.
@@ -1617,7 +1653,7 @@ Return a lower bound $\underline{A}^{(0)}_{ij}$ and approximate moments from $q(
 
 
 \paragraph{Using approximate block evidences in BayesBreak.}
-Once any block-evidence approximation is available (Laplace, JJ, EP, PG-VB, or another surrogate), BayesBreak uses it exactly as in the conjugate case: build a triangular array of approximate block log-evidences and run the same DP recursions.
+Once any block-evidence approximation is available (Laplace, JJ, EP, PG-VB, or another surrogate), BayesBreak uses it exactly as an input score array: build a triangular array of approximate block log-evidences and run the same DP recursions. The resulting posterior summaries are exact for that approximate score array, not automatically exact for the original non-conjugate model.
 Algorithm~\ref{alg:precompute-nonconj} provides a generic recipe for constructing this array in a model-agnostic way, emphasizing reuse of block-local optimizers and cached sufficient-statistic summaries.
 
 \begin{algorithm}[H]
@@ -1711,15 +1747,13 @@ perturbed by at most $2k\varepsilon<\Delta$, so the exact log-odds positivity is
 
 \begin{remark}[A small numerical illustration of the stability bound]
 \label{rem:stability-numerical}
-Consider $n=500$, $k_{\max}=10$, and a non-conjugate block routine whose empirical uniform
-per-block log-evidence error is $\varepsilon=0.02$ (a conservative figure for Laplace on
-moderately sized blocks). Proposition~\ref{prop:stability} guarantees segment-count log-odds
-error at most $20\times 0.02=0.40$ between, say, $k=5$ and $k=15$, and boundary log-odds error at
-most $2\cdot 10\cdot 0.02=0.40$ under any fixed $k\le 10$. In terms of probability ratios, both
-are factors below $1.5$: a ratio of approximately $e^{0.40}\approx 1.49$. Empirical evidence
-errors below $\varepsilon=0.02$ correspond to agreement between approximate and exact log-evidence
-in the second decimal place, which Section~\ref{sec:experiments} confirms is achievable for
-Laplace and PG-VB on well-calibrated block routines.
+Consider $n=500$, $k_{\max}=10$, and a non-conjugate block routine whose verified uniform
+per-block log-evidence error over all reachable blocks is $\varepsilon=0.02$. Proposition~\ref{prop:stability}
+then guarantees segment-count log-odds error at most $(5+10)\times0.02=0.30$ when comparing
+$k=5$ to $k=10$, and boundary log-odds error at most $2\cdot10\cdot0.02=0.40$ under any fixed
+$k\le10$. In terms of probability ratios, these correspond to factors of about $e^{0.30}$ and
+$e^{0.40}$. The numbers in this illustration are conditional on having already verified the
+uniform block-error bound; they are not a generic guarantee for any chosen approximation routine.
 \end{remark}
 
 \begin{remark}[When each non-conjugate routine struggles]
@@ -1731,27 +1765,35 @@ it can be inaccurate on very short segments ($W_{ij}$ small) or for heavy-tailed
 mean-field variational Bayes (Proposition~\ref{prop:pg-mf}) can be overconfident and
 underestimate posterior variance, biasing moment numerators; EP can fail to converge for
 non-log-concave likelihoods; 1D quadrature is accurate for smooth 1D integrands but expensive
-in higher dimensions. For these reasons, $\varepsilon$ should be monitored empirically per
-dataset, not assumed.
+in higher dimensions. For these reasons, monitor $\varepsilon$ empirically per
+dataset rather than assuming it. A practical validation checklist is to compare a subset of blocks against
+quadrature or another trusted reference, report both maximum and high-quantile block errors, inspect
+errors along the exported MAP path, and assess sensitivity of $P(k\mid y)$ and boundary marginals.
 \end{remark}
+
+\paragraph{Approximation-validation checklist.}
+Before interpreting non-conjugate posterior summaries, compare a subset of block evidences against
+higher-accuracy quadrature or another trusted reference; report maximum and high-quantile block
+errors over reachable blocks; inspect errors on the MAP path; and assess sensitivity of $p(k\mid y)$,
+boundary marginals, and exported segmentations to the approximation method. The ranking corollary
+is meaningful only when the exact posterior margin is larger than the propagated approximation error.
 
 
 \section{Prediction: group likelihoods and MAP/Bayes signal evaluation}
 \label{sec:prediction}
 
 Having developed training-time posterior inference for partitions and segment parameters (Sections~\ref{sec:dp}--\ref{sec:nonconj}), we now turn to prediction for new $(X,y)$ data.
-The prediction layer consumes only posterior summaries (e.g., boundary posteriors, segment-parameter posteriors, and group evidences) and is therefore agnostic to whether block evidences were computed in closed form (Section~\ref{sec:families}) or via approximation (Section~\ref{sec:nonconj}).
-
-
-
-This section describes an application-agnostic prediction layer built on top of the
-training-time BayesBreak machinery. We assume we have already trained (or otherwise obtained)
+The prediction layer consumes posterior summaries (e.g., boundary posteriors, segment-parameter posteriors, and group evidences) and is therefore agnostic to whether block evidences were computed in closed form (Section~\ref{sec:families}) or via approximation (Section~\ref{sec:nonconj}). We assume we have already trained (or otherwise obtained)
 a collection of $G$ group-specific BayesBreak models
 $\{\mathcal{M}_g\}_{g=1}^G$, where each $\mathcal{M}_g$ comprises:
 (i) a fitted segmentation posterior (e.g.\ $P_g(k\mid y)$ and boundary posteriors),
 (ii) an exported MAP segmentation $\widehat{t}^{(g)}$ with segment-level posterior
 hyperparameters, and (iii) optionally a Bayesian curve representation
 (e.g.\ posterior mean/variance at design points).
+
+Typical outputs are group log scores, posterior group probabilities, optional unit-level
+responsibilities, exported MAP signal values, Bayes-curve values, and optional pointwise
+uncertainty summaries. These prediction interfaces define the outputs populated by finalized diagnostics for the placeholder real-data examples.
 
 Prediction supports two primary tasks:
 
@@ -1765,7 +1807,25 @@ membership probabilities $P(g\mid \text{new})$ under a prior $\pi_g$.
 Given query design points $X$ and a specified (or inferred) group label $g$, return:
 (i) MAP piecewise-constant signal values $\widehat{f}^{\text{MAP}}_g(X)$ including the
 corresponding breakpoints and segment levels, and/or (ii) Bayesian curve values
-$\widehat{f}^{\text{Bayes}}_g(X)$ with uncertainty summaries when available.
+$\widehat{f}^{\text{Bayes}}_g(X)$ with pointwise uncertainty summaries when available.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Prediction output & Interpretation \\
+\midrule
+$\ell_g$ & Group-specific log posterior-predictive score. \\
+$P(g\mid \mathrm{new})$ & Group posterior after combining $\ell_g$ with prior weight $\pi_g$. \\
+$\widehat f^{\mathrm{MAP}}_g(X)$ & Piecewise-constant signal under the exported MAP segmentation. \\
+$\widehat f^{\mathrm{Bayes}}_g(X)$ & Bayes-curve posterior mean, optionally with pointwise uncertainty. \\
+Unit responsibilities & Optional probabilities for set-valued units or grouped observations. \\
+\bottomrule
+\end{tabular}
+\caption[Prediction-layer outputs]{Prediction-layer outputs exposed by fitted BayesBreak models. These interfaces support downstream scoring and calibration separately from the empirical result tables.}
+\label{tab:prediction-outputs}
+\end{table}
 
 Crucially, we distinguish \emph{single point observations} $(x_i,y_i)$ from
 \emph{multivariate / set-valued observations} where each unit contains multiple internal
@@ -1782,8 +1842,9 @@ We observe a single ordered sequence
 := \{(x_i^{\text{new}},y_i^{\text{new}},w_i^{\text{new}})\}_{i=1}^{m},
 \qquad x_1^{\text{new}}<\cdots<x_m^{\text{new}},
 \]
-with optional exposure weights $w_i^{\text{new}}$ (default $w_i^{\text{new}}=1$ or the
-inter-point gaps).
+with optional exposure or precision weights $w_i^{\text{new}}$. The default is
+$w_i^{\text{new}}=1$; use inter-point gaps only when they are genuine exposures or
+known-precision weights for the observation model, not merely because the design is irregular.
 
 \paragraph{Case B (multivariate/set-valued observations).}
 We observe $U$ units (e.g.\ ``fragments'', ``windows'', or generic composite observations),
@@ -1802,7 +1863,8 @@ At each design point we observe a vector response $\mathbf{y}_i\in\mathbb{R}^d$ 
 discrete/continuous components). We consider two standard constructions:
 (i) \emph{factorized EF} across dimensions, or (ii) a \emph{multivariate EF} with a joint
 log-partition $A(\theta)$ and conjugate prior (when available). The factorized case is
-implementation-friendly and preserves the DP structure with minimal changes.
+implementation-friendly and preserves the DP structure with localized changes, while the multivariate
+case requires a genuine joint likelihood and conjugate or approximate block routine.
 
 \subsection{Posterior-predictive scoring for a fixed segment under EF conjugacy}
 \label{sec:predictive-scoring}
@@ -1995,7 +2057,8 @@ where $B(x^\star;g)$ denotes the MAP segment containing $x^\star$.
 If the DP-derived Bayes regression curve is exported on a grid, return
 $\widehat{f}^{\text{Bayes}}_g(x^\star)$ by evaluating on the nearest grid point (or by
 piecewise-constant interpolation within each grid interval). When pointwise posterior
-variances are available, also return credible bands.
+variances are available, also return pointwise credible intervals; simultaneous bands require an
+additional construction and are not implied by the pointwise variances alone.
 
 \subsection{Algorithms for prediction}
 \label{sec:prediction-algorithms}
@@ -2068,7 +2131,7 @@ mode is enabled.
 
 Because the predictive layer reuses segment-level posteriors, the group posterior
 $P(g\mid\text{new})$ derived from \eqref{eq:group-lik-map} and the pointwise predictive summaries
-are only as well calibrated as the segmentation itself. We recommend two diagnostics for real-data
+inherit their calibration quality from the segmentation. Use two diagnostics for real-data
 deployments:
 \begin{itemize}\itemsep2pt
 \item \textbf{Held-out log-likelihood (HLL) trace.} Split each test sequence into blocks and
@@ -2081,5 +2144,6 @@ evaluate the probability-integral transform $u_i=F_g(y_i^{\text{new}}\mid\mathca
 Under correct calibration the $\{u_i\}$ are Uniform$(0,1)$; histograms or Kolmogorov--Smirnov
 summaries flag miscalibration (overconfident predictive widths show up as U-shaped histograms).
 \end{itemize}
-These diagnostics are cheap post-hoc checks; in the real-data experiments of
-Section~\ref{sec:experiments} we report HLL values alongside boundary-recovery metrics.
+These diagnostics are cheap post-hoc checks. In this paper they are planned outputs
+for the real-data pipelines in Section~\ref{sec:experiments}; placeholder tables identify the planned
+HLL and boundary-recovery fields that the finalized pipelines populate.

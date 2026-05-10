@@ -90,6 +90,22 @@ def _boundary_f1(true_b: Iterable[int], pred_b: Iterable[int], tau: int) -> floa
     return (2 * prec * rec / (prec + rec)) if (prec + rec) > 0 else 0.0
 
 
+def _reachable_blocks_mask(n: int, k_max: int) -> np.ndarray:
+    """Mask of blocks ``(i, j]`` reachable by some k-segmentation with ``k <= k_max``.
+
+    Mirrors the §`prop:stability` reachability convention: a block is
+    reachable iff ``i + (n - j) + 1 <= k_max`` so that there is room for at
+    most one head segment, this block, and at most one tail segment.
+    """
+
+    mask = np.zeros((n + 1, n + 1), dtype=bool)
+    for i in range(n):
+        for j in range(i + 1, n + 1):
+            if i + (n - j) + 1 <= k_max:
+                mask[i, j] = True
+    return mask
+
+
 def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) -> None:
     rng = np.random.default_rng(seed)
 
@@ -111,23 +127,23 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
         raise RuntimeError("Reference fit did not store lA0_")
 
     true_interior = b_true[1:-1]
+    reachable = _reachable_blocks_mask(n, k_max)
 
     methods = [
         ("quadrature", {"approx": "quadrature", "gh_points": gh_points}),
         ("laplace", {"approx": "laplace"}),
         ("jj", {"approx": "jj"}),
         ("ep", {"approx": "ep"}),
-        ("pg_vb", {"approx": "pg_vb"}),
+        ("pg-vb", {"approx": "pg_vb"}),
     ]
 
     rows = []
 
-    # Record the reference row first.
+    # Reference row.
     pred_b = ref.map_boundaries_[1:-1]
     f1 = _boundary_f1(true_interior, pred_b, tau=tau)
-    rows.append(("quadrature", 0.0, t_ref, f1, int(ref.k_map_)))
+    rows.append(("quadrature", 0.0, 0.0, 0.0, t_ref, f1, int(ref.k_map_)))
 
-    # Compare approximations.
     for name, kwargs in methods[1:]:
         t0 = time.perf_counter()
         m = BayesBreakLogisticNormal(k_max=k_max, **kwargs).fit(np.arange(len(y)).reshape(-1, 1), y)
@@ -135,42 +151,62 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
 
         lA0 = m.log_block_evidence_
         if lA0 is None:
-            raise RuntimeError(f"{name} fit did not store lA0_")
+            raise RuntimeError(f"{name} fit did not store log_block_evidence_")
 
-        mask = np.isfinite(lA0_ref) & np.isfinite(lA0)
-        max_abs = float(np.max(np.abs(lA0[mask] - lA0_ref[mask]))) if np.any(mask) else float("nan")
+        finite = np.isfinite(lA0_ref) & np.isfinite(lA0)
+        mask = reachable & finite
+        diffs = np.abs(lA0[mask] - lA0_ref[mask])
+        if diffs.size:
+            max_abs = float(np.max(diffs))
+            q95 = float(np.quantile(diffs, 0.95))
+            median = float(np.median(diffs))
+        else:
+            max_abs = q95 = median = float("nan")
 
         pred_b = m.map_boundaries_[1:-1]
         f1 = _boundary_f1(true_interior, pred_b, tau=tau)
-        rows.append((name, max_abs, t_fit, f1, int(m.k_map_)))
+        rows.append((name, max_abs, q95, median, t_fit, f1, int(m.k_map_)))
 
     outdir.mkdir(parents=True, exist_ok=True)
 
     csv_path = outdir / "table4_nonconj_tradeoff.csv"
     with csv_path.open("w", encoding="utf-8") as f:
-        f.write("method,max_abs_block_log_evidence_error,fit_seconds,boundary_f1,k_sel\n")
-        for name, max_abs, t_fit, f1, k_sel in rows:
-            f.write(f"{name},{max_abs:.6f},{t_fit:.4f},{f1:.4f},{k_sel}\n")
+        f.write(
+            "method,reachable_max_abs,reachable_q95_abs,reachable_median_abs,"
+            "fit_seconds,boundary_f1,k_sel\n"
+        )
+        for name, mx, q95, md, t_fit, f1, k_sel in rows:
+            f.write(f"{name},{mx:.6f},{q95:.6f},{md:.6f},{t_fit:.4f},{f1:.4f},{k_sel}\n")
 
     md_path = outdir / "table4_nonconj_tradeoff.md"
     with md_path.open("w", encoding="utf-8") as f:
-        f.write("| Method | max |Δ log A0| | fit time (s) | F1@tau | k_sel |\n")
-        f.write("|---|---:|---:|---:|---:|\n")
-        for name, max_abs, t_fit, f1, k_sel in rows:
-            f.write(f"| {name} | {max_abs:.3f} | {t_fit:.3f} | {f1:.3f} | {k_sel} |\n")
+        f.write(
+            "| Method | reachable max |Δ log A0| | reachable q95 |Δ log A0| "
+            "| reachable median |Δ log A0| | fit time (s) | F1@tau | k_sel |\n"
+        )
+        f.write("|---|---:|---:|---:|---:|---:|---:|\n")
+        for name, mx, q95, md, t_fit, f1, k_sel in rows:
+            f.write(
+                f"| {name} | {mx:.3f} | {q95:.3f} | {md:.3f} "
+                f"| {t_fit:.3f} | {f1:.3f} | {k_sel} |\n"
+            )
 
     def _tex_escape(s: str) -> str:
-        # Method names contain underscores (e.g. "pg_vb") that need escaping in text mode.
         return s.replace("_", r"\_")
 
     tex_path = outdir / "table4_nonconj_tradeoff.tex"
     with tex_path.open("w", encoding="utf-8") as f:
-        f.write("\\begin{tabular}{lrrrr}\\toprule\n")
+        f.write("\\begin{tabular}{lrrrrrr}\\toprule\n")
         f.write(
-            "Method & $\\max|\\Delta \\log A^0|$ & time (s) & F1@$\\tau$ & $\\hat{k}$\\\\\\midrule\n"
+            "Method & $\\max|\\Delta \\log A^0|$ & $q_{95}|\\Delta \\log A^0|$ & "
+            "median $|\\Delta \\log A^0|$ & time (s) & F1@$\\tau$ & $\\hat{k}$"
+            "\\\\\\midrule\n"
         )
-        for name, max_abs, t_fit, f1, k_sel in rows:
-            f.write(f"{_tex_escape(name)} & {max_abs:.3f} & {t_fit:.3f} & {f1:.3f} & {k_sel}\\\\\n")
+        for name, mx, q95, md, t_fit, f1, k_sel in rows:
+            f.write(
+                f"{_tex_escape(name)} & {mx:.3f} & {q95:.3f} & {md:.3f} & "
+                f"{t_fit:.3f} & {f1:.3f} & {k_sel}\\\\\n"
+            )
         f.write("\\bottomrule\\end{tabular}\n")
 
     print(f"Wrote {csv_path}")

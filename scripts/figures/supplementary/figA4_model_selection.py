@@ -61,7 +61,7 @@ import sys
 from pathlib import Path
 
 # Allow running the script from a source checkout without installation.
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(_ROOT / "src"))
 sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
@@ -140,7 +140,7 @@ def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int) -> None:
         ax.set_xlabel("$k$")
         if idx == 0:
             ax.set_ylabel("$P(k \\mid y)$")
-        ax.set_title(f"{label}\n$\\sigma = {sigma}$", fontsize=9)
+        ax.set_title(f"{label}\n$\\sigma = {sigma}$", fontsize=10)
         ax.set_xlim(0.2, k_max + 0.8)
         # Uniform y-axis across top row for fair comparison
         ax.set_ylim(0, 1.05)
@@ -170,7 +170,7 @@ def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int) -> None:
     ax.set_ylim(0, 1.05)
     ax.set_xticks(k_grid)
     ax.grid(True, axis="y", ls="-", alpha=0.12, color=COLORS["grey"])
-    ax.legend(loc="upper right", fontsize=7, ncol=2)
+    ax.legend(loc="upper right", fontsize=10, ncol=2)
     add_panel_label(ax, "D")
 
     save_figure(fig, outdir / "fig9_model_selection", formats=("png", "pdf"))

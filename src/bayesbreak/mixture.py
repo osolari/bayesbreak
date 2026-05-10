@@ -1,103 +1,81 @@
-"""bayesbreak.mixture
+r"""Latent-group **template-mixture** EM (§``latent-em`` / Algorithm ``multi-em``).
 
-Latent-group pooling (mixture model) for BayesBreak.
+The mixture model places a single boundary template :math:`\tau_g = (k_g, t^{(g)})`
+behind each latent group, integrates out subject-specific segment parameters
+inside per-subject block evidences, and alternates:
 
-The paper's latent-group setting treats each observed sequence as arising from one of
-G latent groups, where each group induces its own segmentation structure. In practice,
-we implement an EM-like coordinate ascent scheme:
+- **E-step** (eq. ``template-resp``): exact responsibilities for the current
+  templates,
 
-1) **M-step (group update):**
-   - Update mixture weights ``pi_g`` from responsibilities.
-   - For each group, compute responsibility-weighted pooled block evidences
-     ``log A^0_{ij,g}`` and pooled first-moment stats ``A^1_{ij,g}``.
-   - Run the BayesBreak DP on the pooled evidences to obtain group posterior boundary
-     probabilities and group MAP boundaries.
+  .. math::
+      r_{sg} \propto \pi_g \, S_g(y^{(s)}; \tau_g),\qquad
+      S_g(y; \tau_g) = \frac{p(k_g)}{C_{k_g}} \prod_{q=1}^{k_g} \tilde A^{(0,s)}_{t^{(g)}_{q-1} t^{(g)}_q}.
 
-2) **E-step (responsibility update):**
-   - Score each sequence under each group using an evidence-weighted compatibility
-     score derived from the group's segmentation posterior.
-   - Convert scores into responsibilities with a softmax.
+- **M-step**: closed-form simplex update on :math:`\pi`, then for each group
+  an exact responsibility-weighted **max-sum** segmentation update with score
 
-This approach is designed to be:
-  - **Family-agnostic**: it works with any :class:`~bayesbreak.base.BayesBreakSegmenter`
-    family that can compute per-segment evidences.
-  - **Sklearn-friendly**: ``fit/predict/predict_proba/score`` are provided.
+  .. math::
+      B^{(g)}_{ij} = n_g \log g(\Delta_x(i, j))
+                    + \sum_{s=1}^S r_{sg} \log A^{(0,s)}_{ij},
 
-Assumptions
------------
-* All sequences must share the same length ``n`` (and thus the same indexing grid).
-  This matches the multi-sequence setups in the paper.
-* The base estimator is assumed to be *scalar-output* (``y`` is 1D). For multivariate
-  outputs, wrap the base estimator with :class:`~bayesbreak.multivariate.BayesBreakMultivariate`.
+  and count offset :math:`n_g (\log p(k) - \log C_k)` when selecting
+  :math:`k_g`. Templates are joint MAP backtracks per group.
 
-Notes
------
-The mixture objective used in ``score`` is a practical lower bound-like objective.
-It is not claimed to be the exact observed-data marginal likelihood of a fully
-specified generative mixture.
+This is the only objective that Theorem ``em-monotone`` covers; the
+**finite-template mixture objective**
+
+.. math::
+    \ell_\star(\pi, \tau) = \sum_s \log\Big(\sum_g \pi_g\, S_g(y^{(s)}; \tau_g)\Big)
+
+is non-decreasing under the iteration. ``ℓ_⋆`` is *not* the Bayesian
+observed-data marginal likelihood — it is a finite-mixture optimization
+objective over template scores. There is no `sum-product` / `geometric`
+legacy switch: callers wanting an alternative ``p(k)`` or design-aware
+prior pass them via the standard ``prior_k`` and ``length_prior`` arguments.
 """
 
 from __future__ import annotations
 
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
 import numpy as np
+from numpy.typing import ArrayLike, NDArray
 from sklearn.base import BaseEstimator, ClassifierMixin, clone
 from sklearn.utils.validation import check_random_state
 
 from . import dp as _dp
 from .base import BayesBreakSegmenter
-from .families import (
-    BayesBreakBernoulli,
-    BayesBreakBeta,
-    BayesBreakBetaObs,
-    BayesBreakBinomial,
-    BayesBreakGaussian,
-    BayesBreakLogisticNormal,
-    BayesBreakPoisson,
-)
-from .groups import BayesBreakGroupedClassifier
-from .utils import log_binom, logsumexp
-from .validation import require_fitted  # noqa: F401
+from .utils import logsumexp
+from .validation import require_fitted
 
-ArrayLike1D = np.ndarray | Sequence[float]
+FloatArray = NDArray[np.floating]
 SequenceInput = np.ndarray | Sequence[np.ndarray]
 
 
 @dataclass
 class _GroupState:
-    """Internal container for per-group fitted quantities."""
+    """Internal per-group container."""
 
     hyper: dict[str, float]
-    lA0: np.ndarray
-    A1: np.ndarray
-    L: np.ndarray
-    R: np.ndarray
-    logC: np.ndarray
-    C: np.ndarray
-    log_evidence: float
-    k_ml: int
-    boundary_post: np.ndarray
-    boundaries: list[int]
-    brc: np.ndarray | None
-    # Segment posterior probabilities for the fixed-k model used in E-step scoring.
-    # Shape (n+1, n+1) on the upper triangle (i<j); zeros elsewhere.
-    seg_post: np.ndarray
+    template: list[int]
+    k_g: int
+    log_score_offset: float  # log p(k_g) - log C_{k_g}
 
 
-def _as_list_of_1d_arrays(X: SequenceInput, *, name: str) -> list[np.ndarray]:
-    """Coerce input into a list of 1D float arrays."""
+def _as_list_of_1d(X: SequenceInput, *, name: str) -> list[FloatArray]:
+    """Coerce to a list of 1-D float arrays of identical length."""
+
     if isinstance(X, np.ndarray) and X.ndim == 2:
         return [np.asarray(row, dtype=float) for row in X]
     if isinstance(X, np.ndarray) and X.ndim == 1:
         return [np.asarray(X, dtype=float)]
     if isinstance(X, list | tuple):
-        out: list[np.ndarray] = []
+        out = []
         for i, arr in enumerate(X):
             a = np.asarray(arr, dtype=float)
             if a.ndim != 1:
-                raise ValueError(f"{name}[{i}] must be 1D, got shape {a.shape}.")
+                raise ValueError(f"{name}[{i}] must be 1-D; got shape {a.shape}.")
             out.append(a)
         if not out:
             raise ValueError(f"{name} must contain at least one sequence.")
@@ -105,299 +83,127 @@ def _as_list_of_1d_arrays(X: SequenceInput, *, name: str) -> list[np.ndarray]:
     raise TypeError(f"Unsupported type for {name}: {type(X)!r}.")
 
 
-def _as_list_of_weight_arrays(
+def _as_list_of_weights(
     sample_weight: SequenceInput | None, *, n_seq: int, n: int
-) -> list[np.ndarray | None]:
-    """Coerce sample_weight into a list of per-sequence 1D arrays (or None)."""
+) -> list[FloatArray | None]:
     if sample_weight is None:
         return [None] * n_seq
     if isinstance(sample_weight, np.ndarray) and sample_weight.ndim == 2:
         if sample_weight.shape != (n_seq, n):
-            raise ValueError(
-                f"sample_weight must have shape ({n_seq}, {n}), got {sample_weight.shape}."
-            )
+            raise ValueError(f"sample_weight shape must be ({n_seq}, {n}).")
         return [np.asarray(row, dtype=float) for row in sample_weight]
     if isinstance(sample_weight, np.ndarray) and sample_weight.ndim == 1:
-        if n_seq != 1:
-            raise ValueError("1D sample_weight is only valid when a single sequence is provided.")
-        if sample_weight.shape[0] != n:
-            raise ValueError(f"sample_weight length must be {n}, got {sample_weight.shape[0]}.")
+        if n_seq != 1 or sample_weight.shape[0] != n:
+            raise ValueError("1-D sample_weight only valid for a single sequence.")
         return [np.asarray(sample_weight, dtype=float)]
     if isinstance(sample_weight, list | tuple):
         if len(sample_weight) != n_seq:
-            raise ValueError(f"sample_weight must have length {n_seq}, got {len(sample_weight)}.")
-        out: list[np.ndarray | None] = []
+            raise ValueError(f"sample_weight must have length {n_seq}.")
+        out: list[FloatArray | None] = []
         for i, w in enumerate(sample_weight):
             if w is None:
                 out.append(None)
                 continue
             ww = np.asarray(w, dtype=float)
             if ww.ndim != 1 or ww.shape[0] != n:
-                raise ValueError(f"sample_weight[{i}] must be shape ({n},), got {ww.shape}.")
+                raise ValueError(f"sample_weight[{i}] must be 1-D length {n}.")
             out.append(ww)
         return out
     raise TypeError(f"Unsupported type for sample_weight: {type(sample_weight)!r}.")
 
 
-def _pool_flattened(
-    ys: list[np.ndarray],
-    ws: list[np.ndarray | None],
-    r: np.ndarray,
-    g: int,
-) -> tuple[np.ndarray, np.ndarray | None]:
-    """Flatten sequences for responsibility-weighted hyper estimation.
-
-    Returns
-    -------
-    y_flat : ndarray, shape (S*n,)
-    w_flat : ndarray or None, shape (S*n,)
-        Observation weights multiplied by responsibilities r[:, g].
-    """
-    y_flat = np.concatenate(ys, axis=0)
-    if all(w is None for w in ws):
-        w_flat = None
-    else:
-        w_parts: list[np.ndarray] = []
-        for s, y in enumerate(ys):
-            rs = float(r[s, g])
-            if ws[s] is None:
-                w_parts.append(np.full_like(y, rs, dtype=float))
-            else:
-                w_parts.append(rs * np.asarray(ws[s], dtype=float))
-        w_flat = np.concatenate(w_parts, axis=0)
-    return y_flat, w_flat
-
-
-def _pool_hyper_by_family(
-    template: BayesBreakSegmenter,
-    ys: Sequence[np.ndarray],
-    ws: Sequence[np.ndarray | None],
-) -> dict[str, float]:
-    """Estimate hyperparameters from multiple sequences.
-
-    For some families, naive concatenation can produce incorrect estimates
-    (notably for the Gaussian sigma^2 estimator that uses first differences).
-    Where available, we reuse the same pooling rules as
-    :class:`bayesbreak.groups.BayesBreakGroupedClassifier`.
-    """
-
-    # Gaussian: avoid concatenation because the sigma2 estimator depends on
-    # within-sequence differences.
-    if isinstance(template, BayesBreakGaussian):
-        return BayesBreakGroupedClassifier._pool_gaussian_hyper(template, list(ys), list(ws))
-
-    # Poisson: pool alpha/beta via the group's moment heuristics.
-    if isinstance(template, BayesBreakPoisson):
-        return BayesBreakGroupedClassifier._pool_poisson_hyper(template, list(ys), list(ws))
-
-    # Binomial / Bernoulli: pool Beta prior parameters. Requires scalar n_trials.
-    if isinstance(template, BayesBreakBinomial | BayesBreakBernoulli):
-        n_trials = getattr(template, "n_trials", 1.0)
-        if not np.isscalar(n_trials):
-            raise ValueError(
-                "BayesBreakMixtureClassifier hyper pooling for Binomial/Bernoulli currently "
-                "requires scalar n_trials."
-            )
-        return BayesBreakGroupedClassifier._pool_beta_binom_hyper(
-            template, list(ys), list(ws), float(n_trials)
-        )
-
-    # Beta surrogate (fractional) is treated as Beta prior pooling.
-    if isinstance(template, BayesBreakBeta):
-        return BayesBreakGroupedClassifier._pool_beta_hyper(template, list(ys), list(ws))
-
-    # BetaObs and LogisticNormal do not rely on within-sequence differencing; we
-    # can safely pool by concatenation.
-    if isinstance(template, BayesBreakBetaObs | BayesBreakLogisticNormal):
-        y_flat = np.concatenate([np.asarray(y, dtype=float) for y in ys], axis=0)
-        if all(w is None for w in ws):
-            w_flat = None
-        else:
-            w_flat = np.concatenate(
-                [
-                    np.ones_like(y, dtype=float) if w is None else np.asarray(w, dtype=float)
-                    for y, w in zip(ys, ws, strict=False)
-                ],
-                axis=0,
-            )
-        return template._estimate_hyperparameters(y_flat, sample_weight=w_flat)
-
-    # Generic fallback.
-    y_flat = np.concatenate([np.asarray(y, dtype=float) for y in ys], axis=0)
-    if all(w is None for w in ws):
-        w_flat = None
-    else:
-        w_flat = np.concatenate(
-            [
-                np.ones_like(y, dtype=float) if w is None else np.asarray(w, dtype=float)
-                for y, w in zip(ys, ws, strict=False)
-            ],
-            axis=0,
-        )
-    return template._estimate_hyperparameters(y_flat, sample_weight=w_flat)
-
-
-def _safe_weighted_sum_lA0(mats: list[np.ndarray], weights: np.ndarray) -> np.ndarray:
-    """Responsibility-weighted sum of log-evidence matrices.
-
-    Avoids ``0 * (-inf) -> nan`` by masking finite entries.
-    """
-    if not mats:
-        raise ValueError("mats must be non-empty")
-    out = np.zeros_like(mats[0])
-    mask = np.isfinite(mats[0])
-    for m, w in zip(mats, weights, strict=False):
-        if w == 0.0:
-            continue
-        out[mask] += w * m[mask]
-    out[~mask] = -np.inf
-    return out
-
-
-def _safe_weighted_sum_A1(mats: list[np.ndarray], weights: np.ndarray) -> np.ndarray:
-    if not mats:
-        raise ValueError("mats must be non-empty")
-    out = np.zeros_like(mats[0])
-    for m, w in zip(mats, weights, strict=False):
-        if w == 0.0:
-            continue
-        out += w * m
-    return out
-
-
-def _run_dp_from_stats(
-    lA0: np.ndarray,
-    A1: np.ndarray,
-    *,
-    k_max: int,
-    regression_curve: str,
-    prior_k: str = "uniform",  # "uniform" or "geometric"
-    geom_p: float = 0.5,
-) -> tuple[
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    np.ndarray,
-    float,
-    int,
-    np.ndarray,
-    list[int],
-    np.ndarray | None,
-]:
-    """Run the BayesBreak DP using precomputed segment statistics."""
-    n = lA0.shape[0] - 1
-    kk = min(max(1, n), int(k_max))
-
-    L, R = _dp.forward_backward(lA0, n, kk)
-
-    # Posterior over k with an optional prior.
-    #
-    # IMPORTANT: For a fixed k, BayesBreak treats changepoint *sets* uniformly.
-    # That induces a combinatorial normalizer C_k = binom(n-1, k-1) for the sum
-    # over ordered partitions. Consequently
-    #     log p(y|k) = log(sum over partitions) - log C_k
-    # which we implement exactly as in _dp.posterior_over_k.
-    logC_raw = np.full(kk + 1, -np.inf, dtype=float)
-    for k in range(1, kk + 1):
-        logC_raw[k] = L[k, n] - log_binom(n - 1, k - 1)
-
-    if prior_k == "geometric":
-        p = float(geom_p)
-        if not (0.0 < p < 1.0):
-            raise ValueError("geom_p must be in (0, 1) for prior_k='geometric'.")
-        logC_raw[1 : kk + 1] = logC_raw[1 : kk + 1] + (np.arange(1, kk + 1) - 1) * np.log(p)
-    elif prior_k != "uniform":
-        raise ValueError("prior_k must be one of {'uniform','geometric'}." f" Got {prior_k!r}.")
-
-    logE = float(logsumexp(logC_raw[1 : kk + 1]))
-    logC = logC_raw.copy()
-    logC[1 : kk + 1] = logC[1 : kk + 1] - logE
-    C = np.zeros_like(logC)
-    C[1 : kk + 1] = np.exp(logC[1 : kk + 1])
-
-    # k selection around E[k] (mirrors BayesBreakSegmenter.fit)
-    ek = float(np.sum((np.arange(1, kk + 1)) * C[1 : kk + 1]))
-    valid = np.arange(1, kk + 1)
-    k_ml = int(valid[np.argmin((valid - ek) ** 2)])
-
-    d1 = _dp.boundary_event_marginals(L, R, logC, n, kk)
-    boundaries = _dp.marginal_boundary_modes(d1, k_ml, n)
-
-    brc: np.ndarray | None = None
-    if regression_curve == "fixed_k":
-        brc = _dp.bayes_regression_curve_fixed_k(L, R, lA0, A1, n, k_ml)
-    elif regression_curve == "mix_k":
-        brc = _dp.bayes_regression_curve_mixed_k(L, R, lA0, A1, n, kk, C)
-    return L, R, logC, C, float(logE), k_ml, d1, boundaries, brc
-
-
-def _segment_posterior_fixed_k(
-    *,
-    L: np.ndarray,
-    R: np.ndarray,
-    lA0: np.ndarray,
+def _build_log_g_table(
+    length_prior: Callable[[float], float] | None,
+    u: FloatArray,
     n: int,
-    k: int,
-) -> np.ndarray:
-    """Posterior probability that (i,j] is a segment under fixed k.
-
-    Returns a matrix ``P`` of shape (n+1, n+1) where only the strict upper triangle
-    (i<j) is non-zero.
-    """
-    denom = L[k, n]
-    P = np.zeros((n + 1, n + 1), dtype=float)
-    for i in range(0, n):
-        Li = L[0:k, i]
+) -> FloatArray | None:
+    if length_prior is None:
+        return None
+    log_g = np.full((n + 1, n + 1), -np.inf, dtype=float)
+    for i in range(n):
         for j in range(i + 1, n + 1):
-            Rj = R[k - 1 :: -1, j]
-            # log sum_{p=0..k-1} L[p,i] + R[k-1-p,j]
-            log_pref_suf = logsumexp(Li + Rj)
-            log_p = log_pref_suf + lA0[i, j] - denom
-            if np.isfinite(log_p):
-                P[i, j] = float(np.exp(log_p))
-    return P
+            d = float(u[j] - u[i])
+            if d <= 0:
+                continue
+            gv = float(length_prior(d))
+            if gv > 0 and np.isfinite(gv):
+                log_g[i, j] = float(np.log(gv))
+    return log_g
+
+
+def _build_log_p_k(prior_k: Callable[[int], float] | None, k_max: int) -> FloatArray:
+    if prior_k is None:
+        return np.full(k_max + 1, -np.log(k_max), dtype=float)
+    vals = np.array([float(prior_k(k)) for k in range(1, k_max + 1)], dtype=float)
+    if np.any(vals < 0):
+        raise ValueError("prior_k must be non-negative.")
+    total = float(np.sum(vals))
+    if total <= 0:
+        raise ValueError("prior_k must put positive mass somewhere.")
+    log_p = np.log(np.maximum(vals / total, 1e-300))
+    full = np.full(k_max + 1, -np.inf, dtype=float)
+    full[1:] = log_p
+    return full
+
+
+def _midpoint_u(x_design: FloatArray, n: int) -> FloatArray:
+    if n == 1:
+        return np.array([x_design[0] - 0.5, x_design[0] + 0.5], dtype=float)
+    mids = 0.5 * (x_design[:-1] + x_design[1:])
+    first_gap = x_design[1] - x_design[0]
+    last_gap = x_design[-1] - x_design[-2]
+    u0 = float(x_design[0] - 0.5 * first_gap)
+    un = float(x_design[-1] + 0.5 * last_gap)
+    return np.concatenate(([u0], mids, [un])).astype(float)
+
+
+def _template_log_score(
+    log_A0_s: FloatArray, template: list[int], log_g: FloatArray | None
+) -> float:
+    """``Σ_q log Ã^{(0,s)}_{t_{q-1} t_q}`` along the boundary vector ``template``."""
+
+    total = 0.0
+    for a, b in zip(template[:-1], template[1:], strict=False):
+        v = float(log_A0_s[int(a), int(b)])
+        if log_g is not None:
+            v = v + float(log_g[int(a), int(b)])
+        if not np.isfinite(v):
+            return float("-inf")
+        total += v
+    return total
 
 
 class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
-    """Latent-group BayesBreak via an EM-like procedure.
+    """Latent-group BayesBreak via the template-mixture EM (Algorithm ``multi-em``).
 
     Parameters
     ----------
-    base_estimator:
-        A fitted-family BayesBreak estimator (e.g., :class:`~bayesbreak.families.BayesBreakGaussian`).
-        The estimator is cloned internally.
-    n_groups:
-        Number of latent groups.
-    k_max:
-        Maximum number of segments used in each DP run.
-    max_iter:
-        Maximum number of EM iterations.
-    tol:
-        Convergence tolerance on the relative change of the objective.
-    regression_curve:
-        Whether to compute a Bayesian regression curve per group.
-        One of {"none", "fixed_k", "mix_k"}.
-    prior_k:
-        Prior on the number of segments *k* used when selecting each group's
-        MAP segment count. "uniform" reproduces the base BayesBreak selection;
-        "geometric" applies an exponentially decaying prior p(k) ∝ geom_p^(k-1).
-    geom_p:
-        Geometric prior parameter in (0, 1). Smaller values penalize larger k more.
-    random_state:
-        Random seed for responsibility initialisation.
-    verbose:
-        If True, store the objective trajectory and print progress.
+    base_estimator : BayesBreakSegmenter
+        Family template; cloned per group. Subject-level block evidences use
+        the group's empirical-Bayes hyperparameters.
+    n_groups : int
+    k_max : int
+    max_iter : int
+    tol : float
+        Relative convergence tolerance on the finite-mixture objective.
+    random_state : int or None
+        Seed for responsibility / template initialisation.
+    n_restarts : int
+        Number of random restarts; the best (highest objective) is retained.
+    length_prior : callable or None
+    boundary_coordinates : array-like of shape (n+1,) or None
+    prior_k : callable or None
+    verbose : bool
 
     Attributes
     ----------
-    responsibilities_:
-        Array of shape (S, G) with final responsibilities.
-    pi_:
-        Mixture weights of shape (G,).
-    group_states_:
-        List of per-group fitted states.
-    objective_:
-        List of objective values per iteration.
+    pi_ : ndarray of shape (G,)
+    responsibilities_ : ndarray of shape (S, G)
+    group_states_ : list of ``_GroupState``
+    objective_ : list of float
+        Finite-template mixture objective ``ℓ_⋆`` trajectory of the *winning*
+        restart. ``ℓ_⋆`` is the optimization objective from §``latent-em``,
+        not the Bayesian observed-data marginal likelihood.
     """
 
     def __init__(
@@ -406,11 +212,12 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         n_groups: int = 2,
         k_max: int = 50,
         max_iter: int = 50,
-        tol: float = 1e-4,
-        regression_curve: str = "none",
-        prior_k: str = "uniform",
-        geom_p: float = 0.5,
+        tol: float = 1e-5,
         random_state: int | None = None,
+        n_restarts: int = 5,
+        length_prior: Callable[[float], float] | None = None,
+        boundary_coordinates: ArrayLike | None = None,
+        prior_k: Callable[[int], float] | None = None,
         verbose: bool = False,
     ):
         self.base_estimator = base_estimator
@@ -418,21 +225,233 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         self.k_max = int(k_max)
         self.max_iter = int(max_iter)
         self.tol = float(tol)
-        self.regression_curve = regression_curve
-        self.prior_k = str(prior_k)
-        self.geom_p = float(geom_p)
         self.random_state = random_state
+        self.n_restarts = int(n_restarts)
+        self.length_prior = length_prior
+        self.boundary_coordinates = boundary_coordinates
+        self.prior_k = prior_k
         self.verbose = bool(verbose)
 
         # fitted
-        self.responsibilities_: np.ndarray | None = None
-        self.pi_: np.ndarray | None = None
+        self.pi_: FloatArray | None = None
+        self.responsibilities_: FloatArray | None = None
         self.group_states_: list[_GroupState] | None = None
         self.objective_: list[float] | None = None
         self.n_: int | None = None
         self.n_seq_: int | None = None
 
-    # ----------------------- sklearn API -----------------------
+    # ---- private helpers ---------------------------------------------
+
+    def _per_subject_log_evidence(
+        self, ys: list[FloatArray], ws: list[FloatArray | None]
+    ) -> tuple[list[FloatArray], list[dict[str, float]]]:
+        """Compute per-subject log block-evidence tables under each subject's own EB hyper."""
+
+        out_lA0: list[FloatArray] = []
+        out_hyper: list[dict[str, float]] = []
+        for s, y in enumerate(ys):
+            est_s = clone(self.base_estimator)
+            w = ws[s] if ws[s] is not None else np.ones(y.size, dtype=float)
+            hyper = est_s._estimate_hyperparameters(y, w)
+            lA0_s, _ = est_s._compute_block_evidence(y, hyper, w)
+            out_lA0.append(lA0_s)
+            out_hyper.append(hyper)
+        return out_lA0, out_hyper
+
+    def _maximise_template_for_group(
+        self,
+        n: int,
+        k_max: int,
+        n_g: float,
+        log_A0_subjects: list[FloatArray],
+        responsibilities_g: FloatArray,
+        log_g_table: FloatArray | None,
+        log_C_k: FloatArray,
+        log_p_k: FloatArray,
+    ) -> tuple[list[int], int, float, float]:
+        """Run the responsibility-weighted max-sum DP over all ``k`` and return the best template.
+
+        Returns
+        -------
+        template : list[int]
+        k_g : int
+        log_score : float
+            ``M_{k_g, n} + n_g (log p(k_g) - log C_{k_g})``.
+        log_offset : float
+            ``log p(k_g) - log C_{k_g}`` itself (used by the E-step S_g formula).
+        """
+
+        # B^{(g)}_{ij} = n_g log g(Δ) + Σ_s r_{sg} log A^{(0,s)}_{ij}
+        # We supply the responsibility-weighted log A^(0) table to max_sum
+        # directly, *without* the n_g log g term, since max_sum_segmentation
+        # accepts log_g_table as an additive contribution scaled by `1` only.
+        # Per Algorithm ``multi-em`` the length factor enters with weight ``n_g``
+        # because it is part of S_g and S_g is raised to the power r_sg per
+        # subject under the auxiliary Q_g — i.e. the resulting per-block term
+        # is n_g · log g(Δ). We bake that scaling into the score table here.
+        S = len(log_A0_subjects)
+        # responsibility-weighted subject log evidences
+        # (mask -inf entries shared across all subjects).
+        finite_mask = np.ones_like(log_A0_subjects[0], dtype=bool)
+        for la in log_A0_subjects:
+            finite_mask &= np.isfinite(la)
+        B = np.zeros_like(log_A0_subjects[0])
+        for s in range(S):
+            r = float(responsibilities_g[s])
+            if r == 0.0:
+                continue
+            B[finite_mask] += r * log_A0_subjects[s][finite_mask]
+        if log_g_table is not None:
+            # Note: max_sum adds log_g once per block; we want n_g · log g(Δ) per
+            # block. Scale here.
+            B[finite_mask] += float(n_g) * log_g_table[finite_mask]
+        B[~finite_mask] = -np.inf
+
+        # Solve max_k { M_k + n_g (log p(k) - log C_k) }; pass log_g_table=None
+        # because the length-factor contribution is already baked into B.
+        best_score = -np.inf
+        best_k = 1
+        best_template: list[int] = [0, n]
+        for k in range(1, k_max + 1):
+            try:
+                template, M_k = _dp.max_sum_segmentation(B, k, log_g_table=None)
+            except RuntimeError:
+                continue
+            offset = float(n_g) * (float(log_p_k[k]) - float(log_C_k[k]))
+            score = float(M_k) + offset
+            # Deterministic tie-break: prefer smaller k on ties.
+            if (score > best_score + 1e-12) or (abs(score - best_score) <= 1e-12 and k < best_k):
+                best_score = score
+                best_k = k
+                best_template = template
+        log_offset = float(log_p_k[best_k]) - float(log_C_k[best_k])
+        return best_template, best_k, best_score, log_offset
+
+    def _fit_one_restart(
+        self,
+        rng: np.random.Generator,
+        ys: list[FloatArray],
+        ws: list[FloatArray | None],
+        n: int,
+        k_max: int,
+        log_g_table: FloatArray | None,
+        log_C_k: FloatArray,
+        log_p_k: FloatArray,
+    ) -> tuple[float, FloatArray, FloatArray, list[_GroupState], list[float], list[FloatArray]]:
+        S = len(ys)
+        G = int(self.n_groups)
+
+        # Per-subject log A^(0) tables (do NOT depend on group; we estimate
+        # subject-specific hyper inside subject's own EB. The paper's
+        # template-mixture model integrates out per-(g,s) segment parameters
+        # under subject-specific priors.)
+        log_A0_subjects, _ = self._per_subject_log_evidence(ys, ws)
+
+        # Initialise hard responsibilities. The §latent-em recommendation is to
+        # try several restarts from (a) k-means on per-subject block-evidence
+        # matrices, (b) templates drawn from the partition prior, or (c) a
+        # warm-started known-groups solution. We default to (a-lite): hard
+        # k-means++-style assignment where each group is anchored to a
+        # randomly-chosen "seed" subject and the remaining subjects are
+        # assigned to the group whose seed is closest under the per-subject
+        # log-A^(0) table treated as a flat feature vector. This breaks the
+        # symmetric-init pathology that otherwise collapses every group's
+        # template to the global pooled template.
+        feats = np.stack([np.where(np.isfinite(la), la, 0.0).ravel() for la in log_A0_subjects])
+        seeds = list(rng.choice(S, size=min(G, S), replace=False))
+        # Greedy farthest-point augmentation if S < G is impossible; we cap.
+        anchors = feats[seeds]  # (G, n*n)
+        # Squared distances from each subject to each anchor.
+        dists = np.linalg.norm(feats[:, None, :] - anchors[None, :, :], axis=2)
+        labels = np.argmin(dists, axis=1)
+        r = np.eye(G)[labels].astype(float)
+        r = 0.99 * r + 0.01 / G
+        pi = (r.sum(axis=0) + 1e-9) / (S + G * 1e-9)
+
+        objective: list[float] = []
+        prev_obj = -np.inf
+        group_states: list[_GroupState] = []
+        prev_templates: list[list[int]] | None = None
+        for it in range(int(self.max_iter)):
+            # ---------- M-step on pi ----------
+            n_g_vec = r.sum(axis=0)
+            # Add a tiny pseudocount to keep every group active.
+            pi = (n_g_vec + 1e-9) / (S + G * 1e-9)
+
+            # ---------- M-step on tau_g via max-sum DP ----------
+            group_states = []
+            for g in range(G):
+                template, k_g, _, log_offset = self._maximise_template_for_group(
+                    n,
+                    k_max,
+                    float(n_g_vec[g]),
+                    log_A0_subjects,
+                    r[:, g],
+                    log_g_table,
+                    log_C_k,
+                    log_p_k,
+                )
+                group_states.append(
+                    _GroupState(
+                        hyper={},  # subject-specific hyper held in subject lA0 already
+                        template=template,
+                        k_g=k_g,
+                        log_score_offset=log_offset,
+                    )
+                )
+
+            # ---------- E-step: r_{sg} ∝ π_g · S_g(y^(s); τ_g) ----------
+            log_u = np.full((S, G), -np.inf, dtype=float)
+            for g, gs in enumerate(group_states):
+                lp = np.log(max(pi[g], 1e-300))
+                offset = gs.log_score_offset
+                for s in range(S):
+                    score = _template_log_score(log_A0_subjects[s], gs.template, log_g_table)
+                    log_u[s, g] = lp + offset + score
+
+            log_norm = logsumexp(log_u, axis=1, keepdims=True)
+            r = np.exp(log_u - log_norm)
+            obj = float(np.sum(log_norm))
+            objective.append(obj)
+
+            if self.verbose:
+                print(f"[mixture] iter {it+1:03d} obj={obj:.6f}")
+
+            current_templates = [list(gs.template) for gs in group_states]
+            if it > 0:
+                denom = max(1.0, abs(prev_obj))
+                templates_stable = (
+                    prev_templates is not None and prev_templates == current_templates
+                )
+                obj_stable = abs(obj - prev_obj) / denom < self.tol
+                if templates_stable and obj_stable:
+                    # §latent-em criterion (iii): re-run the M-step max-sum
+                    # under deterministic tie-breaking to certify the same
+                    # templates re-emerge from the current responsibilities.
+                    n_g_vec = r.sum(axis=0)
+                    recertified = True
+                    for g in range(G):
+                        tmpl, k_g, _, _ = self._maximise_template_for_group(
+                            n,
+                            k_max,
+                            float(n_g_vec[g]),
+                            log_A0_subjects,
+                            r[:, g],
+                            log_g_table,
+                            log_C_k,
+                            log_p_k,
+                        )
+                        if list(tmpl) != current_templates[g] or k_g != group_states[g].k_g:
+                            recertified = False
+                            break
+                    if recertified:
+                        break
+            prev_obj = obj
+            prev_templates = current_templates
+
+        return prev_obj, pi, r, group_states, objective, log_A0_subjects
+
+    # ---- sklearn API --------------------------------------------------
 
     def fit(
         self,
@@ -440,157 +459,61 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         y: SequenceInput | None = None,
         sample_weight: SequenceInput | None = None,
     ) -> BayesBreakMixtureClassifier:
-        # sklearn convention: if y is None, treat X as the observed sequences.
         Y_in = X if y is None else y
-        ys = _as_list_of_1d_arrays(Y_in, name="y")
+        ys = _as_list_of_1d(Y_in, name="y")
         S = len(ys)
         n = int(ys[0].shape[0])
-        if any(int(arr.shape[0]) != n for arr in ys):
-            raise ValueError(
-                "All sequences must have the same length for BayesBreakMixtureClassifier."
-            )
-        ws = _as_list_of_weight_arrays(sample_weight, n_seq=S, n=n)
+        if any(a.shape[0] != n for a in ys):
+            raise ValueError("All sequences must share the same length.")
+        ws = _as_list_of_weights(sample_weight, n_seq=S, n=n)
 
         if self.n_groups < 1:
             raise ValueError("n_groups must be >= 1.")
-        G = self.n_groups
+        k_max = min(max(1, n), int(self.k_max))
 
-        rng = check_random_state(self.random_state)
-        # Responsibilities initialisation: random Dirichlet with mild symmetry breaking.
-        # Prefer a *hard* random initialization (with a small amount of
-        # smoothing) to avoid symmetry-induced label collapse.
-        init_labels = rng.randint(0, G, size=S)
-        # Ensure every group is represented at least once.
-        if S >= G:
-            init_labels[:G] = np.arange(G)
-            rng.shuffle(init_labels)
-        r = np.eye(G, dtype=float)[init_labels]
-        r = 0.999 * r + 0.001 / G
+        # Length prior, p(k), C_k.
+        if self.boundary_coordinates is not None:
+            u = np.asarray(self.boundary_coordinates, dtype=float).ravel()
+            if u.size != n + 1 or not np.all(np.diff(u) > 0):
+                raise ValueError("boundary_coordinates must be strictly increasing of length n+1.")
+        else:
+            x_design = np.arange(n, dtype=float)
+            u = _midpoint_u(x_design, n)
+        log_g = _build_log_g_table(self.length_prior, u, n)
+        log_C_k = _dp.compute_log_C_k(log_g, n, k_max)
+        log_p_k = _build_log_p_k(self.prior_k, k_max)
+        self.boundary_coordinates_ = u
+        self.log_C_k_ = log_C_k
+        self.log_g_table_ = log_g
 
-        pi = np.full(G, 1.0 / G, dtype=float)
-
-        objective: list[float] = []
-        group_states: list[_GroupState] = []
-
-        prev_obj = -np.inf
-        for it in range(self.max_iter):
-            group_states = []
-            # Cache per-sequence block evidences under each group's current hyper
-            # (used in the E-step scoring).
-            lA0_cache: list[list[np.ndarray]] = [[None for _ in range(S)] for _ in range(G)]
-            # M-step: update group hyperparameters and pooled DPs.
-            for g in range(G):
-                # --- hyper (empirical Bayes on responsibility-weighted pooled observations) ---
-                est_h = clone(self.base_estimator)
-                # Force hyper estimation on pooled data regardless of base_estimator.estimate_hyper.
-                est_h.set_params(estimate_hyper=True)
-
-                ws_scaled: list[np.ndarray] = []
-                for s in range(S):
-                    w_s = ws[s]
-                    if w_s is None:
-                        w_s = np.ones(n, dtype=float)
-                    ws_scaled.append(w_s * float(r[s, g]))
-
-                hyper_g = _pool_hyper_by_family(est_h, ys, ws_scaled)
-
-                # --- per-sequence segment stats under hyper_g ---
-                lA0_sg: list[np.ndarray] = []
-                A1_sg: list[np.ndarray] = []
-                for s in range(S):
-                    est_s = clone(self.base_estimator)
-                    est_s.set_params(estimate_hyper=False)
-                    # Best-effort: push hyper keys into estimator params when supported.
-                    for key, val in hyper_g.items():
-                        if key in est_s.get_params(deep=False):
-                            est_s.set_params(**{key: float(val)})
-                    w_s = ws[s]
-                    if w_s is None:
-                        w_s = np.ones(n, dtype=float)
-                    lA0, A1 = est_s._compute_block_evidence(ys[s], hyper_g, sample_weight=w_s)
-                    lA0_cache[g][s] = lA0
-                    lA0_sg.append(lA0)
-                    A1_sg.append(A1)
-
-                # --- pooled stats ---
-                lA0_g = _safe_weighted_sum_lA0(lA0_sg, r[:, g])
-                A1_g = _safe_weighted_sum_A1(A1_sg, r[:, g])
-
-                # --- run DP for the group ---
-                L, R, logC, C, logE, k_ml, d1, boundaries, brc = _run_dp_from_stats(
-                    lA0_g,
-                    A1_g,
-                    k_max=self.k_max,
-                    regression_curve=self.regression_curve,
-                    prior_k=self.prior_k,
-                    geom_p=self.geom_p,
+        rng_master = check_random_state(self.random_state)
+        best = None
+        for restart in range(max(1, int(self.n_restarts))):
+            seed = rng_master.randint(0, 2**31 - 1)
+            rng = np.random.default_rng(seed)
+            try:
+                obj_final, pi, r, gs, traj, lA0_subj = self._fit_one_restart(
+                    rng, ys, ws, n, k_max, log_g, log_C_k, log_p_k
                 )
+            except Exception as exc:
+                if self.verbose:
+                    print(f"[mixture] restart {restart} failed: {exc}")
+                continue
+            if best is None or obj_final > best[0]:
+                best = (obj_final, pi, r, gs, traj, lA0_subj, seed)
+        if best is None:
+            raise RuntimeError("All EM restarts failed.")
+        _, pi, r, group_states, traj, lA0_subj, seed = best
 
-                # Segment posterior under fixed-k (k_ml) for E-step scoring.
-                seg_post = _segment_posterior_fixed_k(L=L, R=R, lA0=lA0_g, n=n, k=k_ml)
-
-                group_states.append(
-                    _GroupState(
-                        hyper=hyper_g,
-                        lA0=lA0_g,
-                        A1=A1_g,
-                        L=L,
-                        R=R,
-                        logC=logC,
-                        C=C,
-                        log_evidence=logE,
-                        k_ml=k_ml,
-                        boundary_post=d1,
-                        boundaries=boundaries,
-                        brc=brc,
-                        seg_post=seg_post,
-                    )
-                )
-
-            # Update mixture weights.
-            pi = np.maximum(1e-12, r.mean(axis=0))
-            pi = pi / pi.sum()
-
-            # E-step: update responsibilities by scoring each sequence under the
-            # current group *MAP* segmentation. This is more discriminative than
-            # using fully-marginalised segment posteriors (which can become too
-            # diffuse early in EM, leading to collapsed solutions).
-            log_resp = np.zeros((S, G), dtype=float)
-            for g in range(G):
-                gs = group_states[g]
-                bnds = gs.boundaries
-                for s in range(S):
-                    lA0_s = lA0_cache[g][s]
-                    # Sum block evidences along the group's MAP partition.
-                    score_sg = 0.0
-                    for a, b in zip(bnds[:-1], bnds[1:], strict=False):
-                        score_sg += float(lA0_s[a, b])
-                    log_resp[s, g] = np.log(pi[g]) + score_sg
-
-            # Normalise.
-            log_norm = logsumexp(log_resp, axis=1, keepdims=True)
-            r = np.exp(log_resp - log_norm)
-
-            # Objective: sum_s log sum_g pi_g exp(score_sg)
-            obj = float(np.sum(log_norm))
-            objective.append(obj)
-
-            if self.verbose:
-                print(f"[BayesBreakMixtureClassifier] iter={it+1:03d} obj={obj:.6f}")
-
-            if it > 0:
-                # Relative improvement.
-                denom = max(1.0, abs(prev_obj))
-                if abs(obj - prev_obj) / denom < self.tol:
-                    break
-            prev_obj = obj
-
-        self.responsibilities_ = r
         self.pi_ = pi
+        self.responsibilities_ = r
         self.group_states_ = group_states
-        self.objective_ = objective
+        self.objective_ = traj
         self.n_ = n
         self.n_seq_ = S
+        self.boundary_coordinates_ = u
+        self._log_A0_subjects_ = lA0_subj
+        self.seed_used_ = int(seed)
         return self
 
     def predict_proba(
@@ -598,47 +521,34 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         X: SequenceInput,
         y: SequenceInput | None = None,
         sample_weight: SequenceInput | None = None,
-    ) -> np.ndarray:
-        if self.group_states_ is None or self.pi_ is None:
-            raise RuntimeError("Call fit() first.")
+    ) -> FloatArray:
+        require_fitted(self, ["group_states_", "pi_"])
         Y_in = X if y is None else y
-        ys = _as_list_of_1d_arrays(Y_in, name="y")
+        ys = _as_list_of_1d(Y_in, name="y")
         S = len(ys)
         n = int(ys[0].shape[0])
         if self.n_ is not None and n != self.n_:
-            raise ValueError(f"Expected sequences of length {self.n_}, got {n}.")
-        ws = _as_list_of_weight_arrays(sample_weight, n_seq=S, n=n)
+            raise ValueError(f"Expected length {self.n_}; got {n}.")
+        ws = _as_list_of_weights(sample_weight, n_seq=S, n=n)
+        log_A0_subjects, _ = self._per_subject_log_evidence(ys, ws)
 
         G = len(self.group_states_)
-        log_resp = np.zeros((S, G), dtype=float)
-        for g in range(G):
-            gs = self.group_states_[g]
+        log_u = np.full((S, G), -np.inf, dtype=float)
+        for g, gs in enumerate(self.group_states_):
+            lp = np.log(max(float(self.pi_[g]), 1e-300))
             for s in range(S):
-                est_s = clone(self.base_estimator)
-                est_s.set_params(estimate_hyper=False)
-                for key, val in gs.hyper.items():
-                    if key in est_s.get_params(deep=False):
-                        est_s.set_params(**{key: float(val)})
-                w_s = ws[s]
-                if w_s is None:
-                    w_s = np.ones(n, dtype=float)
-                lA0_s, _A1_s = est_s._compute_block_evidence(ys[s], gs.hyper, sample_weight=w_s)
-                score_sg = 0.0
-                for a, b in zip(gs.boundaries[:-1], gs.boundaries[1:], strict=False):
-                    score_sg += float(lA0_s[a, b])
-                log_resp[s, g] = np.log(self.pi_[g]) + score_sg
-
-        log_norm = logsumexp(log_resp, axis=1, keepdims=True)
-        return np.exp(log_resp - log_norm)
+                score = _template_log_score(log_A0_subjects[s], gs.template, self.log_g_table_)
+                log_u[s, g] = lp + gs.log_score_offset + score
+        log_norm = logsumexp(log_u, axis=1, keepdims=True)
+        return np.exp(log_u - log_norm)
 
     def predict(
         self,
         X: SequenceInput,
         y: SequenceInput | None = None,
         sample_weight: SequenceInput | None = None,
-    ) -> np.ndarray:
-        proba = self.predict_proba(X, y=y, sample_weight=sample_weight)
-        return np.argmax(proba, axis=1)
+    ) -> FloatArray:
+        return np.argmax(self.predict_proba(X, y=y, sample_weight=sample_weight), axis=1)
 
     def score(
         self,
@@ -646,117 +556,38 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         y: SequenceInput | None = None,
         sample_weight: SequenceInput | None = None,
     ) -> float:
-        """Return the mixture objective used during fitting (higher is better)."""
         proba = self.predict_proba(X, y=y, sample_weight=sample_weight)
-        # Convert back to log normalizer by re-scoring to avoid exposing internals.
-        # This is not the exact marginal likelihood; it's a practical scoring rule.
         return float(np.mean(np.log(np.maximum(1e-300, proba.max(axis=1)))))
 
-    # -------------------- convenience helpers --------------------
+    # ---- diagnostics --------------------------------------------------
 
-    def get_group_boundaries(self, g: int) -> list[int]:
-        if self.group_states_ is None:
-            raise RuntimeError("Call fit() first.")
-        return list(self.group_states_[g].boundaries)
+    def get_group_template(self, g: int) -> list[int]:
+        require_fitted(self, ["group_states_"])
+        return list(self.group_states_[g].template)
 
-    def get_group_boundary_posteriors(self, g: int) -> np.ndarray:
-        if self.group_states_ is None:
-            raise RuntimeError("Call fit() first.")
-        return self.group_states_[g].boundary_post.copy()
+    def get_group_boundary_marginals(self, g: int) -> FloatArray:
+        """Conditional ``P(b_i = 1 | y, k_g)`` under the group's pooled responsibility-weighted score table.
 
-    def get_group_regression_curve(self, g: int) -> np.ndarray | None:
-        if self.group_states_ is None:
-            raise RuntimeError("Call fit() first.")
-        brc = self.group_states_[g].brc
-        return None if brc is None else brc.copy()
-
-    def map_signal(
-        self,
-        X: SequenceInput,
-        group: int | Sequence[int] | np.ndarray | None = None,
-        *,
-        mode: str = "refit",
-        return_curve: str = "pc",
-        sample_weight: SequenceInput | None = None,
-    ) -> np.ndarray:
-        """Compute MAP/Bayes signal evaluations conditional on group membership.
-
-        Parameters
-        ----------
-        X:
-            One or more sequences.
-        group:
-            Group label(s). If None, uses ``predict``.
-        mode:
-            - ``"refit"`` (default): refit BayesBreak on each sequence with group
-              hyperparameters fixed, and return the resulting reconstruction.
-            - ``"template"``: use the group's MAP boundaries and compute segment
-              posterior means for the new sequence (no DP on the new sequence).
-        return_curve:
-            ``"pc"`` for the piecewise-constant posterior mean under MAP boundaries,
-            or ``"brc"`` to return the Bayesian regression curve (requires
-            ``regression_curve != 'none'`` for the refit estimator).
-
-        Returns
-        -------
-        ndarray
-            Array of shape (S, n) (or (n,) for a single sequence).
+        Computed by running the sum-product DP on the same ``B^{(g)}`` matrix
+        used for the M-step max-sum update.
         """
-        if self.group_states_ is None:
-            raise RuntimeError("Call fit() first.")
-        ys = _as_list_of_1d_arrays(X, name="X")
-        S = len(ys)
-        n = ys[0].shape[0]
-        ws = _as_list_of_weight_arrays(sample_weight, n_seq=S, n=n)
 
-        if group is None:
-            grp = self.predict(ys)
-        else:
-            if isinstance(group, int | np.integer):
-                grp = np.full(S, int(group), dtype=int)
-            else:
-                grp = np.asarray(group, dtype=int)
-                if grp.shape != (S,):
-                    raise ValueError(f"group must be scalar or shape ({S},), got {grp.shape}.")
-
-        out = np.zeros((S, n), dtype=float)
+        require_fitted(self, ["group_states_", "_log_A0_subjects_", "responsibilities_"])
+        gs = self.group_states_[g]
+        S = len(self._log_A0_subjects_)
+        n = self._log_A0_subjects_[0].shape[0] - 1
+        n_g = float(self.responsibilities_[:, g].sum())
+        finite_mask = np.ones_like(self._log_A0_subjects_[0], dtype=bool)
+        for la in self._log_A0_subjects_:
+            finite_mask &= np.isfinite(la)
+        B = np.zeros_like(self._log_A0_subjects_[0])
         for s in range(S):
-            g = int(grp[s])
-            gs = self.group_states_[g]
-            if mode == "refit":
-                est = clone(self.base_estimator)
-                est.set_params(estimate_hyper=False)
-                for key, val in gs.hyper.items():
-                    if key in est.get_params(deep=False):
-                        est.set_params(**{key: float(val)})
-                # Preserve the mixture object's curve preference.
-                if "regression_curve" in est.get_params(deep=False):
-                    est.set_params(regression_curve=self.regression_curve)
-                n_s = int(np.asarray(ys[s]).shape[0])
-                X_s = np.arange(n_s).reshape(-1, 1)
-                est.fit(X_s, ys[s], sample_weight=ws[s])
-                if return_curve == "brc":
-                    curve = est.get_regression_curve()
-                    if curve is None:
-                        raise ValueError(
-                            "return_curve='brc' requested, but regression_curve is 'none'."
-                        )
-                    out[s] = curve
-                else:
-                    out[s] = est.predict()
-            elif mode == "template":
-                boundaries = gs.boundaries
-                # Compute posterior mean per segment under group hyper.
-                est = clone(self.base_estimator)
-                est.set_params(estimate_hyper=False)
-                for key, val in gs.hyper.items():
-                    if key in est.get_params(deep=False):
-                        est.set_params(**{key: float(val)})
-                y_arr = np.asarray(ys[s], dtype=float)
-                w_arr = None if ws[s] is None else np.asarray(ws[s], dtype=float)
-                for a, b in zip(boundaries[:-1], boundaries[1:], strict=False):
-                    mu = est._segment_posterior_mean(a, b, y_arr, gs.hyper, sample_weight=w_arr)
-                    out[s, a:b] = float(mu)
-            else:
-                raise ValueError("mode must be one of {'refit','template'}")
-        return out[0] if isinstance(X, np.ndarray) and X.ndim == 1 else out
+            B[finite_mask] += (
+                float(self.responsibilities_[s, g]) * self._log_A0_subjects_[s][finite_mask]
+            )
+        if self.log_g_table_ is not None:
+            B[finite_mask] += n_g * self.log_g_table_[finite_mask]
+        B[~finite_mask] = -np.inf
+
+        L, R = _dp.forward_backward(B, n, gs.k_g)
+        return _dp.boundary_event_marginals_fixed_k(L, R, n, gs.k_g)

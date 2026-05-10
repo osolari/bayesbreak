@@ -12,6 +12,7 @@ from .beta_obs import BayesBreakBetaObs
 from .binomial import BayesBreakBinomial
 from .gaussian import BayesBreakGaussian
 from .logistic_normal import BayesBreakLogisticNormal
+from .negative_binomial import BayesBreakNegBin
 from .poisson import BayesBreakPoisson
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "BayesBreakBetaObs",
     "BayesBreakBernoulli",
     "BayesBreakLogisticNormal",
+    "BayesBreakNegBin",
 ]

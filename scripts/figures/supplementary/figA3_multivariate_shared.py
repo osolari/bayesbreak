@@ -63,7 +63,7 @@ import sys
 from pathlib import Path
 
 # Allow running the script from a source checkout without installation.
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(_ROOT / "src"))
 sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
@@ -159,13 +159,13 @@ def main(outdir: Path, seed: int) -> None:
             label="Independent",
             zorder=3,
         )
-        ax.set_ylabel(ch_labels[c], fontsize=8)
+        ax.set_ylabel(ch_labels[c], fontsize=10)
         ax.set_xlim(0, n)
         # Mark true boundaries lightly
         for tb in true_boundaries[1:-1]:
             ax.axvline(tb, color=COLORS["grey"], ls=":", lw=0.8, alpha=0.5)
         if c == 0:
-            ax.legend(loc="upper right", fontsize=7, ncol=3)
+            ax.legend(loc="upper right", fontsize=10, ncol=3)
         add_panel_label(ax, panel_labels[c])
 
     # Bottom panel: boundary posteriors
@@ -201,7 +201,7 @@ def main(outdir: Path, seed: int) -> None:
     ax.set_ylabel("Boundary probability")
     ax.set_ylim(0, 1.05)
     ax.set_xlim(0, n)
-    ax.legend(loc="upper right", fontsize=6, ncol=3)
+    ax.legend(loc="upper right", fontsize=10, ncol=3)
     add_panel_label(ax, panel_labels[3])
 
     save_figure(fig, outdir / "fig8_multivariate_shared", formats=("png", "pdf"))

@@ -4,7 +4,12 @@ Every figure script calls :func:`setup_style` once at the top. This module
 enforces consistent typography, colour palette, line weights, and figure sizes
 across all figures shipped with the report.
 
-The palette is a colour-blind-safe variation of Paul Tol's bright palette.
+Aesthetic conventions (matching the report):
+
+- **Full spines** on all four sides of every axes (no despining).
+- **Large fonts** — body text ≈ 14 pt, ticks ≈ 12 pt, panel labels ≈ 16 pt.
+- **Muted, colour-blind-safe palette** — Paul Tol's "muted" set.
+- Tighter linewidths than seaborn defaults to keep dense panels readable.
 """
 
 from __future__ import annotations
@@ -31,31 +36,34 @@ DPI_SCREEN = 150
 DPI_PRINT = 300
 
 
-# Paul Tol's "bright" palette, colour-blind safe.
-_BRIGHT_PALETTE = [
-    "#4477AA",  # blue
-    "#EE6677",  # red
-    "#228833",  # green
-    "#CCBB44",  # yellow
-    "#66CCEE",  # cyan
-    "#AA3377",  # purple
-    "#BBBBBB",  # grey
+# Paul Tol's "muted" palette — colour-blind safe and visually softer than
+# "bright". Order tuned for the figures in the report (blue, red, green, ...).
+_MUTED_PALETTE = [
+    "#4477AA",  # blue (Tol "muted")
+    "#CC6677",  # rose
+    "#44AA99",  # teal
+    "#DDCC77",  # sand
+    "#88CCEE",  # cyan
+    "#AA4499",  # purple
+    "#117733",  # green
+    "#999933",  # olive
+    "#882255",  # wine
 ]
 
 COLORS = {
-    "blue": _BRIGHT_PALETTE[0],
-    "red": _BRIGHT_PALETTE[1],
-    "green": _BRIGHT_PALETTE[2],
-    "yellow": _BRIGHT_PALETTE[3],
-    "cyan": _BRIGHT_PALETTE[4],
-    "purple": _BRIGHT_PALETTE[5],
-    "grey": _BRIGHT_PALETTE[6],
+    "blue": _MUTED_PALETTE[0],
+    "red": _MUTED_PALETTE[1],
+    "green": _MUTED_PALETTE[2],
+    "yellow": _MUTED_PALETTE[3],
+    "cyan": _MUTED_PALETTE[4],
+    "purple": _MUTED_PALETTE[5],
+    "grey": "#888888",
     "black": "#222222",
     "lightgrey": "#DDDDDD",
     "orange": "#EE7733",
 }
 
-COLOR_CYCLE = _BRIGHT_PALETTE[:6]
+COLOR_CYCLE = _MUTED_PALETTE[:7]
 
 
 def setup_style(
@@ -63,26 +71,23 @@ def setup_style(
     font_scale: float = 1.0,
     use_tex: bool = False,
     context: str = "paper",
-    despine: bool = True,
 ) -> None:
     """Set matplotlib + seaborn defaults for publication figures.
 
     Parameters
     ----------
     font_scale : float
-        Multiplier applied to all font sizes.
+        Multiplier applied to all font sizes (default 1.0 → ~14 pt body).
     use_tex : bool
-        If True, render text via LaTeX (slower but crisper math).
+        If True, render text via LaTeX (slower, crisper math).
     context : str
         Seaborn context ("paper", "notebook", "talk", "poster").
-    despine : bool
-        Remove the top and right spines by default (seaborn-style).
     """
 
     sns.set_theme(
         style="ticks",
         context=context,
-        palette=_BRIGHT_PALETTE,
+        palette=_MUTED_PALETTE,
         font_scale=font_scale,
         rc={
             "font.family": "sans-serif",
@@ -90,7 +95,7 @@ def setup_style(
         },
     )
 
-    base = 9.5 * font_scale
+    base = 13.0 * font_scale
     params: dict = {
         "figure.dpi": DPI_SCREEN,
         "figure.facecolor": "white",
@@ -100,28 +105,36 @@ def setup_style(
         "axes.titlesize": base + 1.5,
         "axes.titleweight": "medium",
         "axes.labelweight": "regular",
-        "axes.linewidth": 0.9,
-        "axes.edgecolor": "#333333",
-        "axes.spines.top": not despine,
-        "axes.spines.right": not despine,
+        "axes.linewidth": 1.0,
+        "axes.edgecolor": "#222222",
+        # Full spines on every side.
+        "axes.spines.top": True,
+        "axes.spines.right": True,
+        "axes.spines.left": True,
+        "axes.spines.bottom": True,
+        "axes.grid": False,
         "axes.prop_cycle": mpl.cycler(color=COLOR_CYCLE),
-        "xtick.labelsize": base - 0.5,
-        "ytick.labelsize": base - 0.5,
+        "xtick.labelsize": base - 1.0,
+        "ytick.labelsize": base - 1.0,
         "xtick.direction": "out",
         "ytick.direction": "out",
-        "xtick.major.width": 0.9,
-        "ytick.major.width": 0.9,
-        "xtick.major.size": 3.5,
-        "ytick.major.size": 3.5,
-        "lines.linewidth": 1.5,
+        "xtick.major.width": 1.0,
+        "ytick.major.width": 1.0,
+        "xtick.major.size": 4.0,
+        "ytick.major.size": 4.0,
+        "xtick.minor.width": 0.7,
+        "ytick.minor.width": 0.7,
+        "xtick.minor.size": 2.5,
+        "ytick.minor.size": 2.5,
+        "lines.linewidth": 1.7,
         "lines.markersize": 4.5,
-        "legend.fontsize": base - 0.5,
+        "legend.fontsize": base - 1.0,
         "legend.frameon": False,
         "legend.borderaxespad": 0.3,
         "legend.handlelength": 1.5,
         "savefig.dpi": DPI_PRINT,
         "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.03,
+        "savefig.pad_inches": 0.05,
         "savefig.transparent": False,
         "pdf.fonttype": 42,
         "ps.fonttype": 42,
@@ -182,12 +195,9 @@ def save_figure(
     *,
     formats: tuple[str, ...] = ("png", "pdf"),
     dpi: int | None = None,
-    despine: bool = True,
 ) -> None:
     """Save a figure in multiple formats. PDF is vector; PNG is 300 dpi by default."""
 
-    if despine:
-        sns.despine(fig=fig)
     path = Path(path)
     base = path.parent / path.stem
     for fmt in formats:

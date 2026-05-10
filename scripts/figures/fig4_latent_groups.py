@@ -142,14 +142,14 @@ def main(
         k_max=k_max,
         max_iter=max_iter,
         tol=1e-4,
-        regression_curve="mix_k",
         random_state=seed,
     ).fit(np.arange(len(ys)).reshape(-1, 1), ys)
 
     r = np.asarray(mix.responsibilities_, dtype=float)
     perm = _align_groups_by_truth(r, y_true)
     r = r[:, perm]
-    states = [mix.group_states_[int(g)] for g in perm]  # type: ignore[index]
+    # Per-group boundary marginals from the new template-mixture API.
+    boundary_post_per_group = [mix.get_group_boundary_marginals(int(g)) for g in perm]
 
     # Sort sequences by true label for a cleaner responsibility heatmap.
     order = np.argsort(y_true)
@@ -185,9 +185,9 @@ def main(
     ax1 = fig.add_subplot(gs[0, 1])
     x_b = np.arange(1, n)
     colors = [COLORS["blue"], COLORS["red"]]
-    for g, st in enumerate(states):
-        ax1.fill_between(x_b, 0, st.boundary_post, alpha=0.3, color=colors[g], linewidth=0)
-        ax1.plot(x_b, st.boundary_post, lw=2, color=colors[g], label=f"Group {g}")
+    for g, bm in enumerate(boundary_post_per_group):
+        ax1.fill_between(x_b, 0, bm, alpha=0.3, color=colors[g], linewidth=0)
+        ax1.plot(x_b, bm, lw=2, color=colors[g], label=f"Group {g}")
     ax1.set_xlabel("Time index")
     ax1.set_ylabel("Boundary probability")
     ax1.set_ylim(0, 1.05)
@@ -203,9 +203,9 @@ def main(
     ax2.plot(mu1, linestyle="--", lw=1.5, color=COLORS["red"], alpha=0.5, label="True G1")
 
     # Compute group-averaged signals from the data
-    for g in range(len(states)):
+    for g in range(len(boundary_post_per_group)):
         # Get sequences assigned to this group (by max responsibility)
-        group_mask = np.argmax(r, axis=1) == perm[g]
+        group_mask = np.argmax(r, axis=1) == g
         if np.sum(group_mask) > 0:
             group_mean = np.mean([ys[i] for i in range(n_seq) if group_mask[i]], axis=0)
             # Smooth with simple moving average
@@ -216,12 +216,39 @@ def main(
     ax2.set_xlabel("Time index")
     ax2.set_ylabel("Signal")
     ax2.set_xlim(0, n)
-    ax2.legend(loc="upper right", ncol=2, fontsize=8)
+    ax2.legend(loc="upper right", ncol=2, fontsize=10)
     add_panel_label(ax2, "C", offset=(-0.15, 1.05))
 
     # Save in multiple formats
     save_figure(fig, outdir / "fig4_latent_groups", formats=("png", "pdf"))
     plt.close(fig)
+
+    # --- Cropped 2-panel version (responsibilities + boundary marginals) ---
+    # The §6 manuscript shows fig4_latent_groups_cropped — the third Bayes-curve
+    # panel was withdrawn pending a corrected rendering path.
+    fig2 = plt.figure(figsize=(7.4, 3.5))
+    gs2 = fig2.add_gridspec(1, 2, width_ratios=[0.7, 1.0], wspace=0.35)
+    axA = fig2.add_subplot(gs2[0, 0])
+    imA = axA.imshow(r_plot, aspect="auto", interpolation="nearest", cmap="RdBu_r", vmin=0, vmax=1)
+    axA.set_xticks([0, 1])
+    axA.set_xticklabels(["G0", "G1"])
+    axA.set_ylabel("Sequence")
+    cbarA = fig2.colorbar(imA, ax=axA, fraction=0.08, pad=0.08, shrink=0.9)
+    cbarA.set_label("Prob.")
+    add_panel_label(axA, "A", offset=(-0.25, 1.05))
+
+    axB = fig2.add_subplot(gs2[0, 1])
+    for g, bm in enumerate(boundary_post_per_group):
+        axB.fill_between(x_b, 0, bm, alpha=0.3, color=colors[g], linewidth=0)
+        axB.plot(x_b, bm, lw=2, color=colors[g], label=f"Group {g}")
+    axB.set_xlabel("Time index")
+    axB.set_ylabel("Boundary probability")
+    axB.set_ylim(0, 1.05)
+    axB.set_xlim(0, n)
+    axB.legend(loc="upper right")
+    add_panel_label(axB, "B", offset=(-0.15, 1.05))
+    save_figure(fig2, outdir / "fig4_latent_groups_cropped", formats=("png", "pdf"))
+    plt.close(fig2)
 
 
 if __name__ == "__main__":

@@ -172,12 +172,12 @@
       }
       \vskip 0.2cm
       \authorlist\par
-      \vskip 0.2cm
+      \vskip 0.1cm
       \affiliationlist\par
       \contributionlist\par
     }
     \abstractlist\par
-    \vskip 0.5cm
+    \vskip 0.3cm
     {
       \setlength{\parskip}{0cm}
       \ifdefempty{\metadatalist}{\vspace*{0.65cm}}{\metadatalist\par}

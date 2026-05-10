@@ -61,7 +61,7 @@ import sys
 from pathlib import Path
 
 # Allow running the script from a source checkout without installation.
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(_ROOT / "src"))
 sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
@@ -174,7 +174,7 @@ def main(outdir: Path, seed: int, n: int, n_rep: int, k_max: int, tau: int) -> N
     ax.set_xlabel(r"Noise $\sigma$")
     ax.set_ylabel(r"Selected $\hat{k}$")
     ax.set_ylim(0, k_max + 1)
-    ax.legend(loc="upper right", fontsize=7)
+    ax.legend(loc="upper right", fontsize=10)
     ax.grid(True, which="major", ls="-", alpha=0.15, color=COLORS["grey"])
     add_panel_label(ax, "C")
 

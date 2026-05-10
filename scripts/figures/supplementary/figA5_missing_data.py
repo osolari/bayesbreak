@@ -60,7 +60,7 @@ import sys
 from pathlib import Path
 
 # Allow running the script from a source checkout without installation.
-_ROOT = Path(__file__).resolve().parents[2]
+_ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(_ROOT / "src"))
 sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
@@ -162,10 +162,10 @@ def main(outdir: Path, seed: int, n: int, miss_frac: float) -> None:
         )
         ax.plot(mu, ls="--", lw=1.5, color=COLORS["black"], zorder=2)
         ax.plot(pc_w, lw=2, color=COLORS["blue"], zorder=3)
-        ax.set_ylabel(label, fontsize=8)
+        ax.set_ylabel(label, fontsize=10)
         ax.set_xlim(0, n)
         if row == 0:
-            ax.legend(loc="upper right", fontsize=6, ncol=2)
+            ax.legend(loc="upper right", fontsize=10, ncol=2)
         if row == 2:
             ax.set_xlabel("Time index")
         add_panel_label(ax, panel_left[row])
@@ -193,7 +193,7 @@ def main(outdir: Path, seed: int, n: int, miss_frac: float) -> None:
         ax.set_ylim(0, 1.05)
         ax.set_xlim(0, n)
         if row == 0:
-            ax.legend(loc="upper right", fontsize=6)
+            ax.legend(loc="upper right", fontsize=10)
         if row == 2:
             ax.set_xlabel("Time index")
         ax.set_ylabel("Boundary prob.")

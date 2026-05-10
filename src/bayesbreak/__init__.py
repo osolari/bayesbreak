@@ -20,6 +20,12 @@ from typing import Any
 
 from ._version import __version__  # noqa: F401
 from .base import BayesBreakSegmenter
+from .diagnostics import (
+    DiagnosticCheck,
+    DiagnosticReport,
+    run_dp_diagnostics,
+    run_non_conjugate_diagnostics,
+)
 from .families import (
     BayesBreakBernoulli,
     BayesBreakBeta,
@@ -27,6 +33,7 @@ from .families import (
     BayesBreakBinomial,
     BayesBreakGaussian,
     BayesBreakLogisticNormal,
+    BayesBreakNegBin,
     BayesBreakPoisson,
 )
 from .groups import BayesBreakGroupedClassifier
@@ -35,6 +42,7 @@ from .multivariate import (
     IndependentMultivariateSegmenter,
     SharedBoundaryMultivariateSegmenter,
 )
+from .replicates import SharedBoundaryReplicatesSegmenter
 
 _FAMILY_REGISTRY = {
     ("gaussian", "normal"): BayesBreakGaussian,
@@ -49,6 +57,7 @@ _FAMILY_REGISTRY = {
         "logit-normal",
         "logit_normal",
     ): BayesBreakLogisticNormal,
+    ("negbin", "negative-binomial", "negative_binomial", "nb"): BayesBreakNegBin,
 }
 
 
@@ -86,10 +95,16 @@ __all__ = [
     "BayesBreakBetaObs",
     "BayesBreakBernoulli",
     "BayesBreakLogisticNormal",
+    "BayesBreakNegBin",
     "SharedBoundaryMultivariateSegmenter",
     "IndependentMultivariateSegmenter",
+    "SharedBoundaryReplicatesSegmenter",
     "BayesBreakGroupedClassifier",
     "BayesBreakMixtureClassifier",
+    "DiagnosticCheck",
+    "DiagnosticReport",
+    "run_dp_diagnostics",
+    "run_non_conjugate_diagnostics",
     "make_bayesbreak",
     "__version__",
 ]

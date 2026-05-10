@@ -55,9 +55,15 @@ def test_cgh_sample_weight_present():
     assert np.all(b.sample_weight > 0)
 
 
-def test_methylation_fallback_when_csv_missing(tmp_path):
+def test_methylation_returns_valid_bundle_when_csv_missing(tmp_path):
+    """A missing csv_path does not crash: the loader falls through to the real
+    methylKit mirror and, if that is also unreachable, to the simulated analog."""
+
     b = load_methylation(csv_path=tmp_path / "does_not_exist.csv")
-    assert b.is_simulated
+    assert isinstance(b, DatasetBundle)
+    assert b.y.ndim == 1
+    assert np.all((b.y > 0.0) & (b.y < 1.0))
+    assert b.source in {"downloaded", "simulated"}
 
 
 @pytest.mark.parametrize(

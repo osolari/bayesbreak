@@ -22,8 +22,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from _style import COLORS, add_panel_label, save_figure, setup_style  # noqa: E402
 
-from bayesbreak import BayesBreakSegmenter
+from bayesbreak import BayesBreakSegmenter, run_dp_diagnostics
 from bayesbreak.datasets import DatasetBundle
+from bayesbreak.experiments._placeholder import (
+    hash_array,
+    is_verified_mode,
+    overlay_placeholder_banner,
+    write_run_record,
+)
 from bayesbreak.prediction import posterior_predictive_logpdf
 
 
@@ -54,13 +60,26 @@ def make_realdata_figure(
     title: str,
     show_null_baseline: bool = True,
     extra_kwargs: dict[str, Any] | None = None,
+    verified: bool = False,
 ) -> None:
-    """Fit ``estimator`` on ``bundle`` and render the four-panel figure."""
+    """Fit ``estimator`` on ``bundle`` and render the four-panel figure.
+
+    Real-data figures default to **placeholder mode**: a watermark is
+    overlaid and the sidecar JSON records ``verified=False``. Set
+    ``verified=True`` (or ``BAYESBREAK_VERIFIED=1``) only when the author
+    has explicitly approved the finalized pipeline output (handoff §10).
+    Simulated-fallback bundles are *always* treated as placeholders.
+    """
 
     extra_kwargs = extra_kwargs or {}
     setup_style(font_scale=0.95)
 
     estimator.fit(bundle.X, bundle.y, sample_weight=bundle.sample_weight, **extra_kwargs)
+
+    # Verification policy: simulated source forces placeholder mode regardless
+    # of the flag. Otherwise, honour the explicit caller flag and the env var.
+    is_real = bundle.source == "downloaded"
+    is_verified = is_real and is_verified_mode(verified)
 
     n = bundle.y.size
     # Plot everything in index space so panels A and B share a clean axis.
@@ -107,7 +126,7 @@ def make_realdata_figure(
     y_min, y_max = float(np.nanmin(bundle.y)), float(np.nanmax(bundle.y))
     pad = 0.05 * (y_max - y_min if y_max > y_min else 1.0)
     axA.set_ylim(y_min - pad, y_max + pad)
-    axA.legend(loc="best", ncol=3, fontsize=7, frameon=False)
+    axA.legend(loc="best", ncol=3, fontsize=10, frameon=False)
     add_panel_label(axA, "A", title)
     plt.setp(axA.get_xticklabels(), visible=False)
 
@@ -141,7 +160,7 @@ def make_realdata_figure(
     axC.set_xlim(0.3, estimator.k_posterior_.size + 0.7)
     axC.set_xlabel("k")
     axC.set_ylabel(r"$P(k \mid y)$")
-    axC.legend(loc="best", fontsize=8, frameon=False)
+    axC.legend(loc="best", fontsize=10, frameon=False)
     add_panel_label(axC, "C")
 
     # ---- Panel D: cumulative held-out log-likelihood -------------------------
@@ -156,7 +175,36 @@ def make_realdata_figure(
     axD.set_xlim(0, n)
     axD.set_xlabel("index")
     axD.set_ylabel(r"$\sum_{t' \leq t}\log p(y_{t'}\mid \mathcal{M})$")
-    axD.legend(loc="best", fontsize=8, frameon=False)
+    axD.legend(loc="best", fontsize=10, frameon=False)
     add_panel_label(axD, "D")
 
+    if not is_verified:
+        overlay_placeholder_banner(fig, source=bundle.source)
+
     save_figure(fig, outdir / fig_name, formats=("png", "pdf"))
+
+    # Sidecar JSON: provenance + DP diagnostics + placeholder/verified flag.
+    diag = run_dp_diagnostics(estimator)
+    record_extra: dict[str, Any] = {
+        "source": bundle.source,
+        "description": bundle.description,
+        "y_hash": hash_array(bundle.y),
+        "sample_weight_hash": hash_array(bundle.sample_weight),
+        "n": int(bundle.y.shape[0]),
+        "k_map": int(estimator.k_map_),
+        "log_evidence": float(estimator.log_evidence_),
+        "map_boundaries": list(estimator.map_boundaries_),
+        "dp_diagnostics": diag.to_dict(),
+        "estimator": type(estimator).__name__,
+        "estimator_params": {
+            k: (v.tolist() if isinstance(v, np.ndarray) else (repr(v) if callable(v) else v))
+            for k, v in estimator.get_params().items()
+        },
+    }
+    write_run_record(
+        outdir / f"{fig_name}.pdf",
+        dataset=bundle.name,
+        source=bundle.source,
+        verified=is_verified,
+        extra=record_extra,
+    )

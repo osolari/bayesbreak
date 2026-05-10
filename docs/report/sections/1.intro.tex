@@ -11,7 +11,7 @@ naturally propagate uncertainty to downstream tasks such as denoising, regressio
 estimation, and prediction \citep{barry1992ppm, barry1993bayesCP, fearnhead2006exact,
   hutter2006bpcr}.
 
-For offline segmentation, exact Bayesian inference is possible whenever single-segment
+For offline segmentation, exact Bayesian inference applies whenever single-segment
 parameters can be integrated out and the partition prior factorizes appropriately. In that case,
 one can precompute block evidences for all candidate segments and then perform dynamic
 programming (DP) over contiguous partitions to obtain posterior quantities in polynomial time
@@ -32,11 +32,13 @@ exported to downstream decision pipelines.
 
 This paper develops \texttt{BayesBreak}, a unified framework for offline Bayesian segmentation
 that separates \emph{local block modeling} from \emph{global partition inference}. The framework is
-exact whenever block evidences are available in closed form and remains usable when they are
-replaced by controlled deterministic approximations. The central design principle is simple: if a
+exact whenever block evidences are available in closed form and extends to controlled deterministic
+approximations when the block integral lacks a closed form. The central design principle is simple: if a
 candidate segment $(i,j]$ can be summarized by sufficient statistics and assigned a block score
 $A^{(0)}_{ij}$ together with any required moment numerators, then the same DP machinery can be
 reused across observation models, design priors, and several structured extensions.
+
+The paper uses an explicit status convention. The conjugate-block and DP results are exact mathematical results under their hypotheses; non-conjugate results are exact for the approximate block scores and conditional on stated block-error controls; the synthetic experiments are completed archived validations; and the four real-data examples are planned empirical evaluations whose visible placeholder figures and tables are populated by the finalized pipelines.
 
 \paragraph{Contributions.}
 The main contributions are as follows.
@@ -55,7 +57,7 @@ max-sum/backtracking recursion rather than by maximizing boundary marginals inde
 
 \item \textbf{Irregular designs via design-aware partition priors.}
 Irregular spacing is handled at the partition-prior level through segment-length factors
-$g(x_{t_q}-x_{t_{q-1}})$. We make explicit that physical spacing and exposure weighting are
+$g(\Delta_x(t_{q-1},t_q))$, where $\Delta_x$ denotes the physical length between candidate boundary coordinates. We make explicit that physical spacing and exposure weighting are
 conceptually distinct: irregular designs do not, by themselves, force likelihood weights, but
 segment-length priors provide a principled way to encode design geometry.
 
@@ -65,19 +67,19 @@ given conditional independence across subjects conditional on the shared boundar
 level block evidences multiply and the pooled posterior remains exactly tractable under the same
 DP recursions. The same construction applies groupwise when memberships are known.
 
-\item \textbf{A latent-group template mixture with exact EM updates.}
+\item \textbf{A latent-group template mixture with exact coordinate updates.}
 For unknown group membership, we develop a mixture model in which each group carries a latent
 \emph{template segmentation}. Responsibilities are updated in the E-step, while the M-step solves
-an exact responsibility-weighted max-sum DP to update each group template. This yields a rigorous
-alternating optimization scheme without claiming exact Bayesian model averaging over latent-group
-segmentations.
+an exact responsibility-weighted max-sum DP to update each group template for the stated
+finite-template objective. This yields a rigorous alternating optimization scheme for the stated finite-template objective,
+distinct from full Bayesian model averaging over latent-group segmentations.
 
 \item \textbf{Approximate non-conjugate block routines with stability guarantees.}
 For non-conjugate GLM blocks we describe Laplace, variational (Jaakkola--Jordan and
 P\'olya--Gamma mean-field), EP, and one-dimensional quadrature approximations. We then show how a
-uniform block-level log-evidence error $\varepsilon$ (taken over all candidate blocks reachable by
-any $k$-segmentation with $k\le k_{\max}$) propagates through the DP to perturb global log-evidence
-and posterior odds in a controlled way.
+verified uniform block-level log-evidence error $\varepsilon$ (taken over all candidate blocks
+reachable by any $k$-segmentation with $k\le k_{\max}$) propagates through the DP to perturb global
+log-evidence and posterior odds in a controlled way.
 
 \item \textbf{A prediction layer for fitted segmenters.}
 We formalize posterior-predictive scoring for new pointwise sequences, set-valued units, and
@@ -147,40 +149,40 @@ covariate-aware random partitions and generalized cohesion functions, which are 
 to the design-aware partition priors used here \citep{muller2011ppmx, park2010gppm}.
 
 \paragraph{Positioning of BayesBreak.}
-BayesBreak is not intended to replace the full Bayesian richness of every model above. Rather, it
-occupies a modular middle ground: it retains exact offline DP for the core single-sequence and
+BayesBreak occupies a modular middle ground in this landscape: it retains exact offline DP for the core single-sequence and
 shared-boundary pooled settings, broadens the menu of admissible block models, clarifies how to
 incorporate irregular designs through the prior rather than through ad hoc weighting, and exports a
-prediction interface that is usually missing from segmentation papers. For latent groups, we are
-deliberately conservative: instead of claiming exact Bayesian inference over a mixture of
-segmentations, we formulate a template-mixture extension whose EM updates are exact for the stated
-objective.
+prediction interface that is usually missing from segmentation papers. For latent groups, BayesBreak
+uses a template-mixture extension whose EM updates are exact for the stated finite objective.
 
 \paragraph{Annotated review.}
 A compact annotated literature review, organized by methodological theme and relation to
 BayesBreak, is provided in Appendix~\ref{app:annotated-lit}.
 
 \begin{takeawaybox}
-\textbf{What BayesBreak claims, and what it does not.}
+\textbf{BayesBreak scope and guarantees.}
 \emph{Exactness:} given a conjugate exponential-family block and a segment-factorized partition
 prior, the DP delivers exact posteriors $p(k\mid y)$, exact boundary marginals
 $p(t_p=h\mid y,k)$, exact Bayes regression-curve moments conditional on $k$, and the exact joint
 MAP segmentation by max-sum backtracking.
-\emph{Monotone optimization:} for latent groups, EM updates are monotone for the template-mixture
-objective; the observed-data log-likelihood is non-decreasing across iterations.
-\emph{Stability:} for non-conjugate blocks, a uniform per-block log-evidence error $\varepsilon$
-perturbs segment-count and boundary posterior odds by at most $(k+k')\varepsilon$ and
+\emph{Monotone optimization:} for latent groups, EM updates are monotone for the stated finite
+template-mixture objective under the exact coordinate updates and tie-handling conventions in
+Section~\ref{sec:latent-em}.
+\emph{Stability:} for non-conjugate blocks, a verified uniform per-block log-evidence error
+$\varepsilon$ perturbs segment-count and boundary posterior odds by at most $(k+k')\varepsilon$ and
 $2k\varepsilon$ respectively.
-\emph{Not claimed:} exact fully Bayesian inference over latent-group segmentations; a universal
-end-to-end error bound on approximate segmentation when $\varepsilon$ is not small; global
-optimality of EM across restarts.
+\emph{Scope:} the framework provides exact fully Bayesian inference for the stated
+conjugate DP models, exact coordinate updates for the finite latent-template objective, and
+block-error-based stability guarantees for approximations. Latent-template optima are coordinatewise
+within each restart, and approximation guarantees rely on verified small block errors.
 \end{takeawaybox}
 
 \paragraph{Code and reproduction.}
 A reference implementation of BayesBreak, including the block routines, DP layer, and the
-reproduction pipelines for the four real-data illustrations, is available at
-\url{https://github.com/osolari/bayesbreak}. Installation, version pinning, and end-to-end
-commands are collected in Appendix~\ref{app:code}.
+reproduction pipelines for the four real-data case studies, is available at
+\url{https://github.com/osolari/bayesbreak}. Installation, version pinning, end-to-end commands,
+and the verification steps for populating the placeholder real-data outputs are collected in
+Appendix~\ref{app:code}.
 
 \paragraph{Paper organization.}
 Section~\ref{sec:problem} formalizes the inferential targets. Section~\ref{sec:notation}
@@ -196,7 +198,7 @@ Section~\ref{sec:nonconj} collects non-conjugate approximations and stability re
 Section~\ref{sec:prediction} formalizes prediction for new data.
 Section~\ref{sec:algorithms} collects implementation-centric pseudocode, complexity analysis, and
 numerical-stability notes complementing the DP theory.
-Section~\ref{sec:experiments} presents the available synthetic validation together with four
-minimal real-data illustrations (well-log geology, array-CGH copy number, equity-return
-volatility, and CpG-atlas methylation) and records the additional external experiments still needed
-for a larger benchmarking study. We conclude in Section~\ref{sec:conclusion}.
+Section~\ref{sec:experiments} presents the completed synthetic validation together with four
+planned real-data case studies (well-log geology, array-CGH copy number, equity-return
+volatility, and CpG-atlas methylation) whose figures and tables document the planned outputs, and
+records the additional external experiments for a larger benchmarking study. We conclude in Section~\ref{sec:conclusion}.

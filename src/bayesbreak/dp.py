@@ -1,18 +1,27 @@
 r"""Dynamic-programming recursions over contiguous partitions.
 
-This module hosts the distribution-agnostic segmentation engine. Given a
-triangular array of log block evidences ``log_block_evidence[i, j] = log A^0_{ij}``
-(as defined in the report, eq. :eq:`problem-block-evidence`), it computes:
+Given a triangular array of conjugate-block log evidences
+``log_block_evidence[i, j] = log A^0_{ij}`` (eq. ``problem-block-evidence``)
+this module computes:
 
-- the **sum-product** forward / backward tables (§4.3),
-- the **segment-count posterior** :math:`P(k\mid y)` (Prop. ``posterior-k``),
-- the **boundary-event marginal** :math:`P(b_i=1\mid y,k)` (§4.3),
-- the **joint MAP segmentation** via max-sum DP with backtracking (§4.4),
-- the **Bayesian regression curve** via the $O(n^2)$ difference-array trick.
+- the **sum-product** forward / backward tables (eq. ``LR``),
+- the **segment-count posterior** ``P(k|y)`` (eq. ``post-k``),
+- the **boundary marginal** ``P(t_p=h|y,k)`` (eq. ``boundary-post``),
+- the **boundary-event marginal** ``P(b_i=1|y,k)`` (eq. ``boundary-event``)
+  *conditional on a fixed segment count ``k``* — the calibration target,
+- the **joint MAP** segmentation via max-sum + backtracking (eq. ``joint-map-k``),
+- the **Bayesian regression curve** via the difference-array trick on the
+  per-block contributions ``F^{(r)}_{ij}(k)``.
 
-All recursions run in log-space for numerical stability. Distribution-specific
-code lives in :mod:`bayesbreak.families`; this module is deliberately unaware
-of the block model.
+A **design-aware partition prior** ``p(t|k) ∝ ∏_q g(Δ_x(t_{q-1}, t_q))`` is
+threaded uniformly through every recursion: callers supply the optional
+length-factor table ``log_g[i,j] = log g(Δ_x(i,j))``, the DP absorbs it into
+``Ã^{(0)}_{ij} := A^{(0)}_{ij} g(Δ_x(i,j))`` (eq. ``Atilde``), and the
+normalizer ``C_k = Σ_t ∏_q g(Δ_x(t_{q-1}, t_q))`` is computed by the same
+recursion with ``A ≡ 1`` (eq. ``Ck-general``). The index-uniform default
+(``g ≡ 1``) reduces to ``C_k = C(n-1, k-1)``.
+
+Every recursion runs in log space.
 """
 
 from __future__ import annotations
@@ -28,39 +37,100 @@ FloatArray = NDArray[np.floating]
 
 
 # -----------------------------------------------------------------------------
+# Length-prior helpers
+# -----------------------------------------------------------------------------
+
+
+def _resolve_log_g(log_g_table: FloatArray | None, n: int) -> FloatArray:
+    """Return the ``(n+1, n+1)`` ``log g(Δ)`` table, defaulting to zeros."""
+
+    if log_g_table is None:
+        return np.zeros((n + 1, n + 1), dtype=float)
+    arr = np.asarray(log_g_table, dtype=float)
+    if arr.shape != (n + 1, n + 1):
+        raise ValueError(f"log_g_table must have shape ({n+1}, {n+1}); got {arr.shape}.")
+    return arr
+
+
+def compute_log_C_k(log_g_table: FloatArray | None, n: int, k_max: int) -> FloatArray:
+    r"""Compute ``log C_k`` for ``k = 0, ..., k_max`` under a length-factor prior.
+
+    For ``g ≡ 1`` this returns ``[log binom(n-1, k-1)]``. For arbitrary ``log_g``
+    the recursion ``L^{(g)}_{k+1, j} = Σ_h L^{(g)}_{k, h} · g(Δ_x(h, j))`` is run
+    in log space; ``log C_k = log L^{(g)}_{k, n}`` (eq. ``Ck-general``).
+
+    Parameters
+    ----------
+    log_g_table : ndarray of shape (n+1, n+1) or None
+        Pairwise ``log g(Δ_x(i, j))``. ``None`` is the index-uniform shortcut.
+    n, k_max : int
+
+    Returns
+    -------
+    log_C_k : ndarray of shape (k_max + 1,)
+        ``log_C_k[0]`` is set to ``-inf`` (no admissible 0-segment partition);
+        ``log_C_k[k]`` is ``log C_k`` for ``k = 1, ..., k_max``.
+    """
+
+    log_C_k = np.full(k_max + 1, -np.inf, dtype=float)
+    if k_max < 1:
+        return log_C_k
+
+    if log_g_table is None:
+        for k in range(1, k_max + 1):
+            log_C_k[k] = log_binom(n - 1, k - 1)
+        return log_C_k
+
+    Lg = np.full((k_max + 1, n + 1), -np.inf, dtype=float)
+    Lg[0, 0] = 0.0
+    log_g = np.asarray(log_g_table, dtype=float)
+    for k in range(0, k_max):
+        for j in range(k + 1, n + 1):
+            h = np.arange(k, j)
+            terms = Lg[k, h] + log_g[h, j]
+            if terms.size:
+                Lg[k + 1, j] = float(logsumexp(terms))
+
+    for k in range(1, k_max + 1):
+        log_C_k[k] = float(Lg[k, n])
+    return log_C_k
+
+
+def _resolve_log_p_k(log_p_k: FloatArray | None, k_max: int) -> FloatArray:
+    """Default to a uniform ``p(k)`` over ``k = 1, ..., k_max``."""
+
+    if log_p_k is None:
+        return np.full(k_max + 1, -math.log(float(k_max)), dtype=float)
+    arr = np.asarray(log_p_k, dtype=float)
+    if arr.shape != (k_max + 1,):
+        # Tolerate a length-k_max array that omits the k=0 slot.
+        if arr.shape == (k_max,):
+            full = np.full(k_max + 1, -np.inf, dtype=float)
+            full[1:] = arr
+            return full
+        raise ValueError(f"log_p_k must have shape ({k_max+1},) or ({k_max},); got {arr.shape}.")
+    return arr
+
+
+# -----------------------------------------------------------------------------
 # Sum-product recursions
 # -----------------------------------------------------------------------------
 
 
 def forward_backward(
-    log_block_evidence: FloatArray, n: int, k_max: int
+    log_block_evidence: FloatArray,
+    n: int,
+    k_max: int,
+    *,
+    log_g_table: FloatArray | None = None,
 ) -> tuple[FloatArray, FloatArray]:
-    """Compute the forward (prefix) and backward (suffix) sum-product tables.
+    r"""Forward (prefix) and backward (suffix) sum-product tables.
 
-    Let ``la[i, j] = log A^0_{ij}`` for ``0 <= i < j <= n``. Then
+    With ``Ã^{(0)}_{ij} = A^{(0)}_{ij} g(Δ_x(i, j))`` (length factor absorbed),
 
     .. math::
-        L[k, j] = \\log\\sum_{t \\in \\mathcal{T}_{k, j}}
-                  \\prod_{q=1}^k A^0_{t_{q-1} t_q},
-        \\quad
-        R[k, i] = \\log\\sum_{t \\in \\mathcal{T}_{k, i}^{\\text{suf}}}
-                  \\prod_{q=1}^k A^0_{t_{q-1} t_q}.
-
-    Parameters
-    ----------
-    log_block_evidence : ndarray of shape (n+1, n+1)
-        Upper-triangular log block evidences ``la[i, j]`` (``-inf`` when ``i >= j``).
-    n : int
-        Sequence length.
-    k_max : int
-        Maximum number of segments.
-
-    Returns
-    -------
-    log_left : ndarray of shape (k_max+1, n+1)
-        Forward prefix table.
-    log_right : ndarray of shape (k_max+1, n+1)
-        Backward suffix table.
+        L̃[k, j] = \log\sum_{t \in \mathcal{T}_{k, j}} \prod_{q=1}^k Ã^{(0)}_{t_{q-1} t_q}, \qquad
+        R̃[k, i] = \log\sum_{t} \prod_{q=1}^k Ã^{(0)}_{t_{q-1} t_q}.
     """
 
     L = np.full((k_max + 1, n + 1), -np.inf, dtype=float)
@@ -68,10 +138,13 @@ def forward_backward(
     L[0, 0] = 0.0
     R[0, n] = 0.0
 
+    log_g = _resolve_log_g(log_g_table, n)
+    score = np.asarray(log_block_evidence, dtype=float) + log_g
+
     for k in range(0, k_max):
         for j in range(k + 1, n + 1):
             h = np.arange(k, j)
-            terms = L[k, h] + log_block_evidence[h, j]
+            terms = L[k, h] + score[h, j]
             L[k + 1, j] = float(logsumexp(terms)) if terms.size else -np.inf
 
     for k in range(0, k_max):
@@ -79,80 +152,99 @@ def forward_backward(
             if i > n - 1 - k:
                 continue
             h = np.arange(i + 1, n - k + 1)
-            terms = log_block_evidence[i, h] + R[k, h]
+            terms = score[i, h] + R[k, h]
             R[k + 1, i] = float(logsumexp(terms)) if terms.size else -np.inf
 
     return L, R
 
 
 def posterior_over_k(
-    log_left: FloatArray, n: int, k_max: int
+    log_left: FloatArray,
+    n: int,
+    k_max: int,
+    *,
+    log_C_k: FloatArray | None = None,
+    log_p_k: FloatArray | None = None,
+    log_g_table: FloatArray | None = None,
 ) -> tuple[FloatArray, FloatArray, float]:
-    """Compute ``log P(k|y)``, ``P(k|y)``, and ``log P(y)`` under a uniform prior.
+    r"""``log P(k|y)``, ``P(k|y)``, and ``log P(y)`` under an arbitrary ``p(k)``.
 
-    The combinatorial correction ``binom(n-1, k-1)`` is applied so that each
-    boundary vector in :math:`\\mathcal{T}_k` receives equal prior mass
-    (index-uniform partition prior).
-
-    Parameters
-    ----------
-    log_left : ndarray of shape (k_max+1, n+1)
-        Forward table from :func:`forward_backward`.
-    n : int
-        Sequence length.
-    k_max : int
-        Maximum segment count.
+    Implements eq. ``post-k``: ``P(k|y) ∝ p(k) · L̃_{k, n} / C_k``. Either pass
+    ``log_C_k`` directly (if pre-computed) or pass ``log_g_table`` and let this
+    routine compute ``log C_k`` via :func:`compute_log_C_k`.
 
     Returns
     -------
     log_posterior_k : ndarray of shape (k_max,)
-        ``log P(k|y)`` for ``k = 1, ..., k_max``.
     posterior_k : ndarray of shape (k_max,)
-        ``P(k|y)``.
     log_evidence : float
-        ``log P(y)``.
+        ``log P(y) = logsumexp_k(log p(k) + log P(y|k))``.
     """
 
+    if log_C_k is None:
+        log_C_k = compute_log_C_k(log_g_table, n, k_max)
+    log_C_k = np.asarray(log_C_k, dtype=float)
+    if log_C_k.shape != (k_max + 1,):
+        raise ValueError(f"log_C_k must have shape ({k_max+1},); got {log_C_k.shape}.")
+
+    log_p_k_full = _resolve_log_p_k(log_p_k, k_max)
+
     log_py_given_k = np.array(
-        [log_left[k, n] - log_binom(n - 1, k - 1) for k in range(1, k_max + 1)],
+        [log_left[k, n] - log_C_k[k] for k in range(1, k_max + 1)],
         dtype=float,
     )
-    log_prior = -math.log(float(k_max))
-    log_unnorm = log_py_given_k + log_prior
+    log_unnorm = log_py_given_k + log_p_k_full[1:]
     log_evidence = float(logsumexp(log_unnorm))
     log_posterior_k = log_unnorm - log_evidence
     posterior_k = np.exp(log_posterior_k)
     return log_posterior_k, posterior_k, log_evidence
 
 
-def boundary_event_marginals(
+def boundary_event_marginals_fixed_k(
+    log_left: FloatArray,
+    log_right: FloatArray,
+    n: int,
+    k: int,
+) -> FloatArray:
+    r"""``P(b_i = 1 | y, k) = Σ_{p=1}^{k-1} L̃[p, i] R̃[k-p, i] / L̃[k, n]``.
+
+    Eq. ``boundary-event``. Returns a length-``(n-1)`` vector indexed by
+    interior ``i = 1, ..., n-1``. This is the calibration target referenced
+    throughout §6.
+    """
+
+    out = np.zeros(n - 1, dtype=float)
+    if k <= 1:
+        return out
+    denom = float(log_left[k, n])
+    if not np.isfinite(denom):
+        return out
+    for i in range(1, n):
+        p = np.arange(1, k)
+        terms = log_left[p, i] + log_right[k - p, i] - denom
+        out[i - 1] = float(np.exp(logsumexp(terms)))
+    return out
+
+
+def boundary_event_marginals_marginalised(
     log_left: FloatArray,
     log_right: FloatArray,
     log_posterior_k: FloatArray,
     n: int,
     k_max: int,
 ) -> FloatArray:
-    """Compute per-index boundary-event marginals ``P(b_i=1 | y)``.
+    """``P(b_i = 1 | y) = Σ_k P(k|y) · P(b_i = 1 | y, k)``.
 
-    This is the calibration target ``d1`` in the report's §6.2: for each
-    interior index ``i``, the posterior probability that some boundary lies at
-    ``i``, marginalised over ``k`` with weights ``P(k|y)``.
-
-    Returns
-    -------
-    ndarray of shape (n-1,)
-        Element ``i-1`` is ``P(b_i = 1 | y)`` for ``i = 1, ..., n-1``.
+    Provided for completeness; the calibration target in §6 is the
+    fixed-``k`` version.
     """
 
-    w_k = np.exp(log_posterior_k)
     out = np.zeros(n - 1, dtype=float)
-    for i in range(1, n):
-        acc = 0.0
-        for k in range(2, k_max + 1):
-            p = np.arange(1, k)
-            terms = log_left[p, i] + log_right[k - p, i] - log_left[k, n]
-            acc += float(w_k[k - 1]) * float(np.exp(logsumexp(terms)))
-        out[i - 1] = acc
+    p_k = np.exp(log_posterior_k)
+    for k in range(2, k_max + 1):
+        if p_k[k - 1] <= 0:
+            continue
+        out += float(p_k[k - 1]) * boundary_event_marginals_fixed_k(log_left, log_right, n, k)
     return out
 
 
@@ -162,22 +254,7 @@ def boundary_location_posterior(
     n: int,
     k: int,
 ) -> FloatArray:
-    """Return ``P(t_p = h | y, k)`` for all boundaries ``p = 1, ..., k-1``.
-
-    Parameters
-    ----------
-    log_left, log_right : ndarray
-        Sum-product tables.
-    n : int
-        Sequence length.
-    k : int
-        Number of segments.
-
-    Returns
-    -------
-    ndarray of shape (k-1, n+1)
-        Row ``p-1`` gives ``P(t_p = h | y, k)`` for ``h = 0, ..., n``.
-    """
+    r"""``P(t_p = h | y, k)`` for all boundaries ``p = 1, ..., k - 1``."""
 
     out = np.zeros((max(k - 1, 0), n + 1), dtype=float)
     if k <= 1:
@@ -198,45 +275,38 @@ def max_sum_segmentation(
     log_block_evidence: FloatArray,
     k: int,
     *,
-    log_length_prior: FloatArray | None = None,
+    log_g_table: FloatArray | None = None,
 ) -> tuple[list[int], float]:
-    """Exact joint MAP boundary vector via max-sum DP with backtracking.
+    r"""Joint MAP boundary vector via max-sum DP + backtracking (§4.4).
 
-    This is distinct from :func:`boundary_event_marginals`: ``argmax_t p(t|y,k)``
-    is a *joint* optimum, whereas argmaxing the marginals independently may
-    yield an infeasible or suboptimal point estimate (see §4.4, Remark).
+    Distinct from :func:`boundary_event_marginals_fixed_k`: ``argmax_t p(t|y,k)``
+    is a *joint* optimum and is generally not equal to the vector of marginal
+    boundary modes.
 
     Parameters
     ----------
     log_block_evidence : ndarray of shape (n+1, n+1)
         ``la[i, j]`` from :func:`forward_backward`.
     k : int
-        Target number of segments.
-    log_length_prior : ndarray of shape (n+1, n+1), optional
-        Optional additive log-prior ``log g(x_j - x_i)`` on segment lengths. If
-        ``None``, the length prior is uniform.
+        Target segment count.
+    log_g_table : ndarray of shape (n+1, n+1), optional
+        Optional length-prior table (eq. ``Atilde``). Added to the score.
 
     Returns
     -------
     boundaries : list of int
-        MAP boundary vector ``(0, t_1, ..., t_{k-1}, n)``.
     log_joint : float
-        ``log p(t_MAP | y, k)`` up to the partition-prior normaliser.
-
-    Raises
-    ------
-    ValueError
-        If ``k < 1`` or ``k > n``.
     """
 
     la = np.asarray(log_block_evidence, dtype=float)
     if la.ndim != 2 or la.shape[0] != la.shape[1]:
-        raise ValueError("log_block_evidence must be a square (n+1, n+1) matrix.")
+        raise ValueError("log_block_evidence must be square (n+1, n+1).")
     n = la.shape[0] - 1
     if k < 1 or k > n:
         raise ValueError(f"k must satisfy 1 <= k <= {n}; got {k}.")
 
-    score = la if log_length_prior is None else la + np.asarray(log_length_prior, dtype=float)
+    log_g = _resolve_log_g(log_g_table, n)
+    score = la + log_g
 
     M = np.full((k + 1, n + 1), -np.inf, dtype=float)
     back = np.full((k + 1, n + 1), -1, dtype=int)
@@ -249,9 +319,7 @@ def max_sum_segmentation(
             if upper < lower:
                 continue
             h_range = np.arange(lower, upper + 1)
-            prev = M[q - 1, h_range]
-            step = score[h_range, j]
-            candidate = prev + step
+            candidate = M[q - 1, h_range] + score[h_range, j]
             if candidate.size == 0:
                 continue
             best_idx = int(np.argmax(candidate))
@@ -276,11 +344,10 @@ def max_sum_segmentation(
 
 
 def marginal_boundary_modes(d1: FloatArray, k_hat: int, n: int) -> list[int]:
-    """Select interior boundaries by top-``k_hat - 1`` marginal scores.
+    """Top-``k_hat - 1`` marginal boundary positions (diagnostic only).
 
-    This returns the **marginal** boundary summary, *not* the joint MAP. Kept
-    available as an explicit (and distinct) option; see
-    :func:`max_sum_segmentation` for the exact joint optimum.
+    This is the *marginal* boundary summary; see :func:`max_sum_segmentation`
+    for the joint MAP optimum.
     """
 
     if k_hat <= 1:
@@ -293,7 +360,7 @@ def marginal_boundary_modes(d1: FloatArray, k_hat: int, n: int) -> list[int]:
 
 
 # -----------------------------------------------------------------------------
-# Bayesian regression curve (expectation of the latent signal)
+# Bayesian regression curve
 # -----------------------------------------------------------------------------
 
 
@@ -304,26 +371,35 @@ def bayes_regression_curve_fixed_k(
     block_first_moment: FloatArray,
     n: int,
     k: int,
+    *,
+    log_g_table: FloatArray | None = None,
 ) -> FloatArray:
-    r"""Posterior-expected latent signal conditional on ``k`` segments.
+    r"""Posterior-expected latent signal conditional on ``k`` segments (eq. ``segmom``).
 
-    Uses the difference-array trick to accumulate per-block contributions in
-    :math:`O(n^2)`.
+    The length factor ``g(Δ)`` cancels in segment-wise posterior moments
+    (Eq. ``segmom-seg``) but does *not* cancel in the curve, where the weight
+    of each candidate segmentation depends on ``g``. We therefore form
+    ``Ã^{(0)} = A^{(0)} · g`` for the segmentation weights and use the *raw*
+    ``A^{(1)}`` for the moment numerator (the ``g`` cancels segment-wise).
     """
 
     denom = float(log_left[k, n])
     if not np.isfinite(denom):
         return np.full(n, np.nan, dtype=float)
 
+    log_g = _resolve_log_g(log_g_table, n)
+    la = np.asarray(log_block_evidence, dtype=float)
+    la_tilde = la + log_g
+
     diff = np.zeros(n + 1, dtype=float)
     for i in range(0, n):
         Li = log_left[0:k, i]
         for j in range(i + 1, n + 1):
             Rj = log_right[k - 1 :: -1, j]
-            la = float(log_block_evidence[i, j])
-            if not np.isfinite(la):
+            la_t = float(la_tilde[i, j])
+            if not np.isfinite(la_t):
                 continue
-            log_pseg = float(logsumexp(Li + Rj) + la - denom)
+            log_pseg = float(logsumexp(Li + Rj) + la_t - denom)
             if log_pseg < -745.0:
                 continue
             w = math.exp(log_pseg)
@@ -331,7 +407,10 @@ def bayes_regression_curve_fixed_k(
             a = float(block_first_moment[i, j])
             if a == 0.0 or not np.isfinite(a):
                 continue
-            log_abs_mu = math.log(abs(a)) - la
+            la_raw = float(la[i, j])
+            if not np.isfinite(la_raw):
+                continue
+            log_abs_mu = math.log(abs(a)) - la_raw
             if log_abs_mu < -745.0:
                 continue
             if log_abs_mu > 709.0:
@@ -356,8 +435,10 @@ def bayes_regression_curve_mixed_k(
     n: int,
     k_max: int,
     posterior_k: FloatArray,
+    *,
+    log_g_table: FloatArray | None = None,
 ) -> FloatArray:
-    """Posterior-expected latent signal mixed over ``k`` with weights ``posterior_k``."""
+    """``Σ_k P(k|y) · E[μ_t | y, k]`` (eq. discussed after ``segmom``)."""
 
     out = np.zeros(n, dtype=float)
     for k in range(1, k_max + 1):
@@ -365,6 +446,12 @@ def bayes_regression_curve_mixed_k(
         if w == 0.0 or not np.isfinite(log_left[k, n]):
             continue
         out += w * bayes_regression_curve_fixed_k(
-            log_left, log_right, log_block_evidence, block_first_moment, n, k
+            log_left,
+            log_right,
+            log_block_evidence,
+            block_first_moment,
+            n,
+            k,
+            log_g_table=log_g_table,
         )
     return out

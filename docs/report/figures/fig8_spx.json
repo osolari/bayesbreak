@@ -1,0 +1,98 @@
+{
+  "dataset": "spx",
+  "source": "downloaded",
+  "verified": false,
+  "ran_at": 1778392064.662344,
+  "figure_path": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig8_spx.pdf",
+  "description": "^GSPC daily log-squared returns (2015-01-01 \u2192 2023-12-31, n=2263).",
+  "y_hash": "bc8bfdbe7c1888985a1642687bf034062d76b82d247a5413342907510298e1b9",
+  "sample_weight_hash": "",
+  "n": 566,
+  "k_map": 29,
+  "log_evidence": -1296.6537252802884,
+  "map_boundaries": [
+    0,
+    30,
+    34,
+    115,
+    191,
+    201,
+    240,
+    244,
+    288,
+    293,
+    297,
+    312,
+    314,
+    323,
+    343,
+    373,
+    380,
+    384,
+    387,
+    397,
+    422,
+    435,
+    497,
+    500,
+    520,
+    523,
+    550,
+    551,
+    558,
+    566
+  ],
+  "dp_diagnostics": {
+    "estimator_class": "BayesBreakGaussian",
+    "n": 566,
+    "k_max": 50,
+    "k_map": 29,
+    "passed": true,
+    "summary": "4/4 checks passed",
+    "checks": [
+      {
+        "name": "posterior_k_normalised",
+        "passed": true,
+        "detail": "|\u03a3 P(k|y) \u2212 1| = 9.492e-14",
+        "measured": 0.9999999999999051,
+        "tolerance": 1e-07
+      },
+      {
+        "name": "forward_backward_agreement",
+        "passed": true,
+        "detail": "|L\u0303[29,n] \u2212 R\u0303[29,0]| = 0.000e+00",
+        "measured": 0.0,
+        "tolerance": 1e-06
+      },
+      {
+        "name": "boundary_event_sum",
+        "passed": true,
+        "detail": "\u03a3 P(b_i=1|y,k_map) = 28.000000, expected 28",
+        "measured": 1.6555645743210334e-12,
+        "tolerance": 1e-06
+      },
+      {
+        "name": "map_backtrack_consistent",
+        "passed": true,
+        "detail": "|backtrack \u2212 stored| = 0.000e+00",
+        "measured": 0.0,
+        "tolerance": 1e-06
+      }
+    ],
+    "extra": {},
+    "created_at": 1778392064.66221
+  },
+  "estimator": "BayesBreakGaussian",
+  "estimator_params": {
+    "boundary_coordinates": null,
+    "estimate_hyper": true,
+    "k_max": 50,
+    "length_prior": null,
+    "nu": null,
+    "prior_k": null,
+    "regression_curve": "mix_k",
+    "rho2": null,
+    "rho_estimation": "cov",
+    "sigma2": null
+  }
+}

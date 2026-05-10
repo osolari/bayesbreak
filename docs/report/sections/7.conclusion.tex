@@ -4,34 +4,33 @@
 BayesBreak is organized around a simple but powerful decomposition: local block integrals capture
 all model-specific work, while a global dynamic program handles posterior inference over contiguous
 partitions. That decomposition yields exact offline Bayesian segmentation whenever block evidences
-are available in closed form, and it remains useful when those block evidences are replaced by
-controlled deterministic approximations. Within that framework we obtained exact posterior
+are available in closed form, and it extends directly to controlled deterministic approximations
+when closed-form block integration is unavailable. Within that framework we obtained exact posterior
 quantities for segment counts, boundary marginals, and Bayes regression curves; clarified the
 necessary distinction between those posterior summaries and an exported joint MAP segmentation;
 showed how irregular designs are most naturally handled through design-aware partition priors;
 and preserved exactness for pooled shared-boundary analyses across replicates.
 
-For unknown groups, we advocated a deliberately precise latent-template mixture rather than an
-overstated ``fully Bayesian'' grouped segmentation claim. In that formulation the EM updates are
-monotone in the generalized-EM sense of \citet{dempster1977em}: responsibilities are exact for
+For unknown groups, we introduced a latent-template mixture with an explicit finite objective. In that formulation the EM updates are
+monotone for the stated template-mixture objective in the generalized-EM sense of \citet{dempster1977em}: responsibilities are exact for
 the current templates, each template update is an exact responsibility-weighted max-sum
-segmentation problem, and the observed-data log-likelihood does not decrease across iterations
-(Theorem~\ref{thm:em-monotone}). We make no claim of global optimality across EM restarts. For
-non-conjugate blocks, we also made clear what can and cannot be guaranteed. The DP layer
-survives unchanged, but approximation theory is most naturally stated in terms of block-evidence
+segmentation problem, and the finite-mixture objective does not decrease across iterations
+(Theorem~\ref{thm:em-monotone}). The result is a coordinatewise optimum for the selected restart, with standard multi-restart practice handling nonconvexity. For
+non-conjugate blocks, the DP layer
+is unchanged, and approximation theory is stated in terms of block-evidence
 accuracy and induced posterior-odds stability (Proposition~\ref{prop:stability},
 Corollary~\ref{cor:ranking}), not in terms of universal end-to-end segmentation guarantees.
 
-Empirically, the archived project supports a coherent synthetic validation suite showing posterior
+Empirically, the archived project provides a coherent synthetic validation suite showing posterior
 boundary recovery, family portability, calibration behavior, latent-group separation, local
 approximation trade-offs, and runtime scaling (Section~\ref{sec:experiments}). That suite is
-augmented by four minimal real-data illustrations (well-log geology, array-CGH copy number, S\&P
-500 volatility regimes, and CpG-atlas methylation; see Sections~\ref{sec:realdata-welllog}--%
-\ref{sec:realdata-methylation} and reproduction pipelines in Appendix~\ref{app:real-data}), each
-chosen to exercise a different part of the framework. The remaining step toward a fully
-submission-ready empirical story is broader external benchmarking against strong Bayesian and
-frequentist baselines and ablations of the partition prior $p(k)$ and length factor $g$, which
-we have itemized at the end of Section~\ref{sec:experiments}. The value of the present paper is
+accompanied by four planned real-data case studies with visible placeholders (well-log geology, array-CGH
+copy number, S\&P 500 volatility regimes, and CpG-atlas methylation; see
+Sections~\ref{sec:realdata-welllog}--\ref{sec:realdata-methylation} and reproduction pipelines in
+Appendix~\ref{app:real-data}), each chosen to exercise a different part of the framework. The planned empirical extension
+populates those placeholders with verified outputs, adds broader external benchmarking against
+strong Bayesian and frequentist baselines, and includes ablations of the partition prior $p(k)$ and
+length factor $g$, as itemized at the end of Section~\ref{sec:experiments}. The value of the present paper is
 that those additions can now be made without changing the inferential core: once a new block
 model is specified, the rest of the BayesBreak machinery is already in place. An annotated
 literature review covering related work in Bayesian changepoint detection, product partition

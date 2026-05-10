@@ -37,7 +37,6 @@
 \definecolor{MyGreen}{rgb}{0.13, 0.55, 0.13}
 
 \newtcolorbox{AIbox}[2][]{aibox,title=#2,#1}
-% Unused macros removed (D-M1).
 
 \definecolor{rliableolive}{HTML}{BBCC33}
 \definecolor{rliableblue}{HTML}{77AADD}
@@ -93,8 +92,6 @@
 \metadata[Author emails]{\email{omid.solari@saimai.com}}
 % \metadata[Date]{\today}
 
-% Reviewer/debug macros removed (D-E1).
-
 \input{sections/0-abstract}
 
 \begin{document}
@@ -109,20 +106,13 @@
 \input{sections/2.problem}
 \input{sections/3.setup}
 \input{sections/4.method}
-% Section~\ref{sec:algorithms} provides implementation-centric pseudocode,
-% complexity analysis, and numerical-stability notes complementing the DP theory.
 \input{sections/5.algorithms}
 \input{sections/6.evaluation}
 \input{sections/7.conclusion}
 
-% ----------------------------------------------------------------------------
-% Appendices (journal-style: full derivations, complementary proofs, extensions)
-% ----------------------------------------------------------------------------
-
-
 \newpage
-\bibliography{reference/cite}
 \bibliographystyle{plainnat}
+\bibliography{reference/cite}
 
 \newpage
 \appendix

@@ -5,6 +5,13 @@ This section fixes notation used throughout the paper. We use lower-case Roman l
 indices, reserve $t=(t_0,\dots,t_k)$ for boundary vectors, and adopt the half-open block notation
 $(i,j]:=\{i+1,\dots,j\}$ for $0\le i<j\le n$.
 
+For irregular designs, physical segment lengths are defined using candidate boundary coordinates
+$u_0<u_1<\cdots<u_n$ rather than by implicitly referencing an undefined observation location
+$x_0$. The physical length of block $(i,j]$ is
+$\Delta_x(i,j):=u_j-u_i$. On a regular index grid set $u_i=i$; for interval data the
+$u_i$ are the observed interval endpoints. Point observations without meaningful physical interval
+endpoints use the index-uniform prior or provide an external left endpoint $u_0$.
+
 \paragraph{Conjugate-prior normalization convention.}
 For exponential-family blocks we use the following (Diaconis--Ylvisaker) convention for the
 conjugate prior normalizer. For hyperparameters $(\alpha,\beta)$,
@@ -26,6 +33,8 @@ and Appendix~\ref{app:conjugate}).
 \midrule
 $n$ & Number of observations on the ordered design. \\
 $x_i$ & Design point / location of observation $y_i$. \\
+$u_i$ & Candidate boundary coordinate used for physical segment lengths, with $u_0<\cdots<u_n$. \\
+$\Delta_x(i,j)$ & Physical length of block $(i,j]$, defined as $u_j-u_i$. \\
 $y_i$ & Observation at location $x_i$ (single-sequence case). \\
 $w_i$ & Deterministic exposure, trial-count, or precision weight when required by the observation model. Unless otherwise stated, point-observation models use $w_i\equiv 1$. \\
 \midrule
@@ -45,6 +54,7 @@ $W_{ij}$ & Block exposure/weight sum $\sum_{t=i+1}^j w_t$. \\
 $H_{ij}$ & Block base-measure sum $\sum_{t=i+1}^j \log h(y_t,w_t)$. \\
 $A^{(0)}_{ij}$ & Block evidence on $(i,j]$. \\
 $A^{(r)}_{ij}$ & Block moment numerator $A^{(0)}_{ij}\,\mathbb{E}[m(\theta)^r\mid y_{i+1:j}]$ (for integer $r\in\{1,2,\dots\}$; conjugate-case definition). In the non-conjugate Laplace discussion of Section~\ref{sec:nonconj}, the superscript is a test function rather than a moment order; those objects are denoted $M^{[g]}_{ij}$ to avoid collision. \\
+$\widetilde A^{(r)}_{ij}$ & Length-prior-adjusted block quantity $A^{(r)}_{ij}g(\Delta_x(i,j))$. \\
 \midrule
 $L_{k,j}$ & Prefix evidence for $y_{1:j}$ with exactly $k$ segments. \\
 $R_{k,i}$ & Suffix evidence for $y_{i+1:n}$ with exactly $k$ segments. \\
@@ -74,7 +84,7 @@ spacing is usually encoded through the partition prior (see Section~\ref{sec:irr
 $w_i$ belongs inside the likelihood only when the observation model itself supplies exposures or
 known precisions.
 Second, \emph{boundary marginals} and the \emph{joint MAP segmentation} are different summaries of
-the posterior (Section~\ref{sec:dp}). BayesBreak computes both, but they should not be conflated.
+the posterior (Section~\ref{sec:dp}). BayesBreak computes both, and they must not be conflated.
 
 \section{Problem setup and Bayesian segmentation model}
 \label{sec:setup}
@@ -121,13 +131,13 @@ vectors $t$.
 Two cases are especially important.
 \begin{itemize}
 \item \textbf{Index-uniform prior.}
-For regularly spaced or index-based segmentation, one may use
+For regularly spaced or index-based segmentation, use
 $p(t\mid k)=\binom{n-1}{k-1}^{-1}$, uniform over all ordered $(k-1)$-subsets of
 $\{1,\dots,n-1\}$.
 
 \item \textbf{Design-aware prior.}
-For irregular designs, let $\Delta x_q=x_{t_q}-x_{t_{q-1}}$ be the physical length of segment
-$q$. We consider priors of the form
+For irregular designs, let $\Delta x_q=\Delta_x(t_{q-1},t_q)$ be the physical length of segment
+$q$ under the boundary-coordinate convention above. We consider priors of the form
 \begin{equation}
 p(t\mid k) \propto \prod_{q=1}^k g(\Delta x_q),
 \label{eq:lengthprior}
@@ -139,18 +149,19 @@ assumptions.
 
 The normalizing constant hidden in \eqref{eq:lengthprior} is
 \begin{equation}
-C_k := \sum_{0=t_0<t_1<\cdots<t_k=n} \prod_{q=1}^k g\bigl(x_{t_q}-x_{t_{q-1}}\bigr),
+C_k := \sum_{0=t_0<t_1<\cdots<t_k=n} \prod_{q=1}^k g\bigl(\Delta_x(t_{q-1},t_q)\bigr),
 \label{eq:Ck-setup}
 \end{equation}
 so that $p(t\mid k)=C_k^{-1}\prod_q g(\Delta x_q)$. In the index-uniform case, $g\equiv 1$ and
 $C_k=\binom{n-1}{k-1}$.
 
 \paragraph{Hazard interpretation.}
-When $g(m)\propto (1-\rho)^{m-1}$ on an index-uniform grid, the implied segment-length prior is
-the geometric distribution associated with a constant boundary hazard $\rho\in(0,1)$. More
-generally, one can view $g$ as the unnormalized length law of a renewal process on the ordered
-design. This viewpoint is useful for designing physically meaningful priors without changing the
-DP machinery.
+When an unconditioned renewal process on an index grid has iid geometric lengths with hazard
+$\rho\in(0,1)$, its unnormalized segment-length factor is proportional to
+$(1-\rho)^{m-1}$. After conditioning on a fixed segment count and endpoint, these factors often
+become constant over all admissible partitions, especially on a regular grid. More generally, $g$ functions here as a product-partition cohesion on physical block lengths;
+renewal-process language supplies the corresponding process interpretation when the endpoint and
+conditioning conventions are explicit.
 
 \begin{assumption}[Factorizing partition prior]
 \label{ass:factorizing-prior}
@@ -165,7 +176,10 @@ cohesion functions that remain multiplicative over segments.
 
 Assumption~\ref{ass:factorizing-prior} is the key structural condition enabling exact dynamic
 programming. The admissibility condition $C_k\in(0,\infty)$ is automatic for $g\equiv 1$ (giving
-$C_k=\binom{n-1}{k-1}$) and holds for renewal priors whenever $g$ is strictly positive on the
-integer segment-length range admitted by the design.
+$C_k=\binom{n-1}{k-1}$) and holds whenever the finite set of admissible blocks has at least one
+positive-weight $k$-segmentation and all included block weights are finite. Blocks excluded by
+minimum length, missingness rules, or impossible likelihood constraints are represented by
+$g(\Delta_x(i,j))=0$ or by a block log-score of $-\infty$, both of which remain compatible with
+the DP recursions.
 
 A renewal-process view of this class of priors is developed in Appendix~\ref{app:renewal}.

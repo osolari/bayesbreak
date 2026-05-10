@@ -122,8 +122,8 @@ class SharedBoundaryMultivariateSegmenter(BaseEstimator, RegressorMixin):
 
         valid = np.arange(1, k_max + 1)[np.isfinite(log_post_k)]
         self.k_map_ = int(valid[int(np.argmax(log_post_k[valid - 1]))])
-        self.boundary_marginals_ = _dp.boundary_event_marginals(
-            log_left, log_right, log_post_k, n, k_max
+        self.boundary_marginals_ = _dp.boundary_event_marginals_fixed_k(
+            log_left, log_right, n, self.k_map_
         )
         map_boundaries, _log_joint = _dp.max_sum_segmentation(lA0_joint, self.k_map_)
         self.map_boundaries_ = list(map_boundaries)

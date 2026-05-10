@@ -70,7 +70,9 @@ from pathlib import Path
 import matplotlib.pyplot as plt
 import numpy as np
 
-sys.path.insert(0, str(Path(__file__).parents[2] / "src"))
+_ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(_ROOT / "src"))
+sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
 from _style import COLORS, add_panel_label, save_figure, setup_style  # noqa: E402
 
@@ -160,7 +162,6 @@ def make_figure(outdir: Path):
             k_max=10,
             max_iter=100,
             tol=1e-8,
-            regression_curve="none",
             random_state=seed,
         ).fit(np.arange(len(ys)).reshape(-1, 1), ys)
 
@@ -192,6 +193,11 @@ def make_figure(outdir: Path):
 
     # Get group boundaries
     gs0, gs1 = mix.group_states_
+    # Adapt to the new template-mixture API: ``boundary_post`` is now exposed
+    # via ``mix.get_group_boundary_marginals(g)`` (length n - 1), the pooled
+    # boundary set is ``gs.template[1:-1]``, and the segment count is ``gs.k_g``.
+    bm0 = mix.get_group_boundary_marginals(0)
+    bm1 = mix.get_group_boundary_marginals(1)
 
     # Create figure - larger for 6 panels
     fig, axes = plt.subplots(2, 3, figsize=(10, 6), layout=None)  # Disable constrained_layout
@@ -215,7 +221,7 @@ def make_figure(outdir: Path):
 
     ax.set_xlabel("Time")
     ax.set_ylabel("Value")
-    ax.legend(loc="lower right", fontsize=6)
+    ax.legend(loc="lower right", fontsize=10)
     ax.set_xlim(0, n)
     add_panel_label(ax, "A", "Example sequences")
 
@@ -275,36 +281,28 @@ def make_figure(outdir: Path):
     # ---------- Panel D: Boundary posterior for group A ----------
     ax = axes[1, 0]
 
-    d1_A = gs0.boundary_post
-    n_plot = len(d1_A) - 1  # n from the boundary posterior
-    ax.bar(np.arange(1, n_plot), d1_A[1:n_plot], width=1, color=COLORS["blue"], alpha=0.7)
-
-    # Mark true boundaries
+    n_plot = bm0.size  # = n - 1
+    ax.bar(np.arange(1, n_plot + 1), bm0, width=1, color=COLORS["blue"], alpha=0.7)
     for b in bounds_A[1:-1]:
         ax.axvline(b, color="black", lw=1.5, ls="--")
-
     ax.set_xlabel("Position")
     ax.set_ylabel("Posterior probability")
     ax.set_xlim(0, n)
     ax.set_ylim(0, 1)
-    add_panel_label(ax, "D", f"Group A boundaries (k={gs0.k_ml})")
+    add_panel_label(ax, "D", f"Group A boundaries (k={gs0.k_g})")
 
     # ---------- Panel E: Boundary posterior for group B ----------
     ax = axes[1, 1]
 
-    d1_B = gs1.boundary_post
-    n_plot = len(d1_B) - 1
-    ax.bar(np.arange(1, n_plot), d1_B[1:n_plot], width=1, color=COLORS["red"], alpha=0.7)
-
-    # Mark true boundaries
+    n_plot = bm1.size
+    ax.bar(np.arange(1, n_plot + 1), bm1, width=1, color=COLORS["red"], alpha=0.7)
     for b in bounds_B[1:-1]:
         ax.axvline(b, color="black", lw=1.5, ls="--")
-
     ax.set_xlabel("Position")
     ax.set_ylabel("Posterior probability")
     ax.set_xlim(0, n)
     ax.set_ylim(0, 1)
-    add_panel_label(ax, "E", f"Group B boundaries (k={gs1.k_ml})")
+    add_panel_label(ax, "E", f"Group B boundaries (k={gs1.k_g})")
 
     # ---------- Panel F: Pooling benefit ----------
     ax = axes[1, 2]
@@ -314,8 +312,8 @@ def make_figure(outdir: Path):
     individual_boundary_errors = {"A": [], "B": []}
     pooled_boundary_errors = {"A": [], "B": []}
 
-    pooled_bounds_A = gs0.boundaries[1:-1]  # interior boundaries
-    pooled_bounds_B = gs1.boundaries[1:-1]
+    pooled_bounds_A = gs0.template[1:-1]  # interior boundaries
+    pooled_bounds_B = gs1.template[1:-1]
 
     for y_obs, true_label in zip(ys, y_true, strict=False):
         # Fit independently
@@ -360,7 +358,7 @@ def make_figure(outdir: Path):
         Patch(facecolor=COLORS["blue"], label="Pooled (Group A)"),
         Patch(facecolor=COLORS["red"], label="Pooled (Group B)"),
     ]
-    ax.legend(handles=legend_elements, loc="upper right", fontsize=6)
+    ax.legend(handles=legend_elements, loc="upper right", fontsize=10)
 
     add_panel_label(ax, "F", "Pooling reduces boundary error")
 

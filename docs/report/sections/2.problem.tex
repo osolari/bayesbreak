@@ -6,11 +6,13 @@ fundamental unknown is a contiguous partition of the index set $\{1,\dots,n\}$ t
 segment parameter attached to each block. This section states the objects of interest in a
 model-agnostic way; Section~\ref{sec:notation} introduces the detailed notation used later.
 
+Unless stated otherwise, the standing assumptions are: observations are ordered on a fixed set of candidate boundary locations; the admissible segment-count set is finite; block evidences are finite and positive on admissible blocks and are represented as zero or $-\infty$ on inadmissible blocks; segment parameters are conditionally independent across blocks given a segmentation; and the conditional partition prior factorizes over segments as stated in Assumption~\ref{ass:factorizing-prior}.
+
 \subsection{Single-sequence segmentation and Bayes regression}
 \label{sec:problem-single}
 
 We observe ordered pairs $\{(x_i,y_i)\}_{i=1}^n$ with strictly increasing design points
-$x_1<\cdots<x_n$. The design may be irregular. When the observation model includes known
+$x_1<\cdots<x_n$. The design can be irregular. When the observation model includes known
 exposures, trial counts, or precision weights, we also allow deterministic nonnegative quantities
 $w_i$; unless explicitly stated otherwise, point-observation models use $w_i\equiv 1$.
 
@@ -30,7 +32,7 @@ p(y_{1:n}\mid k,t,\theta_{1:k})
 \label{eq:problem-lik}
 \end{equation}
 where $p(y_i\mid\theta_q,w_i)$ is interpreted according to the chosen family. For example,
-$w_i$ may encode exposure in Poisson models, trial count in Binomial models, or known precision
+depending on the family, $w_i$ encodes exposure in Poisson models, trial count in Binomial models, or known precision
 in Gaussian models. Irregular spacing by itself does not force a non-unit $w_i$; design geometry
 can instead enter through the partition prior.
 
@@ -88,9 +90,9 @@ The inferential targets are:
       \in \arg\max_{t\in\mathcal{T}_k} p(t\mid y_{1:n},k),
     \end{equation}
     from \emph{marginal} boundary summaries such as
-    $\arg\max_h p(t_p=h\mid y_{1:n},k)$. These are not generally the same object and should not
-    be conflated. The two MAP objectives under $p(t\mid y,k)$ and under $p(k)\,p(t\mid y,k)$
-    differ only by the $k$-selection offset $\log p(k)-\log C_k$, which enters only when we also
+    $\arg\max_h p(t_p=h\mid y_{1:n},k)$. These are not generally the same object and must not
+    be conflated. The fixed-$k$ MAP objective uses the same length-absorbed block scores as the sum-product DP.
+    Count-prior and normalizer offsets such as $\log p(k)-\log C_k$ enter only when we also
     optimize over $k$.
 \end{enumerate}
 
@@ -117,14 +119,14 @@ segmentation, while sequences within a group share that segmentation and retain 
 segment parameters.
 
 \paragraph{Latent groups.}
-Group labels are unknown. In the fully Bayesian formulation one would average over both
-assignments and group-specific segmentations. In this report we instead adopt a more tractable
+Group labels are unknown. A fully Bayesian formulation averages over both
+assignments and group-specific segmentations. BayesBreak adopts a tractable
 \emph{template-mixture} formulation: each group is associated with a single latent boundary
 template, and EM alternates between soft assignments (exact responsibilities for the current
 templates) and exact responsibility-weighted max-sum DP updates of those templates. The
-observed-data log-likelihood is monotone non-decreasing under these updates in the generalized-EM
-sense (Theorem~\ref{thm:em-monotone}); we do not claim exact Bayesian averaging over latent-group
-segmentations.
+finite-template objective is monotone non-decreasing under the exact coordinate updates
+(Theorem~\ref{thm:em-monotone}); this is a finite-template optimization model rather than exact Bayesian
+averaging over latent-group segmentations.
 
 \subsection{Computational scope}
 \label{sec:problem-computation}
@@ -151,5 +153,6 @@ $(X^{\mathrm{new}},y^{\mathrm{new}})$, the relevant quantities are (i) group-con
 posterior-predictive likelihoods $p(y^{\mathrm{new}}\mid \mathcal{M}_g)$, (ii) group membership
 posteriors $p(g\mid y^{\mathrm{new}})$, and (iii) signal predictions
 $\widehat f^{\mathrm{MAP}}_g(x^\star)$ or $\widehat f^{\mathrm{Bayes}}_g(x^\star)$ at query
-points $x^\star$. Section~\ref{sec:prediction} develops the prediction layer in detail, covering
-pointwise, set-valued, and vector-valued new data.
+points $x^\star$. Section~\ref{sec:prediction} develops the prediction layer in detail, covering pointwise,
+set-valued, and vector-valued new data, and separates exported-segmentation scoring from optional
+full resegmentation of new data.
