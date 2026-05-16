@@ -1,5 +1,21 @@
 r"""Dynamic-programming recursions over contiguous partitions.
 
+The recursions in this module are algebraically exact for whatever
+admissible block-score matrix is supplied to them. They have the literal
+Bayesian interpretation for the data-generating model only when the
+supplied entries are the true marginal likelihoods (eq. ``A0``) under a
+product-partition prior of the form fixed in §``sec:setup``; with surrogate
+non-conjugate block scores, the recursions return exact summaries of the
+surrogate model and the approximation must be assessed separately through
+Proposition ``prop:stability`` and the per-routine uniform-error bounds
+``prop:uniform-bounds`` (under Assumption ``ass:uniform-block-error``).
+
+Callers must satisfy a simple contract: block routines return finite
+``log A^{(0)}_{ij}`` on every admissible block and the sentinel ``-inf`` on
+every inadmissible block, the partition-prior normalizer ``log C_k`` is
+computed under the same admissibility mask as the score array, and exact and
+surrogate scores are not mixed silently within the same matrix.
+
 Given a triangular array of conjugate-block log evidences
 ``log_block_evidence[i, j] = log A^0_{ij}`` (eq. ``problem-block-evidence``)
 this module computes:
@@ -58,6 +74,10 @@ def compute_log_C_k(log_g_table: FloatArray | None, n: int, k_max: int) -> Float
     For ``g ≡ 1`` this returns ``[log binom(n-1, k-1)]``. For arbitrary ``log_g``
     the recursion ``L^{(g)}_{k+1, j} = Σ_h L^{(g)}_{k, h} · g(Δ_x(h, j))`` is run
     in log space; ``log C_k = log L^{(g)}_{k, n}`` (eq. ``Ck-general``).
+
+    Inadmissible blocks (``log g(Δ_x(i, j)) = -inf``) are excluded by the
+    same convention used in :func:`forward_backward`; both arrays must
+    share their admissibility mask.
 
     Parameters
     ----------
@@ -131,6 +151,14 @@ def forward_backward(
     .. math::
         L̃[k, j] = \log\sum_{t \in \mathcal{T}_{k, j}} \prod_{q=1}^k Ã^{(0)}_{t_{q-1} t_q}, \qquad
         R̃[k, i] = \log\sum_{t} \prod_{q=1}^k Ã^{(0)}_{t_{q-1} t_q}.
+
+    The recursions are exact for whatever admissible matrix is supplied here.
+    Inadmissible blocks are signaled by ``log A^{(0)}_{ij} = -inf``; the
+    same admissibility mask must be used by :func:`compute_log_C_k`. With
+    non-conjugate surrogate scores the recursions return exact summaries of
+    the surrogate model; approximation error propagates to global posterior
+    odds per Proposition ``prop:stability`` under
+    Assumption ``ass:uniform-block-error``.
     """
 
     L = np.full((k_max + 1, n + 1), -np.inf, dtype=float)
@@ -211,6 +239,11 @@ def boundary_event_marginals_fixed_k(
     Eq. ``boundary-event``. Returns a length-``(n-1)`` vector indexed by
     interior ``i = 1, ..., n-1``. This is the calibration target referenced
     throughout §6.
+
+    The returned vector sums to ``k - 1`` for any fixed ``k`` with positive
+    evidence (the boundary-event normalization identity stated inline in the
+    DP correctness theorem of §4); that identity is the standard DP
+    localization check (see :mod:`tests.test_dp`).
     """
 
     out = np.zeros(n - 1, dtype=float)

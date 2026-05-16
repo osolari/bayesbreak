@@ -9,9 +9,23 @@ It is a tab-separated table of ~1900 CpG calls on chr21 with columns
 ``coverage`` column as the per-CpG precision ``φ_t`` (consistent with the
 report's §``sec:realdata-methylation`` Beta-response specification).
 
+The manuscript's appendix recipe (§``app:real-data-methylation``) points to
+the Loyfer et al. 2023 atlas distributed via the GitHub repository
+``nloyfer/meth_atlas`` and via NCBI GEO accession ``GSE186458``; the
+present Python loader is a lightweight fallback for that pipeline.
+
 When the network is unavailable, or the user provides a local CSV with the
 same column schema, the loader gracefully falls back to the deterministic
 simulated analog or the user-provided file.
+
+Caveat (for future maintainers): an earlier draft of the manuscript noted
+that ``nloyfer/meth_atlas`` actually implements Moss et al. 2018's array
+deconvolution, and that the companion software for the 2023 atlas is
+``nloyfer/wgbs_tools`` + ``nloyfer/UXM_deconv``. The current draft has
+rolled back to ``nloyfer/meth_atlas`` as the repository name; a finalized
+atlas pipeline that fails to locate the per-CpG ``coverage.tsv.gz`` matrix
+at the ``meth_atlas`` URL should look at ``wgbs_tools`` / ``UXM_deconv``
+under the same GitHub owner.
 """
 
 from __future__ import annotations

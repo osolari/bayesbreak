@@ -46,6 +46,25 @@ def _null_trace(estimator: BayesBreakSegmenter, bundle: DatasetBundle) -> np.nda
     return np.cumsum(per)
 
 
+def planned_caption(text: str, *, planned: bool) -> str:
+    """Prepend ``(PLANNED) `` to a caption/title when status is not finalized.
+
+    Mirrors the manuscript's status convention (§6 IDs 6-E1/6-E2; new-zip
+    CHANGELOG entry CG-E1/E2): every real-data figure/table caption begins
+    with ``(PLANNED)`` until the corresponding finalized pipeline (verified
+    source, recorded hashes/seeds, observed numeric values) replaces the
+    placeholder. ``planned=False`` is reserved for the rare case where the
+    figure was regenerated from a fully verified pipeline.
+    """
+
+    prefix = "(PLANNED) "
+    if not planned:
+        return text
+    if text.startswith(prefix):
+        return text
+    return prefix + text
+
+
 def make_realdata_figure(
     *,
     estimator: BayesBreakSegmenter,
@@ -56,11 +75,24 @@ def make_realdata_figure(
     title: str,
     show_null_baseline: bool = True,
     extra_kwargs: dict[str, Any] | None = None,
+    planned: bool | None = None,
 ) -> None:
-    """Fit ``estimator`` on ``bundle`` and render the four-panel figure."""
+    """Fit ``estimator`` on ``bundle`` and render the four-panel figure.
+
+    When ``planned`` is ``None`` the status is inferred from
+    ``bundle.source``: simulated/fallback bundles render with a
+    ``(PLANNED)`` prefix on the title; bundles loaded from a verified
+    download render with no prefix. Pass ``planned=True`` or
+    ``planned=False`` to force the status. Figures populated from real
+    sources are reported as observed results and must not carry the
+    ``(PLANNED)`` tag.
+    """
 
     extra_kwargs = extra_kwargs or {}
     setup_style(font_scale=0.95)
+    if planned is None:
+        planned = bundle.source != "downloaded"
+    title = planned_caption(title, planned=planned)
 
     # Fit cache: skip refit when the data + estimator params are unchanged.
     key = cache_key(
@@ -179,6 +211,7 @@ def make_realdata_figure(
     diag = run_dp_diagnostics(estimator)
     record_extra: dict[str, Any] = {
         "source": bundle.source,
+        "status": "PLANNED" if planned else "FINAL",
         "description": bundle.description,
         "y_hash": hash_array(bundle.y),
         "sample_weight_hash": hash_array(bundle.sample_weight),

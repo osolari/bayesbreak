@@ -148,9 +148,56 @@ from bayesbreak import run_dp_diagnostics, run_non_conjugate_diagnostics
 ```
 
 `run_dp_diagnostics(estimator)` checks the four §4.2 invariants
-(`Σ P(k) = 1`, `L_kn = R_k0`, `Σ P(b) = k − 1`, max-sum vs. terminal score).
+(`Σ P(k) = 1`, `L_kn = R_k0`, `Σ P(b) = k − 1` per Corollary
+`cor:boundary-event-sum`, max-sum vs. terminal score).
 `run_non_conjugate_diagnostics(approx, reference)` reports the max / 95th /
-median block error over **reachable** blocks plus posterior sensitivity.
+median block error over **reachable** blocks, the posterior-sensitivity
+summaries, and the absolute-probability TV bound
+`exp(2·k_max·ε) − 1` of Corollary `cor:abs-prob` (fields
+`pk_tv_empirical`, `pk_tv_upper_bound`). Every check is tagged with a
+`failure_mode` matching the rewritten §4 approximation-validation
+checklist.
+
+`bayesbreak.diagnostics.run_prior_sensitivity(estimator)` is the planned
+diagnostic from §6 (paragraph 6-C1): it reruns the DP on the existing
+`log_block_evidence_` under perturbations of `p(k)` and the length factor
+`g`, and reports the resulting variation of `P(k|y)` and the fixed-`k_map`
+boundary marginals.
+
+## Baselines (frequentist comparators)
+
+`bayesbreak.baselines` exposes thin wrappers around the canonical
+upstream packages — we do **not** re-implement these algorithms. PELT,
+optimal partitioning, BS, and WBS are driven through
+[`ruptures`](https://github.com/deepcharles/ruptures); CBS is driven
+through Bioconductor `DNAcopy` via `rpy2`. Coverage matches the §6
+planned-baseline list (5-A1, 6-E3) plus the `ruptures`/`changepoint`
+positioning paragraph (1-D2/G-1).
+
+```bash
+pip install bayesbreak[baselines]      # ruptures (Python only)
+pip install bayesbreak[baselines-r]    # rpy2; you also need R + DNAcopy
+```
+
+```python
+from bayesbreak.baselines import segment_with
+
+res = segment_with("pelt", y, penalty=10.0)
+res.boundaries          # array of interior changepoint indices
+res.k                   # number of segments
+res.package, res.package_version, res.tuning
+```
+
+Missing upstream packages raise a single readable `ImportError` rather
+than an opaque attribute error. Each :class:`BaselineResult` records the
+package name, version, and the tuning kwargs that were used.
+
+Every fitted segmenter exposes `admissibility_mask_` — the boolean mask
+of finite cells in `log_block_evidence_`, materializing the
+§`sec:setup` "Block-score contract" that the DP and `compute_log_C_k`
+share the same admissibility convention. Each family also declares a
+`MOMENT_SIGN_CONTRACT` class attribute (`"signed"` for Gaussian,
+`"nonneg"` for the others) per §5 paragraph 5-C1.
 
 ## How it maps to the paper
 

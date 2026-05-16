@@ -36,9 +36,38 @@ base class. Every concrete family inherits from it.
 | `boundary_location_posterior_` | `P(t_p = h | y, k_map)` per boundary |
 | `map_boundaries_` | Joint MAP boundary vector |
 | `map_segment_means_` | Posterior mean per MAP segment |
-| `map_curve_` | Piecewise-constant fit on training indices |
-| `bayes_curve_mean_` | Posterior mean latent signal (optional) |
+| `map_curve_` | Piecewise-constant fit on training indices — the *exported segmentation* in the manuscript sense (`def:exported-segmentation`) |
+| `bayes_curve_mean_` | Posterior mean latent signal (optional) — the *Bayes curve* (`def:bayes-curve`) |
 | `sample_weight_` | Weights used at fit time |
+| `admissibility_mask_` | Boolean `(n+1, n+1)` mask of finite cells in `log_block_evidence_`; the DP and `compute_log_C_k` share this mask (the admissibility contract of §`sec:setup`). |
+
+### Class attributes
+
+- `MOMENT_SIGN_CONTRACT: str` — `"signed"` (Gaussian) or `"nonneg"` (all
+  other families). Declares whether `block_first_moment_` can change
+  sign on admissible cells; §5 signed-moment storage guidance.
+
+### Manuscript cross-references
+
+- Time and space complexity: `prop:bb-complexity` (`Θ(n²)` block
+  precomputation, `Θ(k_max n²)` DP, `Θ(k_max n)` working memory for
+  evidences and `Θ(k_max n²)` when retaining backpointers).
+- Joint MAP correctness: `thm:map-correctness` (max-sum + backtrack
+  returns the joint MAP at the chosen `k`; ties broken deterministically
+  by the back-pointer convention).
+- Block-evidence per family: `prop:gaussian-block`, `prop:poisson-block`,
+  `prop:binomial-block`, `prop:negbin-block`, `prop:beta-block`.
+- Non-conjugate approximations:
+  `ass:uniform-block-error` (uniform per-block log-evidence error `ε`),
+  `prop:stability` (posterior-odds stability), and
+  `prop:uniform-bounds` (per-routine `ε` rates — Q: `O(Q^{-2r})`,
+  Lap/JJ/PG: `O(n^{-1})` on reachable blocks, EP: not uniformly bounded).
+- Latent-group mixture: `prop:latent-identifiability` (identifiable up to
+  label permutation) and `ex:label-switch-counterexample`.
+- Prediction inputs: `def:prediction-cases` (Case A pointwise — see
+  `posterior_predictive_logpdf`; Case B set-valued — see
+  `prediction.Unit` + `predict_group`; Case C vector-valued — see
+  `SharedBoundaryMultivariateSegmenter` / `IndependentMultivariateSegmenter`).
 
 ## Families
 
@@ -88,3 +117,52 @@ block routines:
 
 - `posterior_predictive_logpdf(estimator, X_new, y_new, per_sample=False)`
 - `held_out_log_likelihood_trace(estimator, X_new, y_new, prefix_fractions=None)`
+
+## Diagnostics
+
+`bayesbreak.diagnostics`:
+
+- `run_dp_diagnostics(estimator)` — checks the four §4 invariants
+  (`Σ P(k) = 1`, forward/backward agreement, `Σ P(b_i|y,k) = k − 1`
+  stated inline in the DP correctness theorem, MAP backtrack score
+  matching `thm:map-correctness`).
+- `run_non_conjugate_diagnostics(estimator, reference)` — reachable-block
+  error quantiles (the empirical `ε` of `ass:uniform-block-error`),
+  posterior-sensitivity summaries, and a worst-case total-variation
+  bound on `P(k|y)` derivable from `prop:stability` (fields
+  `pk_tv_empirical`, `pk_tv_upper_bound`; check `pk_tv_bound_check`).
+  Each check carries a `failure_mode` tag aligned with the §4
+  approximation-validation checklist and §5b limitations on the
+  non-conjugate approximation regime.
+- `run_prior_sensitivity(estimator, *, pk_perturbations=None,
+  g_variants=("uniform", "length-proportional"))` — partition-prior
+  sensitivity diagnostic from §5b limitations. Reruns the DP on the
+  existing `log_block_evidence_` under perturbed `p(k)` and `g`, and
+  reports `Δ p(k|y)` (max / TV) and `Δ P(b_i|y, k_map)` (max / L1) per
+  variant.
+
+## Baselines
+
+`bayesbreak.baselines` exposes wrappers around upstream baseline
+libraries (no re-implementation). Algorithms are dispatched through
+
+```python
+bayesbreak.baselines.segment_with(algorithm, y, **kwargs) -> BaselineResult
+```
+
+| Name | Upstream | Reference |
+|---|---|---|
+| `pelt` | `ruptures.Pelt` | Killick, Fearnhead & Eckley (2012) |
+| `optimal_partitioning` (`op`, `dynp`) | `ruptures.Dynp` | Jackson et al. (2005) |
+| `binary_segmentation` (`bs`) | `ruptures.Binseg` | classical BS |
+| `wild_binary_segmentation` (`wbs`) | `ruptures.Binseg` + random windows | Fryzlewicz (2014) |
+| `cbs` | `DNAcopy::segment` via `rpy2` | Olshen et al. (2004) |
+
+Install extras:
+
+- `pip install bayesbreak[baselines]` — `ruptures`.
+- `pip install bayesbreak[baselines-r]` — `rpy2`; also requires an R
+  install with the Bioconductor `DNAcopy` package.
+
+Each :class:`BaselineResult` records `boundaries`, `k`, `algorithm`,
+upstream `package` + `package_version`, and the full `tuning` dict.

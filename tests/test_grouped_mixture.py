@@ -106,3 +106,53 @@ class TestMixtureEM:
         proba = est.predict_proba(X)
         assert proba.shape == (X.shape[0], 2)
         assert np.allclose(proba.sum(axis=1), 1.0, atol=1e-6)
+
+    def test_canonical_template_ordering_after_fit(self):
+        """Reported templates must be in canonical order: ascending k_g, then
+        lexicographic on t^(g). This is the anchor for the permutation
+        indeterminacy of ``prop:latent-identifiability``."""
+
+        seqs, _, _ = _make_two_group_sequences()
+        X = np.stack(seqs)
+        est = BayesBreakMixtureClassifier(
+            BayesBreakGaussian(k_max=4),
+            n_groups=2,
+            max_iter=8,
+            random_state=0,
+        ).fit(X)
+        states = est.group_states_
+        # k_g non-decreasing; ties resolved by lex on t^(g).
+        keys = [(s.k_g, tuple(s.template)) for s in states]
+        assert keys == sorted(keys)
+        # Permutation attribute is exposed and is a valid permutation.
+        assert hasattr(est, "canonical_permutation_")
+        perm = est.canonical_permutation_
+        assert sorted(perm.tolist()) == list(range(len(states)))
+
+    def test_canonical_ordering_stable_across_seeds(self):
+        """Two restarts converging to the same templates must report them in
+        identical canonical order. Together with ``test_canonical_template_ordering_after_fit``
+        this realises the §5b "deterministic anchoring convention" required
+        for label-level reporting."""
+
+        seqs, _, _ = _make_two_group_sequences()
+        X = np.stack(seqs)
+        est_a = BayesBreakMixtureClassifier(
+            BayesBreakGaussian(k_max=4),
+            n_groups=2,
+            max_iter=10,
+            random_state=0,
+        ).fit(X)
+        est_b = BayesBreakMixtureClassifier(
+            BayesBreakGaussian(k_max=4),
+            n_groups=2,
+            max_iter=10,
+            random_state=7,
+        ).fit(X)
+        keys_a = [(s.k_g, tuple(s.template)) for s in est_a.group_states_]
+        keys_b = [(s.k_g, tuple(s.template)) for s in est_b.group_states_]
+        # If the two fits converge to the same template set, they must
+        # appear in the same canonical order; allow the unordered sets to
+        # differ when the data does not pin a unique optimum.
+        if set(keys_a) == set(keys_b):
+            assert keys_a == keys_b

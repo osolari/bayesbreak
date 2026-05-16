@@ -92,8 +92,40 @@ class TestSumProduct:
             d1 = dp.boundary_event_marginals_fixed_k(L, R, n=n, k=k)
             assert d1.shape == (n - 1,)
             assert np.all((d1 >= -1e-12) & (d1 <= 1.0 + 1e-12))
-            # Sums to k - 1 by construction.
+            # Sums to k - 1 by construction (cor:boundary-event-sum).
             assert float(np.sum(d1)) == pytest.approx(k - 1, abs=1e-10)
+
+    def test_score_matrix_passthrough(self, random_log_block_evidence):
+        """``rem:score-matrix-exactness``: the DP is algebraically exact for the
+        supplied admissible block-score matrix, regardless of whether the
+        entries are exact marginal likelihoods or surrogate scores.
+
+        We construct a hand-built ``la`` (not produced by any family routine)
+        and verify the forward DP and MAP recursion agree with brute-force
+        enumeration over the same matrix.
+        """
+
+        rng = np.random.default_rng(42)
+        n = 6
+        la = np.full((n + 1, n + 1), -np.inf)
+        for i in range(n):
+            for j in range(i + 1, n + 1):
+                la[i, j] = float(rng.normal(loc=0.3, scale=1.2))
+        # Mark a few blocks inadmissible to also exercise the mask.
+        la[1, 4] = -np.inf
+        la[2, 5] = -np.inf
+
+        k_max = 4
+        L, _ = dp.forward_backward(la, n=n, k_max=k_max)
+        for k in range(1, k_max + 1):
+            expected = brute_force_log_evidence(la, n, k)
+            assert float(L[k, n]) == pytest.approx(expected, abs=1e-10)
+            bnd, score = dp.max_sum_segmentation(la, k=k)
+            _, expected_score = brute_force_map(la, n, k)
+            assert score == pytest.approx(expected_score, abs=1e-12)
+            # Backtracked segmentation is admissible under the supplied mask.
+            for a, b in zip(bnd[:-1], bnd[1:], strict=False):
+                assert np.isfinite(la[a, b])
 
 
 class TestMaxSum:

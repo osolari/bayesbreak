@@ -1,9 +1,23 @@
 """Well-log (NMR tool-response) loader.
 
-Real source: the TCPD mirror of the classic Ó Ruanaidh well-log signal. We
-prefer the ``well_log.txt`` file (full n=4050 series) and fall back to the
-``well_log.json`` subset if that is unavailable. When neither can be fetched
-we return the deterministic simulated analog.
+Real source: the TCPD mirror of the classic Ó Ruanaidh well-log signal,
+the well-log NMR dataset of Fearnhead (2006) — see
+``\\citet{fearnhead2006exact}`` in the report's §``app:real-data-welllog``.
+A copy ships with the R package ``changepoint`` (Killick & Eckley); the
+manuscript's R recipe uses ``data(Lai2005fig4)`` (or ``data(Wellog)`` /
+``data(wavenumber)`` as fallbacks).
+
+We prefer the ``well_log.txt`` file (full n=4050 series) and fall back to
+the ``well_log.json`` subset if that is unavailable. When neither can be
+fetched we return the deterministic simulated analog.
+
+Caveat (for future maintainers): an earlier draft of the manuscript
+attributed the bundled R copy to ``changepoint.influence::welldata`` /
+Fearnhead & Clifford (2003) and warned that the older ``Lai2005fig4`` is
+actually the array-CGH example of Lai et al. (2005), not the NMR series.
+The current draft has rolled back to the ``changepoint::Lai2005fig4``
+recipe; if a finalized run hits a label mismatch, the
+``changepoint.influence::welldata`` object is the safer ground truth.
 """
 
 from __future__ import annotations
@@ -46,7 +60,8 @@ def _parse_json(path) -> np.ndarray:
 
 
 def load_welllog(*, simulated: bool = False) -> DatasetBundle:
-    """Load the well-log change-point dataset (Ó Ruanaidh & Fitzgerald 1996).
+    """Load the well-log change-point dataset (Ó Ruanaidh & Fitzgerald 1996,
+    as bundled with the R package ``changepoint``).
 
     Parameters
     ----------

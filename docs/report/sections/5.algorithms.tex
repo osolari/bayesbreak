@@ -130,6 +130,27 @@ where $M_{k,j}$ is the max-sum message defined in \eqref{eq:max-sum-inline}.
 Algorithm~\ref{alg:map-forward} computes $M_{k,j}$ and the backpointers; Algorithm~\ref{alg:map-backtrack} then backtracks from $(\widehat{k},n)$ to recover the boundary vector
 $\widehat{b}=(\widehat{b}_0,\dots,\widehat{b}_{\widehat{k}})$.
 
+\begin{theorem}[Correctness of max-sum DP for joint MAP segmentation]
+\label{thm:map-correctness}
+For any choice of segment count $\widehat k\in\{1,\dots,k_{\max}\}$, Algorithms~\ref{alg:map-forward}
+and~\ref{alg:map-backtrack} jointly return the (or a) boundary vector
+$\widehat b=(\widehat b_0,\dots,\widehat b_{\widehat k})$ that attains
+\[
+\widehat b \in \arg\max_{t\in T_{\widehat k,n}}\Big\{
+   \log p(\widehat k) - \log C_{\widehat k} + \sum_{q=1}^{\widehat k} \ell^{(0)}_{t_{q-1},t_q}
+\Big\},
+\]
+where $T_{\widehat k,n}$ is the set of admissible boundary vectors of length $\widehat k$ on $n$
+observations under the segment-factorized partition prior of Section~\ref{sec:dp}. In particular,
+$\widehat b$ is a joint MAP segmentation conditional on the chosen $\widehat k$, and any tie among
+maximizers is broken deterministically by the back-pointer convention encoded in
+$h^\star(k,j)$. The runtime is $\mathcal{O}(k_{\max}n^2)$ and the working space is
+$\mathcal{O}(k_{\max}n)$.
+\end{theorem}
+
+A proof is in Appendix~\ref{app:max-sum-proof}; it proceeds by induction on $k$ using the
+sub-segmentation optimality property of the max-sum recursion.
+
 \begin{algorithm}[H]
 \caption{MAPForward$(\ell^{(0)}_{ij},k_{\max})$}
 \label{alg:map-forward}
@@ -194,15 +215,29 @@ updates are exact for the stated template-mixture objective.
 \subsection{Complexity summary and stability}
 \label{sec:alg-complexity}
 
-For conjugate families with constant-time block evaluation from prefix summaries,
-Algorithm~\ref{alg:block-precompute} costs $\Theta(n^2)$ time.
-The DP in Algorithm~\ref{alg:dp-log} costs $\Theta(k_{\max}n^2)$ time.
-Memory can be $\Theta(k_{\max}n)$ for basic evidence computation, and can be reduced further by
-streaming consecutive $k$-layers when only the final evidence is needed. Boundary posteriors,
-Bayes curves, and MAP backtracking require either stored layers/backpointers or deliberate
-recomputation, so implementations record which trade-off was used.
+\begin{proposition}[BayesBreak time and space complexity]
+\label{prop:bb-complexity}
+Suppose the chosen exponential-family block model admits constant-time block-evidence evaluation
+from cumulative sufficient statistics (Sections~\ref{sec:ef}--\ref{sec:families}), and let
+$n$ denote the number of observations and $k_{\max}$ the maximum segment count considered by the
+DP. Then:
+\begin{enumerate}
+\item Block-evidence precomputation (Algorithm~\ref{alg:block-precompute}) runs in $\Theta(n^2)$ time and stores $\Theta(n^2)$ values.
+\item The forward DP (Algorithm~\ref{alg:dp-log}) runs in $\Theta(k_{\max}n^2)$ time. The required working memory is $\Theta(k_{\max}n)$ if only $p(y\mid k)$ and $p(k\mid y)$ are needed, and $\Theta(k_{\max}n^2)$ if boundary marginals or backpointers must be retained.
+\item The max-sum recursion plus backtracking (Algorithms~\ref{alg:map-forward}--\ref{alg:map-backtrack}) runs in $\Theta(k_{\max}n^2)$ time and $\Theta(k_{\max}n)$ working space.
+\item For non-conjugate block models with per-block approximation cost $T_{\mathrm{block}}$ (e.g.\ Laplace, JJ, EP, PG mean field, 1D quadrature), block precomputation costs $\Theta(n^2 T_{\mathrm{block}})$ and the rest of the DP is unchanged.
+\end{enumerate}
+\end{proposition}
 
-Finally, we emphasize two numerical practices that are essential in realistic data sets:
+\begin{proof}
+Parts (i)--(iii) are standard counting arguments under the constant-time
+block evaluation hypothesis; the full complexity argument is given in
+Appendix~\ref{app:complexity-proofs}. Part (iv) follows because the DP layer
+treats block evidences as opaque inputs, so the only complexity change is in
+the precomputation pass.
+\end{proof}
+
+Two numerical practices are essential in realistic data sets:
 (i) always store evidences and DP messages in log space and normalize via \texttt{logsumexp};
 (ii) standardize/center sufficient statistics when available (e.g., for Gaussian blocks) to
 reduce catastrophic cancellation in moment computations.

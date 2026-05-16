@@ -11,6 +11,7 @@ from bayesbreak import (
     run_dp_diagnostics,
     run_non_conjugate_diagnostics,
 )
+from bayesbreak.diagnostics import run_prior_sensitivity
 
 
 def test_dp_diagnostics_pass_for_segmenter():
@@ -70,3 +71,45 @@ def test_non_conjugate_diagnostics_quantile_consistency():
     # synthetic dataset where Laplace and quadrature can disagree on a few
     # boundary positions.
     assert 0.0 <= extra["map_path_jaccard"] <= 1.0
+    # Worst-case TV bound on P(k|y) derived from prop:stability:
+    # empirical TV ≤ exp(2·k_max·ε) − 1.
+    assert "pk_tv_empirical" in extra
+    assert "pk_tv_upper_bound" in extra
+    assert extra["pk_tv_empirical"] <= extra["pk_tv_upper_bound"] + 1e-9
+    # The TV check should be present with the failure_mode tag and have passed.
+    tv_check = next(c for c in diag.checks if c.name == "pk_tv_bound_check")
+    assert tv_check.failure_mode == "tv-bound"
+    assert tv_check.passed
+    # Theoretical rate annotation from prop:uniform-bounds: Laplace on
+    # reachable blocks is O(n^-1). The field should be populated and the
+    # estimator's approx attribute round-trips.
+    assert extra["approx_routine"] == "laplace"
+    assert "O(n^-1)" in extra["theoretical_rate"]
+    # rate_violated may be True or False but must be a bool (not None) here.
+    assert isinstance(extra["theoretical_rate_violated"], bool)
+
+
+def test_prior_sensitivity_reports_variation_per_variant():
+    """§6 6-C1 planned diagnostic: ``run_prior_sensitivity`` reports
+    ``Δ p(k|y)`` and ``Δ P(b_i|y,k_map)`` for each perturbation of
+    ``p(k)`` or ``g``.
+    """
+
+    rng = np.random.default_rng(0)
+    n = 80
+    y = np.r_[rng.normal(0, 0.3, 30), rng.normal(2, 0.3, 30), rng.normal(-1, 0.3, 20)]
+    est = BayesBreakGaussian(k_max=8).fit(np.arange(n).reshape(-1, 1), y)
+
+    rep = run_prior_sensitivity(est)
+    # Three p(k) perturbations + two g variants = 5 entries by default.
+    assert len(rep.extra["variants"]) == 5
+    for variant in rep.extra["variants"]:
+        for field_ in ("delta_pk_max", "delta_pk_tv", "delta_bm_max", "delta_bm_l1"):
+            assert field_ in variant
+            assert variant[field_] >= 0.0
+        # Magnitudes are bounded: |Δ p(k|y)| ≤ 1, TV ≤ 1.
+        assert variant["delta_pk_max"] <= 1.0 + 1e-9
+        assert variant["delta_pk_tv"] <= 1.0 + 1e-9
+    # Every check carries the prior-sensitivity failure mode tag.
+    for c in rep.checks:
+        assert c.failure_mode == "prior-sensitivity"

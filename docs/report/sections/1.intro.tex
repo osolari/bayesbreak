@@ -38,53 +38,35 @@ candidate segment $(i,j]$ can be summarized by sufficient statistics and assigne
 $A^{(0)}_{ij}$ together with any required moment numerators, then the same DP machinery can be
 reused across observation models, design priors, and several structured extensions.
 
-The paper uses an explicit status convention. The conjugate-block and DP results are exact mathematical results under their hypotheses; non-conjugate results are exact for the approximate block scores and conditional on stated block-error controls; the synthetic experiments are completed archived validations; and the four real-data examples are planned empirical evaluations whose visible placeholder figures and tables are populated by the finalized pipelines.
-
 \paragraph{Contributions.}
 The main contributions are as follows.
 \begin{itemize}
 \item \textbf{A reusable exponential-family block interface.}
-For exposure-aware or precision-aware exponential-family models with conjugate priors, we derive
-closed-form block evidences and posterior moments from cumulative sufficient statistics. This
-recovers familiar Gaussian, Poisson, and Beta--Binomial formulas as special cases, and isolates
-all model-specific work inside a block routine.
+Closed-form block evidences and posterior moments from cumulative sufficient statistics for
+exposure-aware EF models with conjugate priors. The construction recovers Gaussian, Poisson, and
+Beta--Binomial formulas as special cases.
 
-\item \textbf{Exact offline Bayesian inference with coherent posterior summaries.}
-We derive forward/backward DP recursions for marginal evidences, posterior segment-count
-probabilities, boundary marginals, and Bayes regression curves. We also distinguish these
-sum-product quantities from the \emph{joint} MAP segmentation, which is recovered by a separate
-max-sum/backtracking recursion rather than by maximizing boundary marginals independently.
+\item \textbf{Exact offline DP with coherent posterior summaries.}
+Forward/backward DP recursions for marginal evidences, segment-count posteriors, boundary
+marginals, and Bayes regression curves. These sum-product quantities are distinguished from
+the joint MAP segmentation, which uses a separate max-sum recursion with backtracking.
 
-\item \textbf{Irregular designs via design-aware partition priors.}
-Irregular spacing is handled at the partition-prior level through segment-length factors
-$g(\Delta_x(t_{q-1},t_q))$, where $\Delta_x$ denotes the physical length between candidate boundary coordinates. We make explicit that physical spacing and exposure weighting are
-conceptually distinct: irregular designs do not, by themselves, force likelihood weights, but
-segment-length priors provide a principled way to encode design geometry.
+\item \textbf{Design-aware partition priors for irregular designs.}
+A segment-length factor (cohesion function) on the partition prior encodes physical spacing
+$\Delta_x(t_{q-1},t_q)$ at the prior level, keeping design geometry separate from likelihood
+weighting.
 
 \item \textbf{Exact pooling for shared-boundary replicates and known groups.}
-When multiple sequences share boundaries but retain sequence-specific segment parameters, and
-given conditional independence across subjects conditional on the shared boundaries, subject-
-level block evidences multiply and the pooled posterior remains exactly tractable under the same
-DP recursions. The same construction applies groupwise when memberships are known.
+Under conditional independence across subjects given shared boundaries, subject-level block evidences multiply, so the pooled posterior is exactly tractable under the same DP; the same construction applies groupwise when memberships are known.
 
 \item \textbf{A latent-group template mixture with exact coordinate updates.}
-For unknown group membership, we develop a mixture model in which each group carries a latent
-\emph{template segmentation}. Responsibilities are updated in the E-step, while the M-step solves
-an exact responsibility-weighted max-sum DP to update each group template for the stated
-finite-template objective. This yields a rigorous alternating optimization scheme for the stated finite-template objective,
-distinct from full Bayesian model averaging over latent-group segmentations.
+Each group carries a latent template segmentation; the E-step updates responsibilities and the M-step is an exact responsibility-weighted max-sum DP, yielding a rigorous alternating optimization for a stated finite-template objective rather than full Bayesian averaging.
 
 \item \textbf{Approximate non-conjugate block routines with stability guarantees.}
-For non-conjugate GLM blocks we describe Laplace, variational (Jaakkola--Jordan and
-P\'olya--Gamma mean-field), EP, and one-dimensional quadrature approximations. We then show how a
-verified uniform block-level log-evidence error $\varepsilon$ (taken over all candidate blocks
-reachable by any $k$-segmentation with $k\le k_{\max}$) propagates through the DP to perturb global
-log-evidence and posterior odds in a controlled way.
+For non-conjugate GLM blocks we describe Laplace, variational (JJ, P\'olya--Gamma mean field), EP, and 1-D quadrature approximations, and show how a uniform per-block log-evidence error $\varepsilon$ propagates through the DP to perturb global posterior odds by a controlled amount.
 
 \item \textbf{A prediction layer for fitted segmenters.}
-We formalize posterior-predictive scoring for new pointwise sequences, set-valued units, and
-vector-valued responses, distinguishing between conditional prediction under an exported
-segmentation and more expensive resegmentation-based scoring.
+Posterior-predictive scoring for new pointwise sequences, set-valued units, and vector-valued responses, distinguishing conditional prediction under an exported segmentation from optional resegmentation-based scoring.
 \end{itemize}
 
 \subsection{Related work and literature review}\label{sec:lit}
@@ -159,46 +141,17 @@ uses a template-mixture extension whose EM updates are exact for the stated fini
 A compact annotated literature review, organized by methodological theme and relation to
 BayesBreak, is provided in Appendix~\ref{app:annotated-lit}.
 
-\begin{takeawaybox}
-\textbf{BayesBreak scope and guarantees.}
-\emph{Exactness:} given a conjugate exponential-family block and a segment-factorized partition
-prior, the DP delivers exact posteriors $p(k\mid y)$, exact boundary marginals
-$p(t_p=h\mid y,k)$, exact Bayes regression-curve moments conditional on $k$, and the exact joint
-MAP segmentation by max-sum backtracking.
-\emph{Monotone optimization:} for latent groups, EM updates are monotone for the stated finite
-template-mixture objective under the exact coordinate updates and tie-handling conventions in
-Section~\ref{sec:latent-em}.
-\emph{Stability:} for non-conjugate blocks, a verified uniform per-block log-evidence error
-$\varepsilon$ perturbs segment-count and boundary posterior odds by at most $(k+k')\varepsilon$ and
-$2k\varepsilon$ respectively.
-\emph{Scope:} the framework provides exact fully Bayesian inference for the stated
-conjugate DP models, exact coordinate updates for the finite latent-template objective, and
-block-error-based stability guarantees for approximations. Latent-template optima are coordinatewise
-within each restart, and approximation guarantees rely on verified small block errors.
-\end{takeawaybox}
-
 \paragraph{Code and reproduction.}
 A reference implementation of BayesBreak, including the block routines, DP layer, and the
 reproduction pipelines for the four real-data case studies, is available at
-\url{https://github.com/osolari/bayesbreak}. Installation, version pinning, end-to-end commands,
-and the verification steps for populating the placeholder real-data outputs are collected in
-Appendix~\ref{app:code}.
+\url{https://github.com/osolari/bayesbreak}. Installation, version pinning, and end-to-end
+commands are collected in Appendix~\ref{app:code}.
 
 \paragraph{Paper organization.}
-Section~\ref{sec:problem} formalizes the inferential targets. Section~\ref{sec:notation}
-introduces notation, and Section~\ref{sec:setup} states the Bayesian segmentation model and the
-class of partition priors considered. Section~\ref{sec:ef} derives block evidences for conjugate
-exponential-family models. Section~\ref{sec:dp} develops exact DP inference, including boundary
-marginals, Bayes regression curves, and the distinction between sum-product posterior summaries and
-max-sum MAP segmentations. Section~\ref{sec:irregular} studies design-aware priors, while
-Sections~\ref{sec:replicates} and \ref{sec:groups-known} treat shared-boundary pooling and known
-groups. Section~\ref{sec:latent-em} develops the latent-group template mixture.
-Section~\ref{sec:families} gives closed-form block formulas for common conjugate families, and
-Section~\ref{sec:nonconj} collects non-conjugate approximations and stability results.
-Section~\ref{sec:prediction} formalizes prediction for new data.
-Section~\ref{sec:algorithms} collects implementation-centric pseudocode, complexity analysis, and
-numerical-stability notes complementing the DP theory.
-Section~\ref{sec:experiments} presents the completed synthetic validation together with four
-planned real-data case studies (well-log geology, array-CGH copy number, equity-return
-volatility, and CpG-atlas methylation) whose figures and tables document the planned outputs, and
-records the additional external experiments for a larger benchmarking study. We conclude in Section~\ref{sec:conclusion}.
+The paper is in three parts. Theory (\S\ref{sec:problem}--\ref{sec:families}): inferential
+targets, notation, the Bayesian model, the EF--conjugate block layer, the DP, irregular designs,
+replicate and group pooling, the latent-group template mixture, and family-specific block
+formulas. Non-conjugate methods and prediction (\S\ref{sec:nonconj}--\ref{sec:prediction}):
+deterministic block approximations with stability theory, and the posterior-predictive interface
+for new pointwise, set-valued, and vector-valued data. Algorithms, limitations, experiments, and
+conclusions (\S\ref{sec:algorithms}--\ref{sec:conclusion}).

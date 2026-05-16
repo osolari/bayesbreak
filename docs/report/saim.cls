@@ -18,7 +18,7 @@
 \RequirePackage{hyphenat}
 \RequirePackage{setspace}
 \RequirePackage{parskip}
-\RequirePackage[latin, english]{babel}
+\RequirePackage[english]{babel}
 \RequirePackage{lipsum}
 \RequirePackage{etoolbox}
 

@@ -10,26 +10,25 @@ recording a few boundary cases and identifiability remarks that are useful in pr
 \subsection{Conjugate exponential families: detailed block evidence derivation}
 \label{app:conjugate}
 
-Section~\ref{sec:ef} states the closed form of the integrated segment evidence
-$A_{ij}^{(0)}=p(y_{(i,j]}\mid \text{hyper})$ for exponential-family likelihoods with a conjugate prior,
-and gives expressions for posterior moments needed by the Bayes regression curve.
-For completeness, we now provide a step-by-step derivation.
+This appendix gives a step-by-step proof of Theorem~\ref{thm:ef-integral} (closed-form
+EF--conjugate block evidence) and the companion posterior-moment formulas of
+Section~\ref{sec:ef}.
 
-
-\paragraph{Setup.}
+\begin{proof}[Proof of Theorem~\ref{thm:ef-integral}]
+\ProofStep{Setup.}
 Fix a segment (block) $(i,j]$ and write its aggregated sufficient statistics
 $S_{ij}=\sum_{t=i+1}^j w_t T(y_t)$, aggregated exposure
 $W_{ij}=\sum_{t=i+1}^j w_t$, and log base-measure sum
 $H_{ij}=\sum_{t=i+1}^j \log h(y_t,w_t)$.
 Let $\eta\in\mathbb{R}^d$ denote the natural parameter and $A(\eta)$ its cumulant function.
-Assume the conditional likelihood factors as
+The conditional likelihood factors as
 \begin{equation}
  p\big(y_{(i,j]}\mid \eta\big)
  \;=\; \prod_{t=i+1}^j h(y_t,w_t)\exp\big\{ w_t\,\langle \eta, T(y_t)\rangle - w_t A(\eta)\big\}
  \;=\; \exp\big\{H_{ij}+\langle \eta, S_{ij}\rangle - W_{ij}A(\eta)\big\}.
  \label{eq:app-ef-lik}
 \end{equation}
-This uses the same weighted base-measure convention as Theorem~\ref{thm:ef-integral}.
+This uses the same weighted base-measure convention as the statement of Theorem~\ref{thm:ef-integral}.
 The standard Diaconis--Ylvisaker conjugate prior takes the form
 \begin{equation}
  p(\eta\mid \tau,\nu) \;=\; \exp\big\{\langle \eta,\tau\rangle - \nu A(\eta) - \log Z(\tau,\nu)\big\},
@@ -40,7 +39,7 @@ $(\tau,\nu)$ for the same conjugate-prior quantities denoted $(\alpha,\beta)$ in
 $\tau=\alpha$ and $\nu=\beta$ before observing the block, and the posterior update is
 $(\tau+S_{ij},\nu+W_{ij})$.
 
-\paragraph{Evidence integral.}
+\ProofStep{Evidence integral.}
 Multiplying \eqref{eq:app-ef-lik} and \eqref{eq:app-ef-prior} yields
 \begin{align}
  p\big(y_{(i,j]}\mid \eta\big)\,p(\eta\mid\tau,\nu)
@@ -54,7 +53,7 @@ Integrating over $\eta$ therefore gives
  &= \exp\{H_{ij}\}\,\frac{Z\big(\tau+S_{ij},\nu+W_{ij}\big)}{Z(\tau,\nu)}.
  \label{eq:app-evidence}
 \end{align}
-This is the same expression as in Theorem~\ref{thm:ef-integral}, written at the level of a fixed block.
+This is the closed form claimed by Theorem~\ref{thm:ef-integral}, written at the level of a fixed block, and completes the proof. \end{proof}
 
 \paragraph{Posterior distribution and moments.}
 Bayes' rule shows that the posterior remains in the conjugate family:
@@ -218,6 +217,52 @@ record the ordering and deterministic tie-breaking with the run metadata.
 The EM algorithm in Section~\ref{sec:latent-em} can converge to any one of the symmetric modes.
 \end{remark}
 
+\paragraph{Proof of Proposition~\ref{prop:latent-identifiability}.}
+Write the marginal subject-level density induced by parameters $(\pi,\tau_1,\dots,\tau_G)$ under
+the integrated-block formulation as
+\[
+m(y; \pi, \tau_{1:G}) = \sum_{g=1}^G \pi_g \, p(y\mid \tau_g),
+\qquad
+p(y\mid \tau_g) = \frac{p(k_g)}{C_{k_g}} \prod_{q=1}^{k_g} A^{(0)}_{t^{(g)}_{q-1} t^{(g)}_q}(y),
+\]
+where the block-evidence factors $A^{(0)}_{ij}(y)$ are strictly positive on the support of $y$ by
+hypothesis (I3). By exchangeability across subjects, the joint distribution of
+$(y^{(1)},\dots,y^{(S)})$ determines and is determined by the marginal $m(\cdot;\pi,\tau_{1:G})$.
+The claim of the proposition is therefore equivalent to identifiability of the finite mixture
+$m(\cdot;\pi,\tau_{1:G})$ as a $G$-component mixture of the templates $\{p(\cdot\mid\tau_g)\}_{g=1}^G$.
+
+For two parameter tuples $(\pi,\tau_{1:G})$ and $(\pi',\tau'_{1:G})$ to induce the same marginal we
+need
+\(
+\sum_g \pi_g\, p(y\mid \tau_g) \equiv \sum_g \pi'_g\, p(y\mid \tau'_g)
+\)
+pointwise in $y$. Under hypothesis (I2), the family $\{p(\cdot\mid\tau_g)\}_{g=1}^G$ is a set of
+$G$ distinct probability densities on the data space, because distinct templates assign different
+products of block factors to a generic $y$ (the difference is a polynomial in $y$ of degree
+determined by the sufficient statistics, vanishing on a measure-zero set only). Distinct finite
+mixtures with strictly positive weights have distinct mixing distributions on the (now finite)
+template parameter space by standard finite-mixture identifiability (e.g.\ \citet{teicher1963identifiability}),
+which establishes that the unordered multiset
+$\{(\pi_g,\tau_g)\}_{g=1}^G$ is identifiable, i.e.\ identifiability holds up to a permutation
+$\sigma$ of the group indices. \hfill$\square$
+
+\begin{example}[Label-switching counterexample]
+\label{ex:label-switch-counterexample}
+The permutation indeterminacy in Proposition~\ref{prop:latent-identifiability} is binding even at
+the smallest nontrivial scale. Take $G=2$, $S=2$, a single block family with a symmetric prior, and
+two distinct templates $\tau_1=(k_1,t^{(1)})$, $\tau_2=(k_2,t^{(2)})$. Set $\pi_1=\pi_2=1/2$. Then
+the two parameter tuples
+\[
+(\pi,\tau_1,\tau_2) = \big(\tfrac12, \tfrac12; (k_1,t^{(1)}), (k_2,t^{(2)})\big)
+\quad\text{and}\quad
+(\pi,\tau_1,\tau_2)' = \big(\tfrac12, \tfrac12; (k_2,t^{(2)}), (k_1,t^{(1)})\big)
+\]
+induce identical marginals over $(y^{(1)},y^{(2)})$. No estimator (Bayes, ML, EM, or otherwise)
+that observes only $(y^{(1)},y^{(2)})$ can distinguish them. A deterministic anchoring convention
+(e.g.\ ``report templates in nondecreasing $k_g$, breaking ties lexicographically on $t^{(g)}$'') is
+therefore required for reproducible label-level reporting.
+\end{example}
+
 \subsection{Annotated literature review}
 \label{app:annotated-lit}
 
@@ -240,7 +285,10 @@ Foundational product partitions &
 \citet{barry1992ppm, barry1993bayesCP} &
 Introduced the product-partition view of Bayesian changepoint analysis. BayesBreak adopts exactly
 this segment-factorization principle, but repackages it around a reusable block-evidence interface
-that works across multiple observation families and prediction tasks. \\
+that works across multiple observation families and prediction tasks. \emph{Limitation of the cited
+work:} the original treatment is developed for univariate Gaussian-like blocks and does not provide a
+modular block-evidence interface across families, design-aware priors, replicate pooling, or
+non-conjugate approximations. \\
 
 Exact offline DP &
 \citet{fearnhead2006exact, hutter2006bpcr} &
@@ -248,53 +296,82 @@ These are the closest conceptual ancestors of the exact offline core. \citet{fea
 emphasizes exact posterior recursion for changepoints, while \citet{hutter2006bpcr} highlights
 Bayesian curve summaries and evidence-based model comparison. BayesBreak systematizes both inside a
 single modular framework and makes the distinction between sum-product summaries and joint MAP
-segmentations explicit. \\
+segmentations explicit. \emph{Limitation of the cited work:} neither work provides a uniform
+block-error stability result for non-conjugate block routines, an exact replicate-pooling extension,
+or an exact latent-group template-mixture formulation; downstream prediction interfaces (exported
+segmentation vs.\ Bayes curve) are also not formalized as first-class objects. \\
 
 Segment dependence and richer local models &
 \citet{fearnhead2011dependence, ruggieri2014bcpvs} &
 These papers show how offline Bayesian segmentation can be enriched beyond i.i.d. block means, for
 example by allowing dependence across neighboring segments or by fitting piecewise polynomial
 regression. They motivate the claim that the real bottleneck is the local block integral, not the
-DP itself. \\
+DP itself. \emph{Limitation of the cited work:} the enrichments require bespoke local-integral
+implementations and do not come with a propagated-error guarantee from the local block routine to
+global posterior odds; BayesBreak addresses this gap through the
+Assumption~\ref{ass:uniform-block-error}--Proposition~\ref{prop:stability} pair. \\
 
 Frequentist exact partitioning &
 \citet{auger1989segment, jackson2005optpart, killick2012pelt} &
 These methods are critical baselines for optimization-based segmentation. They solve related
 partitioning problems efficiently but do not natively provide posterior probabilities over boundary
 locations or segment counts. BayesBreak differs mainly in inferential target rather than in the use
-of dynamic programming per se. \\
+of dynamic programming per se. \emph{Limitation of the cited work:} the frequentist exact-DP family
+returns a point segmentation under a penalty rather than a full posterior over boundary locations
+and segment counts, so calibration of detected boundaries, segment-count credibility, and
+uncertainty-aware downstream prediction are out of scope. \\
 
 Penalized and multiscale segmentation &
 \citet{tibshirani2005fused, bleakley2011groupfused, frick2014smuce, fryzlewicz2014wbs} &
 These approaches offer strong algorithmic or confidence guarantees, especially in large-scale or
 multisequence settings. They are natural comparators for planned empirical work, and they optimize
-penalized objectives or detection rules rather than the posterior quantities emphasized here. \\
+penalized objectives or detection rules rather than the posterior quantities emphasized here.
+\emph{Limitation of the cited work:} penalized and multiscale approaches return either a point
+estimate of the boundary set or a confidence set under specific detection rules, and do not
+provide a probabilistic forecast of new sequences under uncertainty over both $k$ and $t$; nor do
+they accommodate replicate pooling, latent-group templates, or non-conjugate-block GLM responses
+within a single framework. \\
 
 Online and trans-dimensional Bayes &
 \citet{adamsmackay2007bocpd, green1995rjMCMC, denison1998bayesian} &
 These references represent two alternative Bayesian regimes: streaming detection and fully flexible
 posterior simulation over model dimension. BayesBreak instead targets exact offline inference when
 block marginalization is feasible, and deterministic approximations when only the block integral is
-intractable. \\
+intractable. \emph{Limitation of the cited work:} online detection \citep{adamsmackay2007bocpd} is
+designed for streaming use and forgoes joint MAP and Bayes-curve summaries; RJMCMC
+\citep{green1995rjMCMC} requires substantial tuning of proposal distributions and convergence
+diagnostics, and \citet{denison1998bayesian} relies on simulation for the same quantities that
+BayesBreak computes in closed form for conjugate-block models. \\
 
 Multi-sequence and hierarchical Bayes &
 \citet{carlin1992hierBayesCP, fan2017basic, quinlan2024jrpm} &
 These papers study information sharing across related sequences. BayesBreak's exact shared-boundary
 pooling belongs to this lineage, while the latent-template mixture is a template-constrained,
-algorithmically transparent alternative to full joint hierarchical models. \\
+algorithmically transparent alternative to full joint hierarchical models. \emph{Limitation of the
+cited work:} fully hierarchical formulations require Monte Carlo simulation for inference and lack
+the closed-form exact replicate-pooling factorization, and they do not provide an identifiability
+statement (up to permutation) for the latent-group mixture comparable to
+Proposition~\ref{prop:latent-identifiability}. \\
 
 Covariate-aware and generalized random partitions &
 \citet{muller2011ppmx, park2010gppm} &
 This literature broadens the notion of cohesion or prior similarity between observations. It is the
 closest conceptual precedent for the design-aware segment-length priors used here, although BayesBreak
-specializes to contiguous ordered partitions rather than arbitrary clustering. \\
+specializes to contiguous ordered partitions rather than arbitrary clustering. \emph{Limitation of the
+cited work:} generalized random partitions admit non-contiguous clusters and do not exploit the
+$O(n^2)$ ordered-partition DP that BayesBreak relies on; this generality comes at substantially
+higher inferential cost and forgoes the closed-form ordered-partition results derived here. \\
 
 Deterministic approximations for non-conjugate blocks &
 \citet{jaakkola2000logisticvb, minka2001ep, polson2013pg} &
 These references justify the approximation toolkit in Section~\ref{sec:nonconj}. The present paper
 does not claim novel approximation schemes; its contribution is to show how such local block
 surrogates can be inserted into the same segmentation DP and how their errors propagate to global
-posterior odds. \\
+posterior odds. \emph{Limitation of the cited work:} each approximation method (JJ, EP, PG) is
+analyzed in isolation as a local approximation to a single-block log-evidence; the propagation of
+its block-level error to global posterior odds over an exponentially large segmentation space is
+not addressed and is the gap closed by Proposition~\ref{prop:stability} and the per-routine
+bounds of Proposition~\ref{prop:uniform-bounds}. \\
 \bottomrule
 \end{longtable}
 
@@ -385,10 +462,8 @@ storage.
 \subsection{Code and reproduction}
 \label{app:code}
 
-A reference Python implementation of BayesBreak mirrors the paper
-(block routines, DP layer, plate-model variants, and real-data pipelines). The synthetic
-commands below correspond to completed archived runs; the real-data commands are planned
-recipes to verify before they replace placeholder figures and tables.
+A reference Python implementation of BayesBreak mirrors the paper: block routines, DP layer,
+plate-model variants, and the real-data pipelines for Figures~\ref{fig:welllog}--\ref{fig:methylation}.
 Suggested installation and invocation:
 
 \begin{verbatim}
@@ -416,13 +491,7 @@ environment access to run the listed R/Bioconductor and Python download commands
 This appendix provides data-source targets, download commands, and preprocessing recipes for the
 four real-data illustrations in Section~\ref{sec:realdata}. Each subsection is organized so that a
 reader with a shell, Python $\ge 3.10$, and R $\ge 4.3$ can regenerate the corresponding body
-figure and table after source names, access paths, and annotation labels are verified. The
-commands below define the planned pipelines that populate the placeholder tables.
-
-\paragraph{Real-data verification checklist.}
-Before replacing any placeholder, record download success, raw-data hash, preprocessing script and
-hash, hyperparameters, random seed, generated figure path, generated table path, and any external
-comparison-label source used for boundary metrics.
+figure (Figures~\ref{fig:welllog}--\ref{fig:methylation}).
 
 \subsubsection{Well-log NMR segmentation}
 \label{app:real-data-welllog}

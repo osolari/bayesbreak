@@ -159,6 +159,62 @@ class TestDomainConstraints:
             est.fit(np.arange(5).reshape(-1, 1), np.array([0.1, 0.0, 0.2, 0.3, 0.4]))
 
 
+class TestMomentSignContract:
+    """§5 paragraph 5-C1: per-family moment-sign contract.
+
+    Nonneg families store the order-1 block moment directly in linear space
+    (passes through ``log`` only when strictly positive); the Gaussian
+    family declares ``"signed"`` because the segment mean can change sign.
+    """
+
+    @pytest.mark.parametrize(
+        "cls,contract",
+        [
+            (BayesBreakGaussian, "signed"),
+            (BayesBreakPoisson, "nonneg"),
+            (BayesBreakBinomial, "nonneg"),
+            (BayesBreakBeta, "nonneg"),
+            (BayesBreakBetaObs, "nonneg"),
+            (BayesBreakLogisticNormal, "nonneg"),
+        ],
+    )
+    def test_moment_sign_contract_attribute(self, cls, contract):
+        assert cls.MOMENT_SIGN_CONTRACT == contract
+
+    def test_nonneg_family_block_first_moment_is_nonneg(self):
+        """Poisson rate is nonneg; ``block_first_moment_`` honours the contract."""
+        rng = np.random.default_rng(0)
+        n = 25
+        y = rng.poisson(3.0, size=n).astype(float)
+        est = BayesBreakPoisson(k_max=4).fit(np.arange(n).reshape(-1, 1), y)
+        mask = est.admissibility_mask_
+        # The signed contract permits negative entries; the nonneg contract
+        # requires nonnegative entries on admissible cells.
+        assert est.MOMENT_SIGN_CONTRACT == "nonneg"
+        assert float(est.block_first_moment_[mask].min()) >= 0.0
+
+    def test_signed_family_admits_negative_block_first_moment(self):
+        """Gaussian on a negative-mean segment exhibits negative ``A1``."""
+        rng = np.random.default_rng(1)
+        n = 25
+        # Construct data with negative mean so the segment posterior mean
+        # for blocks lying entirely on the data is negative.
+        y = rng.normal(-1.5, 0.2, size=n)
+        est = BayesBreakGaussian(k_max=2).fit(np.arange(n).reshape(-1, 1), y)
+        assert est.MOMENT_SIGN_CONTRACT == "signed"
+        # The full-data block (0, n] is admissible and should have a negative
+        # first-moment numerator equal to ``exp(log A0) · mean``.
+        mean_full = est._segment_posterior_mean(  # type: ignore[attr-defined]
+            0, n, y, est.hyper_, est.sample_weight_
+        )
+        assert mean_full < 0.0
+        a1_full = float(est.block_first_moment_[0, n])
+        assert a1_full < 0.0
+        assert a1_full == pytest.approx(
+            math.exp(float(est.log_block_evidence_[0, n])) * mean_full, rel=1e-6, abs=1e-10
+        )
+
+
 class TestNonConjugateApproximations:
     @pytest.mark.parametrize("approx", ["laplace", "jj", "pg_vb", "ep", "quadrature"])
     def test_logistic_normal_approximations_agree_approximately(self, approx):

@@ -53,6 +53,16 @@ datasets = [
 datasets-live = [
     "yfinance>=0.2",
 ]
+# Frequentist changepoint baselines (PELT, optimal partitioning, BS, WBS)
+# via the upstream ``ruptures`` library (Truong et al. 2018).
+baselines = [
+    "ruptures>=1.1",
+]
+# Bioconductor-backed baselines (currently: CBS via ``DNAcopy``).
+# Requires both ``rpy2`` and an R install with ``DNAcopy`` from Bioconductor.
+baselines-r = [
+    "rpy2>=3.5",
+]
 dev = [
     "pytest>=7.4",
     "pytest-cov>=4.1",
@@ -165,3 +175,5 @@ indent-style = "space"
 
 [tool.codespell]
 skip = "*.bib,*.bst,*.cls,*.sty,*.tex,*.ipynb,*.pdf,*.png,*.zip,docs/report/*,scripts/**/results/*"
+# CNA = Copy Number Array (DNAcopy::CNA class); not a typo.
+ignore-words-list = "cna"

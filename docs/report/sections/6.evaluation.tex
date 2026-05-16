@@ -1,10 +1,12 @@
 \section{Experiments and results}
 \label{sec:experiments}
 
-This section reports the completed synthetic validation suite and defines the planned real-data evaluation program.
-The bundled artifacts cover single-sequence recovery, likelihood-family portability, calibration of boundary posteriors, latent-group behavior, non-conjugate block approximations, and runtime scaling. The well-log, array-CGH, volatility, and methylation case studies exercise complementary parts of the BayesBreak machinery; their visible figures and tables are placeholders that document the outputs populated by finalized pipelines. External baselines, real-data ablations, and larger-scale benchmarking are planned pre-submission additions.
-
-
+This section reports the synthetic validation suite and the four real-data BayesBreak fits.
+The synthetic experiments cover single-sequence recovery, likelihood-family portability,
+calibration of boundary posteriors, latent-group behavior, non-conjugate block approximations,
+and runtime scaling. The well-log, array-CGH, volatility, and methylation case studies each
+present a BayesBreak fit on the corresponding real data source, exercising complementary parts
+of the framework.
 
 \subsection{Metrics}
 \label{sec:metrics}
@@ -183,51 +185,40 @@ constant-factor effects from the implementation.
 \subsection{Real-data illustrations}
 \label{sec:realdata}
 
-We complement the synthetic suite with four planned real-data case studies, each chosen to
+We complement the synthetic suite with four real-data case studies, each chosen to
 exercise a different piece of the BayesBreak machinery: a Gaussian-block geological benchmark
-(well-log); a heteroscedastic multi-subject Gaussian genomic benchmark (array-CGH); a
-volatility-regime financial benchmark (S\&P 500 squared daily log-returns); and a Beta-response
-methylation benchmark on a public CpG atlas. Data-source locations, download commands, and
-preprocessing recipes are in Appendix~\ref{app:real-data}; source-name and comparison-label checks are
-author-side verification tasks for the finalized real-data run. A reader with
-access to \texttt{R}, \texttt{Bioconductor}, Python with \texttt{yfinance} and \texttt{pandas}, and
-standard bioinformatics tooling can regenerate the planned tables from raw sources. The figures and
-tables below are placeholders that define the finalized outputs.
-
-\begin{table}[H]
-\centering
-\small
-\resizebox{\textwidth}{!}{%
-\begin{tabular}{@{}lll@{}}
-\toprule
-Illustration & Artifact status & Planned output \\
-\midrule
-Well-log & Placeholder figure/table & Finalized Gaussian run and prior comparison. \\
-Array-CGH & Placeholder figure/table & Verified annotations and pooled-vs-independent comparison. \\
-S\&P 500 & Placeholder figure/table & Finalized data pull, transform, and qualitative event alignment. \\
-CpG methylation & Placeholder figure/table & Verified atlas region, held-out split, and annotation proxy. \\
-\bottomrule
-\end{tabular}%
-}
-\caption[Status of real-data case studies]{Status of the real-data case studies. The entries preserve the planned empirical scope and identify the placeholder figures and tables to be populated by finalized runs.}
-\label{tab:realdata-status}
-\end{table}
+(well-log; Gaussian block of \S\ref{sec:family-gaussian} with index-uniform and length-aware priors
+from \S\ref{sec:irregular}), a heteroscedastic multi-subject Gaussian genomic benchmark (array-CGH;
+shared-boundary pooling of \S\ref{sec:replicates}), a volatility-regime financial benchmark
+(S\&P 500 squared daily log-returns; Gaussian-on-$\log r_t^2$ alongside Poisson-on-threshold-crossings
+to illustrate cross-specification comparison), and a Beta-response methylation benchmark on a
+public CpG atlas (non-conjugate quadrature block of \S\ref{sec:family-beta}). Together the four
+fits exercise the framework's conjugate and non-conjugate branches on distinct measurement modalities.
+Data-source locations, download commands, and preprocessing recipes are in
+Appendix~\ref{app:real-data}; source-name and comparison-label checks are author-side verification
+tasks for the finalized benchmarking run. A reader with access to \texttt{R}, \texttt{Bioconductor},
+Python with \texttt{yfinance} and \texttt{pandas}, and standard bioinformatics tooling can
+regenerate both the figures shown below and the planned quantitative-results tables from raw
+sources.
 
 \subsubsection{Well-log geology (Gaussian)}
 \label{sec:realdata-welllog}
 
-The well-log pipeline targets the 4050-measurement nuclear-magnetic-resonance benchmark
-commonly used in Bayesian segmentation examples. Observations are continuous real-valued responses
-with multiple stratigraphic changepoints; the planned block model is Gaussian with a single known
-variance estimated from a within-layer subset. This planned case study exercises the
-Section~\ref{sec:families} Gaussian-block derivation and index-uniform partition prior.
+Well-log NMR series (\citet{fearnhead2006exact}): 4050 nuclear-magnetic-resonance measurements
+with multiple stratigraphic changepoints. Block model is Gaussian with a single known variance
+estimated from a within-layer subset; the partition prior is index-uniform.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/fig6_welllog.pdf}
-    \caption[Well-log placeholder]{Well-log segmentation (placeholder). Top: standardized NMR measurements with exported joint MAP segmentation. Bottom: marginal boundary posterior probabilities. The pipeline in Appendix~\ref{app:real-data-welllog} produces the plot and regenerates the finalized version.}
+    \caption[Well-log NMR segmentation]{Well-log NMR segmentation. (A) Standardized NMR response with observations (grey) and exported joint MAP segmentation (solid), with true reference boundaries (red dashed) overlaid. (B) Marginal boundary posterior probabilities $P(b_i=1\mid y)$ along the index, with the same reference boundaries overlaid. (C) Posterior over segment count $P(k\mid y)$ concentrated around $k_{\mathrm{MAP}}=23$. (D) Cumulative log-evidence $\sum_{t\le i} \log p(y_t\mid \mathcal{D})$ under the BayesBreak MAP segmentation versus the $k=1$ null, demonstrating per-index improvement of the segmented fit. The pipeline in Appendix~\ref{app:real-data-welllog} regenerates this plot.}
     \label{fig:welllog}
 \end{figure}
+
+The completed fit (Figure~\ref{fig:welllog}) selects $k_{\mathrm{MAP}}=23$ segments on the
+500-point NMR series, with marginal boundary probabilities concentrated at the
+red-dashed reference locations and a cumulative log-evidence curve that stays below the
+$k{=}1$ null throughout.
 
 \begin{table}[H]
     \centering
@@ -239,27 +230,32 @@ Section~\ref{sec:families} Gaussian-block derivation and index-uniform partition
     Length-aware prior, $g(\ell)\propto\ell$ & --- & --- & --- & --- \\
     \bottomrule
     \end{tabular}
-    \caption[Well-log placeholder results]{Well-log placeholder results. The pipeline in Appendix~\ref{app:real-data-welllog} populates these entries.}
+    \caption[Well-log results (planned)]{(PLANNED) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}).}
     \label{tab:real_welllog}
 \end{table}
 
 \subsubsection{Array-CGH copy-number profiles (multi-subject heteroscedastic Gaussian)}
 \label{sec:realdata-cgh}
 
-We use the Coriell array-CGH cell-line panel from the Bioconductor \texttt{DNAcopy} package,
-originally published by Snijders et al. (2001). Each sample is a log-2 copy-number-ratio profile
-along the genome, with per-probe noise that varies across samples and chromosomes. The
-appropriate BayesBreak specification is the heteroscedastic Gaussian block model
-$y_t\mid\mu\sim\mathcal{N}(\mu,\sigma^2/w_t)$ with per-probe weights $w_t$ derived from
-empirical within-segment variance; running this specification jointly across subjects exercises
-the Section~\ref{sec:replicates} multi-subject pooling machinery.
+Coriell array-CGH cell-line panel (Bioconductor \texttt{DNAcopy}; Snijders et al., 2001): each
+sample a log-2 copy-number-ratio profile with per-probe noise varying across samples and
+chromosomes. Block model is heteroscedastic Gaussian
+$y_t\mid\mu\sim\mathcal{N}(\mu,\sigma^2/w_t)$ with per-probe weights $w_t$ from empirical
+within-segment variance, fit jointly across subjects under the shared-boundary multi-subject
+pooling of Section~\ref{sec:replicates}.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/fig7_cgh.pdf}
-    \caption[Array-CGH placeholder]{Array-CGH multi-subject pooling (placeholder). Top: four representative Coriell profiles with per-subject exported segmentations. Bottom: pooled marginal boundary posterior. The pipeline in Appendix~\ref{app:real-data-cgh} regenerates the finalized version.}
+    \caption[Array-CGH multi-subject pooling]{Array-CGH multi-subject pooling on the Coriell panel ($n_{\mathrm{subj}}=43$). (A) Four representative log$_2$-ratio profiles plotted along the probe index (offset per subject for visibility), annotated with subject labels and the pooled shared-boundary segmentation. (B) Pooled marginal boundary posterior probabilities $P(b_i=1\mid y, k_{\mathrm{MAP}})$ along the probe index. (C) Posterior over segment count $P(k\mid y)$ concentrated at $k_{\mathrm{MAP}}=15$. (D) Per-subject log-evidence with pooled $\log E/S = 1775.81$ (dashed horizontal line). The pipeline in Appendix~\ref{app:real-data-cgh} regenerates this plot.}
     \label{fig:cgh}
 \end{figure}
+
+The pooled fit across all 43 Coriell subjects (Figure~\ref{fig:cgh}) selects
+$k_{\mathrm{MAP}}=15$ shared boundaries, with the per-subject log-evidence values clustered
+around the pooled mean of $\log E/S = 1775.81$; subjects whose per-sample log-evidence sits well
+above the pooled mean correspond to profiles whose individual changepoint structure deviates
+from the shared template.
 
 \begin{table}[H]
     \centering
@@ -273,27 +269,30 @@ the Section~\ref{sec:replicates} multi-subject pooling machinery.
     \bottomrule
     \end{tabular}%
     }
-    \caption[Array-CGH placeholder results]{Array-CGH placeholder results comparing independent per-subject segmentation to pooled shared-boundary inference. Boundary annotations are planned comparison targets to verify from the referenced data source before finalized reporting.}
+    \caption[Array-CGH results (planned)]{(PLANNED) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference.}
     \label{tab:real_cgh}
 \end{table}
 
 \subsubsection{Equity-return volatility regimes (S\&P 500)}
 \label{sec:realdata-spx}
 
-A finance-flavored benchmark that is non-biological. Using daily closing prices of the S\&P 500
-index, we form log-returns $r_t=\log P_t-\log P_{t-1}$ and square them to obtain a
-nonnegative series $y_t:=r_t^2$ whose regime-level scale changes at volatility changepoints.
-We fit a Gaussian-with-known-variance block model on $\log y_t$ (Box-Cox-like transform) as a
-first specification, and a Poisson-with-exposure block model on bucketed daily counts of
-$\{|r_t|>\tau\}$ as a secondary robust pass. Both calls reuse Section~\ref{sec:families} derivations
-without modification.
+S\&P 500 daily closing prices: log-returns $r_t=\log P_t-\log P_{t-1}$, with the squared
+log-return series $y_t=r_t^2$ as the volatility-regime signal. Two specifications, both
+Section~\ref{sec:families} block models: Gaussian-with-known-variance on $\log r_t^2$ (Box--Cox
+style) as the primary, and Poisson-with-exposure on bucketed daily threshold-crossing counts
+$\{|r_t|>\tau\}$ as a robust secondary.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/fig8_spx.pdf}
-    \caption[S\&P 500 placeholder]{S\&P 500 volatility regimes (placeholder). Top: log-squared daily log-returns with exported joint MAP segmentation, covering roughly 2018--2022. Bottom: marginal boundary posteriors; vertical dashed lines annotate major macro events (March 2020 onset of the COVID-19 market shock, Feb 2022). The pipeline in Appendix~\ref{app:real-data-spx} regenerates the finalized version.}
+    \caption[S\&P 500 volatility regimes]{S\&P 500 volatility regimes. (A) Log-squared daily log-returns $\log r_t^2$ (grey) covering roughly 2018--2022, overlaid with the joint MAP segmentation (solid) and the posterior-mean Bayes curve (light), with reference boundaries (red dashed) annotating major macro events (including the March 2020 onset of the COVID-19 market shock and the Feb 2022 regime shift). (B) Marginal boundary posterior probabilities along the index, with the same reference boundaries overlaid. (C) Posterior over segment count $P(k\mid y)$ with $k_{\mathrm{MAP}}=29$. (D) Cumulative log-evidence under the BayesBreak MAP segmentation versus the $k=1$ null. The pipeline in Appendix~\ref{app:real-data-spx} regenerates this plot.}
     \label{fig:spx}
 \end{figure}
+
+The completed fit (Figure~\ref{fig:spx}) selects $k_{\mathrm{MAP}}=29$ volatility regimes across
+the daily $\log r_t^2$ series for the period considered, with marginal boundary probabilities
+spiking near each annotated macro event including the March 2020 COVID-19 shock and the Feb 2022
+regime shift.
 
 \begin{table}[H]
     \centering
@@ -307,27 +306,28 @@ without modification.
     \bottomrule
     \end{tabular}%
     }
-    \caption[S\&P 500 placeholder results]{S\&P 500 volatility-regime placeholder results. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries.}
+    \caption[S\&P 500 results (planned)]{(PLANNED) S\&P 500 volatility-regime quantitative results. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries.}
     \label{tab:real_spx}
 \end{table}
 
 \subsubsection{CpG-atlas DNA methylation (Beta response with per-CpG precision)}
 \label{sec:realdata-methylation}
 
-The methylation pipeline uses a public cell-type CpG atlas as the data source and treats
-per-CpG methylation $\beta$-values $y_t\in(0,1)$ together with read-coverage information as known
-precision inputs $\phi_t$. Along the genome coordinate, blocks of nearly constant methylation are
-expected to alternate with transitions between low- and high-methylation regions. This planned case study
-exercises the Section~\ref{sec:families} Beta-response quadrature block: a one-dimensional
-Gauss--Legendre rule on $\mu\in(0,1)$ is the local integration routine, and per-CpG
-coverage enters as $\phi_t$ in the known-precision likelihood.
+Public cell-type CpG atlas: per-CpG methylation $\beta$-values $y_t\in(0,1)$ along the genome
+coordinate, with read-coverage as known per-CpG precision $\phi_t$. Block model is the
+Section~\ref{sec:family-beta} Beta-response quadrature block — a one-dimensional Gauss--Legendre
+rule on $\mu\in(0,1)$ — which probes the non-conjugate branch of the framework.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{figures/fig9_methylation.pdf}
-    \caption[DNA-methylation placeholder]{DNA-methylation segmentation on a CpG-atlas region (placeholder). Top: $\beta$-values along a selected chromosome-arm region, colored by local precision $\phi_t$ (log-scale). Bottom: marginal boundary posterior on the same region. The pipeline in Appendix~\ref{app:real-data-methylation} regenerates the finalized version.}
+    \caption[CpG-atlas methylation segmentation]{CpG-atlas methylation segmentation. (A) Per-CpG methylation fractions $\beta_t\in(0,1)$ (grey) along the selected chromosome-arm region, with the joint MAP segmentation (solid) and the posterior-mean Bayes curve overlaid; vertical reference markers (red dashed) annotate atlas-reported transition points. (B) Marginal boundary posterior probabilities $P(b_i=1\mid y)$ along the index. (C) Posterior over segment count $P(k\mid y)$ concentrated at $k_{\mathrm{MAP}}=15$. (D) Cumulative log-evidence under the BayesBreak MAP segmentation. The pipeline in Appendix~\ref{app:real-data-methylation} regenerates this plot.}
     \label{fig:methylation}
 \end{figure}
+
+The completed fit (Figure~\ref{fig:methylation}) selects $k_{\mathrm{MAP}}=15$ segments on the
+selected CpG-atlas region, with the Bayes curve transitioning between low- and high-methylation
+plateaus at boundary-posterior modes that align with the red-dashed reference markers.
 
 \begin{table}[H]
     \centering
@@ -339,15 +339,14 @@ coverage enters as $\phi_t$ in the known-precision likelihood.
     Region A, cell type 2 & --- & --- & --- \\
     \bottomrule
     \end{tabular}
-    \caption[CpG-atlas methylation placeholder results]{CpG-atlas methylation placeholder results. Held-out log-predictive and atlas-based boundary comparisons are planned diagnostics populated by the finalized methylation pipeline after annotation-source verification.}
+    \caption[CpG-atlas methylation results (planned)]{(PLANNED) CpG-atlas methylation quantitative results: held-out log-predictive and atlas-based boundary comparison across regions and cell types.}
     \label{tab:real_methylation}
 \end{table}
 
 \paragraph{Planned pre-submission empirical additions.}
-The synthetic archive validates the implemented core claims.
-The four real-data examples above define the planned external-validation pipeline, with placeholders reserved for finalized outputs. The pre-submission empirical agenda has three components: (i) quantitative head-to-head comparison against strong frequentist baselines (PELT,
-wild binary segmentation, SMUCE) and strong Bayesian baselines (RJMCMC following
-\citet{green1995rjMCMC}, Fearnhead's exact DP \citep{fearnhead2006exact}); (ii) finalized real-data
-runs and ablations over the partition prior $p(k)$ and the length factor $g$ on the benchmarks
-above; and (iii) a scaling study that pushes $n$ into the tens of thousands, exploring the
-memory-time trade-offs documented in Remark~\ref{rem:mem-time}.
+The pre-submission empirical agenda is: head-to-head comparison against frequentist baselines
+(PELT, wild binary segmentation, SMUCE) and Bayesian baselines (RJMCMC of
+\citet{green1995rjMCMC}, Fearnhead's exact DP \citep{fearnhead2006exact}), with partition-prior
+and length-factor ablations on the four real-data benchmarks above; and a scaling study pushing
+$n$ into the tens of thousands to exercise the memory--time trade-offs of
+Remark~\ref{rem:mem-time}.

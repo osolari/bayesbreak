@@ -40,6 +40,11 @@ class BayesBreakGaussian(BayesBreakSegmenter):
         Fixed hyperparameters (override any estimate).
     """
 
+    # The Gaussian segment-mean target ``E[μ | (i, j]]`` is sign-changing, so
+    # ``block_first_moment_[i, j] = A^{(0)}_{ij} · μ̂_{ij}`` is stored as
+    # signed-linear and must not be passed through ``log`` blindly (§5 5-C1).
+    MOMENT_SIGN_CONTRACT: str = "signed"
+
     def __init__(
         self,
         k_max: int = 50,

@@ -1,6 +1,132 @@
 # Changelog
 
-## [2.0.0-rc1] — Unreleased
+## [2.0.0-rc3] — Unreleased
+
+Aligns the implementation with the 2026-05-15 Phase Three manuscript
+(now in `docs/report/`, replacing the May 14 draft). The Phase Three
+draft adds a dedicated §5b limitations section and several named
+theorems / propositions / assumptions / definitions, and rolls back some
+of the prior draft's broader literature additions. This release updates
+docstrings and code surfaces to track those changes.
+
+### Added
+
+- `bayesbreak.mixture._canonical_template_order` and matching
+  `canonical_permutation_` attribute on `BayesBreakMixtureClassifier` —
+  templates, mixing weights, and responsibilities are now reported in
+  ascending `k_g`, then lexicographic order on `t^(g)`, anchoring the
+  permutation indeterminacy of `prop:latent-identifiability`
+  (cf. `ex:label-switch-counterexample`). Two new tests
+  (`test_canonical_template_ordering_after_fit`,
+  `test_canonical_ordering_stable_across_seeds`).
+- `run_non_conjugate_diagnostics` now records `approx_routine`,
+  `theoretical_rate`, and `theoretical_rate_violated` from
+  `prop:uniform-bounds` (§4): Laplace/JJ/PG → `O(n^{-1})` on reachable
+  blocks, Quadrature → `O(Q^{-2r})` for `C^{2r}` integrands, true EP →
+  not uniformly bounded.
+- `bayesbreak.baselines.run_smuce` — SMUCE (Frick, Munk & Sieling 2014)
+  via the R package `stepR`, driven through `rpy2`. Registered as
+  `"smuce"` in the dispatch registry; lazy import; readable
+  `ImportError` when the upstream is missing.
+
+### Changed
+
+- `DiagnosticCheck.failure_mode` tags renamed for the Phase Three draft:
+  `"abs-prob-tv-bound"` → `"tv-bound"`. Check name
+  `pk_tv_bound_cor_abs_prob` → `pk_tv_bound_check`. The math is unchanged
+  (the bound `exp(2 k_max ε) − 1` is derivable directly from
+  `prop:stability`); only the label naming follows the manuscript, which
+  no longer ships a separate `cor:abs-prob` corollary.
+- Module docstrings in `bayesbreak.dp` and `bayesbreak.diagnostics`, and
+  the `_compute_block_evidence` docstring in `bayesbreak.base`, now
+  reference `prop:stability` + `ass:uniform-block-error` +
+  `prop:uniform-bounds` instead of the removed `rem:score-matrix-exactness`
+  / `cor:boundary-event-sum` / `cor:abs-prob` labels.
+- `bayesbreak.datasets.welllog` and `bayesbreak.datasets.methylation`
+  docstrings reverted to the Phase Three text (`changepoint::Lai2005fig4`
+  / `nloyfer/meth_atlas` recipes). Code-comment caveats record the
+  prior-draft alternatives (`changepoint.influence::welldata`,
+  `nloyfer/wgbs_tools` + `nloyfer/UXM_deconv`) so a future agent can
+  re-raise them if the rolled-back recipes fail at run time.
+- `docs/api.md` cross-references the Phase Three labels:
+  `prop:bb-complexity`, `thm:map-correctness`, `prop:gaussian-block` /
+  `prop:poisson-block` / `prop:binomial-block` / `prop:negbin-block` /
+  `prop:beta-block`, `def:exported-segmentation`, `def:bayes-curve`,
+  `def:prediction-cases`, `ass:uniform-block-error`,
+  `prop:uniform-bounds`, `prop:latent-identifiability`.
+
+## [2.0.0-rc2] — Unreleased
+
+Aligns the implementation with the 2026-05-14 revised manuscript in
+`docs/report/` (replaces the earlier May 9 draft). Surfaces the
+"Block-score contract" of §`sec:setup`, adds the absolute-probability TV
+diagnostic from Corollary `cor:abs-prob`, declares per-family
+moment-sign contracts (§5 5-C1), adds a prior-sensitivity diagnostic
+(§6 6-C1), corrects real-data source provenance docstrings, and
+introduces a status-aware `(PLANNED)` helper for figures that fall back
+to simulated data.
+
+### Added
+
+- `BayesBreakSegmenter.admissibility_mask_` — boolean mask of the
+  finite-evidence cells in `log_block_evidence_`. Materializes the
+  §`sec:setup` "Block-score contract" that the DP and `compute_log_C_k`
+  share the same admissibility convention.
+- `MOMENT_SIGN_CONTRACT` class attribute on every family. Gaussian
+  declares `"signed"`; Poisson, Binomial, Beta, BetaObs, Bernoulli,
+  NegBin, LogisticNormal declare `"nonneg"` (§5 paragraph 5-C1).
+- `DiagnosticCheck.failure_mode` — optional short tag tying each check
+  in the non-conjugate diagnostic report to a failure mode in the
+  rewritten approximation-validation checklist (§4 4-C1).
+- `run_non_conjugate_diagnostics` now reports two new fields:
+  `pk_tv_empirical` and `pk_tv_upper_bound`, plus a passing check
+  `pk_tv_bound_cor_abs_prob` enforcing the absolute-probability TV
+  bound `exp(2·k_max·ε) − 1` of Corollary `cor:abs-prob`.
+- `run_prior_sensitivity(estimator, ...)` — planned diagnostic from
+  §6 6-C1; reports variation of `P(k|y)` and the fixed-`k_map`
+  boundary marginals under `p(k)` and `g` perturbations.
+- `scripts.figures._realdata.planned_caption()` helper and a
+  `planned: bool | None` argument on `make_realdata_figure` — infers
+  status from `bundle.source` by default so figures populated from a
+  verified download do **not** carry a `(PLANNED)` tag, and only the
+  simulated-fallback path is marked planned.
+- `bayesbreak.baselines` subpackage — thin wrappers around upstream
+  baseline libraries (no re-implementation). PELT, optimal partitioning,
+  BS, WBS via `ruptures` (`pip install bayesbreak[baselines]`); CBS via
+  Bioconductor `DNAcopy` driven through `rpy2`
+  (`pip install bayesbreak[baselines-r]`). Public API:
+  `segment_with(algorithm, y, **tuning)` returning a `BaselineResult`
+  with boundaries, segment count, upstream package + version, and the
+  tuning kwargs used.
+- New tests: `test_score_matrix_passthrough` (DP-on-supplied-matrix
+  exactness, `rem:score-matrix-exactness`),
+  `test_admissibility_mask_matches_log_block_evidence`,
+  `test_abs_prob_tv_bound` (Corollary `cor:abs-prob`),
+  `TestMomentSignContract` (per-family sign), and
+  `test_prior_sensitivity_reports_variation_per_variant`.
+
+### Changed
+
+- Dataset loader docstrings corrected against the new manuscript:
+  - `datasets.welllog`: cites Ó Ruanaidh & Fitzgerald 1996 +
+    Fearnhead & Clifford 2003 and the `changepoint.influence::welldata`
+    object (length 4050). Warns explicitly that
+    `changepoint::Lai2005fig4` is the array-CGH example of
+    Lai et al. 2005, **not** the well-log NMR series.
+  - `datasets.methylation`: replaces the older `nloyfer/meth_atlas`
+    pointer (which implements Moss et al. 2018, not the 2023 atlas)
+    with `nloyfer/wgbs_tools` + `nloyfer/UXM_deconv`, the companion
+    software for `loyfer2023atlas`. Records GEO accession
+    `GSE186458` as the canonical raw source.
+- Manuscript caption hygiene in `docs/report/sections/6.evaluation.tex`:
+  the four real-data figures (`fig:welllog`, `fig:cgh`, `fig:spx`,
+  `fig:methylation`) no longer carry the `(PLANNED)` prefix —
+  populated PDFs are reported as observed. `tab:realdata-status`
+  rewritten to reflect that figures are populated and only the
+  metrics tables remain placeholders. The four metric tables retain
+  `(PLANNED)` because their cells are still `---`.
+
+## [2.0.0-rc1] — Earlier May 2026
 
 This release aligns the implementation with the May 2026 revision of the
 manuscript at `docs/report/bayesbreak.pdf`. The whole DP layer, latent-group

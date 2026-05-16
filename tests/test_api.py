@@ -67,6 +67,18 @@ class TestFittedAttributes:
         est, _ = gaussian_segmenter
         assert np.all((est.boundary_marginals_ >= -1e-12) & (est.boundary_marginals_ <= 1 + 1e-12))
 
+    def test_admissibility_mask_matches_log_block_evidence(self, gaussian_segmenter):
+        """Block-score contract (§``sec:setup``): ``admissibility_mask_`` is the
+        finite-cell mask of ``log_block_evidence_`` and has the same shape."""
+        est, _ = gaussian_segmenter
+        assert est.admissibility_mask_.shape == est.log_block_evidence_.shape
+        assert est.admissibility_mask_.dtype == bool
+        assert np.array_equal(est.admissibility_mask_, np.isfinite(est.log_block_evidence_))
+        # At least the strict upper triangle has admissible entries.
+        n = est.n_
+        upper_count = int(est.admissibility_mask_[np.triu_indices(n + 1, k=1)].sum())
+        assert upper_count > 0
+
     def test_k_posterior_sums_to_one(self, gaussian_segmenter):
         est, _ = gaussian_segmenter
         assert float(np.sum(est.k_posterior_)) == pytest.approx(1.0, abs=1e-10)

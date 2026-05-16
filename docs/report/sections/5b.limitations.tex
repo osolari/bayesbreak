@@ -1,0 +1,85 @@
+\section{Limitations, failure modes, and counterexamples}
+\label{sec:limitations}
+
+The preceding sections establish the BayesBreak framework as a modular exact-Bayesian
+segmentation pipeline with explicit theoretical guarantees on conjugate-block inference
+(Theorem~\ref{thm:ef-integral}, Proposition~\ref{prop:bb-complexity}), posterior-odds
+stability under non-conjugate approximation (Assumption~\ref{ass:uniform-block-error},
+Proposition~\ref{prop:stability}, Proposition~\ref{prop:uniform-bounds}), latent-group
+identifiability up to label permutation (Proposition~\ref{prop:latent-identifiability},
+Example~\ref{ex:label-switch-counterexample}), and joint MAP correctness
+(Theorem~\ref{thm:map-correctness}). This section collects the corresponding limitations
+and named failure modes, so that downstream users can reason about applicability
+before running the framework on a new problem class.
+
+\paragraph{Computational regime.}
+The DP layer is $\Theta(k_{\max} n^2)$ time and at least $\Theta(k_{\max} n)$ memory
+(Proposition~\ref{prop:bb-complexity}). The framework is therefore appropriate for series
+lengths $n$ in the thousands and modest segment ceilings $k_{\max}$; it is \emph{not} an
+online detector and is not competitive with linear-time penalized methods (e.g.\ PELT) at
+$n\gtrsim 10^5$ unless block precomputation is dramatically sparsified. The DP itself
+cannot be replaced with a coarser approximation without losing the exact posterior
+guarantees that motivate the framework; the right substitution for very large $n$ is a
+sliding-window decomposition (planned, not implemented here).
+
+\paragraph{Block-model misspecification.}
+All guarantees are conditional on the chosen exponential-family block model. If the true
+within-segment distribution is not in the chosen family (e.g.\ heavy-tailed observations
+under a Gaussian block, or zero-inflation under a Poisson block), block evidences become
+biased and the posterior over $k$ inherits that bias. The framework provides
+posterior-predictive diagnostics for this case (Section~\ref{sec:families-predictive}),
+but does \emph{not} adapt the block family automatically. A practical recipe is to
+compare the implemented block families on the same data (Table~\ref{tab:single_quant})
+and reserve the chosen specification for the body of the paper.
+
+\paragraph{Non-conjugate approximation regime.}
+The posterior-odds bound of Proposition~\ref{prop:stability} is linear in $k_{\max}$, so
+non-conjugate analyses with $k_{\max}\gg 30$ must verify a correspondingly smaller $\varepsilon$
+to keep $(k+k')\varepsilon$ small. Routine-by-routine $\varepsilon$ rates are in
+Proposition~\ref{prop:uniform-bounds}; the EP row of Table~\ref{tab:nonconj_tradeoff} is the
+canonical failure mode (EP need not satisfy a uniform $\varepsilon$ when its iteration fails to
+converge).
+
+\paragraph{Latent-group identifiability.}
+Proposition~\ref{prop:latent-identifiability} identifies the latent-group template
+mixture up to permutation of the group labels;
+Example~\ref{ex:label-switch-counterexample} makes the indeterminacy explicit at the
+two-group, two-subject scale. Any label-level reporting therefore requires a
+deterministic anchoring convention (e.g.\ ordering templates by $k_g$ or by lexicographic
+order on $t^{(g)}$). The EM algorithm of Section~\ref{sec:latent-em} is not guaranteed to
+recover the global maximizer of the finite template-mixture objective; the
+recommendation of $R\ge 5$ restarts in Section~\ref{sec:latent-em} is a defense against
+this but is not a guarantee.
+
+\paragraph{Boundary semantics.}
+Boundary-event marginals $p(b_i=1\mid y,k)$ and the joint MAP segmentation
+$\widehat t^{\mathrm{MAP}}(k)$ are different posterior summaries (Remark~\ref{rem:marg-vs-joint})
+and must not be conflated. Report both whenever boundary semantics matter for the downstream task.
+
+\paragraph{Partition-prior sensitivity.}
+The posterior over segment counts $p(k\mid y)$ is mildly sensitive to the prior $p(k)$
+and substantially sensitive to the length factor $g(\Delta_x(i,j))$ when the design grid is
+irregular. The framework supplies design-aware partition priors
+(Section~\ref{sec:irregular}); the well-log results table (Table~\ref{tab:real_welllog},
+planned) is the natural place to quantify this sensitivity for users. Until that
+ablation is populated, users are advised to compare an index-uniform prior to at least
+one length-aware alternative and report any disagreement explicitly.
+
+\paragraph{Out-of-scope settings.}
+The framework does \emph{not} address: (i) streaming or online detection (use
+\citet{adamsmackay2007bocpd}); (ii) within-segment trends or change-in-slope models (use
+piecewise-polynomial regression, e.g.\ \citet{ruggieri2014bcpvs}); (iii) variable-dimensional
+posterior simulation over $k$ with explicit posterior samples of $t$
+(use~\citet{green1995rjMCMC,fearnhead2006exact}); (iv) network or spatial segmentation on
+non-totally-ordered designs. The motivating reason to use BayesBreak is exact
+sum-product inference under \emph{ordered} designs and \emph{piecewise-constant} block
+means; the moment a problem falls outside that scope, a different framework is more
+appropriate.
+
+\paragraph{Scope of the empirical evaluation in this paper.}
+The synthetic suite and the four real-data figures are the implemented demonstrations of the
+framework; conclusions in this paper are restricted to claims that the implemented framework
+recovers what it was designed to recover. Broader competitiveness claims require the planned
+external comparators (PELT, wild binary segmentation, SMUCE, RJMCMC, Fearnhead's exact DP) and
+the partition-prior / pooling / likelihood ablations populated by the finalized benchmarking
+pipeline.

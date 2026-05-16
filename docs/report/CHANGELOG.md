@@ -2,599 +2,555 @@
 
 ## Summary
 
-This pass produced a publication-development-ready BayesBreak project and a coding-agent handoff package from the approved consolidated plan. The revised project preserves the existing LaTeX structure, class file, bibliography style, labels, figure/table environments, placeholder real-data figures, placeholder real-data tables, planned experiments, expected outputs, implementation plans, and theoretical direction. No completed empirical results, benchmark scores, citations, figures, tables, or theorem claims were fabricated.
+This pass produced a publication-development-ready BayesBreak project and an updated
+coding-agent handoff package from the approved consolidated edit plan (Phase Two). The revised
+project preserves the existing LaTeX structure, document class, bibliography style, macros,
+labels, figure and table environments, placeholder real-data figures, placeholder real-data
+tables, planned experiments, expected outputs, projected outputs, implementation plans, and the
+manuscript's theoretical and methodological direction. No completed empirical results, benchmark
+scores, figures, tables, or observed findings were fabricated. New theoretical material is a
+single proposed corollary derived from assumptions already in force, plus clearly labeled remarks
+and one explicitly labeled exploratory appendix note.
 
-Applied change counts by category:
+Unlike the previous pass, a full LaTeX toolchain was available in this environment, so the
+revised project was compiled end to end.
 
-- A. Technical errors and inaccuracies: 52 grouped fixes or verified source corrections.
-- B. Theoretical development: 24 grouped strengthening changes or handoff-linked formal checks.
-- C. Rigor and completeness improvements: 30 grouped clarifications and implementation-readiness checks.
-- D. Clarity and organization: 21 grouped source and exposition improvements.
-- E. Planned/expected/projected/placeholder material: 23 grouped preservation and status-calibration changes.
-- F. New theory/methodology/experiment/handoff additions: 27 grouped additions, primarily coding-agent tasks and planned-evaluation protocols.
-- G. Other substantive additions: 4 grouped handoff and verification notes.
-- H. Minor edits and LaTeX fixes: 24 grouped source, formatting, packaging, and static-check items.
+### Applied change counts by category
 
-Planned-experiment, expected-result, projected-result, implementation-plan, and placeholder material was preserved. The four real-data placeholder studies remain in the project. Real-data figures and tables remain placeholders until final pipelines generate observed outputs. Cautious or conditional language is retained only where needed to distinguish planned outputs from observed results, assumptions from conclusions, and approximation guarantees from exact conjugate inference.
+- **A. Technical errors and inaccuracies:** 8 items (4 bibliographic corrections, 3 new-citation
+  insertions tied to corrected attributions, 1 prose qualifier).
+- **B. Theoretical development:** 4 items (1 proposed corollary with supporting remark, 2
+  clarifying remarks, 1 tightened theorem assumption).
+- **C. Rigor and completeness improvements:** 4 items (forward reference, checklist linkage,
+  per-family sign statement, planned sensitivity metric).
+- **D. Clarity and organization:** 3 applied items (abstract reordering, positioning-claim
+  softening, modular-comparator positioning); 1 no-op item retained for transparency.
+- **E. Planned/expected/projected/placeholder material:** 3 items (9 placeholder captions
+  prefixed with "(PLANNED)", 1 planned-baseline extension).
+- **F. New theory/methodology/experiment/handoff additions:** 4 items (12 new bibliography
+  entries with prose integration, 1 proposed corollary, 1 exploratory appendix note, handoff
+  verification tasks).
+- **G. Other substantive additions:** 2 items (ruptures software citation, this changelog
+  rewrite).
+- **H. Minor edits and LaTeX fixes:** 4 items (2 bibliography entry refinements, 2 overfull-box
+  fixes; 2 no-op/flag-only items retained for transparency).
 
-Baseline build status: the current execution environment lacks a TeX engine and network package installation failed, so no new LaTeX compilation could be performed in this pass. Static checks were run after editing. A previously compiled matching revised PDF is included as the PDF deliverable; it has 91 pages.
+### Preservation statement
 
-New files added: `CODING_AGENT_HANDOFF.md`. Updated files: `CHANGELOG.md`. No new package, macro, figure file, table file, or bibliography entry was added.
+Planned-experiment, expected-result, projected-result, implementation-plan, and placeholder
+material was preserved. The four real-data placeholder case studies (well-log, array-CGH,
+S&P 500, methylation) remain in the project with their placeholder figures and tables intact.
+Real-data figures and tables remain placeholders until finalized pipelines generate observed
+outputs; their captions are now prefixed "(PLANNED)" per the approved status convention.
+Cautious or conditional language is retained only where it distinguishes planned outputs from
+observed results, assumptions from conclusions, and approximation guarantees from exact conjugate
+inference.
 
-## Front Matter, Root File, and Build Structure
+### Baseline build status
 
-### FM-A1 / Bib-A1 — `bayesbreak.tex`
+A full TeX Live toolchain was available. The original project did not compile out of the box in
+this environment because three packages/options were unavailable on the minimal install
+(`lmodern.sty`, `bbm.sty`, and the `latin` Babel option) and `microtype` font expansion fails on
+non-scalable fonts. Reversible portability shims (item Build-A1) were added so the project
+compiles on minimal installs while remaining no-ops on a full install. With those shims, the
+**original project compiled to 92 pages** with zero errors, zero undefined references, zero
+undefined citations, and zero multiply-defined labels.
 
-- Category: A. Technical errors and inaccuracies.
-- Change: Ensured the bibliography style declaration precedes the bibliography invocation.
-- Rationale: BibTeX-compatible workflows expect the style to be declared before the bibliography file is processed.
+### Revised build status
 
-### FM-C1 / Build-A1 / Build-C1 — build documentation
+The revised project compiles end to end via `pdflatex -> bibtex -> pdflatex -> pdflatex` with
+zero errors, zero undefined references, zero undefined citations, and zero multiply-defined
+labels. The **revised PDF has 98 pages** after the CG integration pass. The Phase Three build was 96 pages, the Phase Four build 97 pages; the additional page reflects the new CG-1 remark, CG-2 corollary with proof, CG-3 contract paragraph, the two CG-4 limitations paragraphs, and the resolved appendix recipe. Box warnings: 15 overfull and 50 underfull `\hbox` (down from 17 overfull at baseline).
+No avoidable new warnings were introduced; the remaining overfull boxes are all under 9 pt and
+are font-substitution artifacts (headings and run-in paragraph headers) expected to shrink
+further on a full install with the intended `lmodern` fonts.
 
-- Category: C. Rigor and completeness improvements.
-- Change: Recorded the root file, bibliography workflow, static-check status, and TeX-toolchain limitation in this changelog and in `CODING_AGENT_HANDOFF.md`.
-- Rationale: The next coding agent needs a clear build path and an honest account of what was and was not compiled in this environment.
+### Files added or changed
 
-### FM-D1 / Build-D1 — source cleanliness
+- **Changed source files:** `bayesbreak.tex`, `saim.cls`, `reference/cite.bib`,
+  `sections/0-abstract.tex`, `sections/1.intro.tex`, `sections/2.problem.tex`,
+  `sections/4.method.tex`, `sections/5.algorithms.tex`, `sections/6.evaluation.tex`,
+  `sections/8.appendix.tex`.
+- **Updated deliverables:** `CHANGELOG.md`, `CODING_AGENT_HANDOFF.md`.
+- **New bibliography entries:** 12 (see Bibliography section below). **No new package, macro,
+  figure file, or table file was added.** Two portability shims reference packages
+  (`lmodern`, `bbm`) only through `\IfFileExists` guards with fallbacks, so no new hard package
+  dependency was introduced.
 
-- Category: D. Clarity and organization.
-- Change: Used the cleaned source state without internal debug/edit-history comments.
-- Rationale: The project should be ready for publication development and coding-agent handoff.
+---
 
-### FM-H1 / Build-H2 — package hygiene
+## Front Matter, Root File, and Build Configuration
 
-- Category: H. Minor edits and LaTeX fixes.
-- Change: Prepared the project package without stale build clutter and with the required Markdown deliverables at project root.
-- Rationale: The zip should be Overleaf-ready and handoff-ready.
+### Build-A1 -- `saim.cls`, `bayesbreak.tex`
 
-## Abstract and Keywords
+- Category: A / H (compilation).
+- Change: Added reversible, well-commented portability shims so the project compiles on minimal
+  TeX installs: `microtype` loaded with `expansion=false`; the unused `latin` Babel option
+  dropped; `lmodern` loaded only via `\IfFileExists` with a graceful fallback to default
+  Computer Modern; `bbm` loaded via `\IfFileExists` with a `\mathbbm` -> `\mathbb` fallback for
+  the single `\mathbbm` use in the manuscript.
+- Rationale: The original project required packages/options absent on minimal installs. The
+  shims are no-ops on a full installation and guarantee compilation otherwise; they do not alter
+  the manuscript's content, template, or formatting conventions.
 
-### Abs-A1 / Abs-E1 — empirical status
+### Bib-F1 -- `reference/cite.bib`
 
-- Category: A and E.
-- Change: Preserved the completed theoretical and synthetic-validation framing while keeping real-data material identified as planned/placeholder evaluation content.
-- Rationale: The abstract must distinguish completed synthetic validation from planned real-data outputs without weakening the manuscript’s technical voice.
+- Category: H / F (bibliography).
+- Change: Corrected the `hutter2006bpcr` entry title to "Exact Bayesian Regression of Piecewise
+  Constant Functions" (the verified published title), keeping year 2007 and venue
+  *Bayesian Analysis* 2(4):635--664. The citation key was left unchanged to avoid silent
+  breakage.
+- Rationale: The entry title did not match the published paper; the year/title were internally
+  inconsistent.
 
-### Abs-A2 / Abs-C1 — approximation stability scope
+---
 
-- Category: A and C.
-- Change: Preserved the non-conjugate posterior-odds stability result with its uniform block-error condition.
-- Rationale: The stability guarantee is strong under its stated assumption and should not be read as an unconditional segmentation-accuracy guarantee.
+## Abstract
 
-### Abs-A3 — latent-template EM scope
+### 0-D1 -- `sections/0-abstract.tex`
 
-- Category: A.
-- Change: Kept the EM contribution aligned with finite-template mixture optimization rather than fully Bayesian averaging over latent group segmentations.
-- Rationale: The abstract and method section must make the same technical claim.
+- Category: D (clarity).
+- Change: Reordered the final two sentences so the completed-synthetic versus planned-real-data
+  status reads first; no content was added or removed.
+- Rationale: Surfaces the empirical-status distinction earlier without weakening the technical
+  summary.
 
-### Abs-D1 / Abs-H1 — abstract polish
+---
 
-- Category: D and H.
-- Change: Retained polished abstract flow and standardized terminology.
-- Rationale: The abstract should read as a coherent technical summary.
+## Section 1: Introduction, Related Work, and Positioning
 
-## Section 1: Introduction, Contributions, Related Work, Code Note, and Organization
+### 1-A1 / 1-A2 / 1-A3 -- `reference/cite.bib`
 
-### 1-A1 / 1-A2 / 1-A3 — contribution-scope corrections
+- Category: A (technical errors).
+- Change: Corrected three bibliography entries against verified sources: `auger1989segment`
+  (title and venue corrected to "Algorithms for the Optimal Identification of Segment
+  Neighborhoods," *Bulletin of Mathematical Biology* 51(1):39--54); `frick2014smuce` (venue
+  corrected to *JRSS-B* 76(3):495--580); `bleakley2011groupfused` (converted to an `@misc`
+  arXiv:1106.4199 entry, with the venue flagged for author verification in the handoff).
+- Rationale: The original entries listed incorrect titles or venues; the prose characterizations
+  were accurate and were retained.
 
-- Category: A.
-- Change: Maintained the distinctions among exact conjugate-block DP, approximate non-conjugate block routines, finite-template EM, and posterior-odds stability.
-- Rationale: Contribution claims must be technically precise while remaining confident.
+### 1-A4 -- `sections/1.intro.tex`, `reference/cite.bib`
 
-### 1-B1 / 1-B2 — roadmap and irregular-design bridge
+- Category: A / F (technical errors, new additions).
+- Change: Added one sentence to the "Bayesian offline segmentation and product partitions"
+  paragraph acknowledging Hartigan (1990) as the abstract origin of partition models, Chib
+  (1998) as the intermediate hidden-Markov Bayesian multiple-changepoint formulation, and Wyse,
+  Friel & Rue (2011) as exact-DP segmentation with within-segment dependence. Three new
+  bibliography entries (`hartigan1990partition`, `chib1998estimation`, `wyse2011approximate`).
+- Rationale: Closes a genuine gap in the historical positioning that a reviewer would notice.
 
-- Category: B.
-- Change: Integrated a status-aware but confident roadmap and a bridge from design geometry to partition priors.
-- Rationale: These additions strengthen the conceptual architecture of the paper.
+### 1-D1 -- `sections/1.intro.tex`
 
-### 1-C1 / 1-G1 / Bib-F1 — related-work and citation verification
+- Category: D (clarity, positioning accuracy).
+- Change: Softened the "fragmented literature" claim to the verified-defensible phrasing and
+  added an explicit clause acknowledging the multi-sequence and dependence exceptions (Fearnhead
+  & Liu 2011, Fan & Mackey 2017, Quinlan et al. 2024).
+- Rationale: The original blanket claim was slightly overstated relative to the literature.
 
-- Category: C, G, and F.
-- Change: Preserved balanced related-work positioning and moved future citation-verification needs to the handoff.
-- Rationale: No citation was fabricated; future baseline and dataset citation work is now actionable.
+### 1-D2 / G-1 -- `sections/1.intro.tex`, `reference/cite.bib`
 
-### 1-D1 / 1-D2 / 1-E1 / 1-F1 — empirical-development framing
+- Category: D / G (clarity, positioning).
+- Change: Added a sentence to the "Positioning of BayesBreak" paragraph positioning the
+  framework relative to the closest modular comparators, the `ruptures` Python library and the
+  `changepoint` R package, noting these are optimization-based and frequentist. New bibliography
+  entries `truong2018ruptures` and `killick2014changepoint`.
+- Rationale: A reviewer would expect explicit engagement with the closest modular toolkits.
 
-- Category: D, E, and F.
-- Change: Kept completed synthetic validation distinct from planned real-data and baseline evaluation, and documented baseline categories in the handoff.
-- Rationale: Planned empirical work should be clear, confident, and executable.
+### 5-A1 -- `sections/1.intro.tex`, `reference/cite.bib`
 
-### 1-H1 — local polish
+- Category: A (technical correctness).
+- Change: Added an expected-case-and-conditions qualifier to the PELT complexity mention (linear
+  cost is expected-case under a changepoint-density condition; worst case remains quadratic) and
+  cited the functional-pruning algorithms FPOP and SNIP. New bibliography entry
+  `maidstone2017optimal`.
+- Rationale: Prevents an unqualified linear-cost claim and engages modern pruned-DP work.
 
-- Category: H.
-- Change: Preserved polished introductory prose and consistent acronym usage.
-- Rationale: Improves readability and professional tone.
+---
 
 ## Section 2: Problem Formulation and Inferential Targets
 
-### 2-A1 / 2-A2 — segment-count conditioning and MAP objectives
-
-- Category: A.
-- Change: Preserved the distinction among fixed-`k`, selected-`k`, and marginalized-`k` summaries, and the distinction between fixed-`k` and across-`k` MAP objectives.
-- Rationale: These distinctions determine correct posterior interpretation and implementation.
-
-### 2-A3 / 2-C1 — weight interpretation and prediction targets
-
-- Category: A and C.
-- Change: Preserved the separation between likelihood weights and irregular design spacing, and documented prediction-mode validation in the handoff.
-- Rationale: Prevents model misspecification and prediction-mode confusion.
-
-### 2-B1 / 2-B2 / 2-F1 — assumptions and diagnostics
-
-- Category: B and F.
-- Change: Added coding-agent checks for segment-count conditioning, posterior normalization, and boundary-sum identities.
-- Rationale: Formal inferential targets should map to implementation tests.
-
-### 2-D1 / 2-H1 — organization and notation
-
-- Category: D and H.
-- Change: Preserved clean transitions and notation consistency.
-- Rationale: Improves reader navigation.
-
-## Section 3: Notation and Bayesian Setup
-
-### 3-A1 / 3-A2 / 4.3-A1 / App2-A3 — block-length convention
-
-- Category: A.
-- Change: Preserved the unified physical block-length convention across setup, irregular designs, algorithms, and appendices.
-- Rationale: Irregular-design priors require a consistent endpoint convention.
-
-### 3-A3 / App2-A2 — fixed-`k` hazard scope
-
-- Category: A.
-- Change: Preserved corrected interpretation of renewal/hazard language under fixed segment count.
-- Rationale: Conditioning on `k` changes the role of length laws.
-
-### 3-A4 / 5-A1 / 3-F1 — partition-prior normalizers
-
-- Category: A and F.
-- Change: Preserved the normalized `C_k` convention and added handoff tests for prior normalizers.
-- Rationale: Correct posterior over `k` and across-`k` scoring require correct normalizers.
-
-### 3-B1 / 5-C1 — admissible-block convention
-
-- Category: B and C.
-- Change: Preserved conventions for invalid blocks and documented implementation tests.
-- Rationale: Invalid blocks need uniform handling in log-space DP.
-
-### 3-B2 / 4.3-B1 — design-prior taxonomy
-
-- Category: B.
-- Change: Preserved the taxonomy of index-uniform, boundary-coordinate, segment-cohesion, and renewal-style priors.
-- Rationale: Strengthens the irregular-design framework.
-
-### 3-C1 / 3-D1 / 3-H1 — notation and layout
-
-- Category: C, D, and H.
-- Change: Preserved symbol-table and normalizer-convention improvements.
-- Rationale: Reduces notation ambiguity.
-
-## Section 4.1: Exponential-Family Block Evidence and Moments
-
-### 4.1-A1 / App1-A1 — weighted base-measure convention
-
-- Category: A.
-- Change: Preserved aligned weighted exponential-family notation between main theorem and appendix.
-- Rationale: Block evidence formulas depend on this convention.
-
-### 4.1-A2 / 4.7-A1 / 4.7-B1 — moment target scale
-
-- Category: A and B.
-- Change: Preserved the distinction between observation-scale mean moments and parameter-scale quantities.
-- Rationale: Bayes-curve interpretation must be consistent across families.
-
-### 4.1-B1 / App1-B1 — theorem hypotheses
-
-- Category: B.
-- Change: Preserved strengthened hypotheses for finite normalizers, finite moments, valid hyperparameters, and nonnegative weights.
-- Rationale: Makes the theorem publication-ready.
-
-### 4.1-B2 / 5-A3 — moment-numerator storage
-
-- Category: B and A.
-- Change: Preserved guidance distinguishing log evidence storage from signed or linear moment-numerator storage.
-- Rationale: Prevents implementation errors.
-
-### 4.1-C1 / 4.4-A2 — zero-weight convention
-
-- Category: C and A.
-- Change: Preserved zero-weight/missingness guidance and documented corresponding implementation checks.
-- Rationale: Missing data must not break family formulas.
-
-### 4.1-F1 — conjugate-family unit tests
-
-- Category: F.
-- Change: Added handoff tasks for numerical verification of conjugate block engines.
-- Rationale: Directly maps theory to implementation.
-
-## Section 4.2: Dynamic Programming, Posterior Summaries, MAP, and Moments
-
-### 4.2-A1 — marginal versus joint MAP
-
-- Category: A.
-- Change: Preserved corrected explanation distinguishing marginal boundary modes from joint MAP segmentation.
-- Rationale: Independent marginal maximization is not a segmentation algorithm.
-
-### 4.2-A2 — evidence monotonicity
-
-- Category: A.
-- Change: Preserved replacement of the invalid monotonicity proposition with correct diagnostic interpretation.
-- Rationale: Evidence across segment count is not generally monotone.
-
-### 4.2-A3 / 4.2-A4 / 4.2-A5 / App7-A1 — normalization and MAP scoring
-
-- Category: A.
-- Change: Preserved the distinctions among unnormalized DP sums, normalized likelihoods, fixed-`k` MAP, and across-`k` MAP.
-- Rationale: These distinctions are essential for model comparison and backtracking.
-
-### 4.2-B1 / 4.2-B2 / 5-B1 — theorem assumptions and sanity checks
-
-- Category: B.
-- Change: Added handoff tests for posterior normalization, forward/backward agreement, boundary sums, and MAP validity.
-- Rationale: DP exactness should be implementation-verifiable.
-
-### 4.2-B3 — `k`-marginalized Bayes curve
-
-- Category: B.
-- Change: Preserved optional `k`-marginalized curve support as a formal extension of existing posterior quantities.
-- Rationale: Expands the inference interface without inventing experiments.
-
-### 4.2-C1 / 5-D1 — memory and recomputation trade-offs
-
-- Category: C and D.
-- Change: Preserved implementation guidance distinguishing stored layers, checkpointing, and recomputation.
-- Rationale: Prevents underestimating resource requirements.
-
-### 4.2-F1 — brute-force DP validation
-
-- Category: F.
-- Change: Added handoff tasks for small-`n` brute-force enumeration checks.
-- Rationale: Provides concrete implementation correctness tests.
-
-## Section 4.3: Irregular Designs and Length-Aware Priors
-
-### 4.3-A2 / App2-A1 — boundary processes and cohesion priors
-
-- Category: A.
-- Change: Preserved the distinction between boundary-process priors and segment-cohesion priors.
-- Rationale: Avoids overextending the Poisson-process motivation.
-
-### 4.3-A3 — coarse-to-fine consistency
-
-- Category: A.
-- Change: Preserved lifted-grid and pseudo-index assumptions for refinement statements.
-- Rationale: Keeps indexing unambiguous.
-
-### 4.3-A4 — irregular-design example interpretation
-
-- Category: A.
-- Change: Preserved qualitative interpretation consistent with the stated cohesion function.
-- Rationale: Avoids unsupported quantitative claims.
-
-### 4.3-C1 / 4.9-A1 — likelihood weights versus design geometry
-
-- Category: C and A.
-- Change: Preserved the rule that irregular spacing belongs in the prior unless it is true likelihood exposure or precision.
-- Rationale: This is a central modeling safeguard.
-
-### 4.3-C2 / 3-F1 — normalizer implementation
-
-- Category: C and F.
-- Change: Added handoff tasks for regular and irregular normalizer tests.
-- Rationale: Ensures the prior used in inference matches the prior being normalized.
-
-### 4.3-F1 / App2-F1 — irregular-prior ablations
-
-- Category: F.
-- Change: Added coding-agent tasks for irregular-grid ablations and prior simulation diagnostics.
-- Rationale: Directly tests the design-aware prior contribution.
-
-## Sections 4.4 and 4.5: Shared-Boundary Replicates and Known Groups
-
-### 4.4-A1 — shared-boundary posterior scope
-
-- Category: A.
-- Change: Preserved the distinction between exact boundary posterior inference and conditional continuous parameter recovery.
-- Rationale: Avoids overstating what finite DP tables store.
-
-### 4.4-B1 / 4.4-C1 / 4.4-C2 — pooling details
-
-- Category: B and C.
-- Change: Added handoff guidance for subject-specific moment recovery, common-grid conventions, and hyperparameter handling.
-- Rationale: Strengthens implementation readiness.
-
-### 4.4-F1 — multi-subject ablation
-
-- Category: F.
-- Change: Added a planned pooled-vs-independent synthetic stress test to the handoff.
-- Rationale: Tests shared-boundary pooling under controlled conditions.
-
-### 4.5-A1 / 4.5-B1 — known-group notation and factorization
-
-- Category: A and B.
-- Change: Preserved group-specific segment-count notation and groupwise factorization.
-- Rationale: Distinguishes known groups from shared-boundary and latent-group settings.
-
-### 4.5-F1 — known-versus-latent label experiment
-
-- Category: F.
-- Change: Added a planned comparison between known-label and latent-label settings.
-- Rationale: Quantifies the impact of label uncertainty in future experiments.
-
-## Section 4.6: Latent-Template Mixture and EM
-
-### 4.6-A1 / 4.6-A2 / 4.6-A3 — EM objective and length factors
-
-- Category: A.
-- Change: Preserved objective-aligned EM statements and documented implementation tests for objective monotonicity.
-- Rationale: Template updates must optimize the stated objective.
-
-### 4.6-A4 / 4.6-C2 — zero mixture weights, ties, restarts
-
-- Category: A and C.
-- Change: Added handoff tasks for empty groups, deterministic tie handling, restarts, and objective monitoring.
-- Rationale: These are necessary for robust implementation.
-
-### 4.6-A5 / 4.6-D1 — fixed-point language
-
-- Category: A and D.
-- Change: Preserved coordinatewise/template fixed-point language rather than unsupported continuous stationarity language.
-- Rationale: Discrete template optimization has a discrete convergence interpretation.
-
-### 4.6-F1 — latent-template robustness experiments
-
-- Category: F.
-- Change: Added planned experiments over initialization, separation, group count, noise, and restarts.
-- Rationale: Strengthens the empirical development path.
-
-## Section 4.7: Family-Specific Block Derivations
-
-### 4.7-A1 / 4.7-A2 — Negative-Binomial scale
-
-- Category: A.
-- Change: Preserved explicit scale distinctions for Negative-Binomial quantities.
-- Rationale: Prevents parameter-scale outputs from being read as observation-scale means.
-
-### 4.7-A3 / 4.7-A6 — Beta-response quadrature
-
-- Category: A.
-- Change: Preserved corrected quadrature framing and distinction from conjugate closed forms.
-- Rationale: The Beta-response row is DP-compatible but not a conjugate ratio-of-normalizers row.
-
-### 4.7-A4 — duplicate accumulation
-
-- Category: A.
-- Change: Preserved corrected Beta-response pseudocode without duplicate accumulation.
-- Rationale: Avoids implementation confusion.
-
-### 4.7-A5 / 4.7-E1 — per-location precision
-
-- Category: A and E.
-- Change: Preserved the methylation precision issue as a method/application consistency task.
-- Rationale: The planned methylation pipeline must match the supported Beta-response implementation.
-
-### 4.7-F1 — family-unit-test matrix
-
-- Category: F.
-- Change: Added handoff tasks for per-family evidence and moment tests.
-- Rationale: Makes block-family implementation concrete.
-
-## Section 4.8: Non-Conjugate GLMs and Approximation Stability
-
-### 4.8-A1 / 4.8-A2 — approximation assumptions
-
-- Category: A.
-- Change: Preserved explicit assumptions for mode existence and Laplace tails.
-- Rationale: Avoids overclaiming approximation guarantees.
-
-### 4.8-A3 / App9-A1 — Pólya-Gamma weighting
-
-- Category: A.
-- Change: Preserved precise interpretation of weights for PG-style updates and added implementation checks.
-- Rationale: Weighted augmentation must correspond to a valid likelihood interpretation.
-
-### 4.8-A4 / App8-A1 — Jaakkola-Jordan bound
-
-- Category: A.
-- Change: Preserved aligned bound notation across main text and appendix.
-- Rationale: Prevents sign or constant ambiguities.
-
-### 4.8-A5 / 4.8-A6 — approximate exactness and stability interpretation
-
-- Category: A.
-- Change: Preserved the distinction between exact DP on approximate block scores and exact inference for the original non-conjugate model.
-- Rationale: Keeps the approximation section rigorous.
-
-### 4.8-B1 / 4.8-B2 — approximation taxonomy and margin interpretation
-
-- Category: B.
-- Change: Preserved approximation taxonomy and added handoff validation around margins.
-- Rationale: Clarifies when stability results are informative.
-
-### 4.8-F1 — approximation-validation suite
-
-- Category: F.
-- Change: Added handoff tasks for block-error, posterior-sensitivity, MAP-path, boundary-marginal, and moment-error diagnostics.
-- Rationale: Directly operationalizes the stability theorem.
-
-## Section 4.9: Prediction Layer
-
-### 4.9-A1 / 4.9-A2 / 4.9-A3 — prediction accuracy and status
-
-- Category: A.
-- Change: Preserved corrections on likelihood weights, pointwise uncertainty, and planned real-data predictive diagnostics.
-- Rationale: Prevents misuse of prediction formulas and placeholder diagnostics.
-
-### 4.9-B1 / 4.9-C1 / 4.9-C2 — prediction-output taxonomy
-
-- Category: B and C.
-- Change: Added handoff mapping for prediction outputs, scoring modes, and conditional-independence assumptions.
-- Rationale: Makes the prediction layer implementable and testable.
-
-### 4.9-F1 — prediction evaluation
-
-- Category: F.
-- Change: Added a planned evaluation comparing MAP, Bayes-curve, and resegmentation scoring modes.
-- Rationale: Directly tests the prediction layer.
+### 2-C1 -- `sections/2.problem.tex`
+
+- Category: C (rigor).
+- Change: Added a forward reference in the "Computational scope" subsection acknowledging the
+  optional resegmentation-mode prediction cost of `O(k_max m^2)` per group, which is otherwise
+  introduced only much later in the prediction section.
+- Rationale: Completeness of the computational-scope statement.
+
+---
+
+## Section 4: Method (EF Block Evidence, DP, Irregular Designs, Pooling, Latent Groups, Families, Non-Conjugate Blocks, Prediction)
+
+### 4-B1 / F-2 -- `sections/4.method.tex`
+
+- Category: B / F (theoretical development, new addition).
+- Change: Inserted a new corollary (`cor:abs-prob`, "Absolute probability error for the
+  segment-count posterior") immediately after the boundary-ranking corollary, with a full proof
+  and a status remark (`rem:abs-prob-status`). The corollary converts the existing
+  posterior-odds stability bound into an explicit absolute-probability and total-variation bound
+  for the segment-count posterior, derived entirely from assumptions already in force for
+  Proposition `prop:stability`. The closing sentence of `prop:stability` was updated to point to
+  the new corollary instead of leaving the conversion implicit.
+- Rationale: A proposed strengthening that pre-empts an obvious reviewer request; the odds-level
+  guarantee alone does not give the absolute-probability statement that downstream thresholding
+  rules require.
+
+### 4-B2 -- `sections/4.method.tex`
+
+- Category: B (theoretical development).
+- Change: Added a remark (`rem:marg-eq-joint`, "When the two summaries agree") after the
+  marginal-versus-joint-MAP counterexample, stating the boundary case in which independently
+  maximizing the marginals does recover the joint MAP segmentation.
+- Rationale: The manuscript stated the discrepancy but never the converse condition.
+
+### 4-B3 -- `sections/4.method.tex`
+
+- Category: B (rigor, theory).
+- Change: Tightened the wording of Laplace-approximation assumption (A4) and added a clarifying
+  sentence separating what strict log-concavity provides (uniqueness of the maximizer) from what
+  it does not (tail control), which must instead come from coercivity or compact-domain
+  truncation.
+- Rationale: Removes a slight informality in the relationship between (A4) and the
+  log-concavity lemma.
+
+### 4-C1 -- `sections/4.method.tex`
+
+- Category: C (rigor, clarity).
+- Change: Rewrote the "Approximation-validation checklist" paragraph so each checklist item is
+  explicitly tied to the specific failure mode it guards against (Remark `rem:failure-modes`),
+  and so that the relationship to Corollary `cor:ranking` is made explicit.
+- Rationale: Operationalizes the failure-mode discussion and the stability theory.
+
+### 6-A1 -- `sections/6.evaluation.tex` (well-log subsection)
+
+- Category: A (technical errors), with `reference/cite.bib` and `sections/8.appendix.tex`.
+- Change: Corrected the well-log NMR dataset attribution. The body subsection now cites the
+  primary source (O Ruanaidh & Fitzgerald 1996) alongside the downstream users, states that the
+  cleaned version is used, and references Fearnhead & Rigaill (2019) for the raw/cleaned
+  distinction. New bibliography entries `oruanaidh1996numerical`, `lai2005comparative`,
+  `fearnhead2019changepoint`.
+- Rationale: The dataset was attributed only to a downstream user, and the appendix recipe used
+  a dataset object name (`Lai2005fig4`) that actually refers to a different (array-CGH)
+  benchmark.
+
+### 6-A2 -- `sections/6.evaluation.tex` (array-CGH and methylation subsections)
+
+- Category: A (technical errors), with `reference/cite.bib`.
+- Change: Converted prose-only attributions to proper citations: Snijders et al. (2001) for the
+  Coriell array-CGH panel and Loyfer et al. (2023) for the methylation atlas. New bibliography
+  entries `snijders2001assembly`, `loyfer2023atlas`, `killick2014changepoint`.
+- Rationale: These works were named in prose but had no bibliography entries, so they produced
+  no formatted references.
+
+### 4-D1 -- `sections/4.method.tex`
+
+- Category: D (organization).
+- Change: No-op, retained for transparency. The method file is long, but per Objective 8 the
+  project layout was not reorganized.
+- Rationale: Preservation of project structure.
+
+---
 
 ## Section 5: Algorithms, Complexity, and Numerical Considerations
 
-### 5-A1 / 5-A2 / 5-A3 / 5-A4 — algorithm consistency
+### 5-C1 -- `sections/5.algorithms.tex`
 
-- Category: A.
-- Change: Preserved corrected normalizer inputs, block-length calls, moment storage caveats, and EM block-score consistency.
-- Rationale: Algorithms must match the theory.
+- Category: C (rigor, handoff).
+- Change: Added a per-family statement of moment-numerator sign to the log-block-evidence
+  storage paragraph: the conjugate-family moment numerators are strictly positive and may be
+  stored directly in log space, with the signed-log path needed only for sign-changing targets
+  such as a centered Gaussian mean or a non-conjugate Laplace test function.
+- Rationale: Tells an implementer precisely when the signed-log representation is required.
 
-### 5-B1 / 5-C1 / 5-C2 — numerical checks and indexing
-
-- Category: B and C.
-- Change: Added handoff tasks for numerical sanity checks, invalid-block handling, and DP range checks.
-- Rationale: These checks reduce implementation risk.
-
-### 5-C3 / 6-G1 — reproducibility metadata
-
-- Category: C and G.
-- Change: Added handoff requirements for seeds, hyperparameters, prior settings, data versions, approximation methods, and generated artifact paths.
-- Rationale: Required for reproducible experiments.
-
-### 5-F1 — implementation milestones
-
-- Category: F.
-- Change: Added milestone tasks for block engines, DP core, priors, EM, prediction, diagnostics, plotting, and experiment scripts.
-- Rationale: Makes the project coding-agent-ready.
+---
 
 ## Section 6: Experiments and Results
 
-### 6-A1 / TF-A1 — non-conjugate table interpretation
+### 6-E1 / 6-E2 -- `sections/6.evaluation.tex`
 
-- Category: A.
-- Change: Preserved corrected interpretation of block-error magnitudes and approximation trade-offs.
-- Rationale: The table is an illustration, not a universal ranking.
+- Category: E (planned/placeholder material).
+- Change: Prefixed all nine real-data placeholder figure and table captions
+  (`tab:realdata-status`, `fig:welllog`, `tab:real_welllog`, `fig:cgh`, `tab:real_cgh`,
+  `fig:spx`, `tab:real_spx`, `fig:methylation`, `tab:real_methylation`) with "(PLANNED)" per the
+  approved status convention; removed the now-redundant inline "(placeholder)" wording. All
+  placeholder content, `---` cells, and pipeline cross-references were preserved.
+- Rationale: Applies the explicit "(PLANNED)" caption convention for placeholder artifacts.
 
-### 6-A2 — boundary F1 characterization
+### 6-E3 -- `sections/6.evaluation.tex`, `reference/cite.bib`
 
-- Category: A.
-- Change: Preserved table-consistent interpretation of boundary F1 values.
-- Rationale: Empirical prose must match displayed numbers.
+- Category: E / F (planned material, new addition).
+- Change: Extended the planned pre-submission frequentist baseline list to include the
+  functional-pruning algorithms FPOP and SNIP (Maidstone et al. 2017). Remains explicitly
+  planned work.
+- Rationale: Strengthens the planned comparison set with modern pruned-DP baselines.
 
-### 6-A3 / 6-E1 / 6-E2 / TF-A2 / TF-E1 / TF-E2 — real-data placeholders
+### 6-C1 -- `sections/6.evaluation.tex`
 
-- Category: A and E.
-- Change: Preserved all real-data placeholder figures and tables, with status-calibrated captions and pending-value markers.
-- Rationale: Placeholder material defines planned outputs and should not be mistaken for completed results.
+- Category: C (rigor, experiment plan).
+- Change: Added a planned prior-sensitivity diagnostic to the evaluation-protocol description --
+  recording variation of `P(k|y)` and the boundary marginals under prior perturbation -- tied to
+  the already-planned ablations over `p(k)` and `g`. Marked as planned.
+- Rationale: The planned ablations had no associated robustness metric.
 
-### 6-A4 / App12-A3 — labels and annotations
+---
 
-- Category: A.
-- Change: Added handoff verification tasks for real-data annotation and proxy-label sources.
-- Rationale: Boundary F1 should not be computed against unverified labels.
+## Section 8: Appendix
 
-### 6-A5 — methylation precision
+### App-A1 -- `sections/8.appendix.tex`
 
-- Category: A.
-- Change: Added handoff attention to per-location precision for the methylation pipeline.
-- Rationale: Application and family derivation must agree.
+- Category: A (technical errors).
+- Change: Converted informal prose attributions in the real-data appendix to proper citations
+  (O Ruanaidh & Fitzgerald 1996, Snijders et al. 2001, Loyfer et al. 2023, Killick & Eckley 2014).
+  Corrected the well-log R recipe to remove the incorrect `Lai2005fig4` dataset object name,
+  replacing it with a placeholder object name and an explicit author-verification note, and
+  added an explicit warning that `Lai2005fig4` is the array-CGH example of Lai et al. (2005).
+  Flagged the methylation atlas distribution channel (GitHub path, GEO accession) as an
+  author-verification task.
+- Rationale: Removes a misleading dataset attribution and links prose references to the
+  bibliography.
 
-### 6-A6 — runtime interpretation
+### App-B1 -- `sections/8.appendix.tex`
 
-- Category: A.
-- Change: Preserved calibrated runtime interpretation over the archived range.
-- Rationale: Limited runtime ranges should not be overextended.
+- Category: B (rigor, theory).
+- Change: Added a remark (`rem:renewal-scope`, "Scope of the renewal equivalence") after the
+  renewal-equivalence proposition, formally delimiting the boundary case: for general
+  irregular designs the factorized prior remains a valid product-partition prior but is no
+  longer an i.i.d. renewal law, so the renewal-process language is heuristic motivation rather
+  than an exact equivalence.
+- Rationale: Prevents the renewal interpretation from being read as more general than it is.
 
-### 6-B1 / 6-C1 / 6-C2 / 6-C3 / 6-C4 — metrics and status summary
+### F-3 -- `sections/8.appendix.tex`
 
-- Category: B and C.
-- Change: Preserved the experiment-status summary, metrics explanations, publication-ready table labels, family-showcase explanation, and latent-group diagnostic status.
-- Rationale: The empirical section should be clear, confident, and accurate.
+- Category: F (new addition, exploratory).
+- Change: Added a new appendix subsection (`app:latent-template-positioning`, "Exploratory note:
+  relation of the latent-template mixture to multi-sequence Bayesian segmentation"), explicitly
+  labeled as a future-direction discussion rather than a completed contribution. It contrasts
+  the latent-template mixture with BASIC (Fan & Mackey 2017) and JRPM (Quinlan et al. 2024)
+  along three axes (discrete assignment versus shared-prior parameter; exact max-sum DP versus
+  MCMC; finite template-mixture objective versus full posterior averaging) and records the
+  fuller comparison as planned work.
+- Rationale: The research flagged that the latent-template-EM novelty claim is defensible but
+  must be explicitly contrasted with the closest comparators; the note is kept exploratory so it
+  does not derail the main narrative.
 
-### 6-F1 / 6-F2 / 6-F3 / 6-F4 — planned empirical strengthening
+### F-1 -- `sections/8.appendix.tex` (annotated literature table)
 
-- Category: F.
-- Change: Added handoff tasks for baseline comparisons, sensitivity ablations, failure-case analyses, and figure/table generation.
-- Rationale: These tasks turn the planned empirical program into executable work.
+- Category: F (new additions).
+- Change: Folded the high-value missing references into the annotated literature review table:
+  Hartigan (1990) and Chib (1998) into the foundational and exact-DP rows; Wyse, Friel & Rue
+  (2011) into the exact-DP row; Maidstone et al. (2017) into the frequentist partitioning row;
+  and two new rows for Fearnhead & Rigaill (2019) (robust segmentation / the well-log benchmark)
+  and Jewell et al. (2022) (post-selection inference for changepoints). New bibliography entry
+  `jewell2022testing`.
+- Rationale: Closes genuine positioning gaps identified during the literature investigation.
 
-## Section 7: Conclusion
-
-### 7-A1 / 7-A2 — conclusion status and method alignment
-
-- Category: A.
-- Change: Preserved conclusion language aligned with completed theory, completed synthetic validation, planned real-data work, finite-template EM, and non-conjugate stability assumptions.
-- Rationale: The conclusion should be accurate and strong.
-
-### 7-B1 / 7-C1 / 7-E1 / 7-F1 — theory-to-evaluation closure
-
-- Category: B, C, E, and F.
-- Change: Added handoff mapping from conclusion-level next steps to implementation and evaluation tasks.
-- Rationale: Supports the next publication-development iteration.
-
-## Appendices
-
-### App1-A1 / App1-A2 / App1-B1 / App1-C1 / App1-D1
-
-- Category: A, B, C, and D.
-- Change: Preserved appendix alignment for weighted base measures, hyperparameter mapping, moment-derivative conditions, proof completeness, and theorem pointers.
-- Rationale: Appendix derivations must match the main text.
-
-### App2-A1 / App2-A2 / App2-A3 / App2-B1 / App2-C1 / App2-D1
-
-- Category: A, B, C, and D.
-- Change: Preserved corrected scope for renewal priors, hazard cases, boundary-coordinate notation, fixed-`k` caveats, boundary marginal proof details, and HMM analogies.
-- Rationale: Prior-theory appendices must not overstate their scope.
-
-### App5-A1 / App5-B1
-
-- Category: A and B.
-- Change: Preserved label-switching scope and added handoff guidance for deterministic label reporting.
-- Rationale: Ensures reproducible latent-template summaries.
-
-### App6-A1 / App6-C1 / App6-D1 / App6-E1 / App6-F1
-
-- Category: A, C, D, E, and F.
-- Change: Preserved balanced literature positioning and added handoff tasks for baseline/citation verification.
-- Rationale: No missing citation was fabricated; future verification is explicit.
-
-### App7-A1 / App7-B1 / App8-A1 / App8-C1 / App9-A1 / App10-A1 / App10-C1 / App10-F1
-
-- Category: A, B, C, and F.
-- Change: Preserved max-sum offset corrections, tie-handling guidance, variational-bound alignment, PG weighting conventions, EM-complexity corrections, memory decomposition, and complexity-variant handoff tasks.
-- Rationale: Appendix proofs and complexity notes must support implementation.
-
-### App11-A1 / App12-A1 / App12-A2 / App12-A3 / App11-C1 / App12-C1 / App12-C2 / App12-D1 / App12-E1 / App12-E2 / App12-F1 / App12-F2
-
-- Category: A, C, D, E, and F.
-- Change: Preserved synthetic reproduction status, planned real-data pipeline status, source-verification tasks, runtime-target framing, output mappings, external dependency notes, and real-data completion checklists.
-- Rationale: The appendix should be accurate and coding-agent-ready.
+---
 
 ## Bibliography, Tables, Figures, and Source Hygiene
 
-### Bib-A2 / Bib-C1 / Bib-H1 / Bib-H2
+### H-1 -- `reference/cite.bib`
 
-- Category: A, C, and H.
-- Change: Preserved existing citation keys, avoided fabricated entries, and documented future citation verification in the handoff.
-- Rationale: Bibliography work must be source-supported or explicitly deferred.
+- Category: H (bibliography).
+- Change: Refined the `rigaill2010pruned` entry to an `@misc` form with the arXiv identifier
+  (arXiv:1004.0887) and a note pointing to the later journal version; flagged for author
+  verification in the handoff.
+- Rationale: The original entry's venue and year did not clearly correspond to a single
+  published artifact.
 
-### TF-A3 / TF-C1 / TF-F1 / TF-H1 / TF-H2
+### H-2 -- `reference/cite.bib`
 
-- Category: A, C, F, and H.
-- Change: Preserved table/caption corrections and added a figure/table generation inventory to `CODING_AGENT_HANDOFF.md`.
-- Rationale: Placeholder and generated artifacts need clear ownership and completion criteria.
+- Category: H (bibliography).
+- Change: Pinned the `punskaya2002bayesian` entry to the IEEE Transactions on Signal Processing
+  journal version (50(3):747--758), with a note on the conference version; flagged for author
+  verification in the handoff.
+- Rationale: The original entry used a vague "also circulated as a technical report" note.
 
-## Coding-Agent Handoff
+### H-3 -- `sections/8.appendix.tex`
 
-### CAH-F1 through CAH-F6 / CAH-G1 / CAH-H1
+- Category: H (LaTeX fixes).
+- Change: Fixed the two largest overfull `\hbox` warnings (46.9 pt and 36.7 pt) by converting
+  two long inline mathematical expressions in the appendix -- the block ELBO inequality and the
+  aggregated sufficient-statistics definitions -- into displayed equations. Overfull-box count
+  fell from 17 to 15; the remaining boxes are all under 9 pt and are font-substitution artifacts.
+- Rationale: Removes the only genuinely disruptive overfull boxes; the remaining sub-9 pt boxes
+  are headings and run-in headers that do not warrant rewriting.
 
-- Category: F, G, and H.
-- Change: Created `CODING_AGENT_HANDOFF.md` with project overview, build instructions, implementation tasks, experiment plan, placeholder figure/table tasks, projected-result guardrails, theory-to-code mapping, open questions, files changed, and do-not-change constraints.
-- Rationale: This directly prepares the project for the next coding-agent iteration.
+### H-4 / H-5 -- `math_commands.tex`, `bayesbreak.tex`
 
-## Static Checks
+- Category: H.
+- Change: No-op / flag-only, retained for transparency. `math_commands.tex` was reviewed and
+  found defect-free (it already comments out its `\eqref` override in favor of `amsmath`). The
+  stale commented-out author/affiliation scaffolding lines in `bayesbreak.tex` were left in
+  place as harmless; their removal can be done at the author's discretion.
+- Rationale: No corrective action required.
 
-After writing the handoff and changelog, the project was statically checked for:
+### New bibliography entries (12 total)
 
-- expected root file and included section files;
-- referenced graphics paths;
-- duplicate labels;
-- undefined document-level references detectable by source scan;
-- citation keys used in the manuscript but absent from `reference/cite.bib`.
+`oruanaidh1996numerical`, `lai2005comparative`, `snijders2001assembly`, `loyfer2023atlas`,
+`killick2014changepoint`, `hartigan1990partition`, `chib1998estimation`, `wyse2011approximate`,
+`maidstone2017optimal`, `fearnhead2019changepoint`, `jewell2022testing`, `truong2018ruptures`.
+All entries were verified against reliable sources during the Phase Two literature
+investigation. No citation was invented; entries whose details remain uncertain are flagged for
+author verification in `CODING_AGENT_HANDOFF.md` (Section 8).
 
-No blocking static source issues were found. LaTeX compilation was not run because the current environment lacks a TeX engine and package installation was unavailable.
+---
+
+## Phase Four: Independent Audit and Confirmed Fixes
+
+An independent review of the full revised manuscript was conducted as the Phase Four audit. The
+audit found no substantive defects in the manuscript's theory, methodology, claims, structure,
+or compilation integrity. The new mathematical material was verified: the
+marginal-versus-joint-MAP counterexample is arithmetically correct, and the new
+absolute-probability corollary (`cor:abs-prob`) has a sound proof. All Phase Three edits were
+confirmed applied without contradiction or claim drift, and all planned, expected, projected, and
+placeholder material was confirmed intact and correctly labeled. Two minor polish items were
+surfaced and confirmed for application.
+
+### P4-H1 -- `sections/6.evaluation.tex`
+
+- Category: H (minor cross-reference).
+- Change: Replaced a vague section-level cross-reference in the prior-sensitivity diagnostic
+  sentence (added under 6-C1) with a label-free phrase pointing to the planned pre-submission
+  additions described later in the same subsection.
+- Rationale: The original `\ref` resolved to the evaluation section as a whole rather than to the
+  specific planned-additions discussion; the label-free phrasing is unambiguous.
+
+### P4-H2 -- `sections/8.appendix.tex`
+
+- Category: H (minor wording).
+- Change: Added a brief parenthetical to the exploratory appendix note
+  (`app:latent-template-positioning`) linking the planned BASIC/JRPM comparison to the
+  corresponding open-questions item and external-baseline experiment in
+  `CODING_AGENT_HANDOFF.md`.
+- Rationale: Improves traceability between the manuscript's exploratory note and the handoff
+  document.
+
+### Phase Four build
+
+After applying the two confirmed fixes, the project was recompiled end to end via
+`pdflatex -> bibtex -> pdflatex -> pdflatex` with zero errors, zero undefined references, zero
+undefined citations, and zero multiply-defined labels. The PDF page count moved from 96 to 97
+pages: the two single-sentence wording changes pushed content across one page boundary. Box
+warnings are unchanged at 15 overfull and 50 underfull `\hbox`.
+
+## Integration Pass: External-Draft Cross-Comparison (CG Items)
+
+After Phase Four delivery, an external ChatGPT-revised package was supplied for comparison. The
+external package itself did not compile (missing portability guards plus 167 PGF errors from
+corrupted TikZ plate diagrams in `sections/4.method.tex`), so it could not be merged
+wholesale. A targeted comparison identified four substantive ideas worth integrating into the
+working copy as discrete, identified edits, plus one bibliography correction surfaced by a
+companion verification research task.
+
+### CG-1 -- `sections/4.method.tex`
+
+- Category: B / D (theoretical clarification).
+- Change: Inserted a new remark (`rem:score-matrix-exactness`, "Exact DP conditional on the
+  score matrix") at the opening of the dynamic-programming section. The remark draws an explicit
+  line between the algebraic exactness of the DP recursions for any supplied admissible
+  block-score matrix and their interpretation as exact Bayesian recursions for the
+  data-generating model only when those entries are true marginal likelihoods under the stated
+  product-partition prior. The remark cross-references `eq:A0`, `prop:stability`, and the new
+  `cor:abs-prob`.
+- Rationale: The distinction between exact-DP-on-supplied-scores and exact-DP-on-true-evidences
+  is the most reviewer-relevant conceptual sharpening identified in the external comparison. It
+  reinforces, rather than overlaps with, the absolute-probability bound added in Phase Three.
+
+### CG-2 -- `sections/4.method.tex`
+
+- Category: B / F (theoretical addition).
+- Change: Inserted a new corollary (`cor:boundary-event-sum`, "Fixed-count boundary-event
+  normalization") with a one-line proof, stating that the boundary-event marginals
+  $\sum_{i=1}^{n-1} P(b_i=1\mid y,k) = k-1$ for any fixed $k$ with positive evidence. The
+  corollary is placed immediately after the existing posterior-evidence sanity-checks paragraph
+  and is followed by a sentence explaining its use as an implementation localization check.
+- Rationale: The identity was previously stated only as an embedded clause within the DP
+  correctness theorem. Elevating it to a labeled, citable corollary improves the paper's
+  presentation as an implementation-oriented framework and gives a clean named target for the
+  per-DP boundary-sum check.
+
+### CG-3 -- `sections/3.setup.tex`
+
+- Category: C / D (rigor, coding-agent readiness).
+- Change: Added an explicit "Block-score contract" paragraph immediately before the
+  renewal-process pointer, formalizing the per-family invariant that block routines return
+  finite log-evidence on admissible blocks and the sentinel $-\infty$ on inadmissible blocks,
+  that $\log C_k$ is computed under the same admissibility mask as the score array, and that
+  exact and surrogate scores must not be mixed silently. No change was needed in
+  `sections/5.algorithms.tex` because the Phase Three sanity-check paragraph already aligns
+  with the new contract.
+- Rationale: Consolidates scattered guidance into one labeled passage that an implementer can
+  cite. Pre-empts the most common class of implementation bugs (admissibility-mask mismatch
+  between the score matrix and the prior normalizer).
+
+### CG-4 -- multiple files
+
+- Category: A / D / F (technical correctness, clarity, new content).
+- Change: Four coupled edits informed by an independent bibliographic verification research
+  task that checked four references introduced by the external draft.
+  (a) Added a "Limitations and manuscript-development status" paragraph at the end of
+  `sections/1.intro.tex` (before the Paper-organization paragraph) and a parallel
+  "Limitations and manuscript-development status" paragraph at the end of
+  `sections/7.conclusion.tex`. Both paragraphs scope the conjugate-DP guarantees, the
+  approximation-controlled non-conjugate extension, and the EM caveats, and identify the
+  real-data case studies as planned pipelines.
+  (b) Updated the well-log dataset source paragraph in `sections/6.evaluation.tex` and the
+  well-log appendix recipe in `sections/8.appendix.tex` to add Fearnhead & Clifford (2003)
+  alongside Ó Ruanaidh & Fitzgerald (1996) as the popularizing changepoint-literature
+  reference, and to resolve the previous `<welllog_object>` placeholder with the verified
+  package-and-object pair `changepoint.influence::welldata` (a length-4050 numeric vector).
+  (c) Added one new bibliography entry, `fearnhead2003particle`, verified against the JRSS-B
+  publisher page and the CRAN `changepoint.influence` package manual: P.~Fearnhead and
+  P.~Clifford (2003), "On-line inference for hidden Markov models via particle filters,"
+  *JRSS-B* 65(4):887--899, DOI 10.1111/1467-9868.00421.
+  (d) Corrected the methylation atlas GitHub repository attribution in
+  `sections/8.appendix.tex`: replaced the previous `nloyfer/meth_atlas` pointer (which the
+  research verification showed implements the older Moss et al.\ 2018 array-deconvolution
+  method, not the 2023 atlas) with `nloyfer/wgbs_tools` and `nloyfer/UXM_deconv`, the
+  companion software for the 2023 atlas paper.
+- Rationale: The verification research confirmed the four ChatGPT-introduced references as
+  pointing to real works; the Fearnhead-Clifford entry adds genuine content (a popularizing
+  reference for the well-log series and a concrete package-and-object name) while the Loyfer
+  GitHub correction prevents the manuscript from pointing readers to the wrong code base.
+
+### Build after CG integration
+
+The project recompiles via `pdflatex -> bibtex -> pdflatex -> pdflatex` with zero errors, zero
+undefined references, zero undefined citations, and zero multiply-defined labels. The PDF is
+**98 pages** (one more than the 97-page Phase Four build), and the bibliography now has 48
+entries (one more than the 47-entry Phase Three count). Box warnings are unchanged at 15
+overfull and 50 underfull, all under 9 points and font-substitution artifacts.
+
+## Proposed changes not applied
+
+None. All items on the Phase Two approval checklist were approved and applied, both Phase Four
+fixes were confirmed and applied, and the four CG integration items (CG-1 through CG-4) were
+approved and applied. The four no-op / flag-only items (4-D1, H-4, H-5, and the
+structural-preservation aspects of Build-A1) are recorded above for transparency.
+
+## New material requiring future work
+
+- The proposed corollary `cor:abs-prob` is a complete result (statement and proof) and requires
+  no further work, but its conservative `k_max` bound could be tightened in a later iteration.
+- The exploratory appendix note `app:latent-template-positioning` records a planned head-to-head
+  comparison against BASIC-style and JRPM-style inference; this is logged in
+  `CODING_AGENT_HANDOFF.md`.
+- The planned prior-sensitivity diagnostic (6-C1) and the FPOP/SNIP baseline extension (6-E3)
+  are planned experiment-plan additions logged in `CODING_AGENT_HANDOFF.md`.
+- Author-verification tasks for several bibliography entries (Bleakley & Vert venue;
+  Denison-Mallick-Smith 1998 identity; Punskaya venue; Rigaill version; Müller-Quintana-Rosner
+  end page; well-log dataset object name; methylation atlas accession/repository) are logged in
+  `CODING_AGENT_HANDOFF.md`, Section 8.
+
+## Compilation record
+
+- Build command: `pdflatex bayesbreak.tex` -> `bibtex bayesbreak` -> `pdflatex bayesbreak.tex`
+  (x2).
+- Bibliography tool: BibTeX with `plainnat` style.
+- Result: zero errors; zero undefined references; zero undefined citations; zero
+  multiply-defined labels.
+- Original PDF: 92 pages. Revised PDF after Phase Three: 96 pages. Revised PDF after Phase Four:
+  97 pages. Revised PDF after CG integration pass: 98 pages.
+- Warnings: 15 overfull and 50 underfull `\hbox` (baseline: 17 overfull). No avoidable new
+  warnings introduced; remaining boxes are font-substitution artifacts.

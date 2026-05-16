@@ -11,24 +11,23 @@ necessary distinction between those posterior summaries and an exported joint MA
 showed how irregular designs are most naturally handled through design-aware partition priors;
 and preserved exactness for pooled shared-boundary analyses across replicates.
 
-For unknown groups, we introduced a latent-template mixture with an explicit finite objective. In that formulation the EM updates are
-monotone for the stated template-mixture objective in the generalized-EM sense of \citet{dempster1977em}: responsibilities are exact for
-the current templates, each template update is an exact responsibility-weighted max-sum
-segmentation problem, and the finite-mixture objective does not decrease across iterations
-(Theorem~\ref{thm:em-monotone}). The result is a coordinatewise optimum for the selected restart, with standard multi-restart practice handling nonconvexity. For
-non-conjugate blocks, the DP layer
-is unchanged, and approximation theory is stated in terms of block-evidence
-accuracy and induced posterior-odds stability (Proposition~\ref{prop:stability},
-Corollary~\ref{cor:ranking}), not in terms of universal end-to-end segmentation guarantees.
+For unknown groups, we introduced a latent-template mixture with an explicit finite objective.
+EM updates are monotone for that objective in the generalized-EM sense of
+\citet{dempster1977em}: responsibilities are exact for the current templates, each template
+update is an exact responsibility-weighted max-sum DP, and the finite-mixture objective is
+non-decreasing across iterations (Theorem~\ref{thm:em-monotone}). For non-conjugate blocks, the
+DP layer is unchanged, and approximation guarantees are stated in terms of block-evidence error
+and induced posterior-odds stability (Proposition~\ref{prop:stability},
+Corollary~\ref{cor:ranking}).
 
 Empirically, the archived project provides a coherent synthetic validation suite showing posterior
 boundary recovery, family portability, calibration behavior, latent-group separation, local
 approximation trade-offs, and runtime scaling (Section~\ref{sec:experiments}). That suite is
-accompanied by four planned real-data case studies with visible placeholders (well-log geology, array-CGH
+accompanied by four real-data case studies with completed BayesBreak fits (well-log NMR geology, array-CGH
 copy number, S\&P 500 volatility regimes, and CpG-atlas methylation; see
 Sections~\ref{sec:realdata-welllog}--\ref{sec:realdata-methylation} and reproduction pipelines in
 Appendix~\ref{app:real-data}), each chosen to exercise a different part of the framework. The planned empirical extension
-populates those placeholders with verified outputs, adds broader external benchmarking against
+populates the companion per-case-study quantitative results tables with verified outputs, adds broader external benchmarking against
 strong Bayesian and frequentist baselines, and includes ablations of the partition prior $p(k)$ and
 length factor $g$, as itemized at the end of Section~\ref{sec:experiments}. The value of the present paper is
 that those additions can now be made without changing the inferential core: once a new block

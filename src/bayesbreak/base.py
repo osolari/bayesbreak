@@ -47,6 +47,14 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
 
     and (for the prediction layer) :meth:`posterior_predictive_logpdf_block`.
 
+    Subclasses also declare a ``MOMENT_SIGN_CONTRACT`` class attribute
+    (§5 paragraph 5-C1): ``"nonneg"`` when the order-1 block moment
+    ``block_first_moment_[i, j]`` targets a strictly-nonnegative
+    observation-scale quantity (probability, rate, count mean, Beta mean),
+    ``"signed"`` when it can change sign (centered Gaussian mean,
+    non-conjugate Laplace test function). The base class default is
+    ``"nonneg"``; the Gaussian family overrides to ``"signed"``.
+
     Parameters
     ----------
     k_max : int, default=50
@@ -82,6 +90,11 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
     boundary modes.
     """
 
+    # §5 paragraph 5-C1: nonneg observation-scale targets store directly in
+    # log; signed targets store via signed-linear or signed-log accumulators.
+    # Families override as needed.
+    MOMENT_SIGN_CONTRACT: str = "nonneg"
+
     def __init__(
         self,
         k_max: int = 50,
@@ -113,7 +126,19 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
     def _compute_block_evidence(
         self, y: FloatArray, hyper: dict[str, float], sample_weight: FloatArray
     ) -> tuple[FloatArray, FloatArray]:
-        """Return ``(log_block_evidence, block_first_moment)`` tables."""
+        """Return ``(log_block_evidence, block_first_moment)`` tables.
+
+        Implementations follow the §``sec:setup`` admissibility contract:
+        ``log_block_evidence[i, j]`` is finite on every admissible block
+        ``(i, j]`` and ``-inf`` on every inadmissible block (minimum-length
+        violations, zero usable weight, family-specific domain failures).
+        ``block_first_moment[i, j]`` is queried only on admissible blocks;
+        for families that target a strictly-nonnegative observation-scale
+        mean it is stored directly in linear space, and for sign-changing
+        targets (centered Gaussian mean, non-conjugate Laplace test
+        functions) it uses signed-linear or signed-log accumulators per
+        §5 (signed-moment storage guidance).
+        """
 
     @abstractmethod
     def _segment_posterior_mean(
@@ -266,6 +291,11 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
             )
         self.log_block_evidence_ = lA0
         self.block_first_moment_ = A1
+        # Admissibility mask: True wherever the block routine produced a
+        # finite log evidence. The DP layer and ``compute_log_C_k`` operate
+        # on the same mask; callers can inspect it for diagnostics or audit
+        # traces.
+        self.admissibility_mask_ = np.isfinite(lA0)
 
         # ---- 4. Length-prior + p(k) plumbing ------------------------------------
         u = self._build_boundary_coordinates(x_design)

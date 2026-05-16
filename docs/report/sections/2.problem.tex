@@ -6,7 +6,11 @@ fundamental unknown is a contiguous partition of the index set $\{1,\dots,n\}$ t
 segment parameter attached to each block. This section states the objects of interest in a
 model-agnostic way; Section~\ref{sec:notation} introduces the detailed notation used later.
 
-Unless stated otherwise, the standing assumptions are: observations are ordered on a fixed set of candidate boundary locations; the admissible segment-count set is finite; block evidences are finite and positive on admissible blocks and are represented as zero or $-\infty$ on inadmissible blocks; segment parameters are conditionally independent across blocks given a segmentation; and the conditional partition prior factorizes over segments as stated in Assumption~\ref{ass:factorizing-prior}.
+Unless stated otherwise, the standing assumptions are: observations are ordered on a fixed
+set of candidate boundary locations; the admissible segment-count set is finite; block evidences
+are finite and positive on admissible blocks (and zero or $-\infty$ on inadmissible blocks);
+segment parameters are conditionally independent across blocks given a segmentation; and the
+conditional partition prior factorizes over segments per Assumption~\ref{ass:factorizing-prior}.
 
 \subsection{Single-sequence segmentation and Bayes regression}
 \label{sec:problem-single}
@@ -53,47 +57,22 @@ DP.
 The inferential targets are:
 \begin{enumerate}[label=(\roman*), leftmargin=2.3em]
     \item the marginal evidence at fixed segment count,
-    \begin{equation}
-    p(y_{1:n}\mid k)
-    = \sum_{t\in\mathcal{T}_k} p(t\mid k)
-      \prod_{q=1}^k \mathcal{L}(t_{q-1},t_q),
-    \label{eq:problem-evidence}
-    \end{equation}
-    where $\mathcal{T}_k:=\{(t_0,\dots,t_k):0=t_0<t_1<\cdots<t_k=n\}$ is the set of all admissible
-    $k$-segment boundary vectors;
-
-    \item the posterior over segment counts and boundaries,
-    $p(k,t\mid y_{1:n})$, together with marginals such as $p(k\mid y_{1:n})$,
-    $p(t_p=h\mid y_{1:n},k)$, and the \emph{boundary-event marginal}
-    $p(b_i=1\mid y_{1:n},k)=\sum_{p=1}^{k-1}p(t_p=i\mid y_{1:n},k)$ that interior index $i$ is a
-    boundary (this latter object is what calibration experiments in
-    Section~\ref{sec:experiments} target);
-
-    \item posterior summaries of the latent piecewise-constant signal. Writing
-    $\theta_i$ for the parameter of the random segment containing observation $i$, we are
-    interested in quantities such as
-    \begin{equation}
-        p(\theta_i\mid y_{1:n}),
-        \qquad
-        \mathbb{E}[m(\theta_i)\mid y_{1:n}],
-    \label{eq:problem-bayes-curve}
-    \end{equation}
-    where $m(\theta)$ denotes the observation-scale mean parameter. These yield Bayes
-    regression curves and uncertainty bands. We distinguish curves marginalized over $k$ from
-    curves conditional on $k=\widehat{k}$; unless stated otherwise, the latter is the default
-    and is what Section~\ref{sec:dp} computes;
-
-    \item point estimators for downstream use. BayesBreak distinguishes
-    \emph{joint} MAP segmentations
-    \begin{equation}
-      \widehat t^{\mathrm{MAP}}(k)
-      \in \arg\max_{t\in\mathcal{T}_k} p(t\mid y_{1:n},k),
-    \end{equation}
-    from \emph{marginal} boundary summaries such as
-    $\arg\max_h p(t_p=h\mid y_{1:n},k)$. These are not generally the same object and must not
-    be conflated. The fixed-$k$ MAP objective uses the same length-absorbed block scores as the sum-product DP.
-    Count-prior and normalizer offsets such as $\log p(k)-\log C_k$ enter only when we also
-    optimize over $k$.
+    \(p(y_{1:n}\mid k)=\sum_{t\in\mathcal{T}_k}p(t\mid k)\prod_{q}\mathcal{L}(t_{q-1},t_q)\)
+    with $\mathcal{T}_k=\{(t_0,\dots,t_k):0=t_0<\cdots<t_k=n\}$;
+    \item the posterior $p(k,t\mid y)$ over segment counts and boundaries and its marginals
+    $p(k\mid y)$, $p(t_p=h\mid y,k)$, and the boundary-event marginal
+    \(p(b_i=1\mid y,k)=\sum_{p=1}^{k-1}p(t_p=i\mid y,k)\)
+    (the calibration target of \S\ref{sec:experiments});
+    \item posterior summaries of the latent piecewise-constant signal, namely
+    $p(\theta_i\mid y)$ and $\mathbb{E}[m(\theta_i)\mid y]$ with $m(\theta)$ the
+    observation-scale mean parameter (the Bayes regression curve; conditional on the selected
+    $\widehat k$ unless stated otherwise);
+    \item point estimators for downstream use. In particular the \emph{joint} MAP segmentation
+    \(\widehat t^{\mathrm{MAP}}(k)\in\arg\max_t p(t\mid y,k)\)
+    differs from the vector of marginal boundary modes
+    \(\arg\max_h p(t_p=h\mid y,k)\)
+    and is recovered by max-sum DP. The prior on $k$ and the normalizer $\log C_k$ enter the
+    objective only when also optimizing over $k$.
 \end{enumerate}
 
 \subsection{Multi-sequence structure}

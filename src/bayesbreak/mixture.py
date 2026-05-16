@@ -63,6 +63,24 @@ class _GroupState:
     log_score_offset: float  # log p(k_g) - log C_{k_g}
 
 
+def _canonical_template_order(group_states: list[_GroupState]) -> list[int]:
+    """Return a permutation of ``group_states`` that anchors the
+    permutation indeterminacy of Proposition ``prop:latent-identifiability``.
+
+    Per ``ex:label-switch-counterexample`` the latent-template mixture is
+    only identifiable up to a permutation of the group labels. To make
+    label-level reporting reproducible across restarts we adopt the
+    deterministic anchoring described in §5b: order groups first by ``k_g``
+    (smallest segment count first), then lexicographically on the boundary
+    vector ``t^{(g)}``. Returns the index permutation that puts the input
+    list into canonical order.
+    """
+    return sorted(
+        range(len(group_states)),
+        key=lambda i: (group_states[i].k_g, tuple(group_states[i].template)),
+    )
+
+
 def _as_list_of_1d(X: SequenceInput, *, name: str) -> list[FloatArray]:
     """Coerce to a list of 1-D float arrays of identical length."""
 
@@ -504,6 +522,18 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         if best is None:
             raise RuntimeError("All EM restarts failed.")
         _, pi, r, group_states, traj, lA0_subj, seed = best
+
+        # Anchor the label-permutation indeterminacy of
+        # ``prop:latent-identifiability`` deterministically (§5b
+        # "Latent-group identifiability"): sort groups by k_g, then
+        # lexicographically by template t^(g). The unordered multiset is
+        # identifiable; this anchor makes label-level reporting reproducible
+        # across restarts and across runs.
+        perm = _canonical_template_order(group_states)
+        pi = pi[perm]
+        r = r[:, perm]
+        group_states = [group_states[i] for i in perm]
+        self.canonical_permutation_ = np.asarray(perm, dtype=int)
 
         self.pi_ = pi
         self.responsibilities_ = r

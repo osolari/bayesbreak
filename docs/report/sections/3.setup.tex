@@ -74,17 +74,24 @@ $r_{sg}$ & Soft assignment (responsibility) of sequence $s$ to group $g$ in the 
 $\mathcal{M}_g$ & Fitted group-specific model exported for prediction. \\
 $\ell_g$ & Log predictive score of new data under group $g$. \\
 $\pi_g$ & Prior group weight used for prediction or in the latent-group mixture. \\
+\midrule
+$\varepsilon$ & Uniform per-block log-evidence error tolerance for non-conjugate block approximations; appears as the hypothesis controlling the posterior-odds stability bound in Section~\ref{sec:nonconj}. \\
+$\widehat A^{(0)}_{ij}$ & Approximate (non-conjugate) block evidence; satisfies $|\log\widehat A^{(0)}_{ij} - \log A^{(0)}_{ij}| \le \varepsilon$ under the stability assumption. \\
+$\phi_t$ & Known per-observation precision used in the Beta-block likelihood for $y_t\in(0,1)$. \\
+$\omega_t$ & P\'olya--Gamma augmentation variable for logistic / negative-binomial mean-field block approximations. \\
+$M^{[g]}_{ij}$ & Block test-function numerator $\int g(\theta)\, p(y_{i+1:j}\mid \theta)\, p(\theta)\, d\theta$, used in the Laplace-approximation discussion of Section~\ref{sec:nonconj} where the superscript denotes a test function rather than a moment order. \\
+\midrule
+$f_{\mathrm{Lap}}$, $f_{\mathrm{JJ}}$, $f_{\mathrm{EP}}$, $f_{\mathrm{PG}}$, $f_{\mathrm{Q}}$ & Local block-evidence approximations:
+Laplace, Jaakkola--Jordan variational bound, expectation propagation, P\'olya--Gamma mean field,
+and one-dimensional quadrature. Each instantiates $\widehat A^{(0)}_{ij}$ and inherits the same DP layer. \\
 \bottomrule
 \end{longtable}
 
 \paragraph{Remarks.}
-Two distinctions are important and recur throughout the paper.
-First, \emph{design irregularity} and \emph{likelihood weighting} are not the same thing: irregular
-spacing is usually encoded through the partition prior (see Section~\ref{sec:irregular}), whereas
-$w_i$ belongs inside the likelihood only when the observation model itself supplies exposures or
-known precisions.
-Second, \emph{boundary marginals} and the \emph{joint MAP segmentation} are different summaries of
-the posterior (Section~\ref{sec:dp}). BayesBreak computes both, and they must not be conflated.
+Two recurring distinctions: \emph{design irregularity} enters through the partition prior
+(\S\ref{sec:irregular}); $w_i$ enters the likelihood only when the observation model supplies
+genuine exposures or known precisions. \emph{Boundary marginals} and the \emph{joint MAP
+segmentation} are different posterior summaries (\S\ref{sec:dp}) and must not be conflated.
 
 \section{Problem setup and Bayesian segmentation model}
 \label{sec:setup}

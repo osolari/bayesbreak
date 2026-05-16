@@ -1,11 +1,18 @@
-"""Non-conjugate stability bound (Proposition ``stability``).
+"""Non-conjugate stability bound (Proposition ``stability``) and the
+worst-case TV bound for ``P(k | y)`` derived directly from it.
 
-Verify that perturbing every block log-evidence by a uniform amount ``ε``
-shifts the segment-count log-odds by at most ``(k + k') ε`` and the
-boundary-event log-odds by at most ``2 k ε``.
+Verify that perturbing every block log-evidence by a uniform amount ``ε``:
+
+- shifts the segment-count log-odds by at most ``(k + k') ε``,
+- shifts the boundary-event log-odds by at most ``2 k ε``, and
+- shifts ``P(k | y)`` in total variation by at most ``exp(2 k_max ε) − 1``,
+  the conservative worst-case bound derivable directly from
+  Proposition ``prop:stability``.
 """
 
 from __future__ import annotations
+
+import math
 
 import numpy as np
 
@@ -42,6 +49,33 @@ def test_k_odds_within_bound():
             bound = (k + kp) * eps
             # Allow a small numerical slack on top of the (k+k')ε bound.
             assert abs(approx - exact) <= bound + 1e-9
+
+
+def test_pk_tv_worst_case_bound():
+    """Under a uniform ε perturbation of every block log-evidence, the
+    segment-count posterior shifts in total variation by at most
+    ``exp(2 k_max ε) − 1`` — the worst-case bound derivable from
+    Proposition ``prop:stability``.
+    """
+    rng = np.random.default_rng(2)
+    n = 12
+    k_max = 5
+    eps = 0.04
+    la = np.full((n + 1, n + 1), -np.inf)
+    for i in range(n):
+        for j in range(i + 1, n + 1):
+            la[i, j] = float(rng.normal(loc=-0.1, scale=0.4))
+    delta = rng.uniform(-eps, eps, size=la.shape)
+    la_pert = la + delta * (la > -np.inf)
+
+    L0, _ = forward_backward(la, n=n, k_max=k_max)
+    L1, _ = forward_backward(la_pert, n=n, k_max=k_max)
+    _, post_k0, _ = posterior_over_k(L0, n=n, k_max=k_max)
+    _, post_k1, _ = posterior_over_k(L1, n=n, k_max=k_max)
+
+    tv_empirical = 0.5 * float(np.sum(np.abs(post_k1 - post_k0)))
+    tv_bound = math.expm1(2.0 * k_max * eps)
+    assert tv_empirical <= tv_bound + 1e-9
 
 
 def test_boundary_odds_within_bound():
