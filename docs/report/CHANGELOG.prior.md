@@ -1,0 +1,50 @@
+# CHANGELOG
+
+## Phase Three substantive revision log
+
+- `0-C1`: Clarified the empirical status distinction in the abstract so completed figures and planned quantitative comparison tables are framed according to the approved manifest.
+- `1-D1`: Reorganized the contribution statement into exact theory, posterior computation, structured extensions, approximations, prediction, and reproducibility components, improving the technical map of the paper.
+- `2-C1`: Promoted the standing modeling requirements into an explicit assumption block covering finite support, admissibility, positivity, and block-independence requirements.
+- `2-B1`: Added formal definitions for the segmentation space, boundary-event variable, fixed-k Bayes curve, exported estimator, and related posterior summaries.
+- `2-B2`: Formalized the multi-sequence settings used later in the paper: shared boundaries, known groups, and latent templates.
+- `3-E1`: Marked the notation table as a glossary with no source CSV, consistent with the approved theoretical-table classification.
+- `3-B1`: Added an admissible-block and admissible-partition support definition to separate zero block scores from excluded partition support.
+- `3-C1`: Clarified the relationship among renewal-process priors, product-partition cohesions, hazard parameterizations, and regular-grid special cases.
+- `4-A1`: Corrected the generic dynamic-programming description by separating the algebraic recursion from the later log-space implementation.
+- `4-B1`: Added explicit conjugate-parameter domain and finite-normalizer hypotheses to the exponential-family block-score development.
+- `4-C1`: Isolated the Bayes-curve block-covering decomposition as an auditable formal result.
+- `4-A2`: Reconciled storage and complexity accounting across block-score storage, DP layers, backpointers, boundary marginals, and Bayes-curve moment arrays.
+- `4-C2`: Added numerical tolerance and failure-interpretation guidance for the core posterior sanity checks.
+- `4-B2`: Added an invariance clarification for irregular designs, distinguishing inherited-partition score invariance from posterior changes induced by design-dependent admissibility and priors.
+- `4-B3`: Made shared-boundary hypotheses explicit, including common-grid, conditional-independence, subject-specific support, and product-factor assumptions.
+- `4-A3`: Recast latent-template identifiability as a population-level result under explicit sufficient conditions and recorded the finite-sample and label-switching limitations.
+- `4-B4`: Separated exact EM monotonicity from regularized or floored variants, stating which objective each case supports.
+- `4-E1`: Marked the family-summary table as a theoretical accounting table with no source CSV.
+- `4-A4`: Clarified non-conjugate approximation notation and strengthened the routine-level approximation discussion with explicit smoothness and error-control assumptions.
+- `4-A5`: Added evidence-normalization and site-constant bookkeeping to the expectation-propagation approximation description.
+- `4-B5`: Added a probability-error consequence for the posterior-odds perturbation result under explicit bounded-odds conditions.
+- `4-E2`: Marked the prediction-output table as an interface-definition table with no source CSV.
+- `4-C3`: Added formal prediction-layer assumptions and export-object definitions for downstream posterior-predictive scoring.
+- `4-B6`: Added complexity and numerical notes for prediction-time scoring, assignment, and group-posterior normalization.
+- `5-B1`: Added a signed-log output contract for block routines so moment numerators and likelihood scores can be implemented consistently.
+- `5-A1`: Clarified the backward dynamic-programming boundary convention and edge-case indexing for log-space recursions.
+- `5-C1`: Added a theoretical complexity table covering conjugate, non-conjugate, shared-boundary, latent-group, prediction, and memory modes.
+- `5-H1`: Converted the implementation checklist into test-oriented coding guidance tied to the formal results.
+- `5b-C1`: Added an assumption-to-failure-mode map covering block misspecification, approximation error, latent-group local optima, prior sensitivity, and computational scaling.
+- `5b-C2`: Distinguished exact dynamic-programming guarantees from future windowed or sparse approximations for very large sequences.
+- `6-E1`: Marked the metrics table as a protocol-definition table with no source CSV.
+- `6-A1`: Preserved all calibration numbers while clarifying that the archived figure annotation, not edited numerical text, carries the reported diagnostic value.
+- `6-A2`: Preserved all runtime values while reframing the runtime table as a numerical companion to the same archived configuration rather than a literal dump of every plotted curve.
+- `6-C1`: Framed the synthetic experiments as completed small diagnostic runs without overstating broad benchmark generality.
+- `6-C2`: Preserved the completed latent-group figure while keeping the reserved Bayes-curve diagnostic as a forward-looking item.
+- `6-C3`: Clarified the non-conjugate diagnostic interpretation relative to the perturbation theorem without converting small-run values into general validation claims.
+- `6-C4`: Split real-data case-study framing into completed figure evidence and planned quantitative-table outputs.
+- `6-A3`: Preserved all well-log numerical content while adding nonnumeric preprocessing-window clarification.
+- `6-A4`: Separated completed array-CGH figure claims from planned comparator-metric table claims.
+- `6-C5`: Preserved the completed S&P 500 figure interpretation while projection-framing the secondary specification table.
+- `6-C6`: Preserved the completed methylation-region figure interpretation while projection-framing the held-out and atlas-comparison table.
+- `6-F1`: Connected planned empirical additions to coding-agent tasks and expected outputs.
+- `7-D1`: Aligned the conclusion with the approved manifest, preserving completed figure claims while keeping planned quantitative tables forward-looking.
+- `8-B1`: Revised the latent-template identifiability appendix proof to match the new explicit sufficient conditions.
+- `8-E1`: Split appendix real-data outputs into completed figure-regeneration outputs and planned quantitative-table outputs.
+- `Global-C1`: Applied the manifest-governed status-framing pass across asset-citing prose.

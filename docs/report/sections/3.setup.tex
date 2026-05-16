@@ -28,6 +28,7 @@ the ratio form $Z(\alpha_0+S_{ij},\beta_0+W_{ij})/Z(\alpha_0,\beta_0)$ (Theorem~
 and Appendix~\ref{app:conjugate}).
 
 \begin{longtable}{@{}p{0.22\linewidth}p{0.72\linewidth}@{}}
+\caption[Notation and symbols]{Notation and symbols used throughout the paper. This is a notation glossary; no source CSV is associated with it.}\label{tab:notation}\\
 \toprule
 \textbf{Symbol} & \textbf{Meaning} \\
 \midrule
@@ -135,6 +136,7 @@ and uses these to evaluate $A^{(0)}_{ij}$ and the moment numerators $A^{(r)}_{ij
 \paragraph{Partition prior.}
 We place a prior $p(k)$ on the number of segments and, conditional on $k$, a prior on boundary
 vectors $t$.
+
 Two cases are especially important.
 \begin{itemize}
 \item \textbf{Index-uniform prior.}
@@ -165,10 +167,27 @@ $C_k=\binom{n-1}{k-1}$.
 \paragraph{Hazard interpretation.}
 When an unconditioned renewal process on an index grid has iid geometric lengths with hazard
 $\rho\in(0,1)$, its unnormalized segment-length factor is proportional to
-$(1-\rho)^{m-1}$. After conditioning on a fixed segment count and endpoint, these factors often
-become constant over all admissible partitions, especially on a regular grid. More generally, $g$ functions here as a product-partition cohesion on physical block lengths;
-renewal-process language supplies the corresponding process interpretation when the endpoint and
-conditioning conventions are explicit.
+$(1-\rho)^{m-1}$. This renewal construction is sufficient for a product-form cohesion but not
+necessary: BayesBreak only requires the factorization in Assumption~\ref{ass:factorizing-prior}.
+After conditioning on a fixed segment count and endpoint, geometric factors can become constant
+over all admissible regular-grid partitions, whereas non-geometric or physical-length factors need
+not. More generally, $g$ functions here as a product-partition cohesion on physical block lengths;
+renewal-process language supplies the corresponding process interpretation only when the endpoint
+and conditioning conventions are explicit.
+
+\begin{definition}[Admissible partition support and zero-weight blocks]
+\label{def:admissible-blocks}
+For a fixed $k$, the support of the conditional partition prior is
+\[
+\mathcal{T}^{g}_{k,n}:=\{t\in\mathcal{T}_{k,n}:\prod_{q=1}^k g(\Delta_x(t_{q-1},t_q))>0\}.
+\]
+A zero prior factor removes a block from prior support, while a zero block likelihood removes a
+block through the data model. Both mechanisms enter the DP only through the combined block score
+$\widetilde A^{(0)}_{ij}=A^{(0)}_{ij}g(\Delta_x(i,j))$ and are represented as
+$\log\widetilde A^{(0)}_{ij}=-\infty$ in implementation. The distinction matters for model
+checking: a prior exclusion is an intentional admissibility restriction, whereas a zero likelihood
+usually indicates a violated family assumption or a missing-data convention.
+\end{definition}
 
 \begin{assumption}[Factorizing partition prior]
 \label{ass:factorizing-prior}

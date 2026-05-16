@@ -14,7 +14,7 @@ of the framework.
 \begin{table}[H]
     \centering
     \input{tables/table0_metrics_overview}
-    \caption{Metrics used in the synthetic experiments. When ground-truth boundaries are available, boundary-level metrics use a small tolerance window (here $\tau=2$ indices) so that near-misses are not counted as complete failures.}
+    \caption{Metrics used in the synthetic experiments. When ground-truth boundaries are available, boundary-level metrics use a small tolerance window (here $\tau=2$ indices) so that near-misses are not counted as complete failures. This is a protocol-definition table; no source CSV is associated with it.}
     \label{tab:metrics}
 \end{table}
 
@@ -22,7 +22,67 @@ The resulting evaluation protocol is deliberately mixed: some diagnostics target
 (boundary F1, boundary-location MAE, latent-signal MSE), while others target uncertainty quality
 (calibration curves for marginal boundary probabilities and evidence-based model selection through
 $P(k\mid y)$). This is appropriate for BayesBreak because the method returns both an
-exported segmentation and posterior summaries around that segmentation.
+exported segmentation and posterior summaries around that segmentation. The synthetic tables and figures below are completed archived diagnostics: they are read as small completed runs, not placeholders and not broad benchmark claims.
+
+For reference throughout this section, the four scalar metrics used below are defined as follows.
+
+\begin{definition}[Boundary precision, recall, and $F_1$ at tolerance $\tau$]
+\label{def:metric-f1}
+Let $\mathcal{B}^\star\subseteq\{1,\dots,n-1\}$ be the set of true interior boundaries and
+$\widehat{\mathcal{B}}\subseteq\{1,\dots,n-1\}$ the predicted interior boundaries (typically the
+support of $\widehat t^{\mathrm{MAP}}(\widehat k)$ excluding the endpoints $\{0,n\}$). For an
+integer tolerance $\tau\ge 0$, a predicted boundary $\hat b\in\widehat{\mathcal{B}}$ is a
+\emph{true positive at tolerance $\tau$} if there exists $b^\star\in\mathcal{B}^\star$ with
+$|\hat b-b^\star|\le\tau$ and $b^\star$ has not already been matched to a smaller-error predicted
+boundary (matching is one-to-one, resolved in order of nearest distance). Let
+$\mathrm{TP}_\tau$, $\mathrm{FP}_\tau$, $\mathrm{FN}_\tau$ denote the resulting counts. Then
+\[
+\mathrm{Prec}_\tau=\frac{\mathrm{TP}_\tau}{\mathrm{TP}_\tau+\mathrm{FP}_\tau},\quad
+\mathrm{Rec}_\tau=\frac{\mathrm{TP}_\tau}{\mathrm{TP}_\tau+\mathrm{FN}_\tau},\quad
+F_{1,\tau}=\frac{2\,\mathrm{Prec}_\tau\,\mathrm{Rec}_\tau}{\mathrm{Prec}_\tau+\mathrm{Rec}_\tau},
+\]
+with the conventions $\mathrm{Prec}_\tau=0$ when $\mathrm{TP}_\tau+\mathrm{FP}_\tau=0$,
+$\mathrm{Rec}_\tau=0$ when $\mathrm{TP}_\tau+\mathrm{FN}_\tau=0$, and $F_{1,\tau}=0$ when both
+$\mathrm{Prec}_\tau$ and $\mathrm{Rec}_\tau$ are $0$.
+\end{definition}
+
+\begin{definition}[Boundary-location mean absolute error]
+\label{def:metric-mae}
+Under the one-to-one matching of Definition~\ref{def:metric-f1}, let
+$\mathcal{M}_\tau\subseteq\widehat{\mathcal{B}}\times\mathcal{B}^\star$ be the set of matched
+pairs. The boundary-location MAE is
+\[
+\mathrm{MAE}_\tau:=\frac{1}{|\mathcal{M}_\tau|}\sum_{(\hat b,b^\star)\in\mathcal{M}_\tau}|\hat b-b^\star|,
+\]
+with $\mathrm{MAE}_\tau:=0$ when $\mathcal{M}_\tau=\emptyset$.
+\end{definition}
+
+\begin{definition}[Expected calibration error for boundary marginals]
+\label{def:metric-ece}
+Partition $[0,1]$ into $B$ equal-width bins $\{I_b\}_{b=1}^B$ and, for each interior index
+$i\in\{1,\dots,n-1\}$, place the marginal boundary posterior
+$\mathrm{MB}_i(\widehat k):=p(b_i=1\mid y,\widehat k)$
+(Definition~\ref{def:posterior-summaries}) into bin $b(i):=b$ such that
+$\mathrm{MB}_i(\widehat k)\in I_b$. The empirical frequency in bin $b$ is
+$\bar y_b:=|\{i:b(i)=b, b_i^\star=1\}|/|\{i:b(i)=b\}|$ and the average predicted probability is
+$\bar p_b:=|\{i:b(i)=b\}|^{-1}\sum_{i:b(i)=b}\mathrm{MB}_i(\widehat k)$.
+The expected calibration error is
+\[
+\mathrm{ECE}:=\sum_{b=1}^B \frac{|\{i:b(i)=b\}|}{n-1}\,|\bar p_b-\bar y_b|.
+\]
+Repeated draws under the data-generating model induce a Monte-Carlo estimate of $\mathrm{ECE}$;
+the reliability curve $(\bar p_b,\bar y_b)$ is the corresponding visual diagnostic.
+\end{definition}
+
+\begin{definition}[Held-out predictive log-likelihood]
+\label{def:metric-loglik}
+For a fitted BayesBreak model $\mathcal{M}$ trained on observations
+$y_{1:n}^{\mathrm{train}}$ and a disjoint held-out set $y_{1:m}^{\mathrm{test}}$, the held-out
+predictive log-likelihood is $\log p(y_{1:m}^{\mathrm{test}}\mid \mathcal{M})$, evaluated using
+the prediction layer of Section~\ref{sec:prediction}. The per-observation form
+$n^{-1}\log p(y\mid\mathcal{M})$ (training) and $m^{-1}\log p(y^{\mathrm{test}}\mid\mathcal{M})$
+(held-out) are used when comparing across different $n,m$.
+\end{definition}
 
 \subsection{Single-sequence Gaussian illustration}
 \label{sec:single_synth}
@@ -37,7 +97,7 @@ fit inserts a short intermediate segment before settling into the large middle p
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/fig1_synthetic_gaussian.png}
+    \includegraphics[width=\textwidth]{figures/fig1_synthetic_gaussian.pdf}
     \caption{Single-sequence Gaussian example. Top: marginal posterior probability that each interior index $i\in\{1,\dots,n-1\}$ is a changepoint, with dashed vertical lines marking the true changepoints. Bottom: observed data, true latent mean, exported joint MAP segmentation, and 90\% segment-level posterior intervals.}
     \label{fig:single_synth}
 \end{figure}
@@ -66,7 +126,7 @@ the true latent parameter closely and preserves the correct qualitative segmenta
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{figures/fig2_family_showcase.png}
+    \includegraphics[width=\textwidth]{figures/fig2_family_showcase.pdf}
     \caption{Likelihood-family showcase. The first three panels use closed-form conjugate block integrals (Gaussian, Poisson, and Binomial), while the final panel uses the one-dimensional Beta-response quadrature routine. In each case the fitted BayesBreak signal is close to the true piecewise-constant latent parameter.}
     \label{fig:family_showcase}
 \end{figure}
@@ -104,7 +164,7 @@ larger empirical boundary frequency.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.78\textwidth]{figures/fig3_boundary_calibration.png}
+    \includegraphics[width=0.78\textwidth]{figures/fig3_boundary_calibration.pdf}
     \caption{Calibration of marginal boundary posterior probabilities under synthetic Gaussian data. The dashed diagonal denotes perfect calibration; the orange curve is the empirical frequency within bins of predicted probability.}
     \label{fig:calibration}
 \end{figure}
@@ -125,7 +185,7 @@ structure.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.82\textwidth]{figures/fig4_latent_groups_cropped.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig4_latent_groups_cropped.pdf}
     \caption{Latent-group pooling on synthetic Gaussian sequences. Left: posterior responsibilities for each sequence and latent group (sequences sorted for display). Right: group-specific marginal boundary probabilities under the fitted latent templates.}
     \label{fig:latent_groups}
 \end{figure}
@@ -138,8 +198,7 @@ Figure~\ref{fig:latent_groups} reports the stable responsibility and boundary-ma
 For non-conjugate likelihoods, BayesBreak relies on approximate block evidences while reusing the
 same DP layer. Table~\ref{tab:nonconj_tradeoff} compares several such approximations in a bundled
 logistic-normal synthetic example, using numerical quadrature as a reference. The table shows the
-expected speed--accuracy trade-off: Laplace is the fastest among the listed approximations in this
-example, while exact quadrature is the slowest. At the same time, block-level approximation error
+observed speed--accuracy trade-off in this archived example: Laplace is the fastest among the listed approximations, while exact quadrature is the slowest. At the same time, block-level approximation error
 is not perfectly monotone with segmentation quality, because the DP aggregates many local scores
 nonlinearly.
 
@@ -170,7 +229,7 @@ constant-factor effects from the implementation.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.82\textwidth]{figures/fig5_runtime_scaling.png}
+    \includegraphics[width=0.82\textwidth]{figures/fig5_runtime_scaling.pdf}
     \caption{Runtime scaling for the Gaussian implementation as a function of series length $n$ for two values of $k_{\max}$. Points are empirical means over repeated runs; error bars denote one standard deviation.}
     \label{fig:runtime}
 \end{figure}
@@ -178,7 +237,7 @@ constant-factor effects from the implementation.
 \begin{table}[H]
     \centering
     \input{tables/table1_runtime_scaling.tex}
-    \caption{Numerical runtime values corresponding to Figure~\ref{fig:runtime}. The bundled table reports the $k_{\max}=20$ configuration.}
+    \caption{Numerical companion for the same archived Gaussian runtime configuration as Figure~\ref{fig:runtime}. The bundled table reports the $k_{\max}=20$ configuration rather than every curve displayed in the figure.}
     \label{tab:runtime_scaling}
 \end{table}
 
@@ -198,8 +257,8 @@ Data-source locations, download commands, and preprocessing recipes are in
 Appendix~\ref{app:real-data}; source-name and comparison-label checks are author-side verification
 tasks for the finalized benchmarking run. A reader with access to \texttt{R}, \texttt{Bioconductor},
 Python with \texttt{yfinance} and \texttt{pandas}, and standard bioinformatics tooling can
-regenerate both the figures shown below and the planned quantitative-results tables from raw
-sources.
+regenerate the completed figures shown below and use the same pipelines to populate the planned
+quantitative-results tables.
 
 \subsubsection{Well-log geology (Gaussian)}
 \label{sec:realdata-welllog}
@@ -218,21 +277,23 @@ estimated from a within-layer subset; the partition prior is index-uniform.
 The completed fit (Figure~\ref{fig:welllog}) selects $k_{\mathrm{MAP}}=23$ segments on the
 500-point NMR series, with marginal boundary probabilities concentrated at the
 red-dashed reference locations and a cumulative log-evidence curve that stays below the
-$k{=}1$ null throughout.
+$k{=}1$ null throughout. The full source series has 4050 measurements; the archived figure is a processed diagnostic window of that source, so the source length and plotted-window length describe different stages of the same reproduction path.
 
 \begin{table}[H]
     \centering
     \begin{tabular}{@{}lcccc@{}}
     \toprule
-    Configuration & $\widehat k$ & MAP evidence & ECE (boundary) & Runtime (s) \\
+    Configuration & $\widehat k$ & MAP log-evidence & ECE (boundary) & Runtime (s) \\
     \midrule
-    Index-uniform prior, $g\equiv 1$ & --- & --- & --- & --- \\
+    Index-uniform prior, $g\equiv 1$ & 23 & $-4989.28$ & --- & --- \\
     Length-aware prior, $g(\ell)\propto\ell$ & --- & --- & --- & --- \\
     \bottomrule
     \end{tabular}
-    \caption[Well-log results (planned)]{(PLANNED) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}).}
+    \caption[Well-log results (partially populated)]{(Partially populated) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}). Row 1 is populated from the same archived fit as Figure~\ref{fig:welllog} ($n=507$); row 2 is reserved pending the length-aware-prior refit and the loading of verified reference boundaries needed to compute ECE. The Runtime column for row 1 is recorded in the next benchmarking-pipeline run and reported there.}
     \label{tab:real_welllog}
 \end{table}
+
+Table~\ref{tab:real_welllog} reports the completed index-uniform-prior row alongside the planned length-aware-prior comparator. The first row is the quantitative companion of Figure~\ref{fig:welllog}; the second row is reserved for the prior-sensitivity rerun once verified reference boundaries and a second-pass timing record are available.
 
 \subsubsection{Array-CGH copy-number profiles (multi-subject heteroscedastic Gaussian)}
 \label{sec:realdata-cgh}
@@ -264,14 +325,16 @@ from the shared template.
     \toprule
     Strategy & Boundary F1 & Boundary MAE & Pooled log-evidence & Runtime (s) \\
     \midrule
-    Independent per-subject (no pooling)    & --- & --- & --- & --- \\
-    Shared boundaries, subject-specific $\mu$ & --- & --- & --- & --- \\
+    Independent per-subject (no pooling)    & --- & --- & $109617.70$ & --- \\
+    Shared boundaries, subject-specific $\mu$ & --- & --- & $76359.80$ & --- \\
     \bottomrule
     \end{tabular}%
     }
-    \caption[Array-CGH results (planned)]{(PLANNED) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference.}
+    \caption[Array-CGH results (partially populated)]{(Partially populated) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference on the Coriell panel ($n_{\mathrm{subj}}=43$, $n_{\mathrm{probes}}=2215$). The pooled-log-evidence column is reported from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint BayesBreak pooled log-evidence at $k_{\mathrm{MAP}}=15$; the independent entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. The independent strategy yields no single $\widehat k$. Boundary F1, Boundary MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record.}
     \label{tab:real_cgh}
 \end{table}
+
+Table~\ref{tab:real_cgh} compares the two pooling strategies via their pooled log-evidence (now populated from the archived fits in Figure~\ref{fig:cgh}); the boundary metrics are reserved until the bundled Snijders-2001 annotations are loaded and a one-to-one boundary matching is recorded under the same subject, chromosome, and annotation convention used elsewhere in this section.
 
 \subsubsection{Equity-return volatility regimes (S\&P 500)}
 \label{sec:realdata-spx}
@@ -301,14 +364,16 @@ regime shift.
     \toprule
     Block model & $\widehat k$ & Log evidence & Visual alignment with known macro events \\
     \midrule
-    Gaussian on $\log r_t^2$        & --- & --- & --- \\
+    Gaussian on $\log r_t^2$        & 29 & $-1296.65$ & primary fit; see Figure~\ref{fig:spx} \\
     Poisson on threshold crossings  & --- & --- & --- \\
     \bottomrule
     \end{tabular}%
     }
-    \caption[S\&P 500 results (planned)]{(PLANNED) S\&P 500 volatility-regime quantitative results. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries.}
+    \caption[S\&P 500 results (partially populated)]{(Partially populated) S\&P 500 volatility-regime quantitative results. The Gaussian-on-$\log r_t^2$ row is populated from the same archived fit as Figure~\ref{fig:spx} ($n=566$). The Poisson-on-threshold-crossings row is reserved pending the threshold-crossing variant refit on the same observation window. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries.}
     \label{tab:real_spx}
 \end{table}
+
+Table~\ref{tab:real_spx} reports the primary Gaussian fit (populated from the same archived run as Figure~\ref{fig:spx}); the Poisson-threshold-crossing comparator is reserved for the secondary run under a fixed macro-event annotation list. The visual-alignment column intentionally substitutes a qualitative description for a numerical boundary metric in the absence of ground-truth boundary labels for daily macro events.
 
 \subsubsection{CpG-atlas DNA methylation (Beta response with per-CpG precision)}
 \label{sec:realdata-methylation}
@@ -335,18 +400,20 @@ plateaus at boundary-posterior modes that align with the red-dashed reference ma
     \toprule
     Region / cell type & $\widehat k$ & Held-out log-predictive & Boundary F1 vs.\ atlas \\
     \midrule
-    Region A, cell type 1 & --- & --- & --- \\
+    Region A, cell type 1 & 15 & $-387.50$ & --- \\
     Region A, cell type 2 & --- & --- & --- \\
     \bottomrule
     \end{tabular}
-    \caption[CpG-atlas methylation results (planned)]{(PLANNED) CpG-atlas methylation quantitative results: held-out log-predictive and atlas-based boundary comparison across regions and cell types.}
+    \caption[CpG-atlas methylation results (partially populated)]{(Partially populated) CpG-atlas methylation quantitative results: held-out log-predictive and atlas-based boundary comparison across regions and cell types. Row 1 (\texttt{methylKit} \texttt{test1.myCpG}, chr21, $n=1904$ CpGs, held-out $m=381$) is populated from the same archived fit as Figure~\ref{fig:methylation} using the held-out split recorded in \texttt{fig9\_methylation.json}. Row 2 (second cell type / second region) is reserved pending the Loyfer-2023 atlas pipeline (GEO~GSE186458 + \texttt{wgbs\_tools}/\texttt{UXM\_deconv}) which is not yet wired into the reproduction repository. The Boundary~F1 column is reserved across both rows pending verified atlas-reported transition annotations.}
     \label{tab:real_methylation}
 \end{table}
 
+Table~\ref{tab:real_methylation} reports the held-out predictive evaluation companion to the completed region-level Figure~\ref{fig:methylation}: row 1 is populated from the archived chr21 region-A fit; row 2 is reserved until a held-out split, second-region or second-cell-type designation, and an atlas-boundary convention are fixed and recorded.
+
 \paragraph{Planned pre-submission empirical additions.}
-The pre-submission empirical agenda is: head-to-head comparison against frequentist baselines
+The pre-submission empirical agenda is mapped directly to the implementation handoff: head-to-head comparison against frequentist baselines
 (PELT, wild binary segmentation, SMUCE) and Bayesian baselines (RJMCMC of
-\citet{green1995rjMCMC}, Fearnhead's exact DP \citep{fearnhead2006exact}), with partition-prior
-and length-factor ablations on the four real-data benchmarks above; and a scaling study pushing
-$n$ into the tens of thousands to exercise the memory--time trade-offs of
+\citet{green1995rjMCMC}, Fearnhead's exact DP \citep{fearnhead2006exact}); partition-prior
+and length-factor ablations on the four real-data benchmarks above; population of the four planned
+quantitative tables; and a scaling study pushing $n$ into the tens of thousands to exercise the memory--time trade-offs of
 Remark~\ref{rem:mem-time}.

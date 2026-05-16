@@ -39,34 +39,25 @@ $A^{(0)}_{ij}$ together with any required moment numerators, then the same DP ma
 reused across observation models, design priors, and several structured extensions.
 
 \paragraph{Contributions.}
-The main contributions are as follows.
+The main contributions are organized by their role in the inference pipeline.
 \begin{itemize}
-\item \textbf{A reusable exponential-family block interface.}
-Closed-form block evidences and posterior moments from cumulative sufficient statistics for
-exposure-aware EF models with conjugate priors. The construction recovers Gaussian, Poisson, and
-Beta--Binomial formulas as special cases.
+\item \textbf{Exact theory for reusable block models.}
+We give a reusable exponential-family block interface: closed-form block evidences and posterior moments from cumulative sufficient statistics for exposure-aware conjugate models, recovering Gaussian, Poisson, and Beta--Binomial formulas as special cases.
 
-\item \textbf{Exact offline DP with coherent posterior summaries.}
-Forward/backward DP recursions for marginal evidences, segment-count posteriors, boundary
-marginals, and Bayes regression curves. These sum-product quantities are distinguished from
-the joint MAP segmentation, which uses a separate max-sum recursion with backtracking.
+\item \textbf{Exact global posterior computation.}
+We state forward/backward DP recursions for fixed-count evidences, segment-count posteriors, boundary marginals, and Bayes regression curves, and we keep these sum-product quantities separate from the joint MAP segmentation computed by max-sum DP and backtracking.
 
-\item \textbf{Design-aware partition priors for irregular designs.}
-A segment-length factor (cohesion function) on the partition prior encodes physical spacing
-$\Delta_x(t_{q-1},t_q)$ at the prior level, keeping design geometry separate from likelihood
-weighting.
+\item \textbf{Structured extensions that preserve the block/DP separation.}
+We incorporate design-aware partition priors for irregular designs, exact evidence pooling for shared-boundary replicates, and groupwise pooled inference when memberships are known. The design-aware prior acts through a segment-length cohesion $g(\Delta_x)$ and does not silently reweight the likelihood.
 
-\item \textbf{Exact pooling for shared-boundary replicates and known groups.}
-Under conditional independence across subjects given shared boundaries, subject-level block evidences multiply, so the pooled posterior is exactly tractable under the same DP; the same construction applies groupwise when memberships are known.
-
-\item \textbf{A latent-group template mixture with exact coordinate updates.}
-Each group carries a latent template segmentation; the E-step updates responsibilities and the M-step is an exact responsibility-weighted max-sum DP, yielding a rigorous alternating optimization for a stated finite-template objective rather than full Bayesian averaging.
+\item \textbf{A finite latent-group optimization model.}
+For unknown group membership, we formulate a latent-template mixture in which exact E-step responsibilities alternate with exact responsibility-weighted max-sum template updates. The resulting EM procedure optimizes a stated finite-template objective rather than claiming full Bayesian averaging over latent segmentations.
 
 \item \textbf{Approximate non-conjugate block routines with stability guarantees.}
-For non-conjugate GLM blocks we describe Laplace, variational (JJ, P\'olya--Gamma mean field), EP, and 1-D quadrature approximations, and show how a uniform per-block log-evidence error $\varepsilon$ propagates through the DP to perturb global posterior odds by a controlled amount.
+For non-conjugate GLM blocks we describe Laplace, variational Jaakkola--Jordan, P\'olya--Gamma mean-field, expectation-propagation, and one-dimensional quadrature routines, then prove how a uniform per-block log-evidence error $\varepsilon$ propagates through the DP to perturb global posterior odds.
 
-\item \textbf{A prediction layer for fitted segmenters.}
-Posterior-predictive scoring for new pointwise sequences, set-valued units, and vector-valued responses, distinguishing conditional prediction under an exported segmentation from optional resegmentation-based scoring.
+\item \textbf{Prediction and reproducibility interfaces.}
+We define posterior-predictive scoring for new pointwise sequences, set-valued units, and vector-valued responses, distinguishing conditional prediction under exported segmentations from optional resegmentation-based scoring, and we specify the empirical and coding interfaces needed to reproduce the completed and planned outputs.
 \end{itemize}
 
 \subsection{Related work and literature review}\label{sec:lit}

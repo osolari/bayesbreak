@@ -6,11 +6,19 @@ fundamental unknown is a contiguous partition of the index set $\{1,\dots,n\}$ t
 segment parameter attached to each block. This section states the objects of interest in a
 model-agnostic way; Section~\ref{sec:notation} introduces the detailed notation used later.
 
-Unless stated otherwise, the standing assumptions are: observations are ordered on a fixed
-set of candidate boundary locations; the admissible segment-count set is finite; block evidences
-are finite and positive on admissible blocks (and zero or $-\infty$ on inadmissible blocks);
-segment parameters are conditionally independent across blocks given a segmentation; and the
-conditional partition prior factorizes over segments per Assumption~\ref{ass:factorizing-prior}.
+Unless stated otherwise, all inferential statements in the paper use the following standing assumption.
+
+\begin{assumption}[Offline segmentation support and block independence]
+\label{ass:standing-offline}
+The observations are ordered on a fixed set of candidate boundary locations; the admissible
+segment-count set $\{1,\dots,k_{\max}\}$ is finite; every admissible block has finite nonnegative
+block evidence, with strictly positive evidence on the support used by the DP and score $0$ (or
+log-score $-\infty$) on excluded blocks; segment parameters are conditionally independent across
+blocks given a segmentation; and the conditional partition prior factorizes over segments as in
+Assumption~\ref{ass:factorizing-prior}. For approximate non-conjugate blocks, the same statement
+applies to the approximate score array, while comparison with the exact non-conjugate model
+requires the additional error hypothesis of Assumption~\ref{ass:uniform-block-error}.
+\end{assumption}
 
 \subsection{Single-sequence segmentation and Bayes regression}
 \label{sec:problem-single}
@@ -28,6 +36,21 @@ where block $q\in\{1,\dots,k\}$ is the index set
 \begin{equation}
 I_q(t)\coloneqq \{t_{q-1}+1,\dots,t_q\}.
 \end{equation}
+
+\begin{definition}[Segmentation space and admissible support]
+\label{def:segmentation-space}
+For fixed $n$ and $k$, let
+\[
+\mathcal{T}_{k,n}:=\{t=(t_0,\dots,t_k):0=t_0<t_1<\cdots<t_k=n\}.
+\]
+The \emph{admissible support} $\mathcal{T}^{+}_{k,n}\subseteq\mathcal{T}_{k,n}$ consists of
+those boundary vectors for which every block has positive prior cohesion and finite positive
+block evidence. Equivalently, $t\in\mathcal{T}^{+}_{k,n}$ only when
+$g(\Delta_x(t_{q-1},t_q))A^{(0)}_{t_{q-1},t_q}>0$ for all $q$, with the obvious replacement of
+$A^{(0)}$ by an approximate evidence when a non-conjugate routine is being analyzed as an
+approximate score model.
+\end{definition}
+
 The corresponding segment parameter is denoted $\theta_q\in\Theta$. Conditionally on
 $(k,t,\theta_{1:k})$, observations factorize across blocks:
 \begin{equation}
@@ -54,11 +77,23 @@ entire offline posterior can be computed exactly by dynamic programming. When it
 approximated, BayesBreak isolates the approximation at the block level and reuses the same global
 DP.
 
+\begin{definition}[Boundary-event variables, Bayes curve, and exported estimator]
+\label{def:problem-bayes-curve}
+For a boundary vector $t\in\mathcal{T}_{k,n}$, define the interior boundary indicator
+$b_i(t):=\sum_{p=1}^{k-1}\mathbf{1}\{t_p=i\}$ for $i=1,\dots,n-1$. Because the boundaries are
+strictly ordered, $b_i(t)\in\{0,1\}$. For fixed $k$, the Bayes regression curve at index $i$ is
+the posterior mean of the observation-scale segment mean covering $i$ after marginalizing over
+$t\in\mathcal{T}^{+}_{k,n}$ and over segment parameters. The exported segmentation estimator is a
+deterministic boundary vector, usually the joint MAP vector $\widehat t^{\mathrm{MAP}}(k)$, paired
+with segment-level posterior summaries for downstream prediction. These two objects need not
+coincide because the Bayes curve averages over boundary uncertainty whereas the exported estimator
+chooses one segmentation.
+\end{definition}
+
 The inferential targets are:
 \begin{enumerate}[label=(\roman*), leftmargin=2.3em]
     \item the marginal evidence at fixed segment count,
-    \(p(y_{1:n}\mid k)=\sum_{t\in\mathcal{T}_k}p(t\mid k)\prod_{q}\mathcal{L}(t_{q-1},t_q)\)
-    with $\mathcal{T}_k=\{(t_0,\dots,t_k):0=t_0<\cdots<t_k=n\}$;
+    \(p(y_{1:n}\mid k)=\sum_{t\in\mathcal{T}^{+}_{k,n}}p(t\mid k)\prod_{q}\mathcal{L}(t_{q-1},t_q)\);
     \item the posterior $p(k,t\mid y)$ over segment counts and boundaries and its marginals
     $p(k\mid y)$, $p(t_p=h\mid y,k)$, and the boundary-event marginal
     \(p(b_i=1\mid y,k)=\sum_{p=1}^{k-1}p(t_p=i\mid y,k)\)
@@ -75,16 +110,57 @@ The inferential targets are:
     objective only when also optimizing over $k$.
 \end{enumerate}
 
+The three posterior summaries entering downstream analysis are isolated as labelled objects so
+that later sections can refer to them without re-deriving notation.
+
+\begin{definition}[Posterior summaries: marginal boundaries, segment count, and joint MAP]
+\label{def:posterior-summaries}
+Fix a sequence $y=y_{1:n}$, a maximum segment count $k_{\max}$, and Assumption~\ref{ass:standing-offline}.
+Define:
+\begin{enumerate}[label=(\alph*), leftmargin=2.3em]
+    \item the \emph{marginal boundary posterior}
+    \(\mathrm{MB}_i(k):=p(b_i=1\mid y,k)\)
+    for interior indices $i\in\{1,\dots,n-1\}$ and admissible $k\in\{1,\dots,k_{\max}\}$;
+    \item the \emph{posterior over segment count}
+    \(\mathrm{PK}(k):=p(k\mid y)\propto p(k)\,p(y\mid k)\)
+    for $k\in\{1,\dots,k_{\max}\}$;
+    \item the \emph{joint MAP segmentation at fixed $k$}
+    \(\widehat t^{\mathrm{MAP}}(k):=\arg\max_{t\in\mathcal{T}^{+}_{k,n}} p(t\mid y,k)\),
+    with ties broken by a deterministic rule (Section~\ref{sec:dp-alg}).
+\end{enumerate}
+These three objects are returned by distinct DP recursions (sum-product, sum-product with
+$k$-aggregation, and max-sum, respectively), and they are not in general consistent with each
+other: $\mathrm{MB}_i$ and $\widehat t^{\mathrm{MAP}}(k)$ can place boundary mass at different
+indices (Remark~\ref{rem:marg-vs-joint}), and the mode of $\mathrm{PK}$ need not coincide with
+the cardinality of any single thresholded set of marginal boundaries.
+\end{definition}
+
 \subsection{Multi-sequence structure}
 \label{sec:problem-multiseq}
 
 Many applications provide multiple related sequences observed on a common ordered grid or on a
 common set of candidate boundary locations. Let sequence $s\in\{1,\dots,S\}$ be denoted by
-$y^{(s)}_{1:n}$. BayesBreak treats three progressively richer settings.
+$y^{(s)}_{1:n}$, with optional weights $w_i^{(s)}$ and subject-specific segment parameters
+$\theta_q^{(s)}$ when boundaries are shared. We use $z_s\in\{1,\dots,G\}$ for group membership,
+$\mathcal{S}_g:=\{s:z_s=g\}$ for known groups, and $r_{sg}$ for latent-group responsibilities.
+BayesBreak treats three progressively richer settings.
+
+\begin{definition}[Multi-sequence segmentation classes]
+\label{def:multiseq-classes}
+A shared-boundary replicate model has one boundary vector $t$ and subject-specific segment
+parameters $\theta^{(s)}_{1:k}$. A known-group model has observed labels $z_s$ and one boundary
+vector $t^{(g)}$ per group. A latent-template model has unobserved labels $z_s$ and a finite set of
+templates $\tau_g=(k_g,t^{(g)})$ optimized under the template-mixture objective of
+Section~\ref{sec:latent-em}. These three classes preserve the block-evidence interface; fully
+Bayesian averaging over both unknown labels and all group segmentations is a different target and
+is not claimed for the EM template model.
+\end{definition}
 
 \paragraph{Shared-boundary replicates.}
-All sequences share a common segmentation $t$, but each sequence has its own within-block
-parameters $\theta^{(s)}_{1:k}$. Conditional on $t$, the sequences are independent:
+All sequences share a common segmentation $t\in\mathcal{T}^{+}_{k,n}$, but each sequence has its
+own within-block parameters $\theta^{(s)}_{1:k}$. The common-grid requirement is an assumption on
+the candidate boundary coordinates; subject-specific missingness or exposures are handled inside
+the block evidences. Conditional on $t$, the sequences are independent:
 \begin{equation}
 p(\{y^{(s)}\}_{s=1}^S\mid t,\{\theta^{(s)}\})
 = \prod_{s=1}^S \prod_{q=1}^k \prod_{i\in I_q(t)} p\bigl(y_i^{(s)}\mid \theta_q^{(s)}, w_i^{(s)}\bigr).
@@ -94,14 +170,15 @@ multiplying subject-level block evidences.
 
 \paragraph{Known groups.}
 Sequences are partitioned into known groups $g\in\{1,\dots,G\}$. Each group has its own
-segmentation, while sequences within a group share that segmentation and retain their own
-segment parameters.
+segmentation $t^{(g)}\in\mathcal{T}^{+}_{k_g,n}$, while sequences within a group share that
+segmentation and retain their own segment parameters. Conditional independence is within group
+and across subjects given $t^{(g)}$.
 
 \paragraph{Latent groups.}
 Group labels are unknown. A fully Bayesian formulation averages over both
 assignments and group-specific segmentations. BayesBreak adopts a tractable
 \emph{template-mixture} formulation: each group is associated with a single latent boundary
-template, and EM alternates between soft assignments (exact responsibilities for the current
+template $\tau_g=(k_g,t^{(g)})$, and EM alternates between soft assignments (exact responsibilities for the current
 templates) and exact responsibility-weighted max-sum DP updates of those templates. The
 finite-template objective is monotone non-decreasing under the exact coordinate updates
 (Theorem~\ref{thm:em-monotone}); this is a finite-template optimization model rather than exact Bayesian

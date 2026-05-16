@@ -22,9 +22,13 @@ In practice, it is numerically preferable to store \emph{log} block evidences,
     \ell_{i j}^{(0)} \;\coloneqq\; \log \widetilde{A}^{(0)}_{i j},
 \end{equation}
 and similarly for positive moment numerators required for the Bayes regression curve. If a chosen
-moment numerator can be zero or negative, implementations use signed-log storage or linear
-accumulators with explicit scaling rather than silently taking a logarithm.
-Algorithm~\ref{alg:block-precompute} expresses the precomputation at an abstract level, with a
+moment numerator can be zero or negative, implementations use tagged signed-log storage rather than
+silently taking a logarithm: a signed quantity $m_{ij}$ is represented as $(s_{ij},a_{ij})$ with
+$s_{ij}\in\{-1,0,1\}$ and $a_{ij}=\log |m_{ij}|$ when $s_{ij}\ne0$, while $s_{ij}=0$ records exact
+zero. The output contract for each \texttt{BlockRoutine} is explicit: return a finite log evidence
+for admissible blocks, $-\infty$ for excluded blocks, optional positive log-moment numerators, and
+optional signed-log moment records with this zero convention. Downstream DP code must reject
+untagged nonpositive moment numerators rather than treating them as log values. Algorithm~\ref{alg:block-precompute} expresses the precomputation at an abstract level, with a
 single call to a \texttt{BlockRoutine} that implements the family-specific closed forms given in
 Section~\ref{sec:families}.
 
@@ -107,6 +111,10 @@ $\log \pi_k \leftarrow \log p(k) + \log p(y\mid k)$;
 set $p(k\mid y)\leftarrow \exp\{\log \pi_k - \texttt{logsumexp}_{k'}(\log \pi_{k'})\}$.
 \end{algorithm}
 
+The backward upper endpoint $n-k+1$ is the last split that leaves $k-1$ nonempty suffix blocks to
+cover indices $h+1,\dots,n$. Empty summation ranges are interpreted as $-\infty$ in log space, so
+edge cases are handled by the same admissibility convention as the forward recursion.
+
 \paragraph{Boundary marginals and Bayes curves.}
 Once $\log\widetilde{L}$ and $\log\widetilde{R}$ are available, the boundary marginal in
 \eqref{eq:boundary-post} can be computed stably by subtracting the common normalizer
@@ -115,6 +123,14 @@ Similarly, Bayes regression moments (Theorem~\ref{thm:dp-correctness}, Step~6; c
 can be computed by replacing $\ell^{(0)}_{ij}$ with compatible moment numerators and reusing the
 same log-space DP bookkeeping. Signed or nonpositive moment targets require the signed-log or
 scaled-linear convention noted in Section~\ref{sec:alg-blocks}.
+A signed-log accumulator stores each target as a sign bit and a log-magnitude; sums of signed
+terms are evaluated by separately applying \texttt{logsumexp} to positive and negative parts
+and subtracting the two scaled results only at the final reporting step. This convention is part
+of the output contract for any routine that returns moment numerators rather than evidences.
+The backward-loop bound $h\le n-k+1$ in Algorithm~\ref{alg:dp-log} enforces the nonempty-suffix
+convention: after choosing the next endpoint $h$ for the block $(i,h]$, the remaining $k-1$
+blocks must occupy at least one observation each in $(h,n]$. Thus the summation is empty, and the
+message is $-\infty$, whenever the remaining suffix cannot support the requested number of blocks.
 
 \subsection{MAP segmentation and backtracking}
 \label{sec:alg-map}
@@ -192,6 +208,30 @@ In log space, pooling is therefore a simple sum:
 The same applies to known groups, with the sum taken over subjects in a group.
 The resulting pooled matrices can be passed unchanged to Algorithm~\ref{alg:dp-log}.
 
+\begin{algorithm}[H]
+\caption{Pooled-DP for shared-boundary multi-subject inference (log-space)}
+\label{alg:pool-shared-boundary}
+\KwIn{Per-subject log-block-evidence arrays $\{\ell^{(0,s)}_{ij}\}_{s=1}^S$ for $0\le i<j\le n$;
+optional length-prior log-cohesion $\log g(\Delta_x(i,j))$; $k_{\max}$; group-label set
+$\{z_s\}_{s=1}^S$ if pooling by known group, else $z_s\equiv 1$ for global pooling.}
+\KwOut{Per-group pooled posteriors $P_g(k\mid y)$, $P_g(t_p\mid y,k)$, MAP segmentations
+$\widehat t^{\mathrm{MAP}}_g(\widehat k_g)$, and segment-conditional parameter posteriors.}
+\For{each distinct group label $g\in\{z_s\}$}{
+  Let $\mathcal{S}_g=\{s:z_s=g\}$\;
+  $\ell^{(0,\mathrm{pool})}_{ij,g}\leftarrow \sum_{s\in\mathcal{S}_g}\ell^{(0,s)}_{ij}$ for every admissible $(i,j]$\;
+  \tcp{Length prior absorbed once at the pooled level.}
+  $\widetilde\ell^{(0,\mathrm{pool})}_{ij,g}\leftarrow \ell^{(0,\mathrm{pool})}_{ij,g}+\log g(\Delta_x(i,j))$\;
+  Run Algorithm~\ref{alg:dp-log} with score $\widetilde\ell^{(0,\mathrm{pool})}_{ij,g}$ to obtain $P_g(k\mid y)$, $P_g(t_p\mid y,k)$, $\widehat k_g$\;
+  Run the max-sum routine (Algorithms~\ref{alg:map-forward}--\ref{alg:map-backtrack}) on the same score to obtain $\widehat t^{\mathrm{MAP}}_g(\widehat k_g)$\;
+  Conditional on $\widehat t^{\mathrm{MAP}}_g$, recover subject-specific segment-parameter posteriors from each $s\in\mathcal{S}_g$ block update\;
+}
+\Return $\{P_g(k\mid y),P_g(t_p\mid y,k),\widehat t^{\mathrm{MAP}}_g,\text{per-subject parameter posteriors}\}_g$\;
+\tcp{Complexity: $\Theta\!\bigl(\sum_g(|\mathcal{S}_g|n^2 + k_{\max}n^2)\bigr)$ time and
+$\Theta(n^2 + k_{\max}n)$ working memory per group when subject sums are streamed.}
+\tcp{Numerical: pool in log space and use \texttt{logsumexp}; carry per-subject log-blocks to
+floating-point underflow safely; sum $-\infty$ contributions are absorbed at the pooled step.}
+\end{algorithm}
+
 \subsection{Latent-group EM implementation notes}
 \label{sec:alg-em}
 
@@ -212,8 +252,62 @@ objective in Section~\ref{sec:latent-em}.
 The monotonicity guarantee in Theorem~\ref{thm:em-monotone} applies precisely because these E- and M-step
 updates are exact for the stated template-mixture objective.
 
+\begin{algorithm}[H]
+\caption{Latent-template EM with exact responsibility and exact max-sum M-step (log-space)}
+\label{alg:latent-em-detail}
+\KwIn{Per-subject log-block-evidence arrays $\{\ell^{(0,s)}_{ij}\}_{s=1}^S$; group count $G$;
+$k_{\max}$; restart count $R\ge 5$; mixing-weight floor $\pi_{\min}\in[0,1)$ (optional);
+log-cohesion $\log g(\Delta_x(\cdot))$ and partition-prior $\log p(k)/C_k$.}
+\KwOut{Mixing weights $\widehat\pi\in\Delta^{G-1}$; templates $\{\widehat\tau_g\}_{g=1}^G$; final
+responsibilities $\{r_{sg}\}$; achieved finite-mixture objective $\ell_\star$.}
+\For{restart $r=1$ \KwTo $R$}{
+  Initialize $(\pi^{(0)},\tau^{(0)})$ by (\emph{r=1}) $k$-means on pooled per-subject scores, (\emph{r=2,\dots,R}) draws from the partition prior\;
+  \Repeat{$|\Delta\ell_\star|<10^{-6}$ \emph{and} templates stop changing under deterministic tie-breaking}{
+    \tcp{E-step (exact responsibility update; closed-form for the current finite templates).}
+    $r_{sg}\leftarrow \dfrac{\pi_g\,S_g(y^{(s)};\tau_g)}{\sum_{h=1}^G\pi_h\,S_h(y^{(s)};\tau_h)}$ for each $s,g$\;
+    \tcp{M-step (i): mixing-weight update.}
+    $n_g\leftarrow \sum_s r_{sg}$; $\pi_g\leftarrow \max(n_g/S,\pi_{\min})$ then renormalize\;
+    \tcp{M-step (ii): exact responsibility-weighted max-sum template update.}
+    \For{$g=1$ \KwTo $G$}{
+      Form $B^{(g)}_{ij}=n_g\log g(\Delta_x(i,j))+\sum_s r_{sg}\ell^{(0,s)}_{ij}$\;
+      Run max-sum DP + backtracking on $B^{(g)}$ with offset $n_g\{\log p(k)-\log C_k\}$ to obtain $\widehat\tau_g=(\widehat k_g,\widehat t^{(g)})$\;
+    }
+    Compute $\ell_\star^{(t+1)}=\sum_{s=1}^S\log\sum_g \pi_g S_g(y^{(s)};\tau_g)$\;
+  }
+  Record $(\pi^{(r)},\tau^{(r)},\ell_\star^{(r)})$\;
+}
+\Return restart with largest achieved $\ell_\star^{(r)}$\;
+\tcp{Complexity (per iteration): $\Theta(GS n^2 + G k_{\max} n^2)$ time and $\Theta(Sn^2+Gk_{\max}n)$ working memory.}
+\tcp{Numerical: do every responsibility update with a \texttt{logsumexp}-style normalizer; report
+$\pi_{\min}>0$ as a regularized variant (Remark on regularized EM in Section~\ref{sec:latent-em}).}
+\end{algorithm}
+
 \subsection{Complexity summary and stability}
 \label{sec:alg-complexity}
+
+
+\begin{table}[H]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}llll@{}}
+\toprule
+Component & Time & Memory & Numerical note \\
+\midrule
+Conjugate block precomputation & $\Theta(n^2)$ & $\Theta(n^2)$ & prefix summaries; invalid blocks stored as $-\infty$ \\
+Exact DP, fixed score matrix & $\Theta(k_{\max}n^2)$ & $\Theta(k_{\max}n)$--$\Theta(k_{\max}n^2)$ & logsumexp normalization \\
+Boundary marginals and Bayes curve & $\Theta(k_{\max}n^2)$ & $\Theta(k_{\max}n^2)$ if all block covers are retained & common evidence normalizer \\
+MAP backtracking & $\Theta(k_{\max}n^2)$ & $\Theta(k_{\max}n)$ plus backpointers & deterministic tie rule \\
+Non-conjugate precomputation & $\Theta(n^2T_{\mathrm{block}})$ & $\Theta(n^2)$ plus routine state & routine convergence/failure flags \\
+Shared-boundary pooling & $\Theta(Sn^2+k_{\max}n^2)$ after subject blocks & $\Theta(Sn^2)$ or streamed subject sums & sum subject log scores \\
+Latent-template EM & per iteration $\Theta(GSn^2+Gk_{\max}n^2)$ & $\Theta(Sn^2+Gk_{\max}n)$ & log-responsibility normalization \\
+Prediction scoring & $\Theta(Gm)$ after segment assignment; $\Theta(Gk_{\max}m^2)$ for resegmentation & problem dependent & log predictive scores \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Implementation-level complexity summary. This is a theoretical accounting table; no source CSV is associated with it.}
+\label{tab:complexity-summary}
+\end{table}
 
 \begin{proposition}[BayesBreak time and space complexity]
 \label{prop:bb-complexity}
@@ -237,6 +331,7 @@ treats block evidences as opaque inputs, so the only complexity change is in
 the precomputation pass.
 \end{proof}
 
+
 Two numerical practices are essential in realistic data sets:
 (i) always store evidences and DP messages in log space and normalize via \texttt{logsumexp};
 (ii) standardize/center sufficient statistics when available (e.g., for Gaussian blocks) to
@@ -247,33 +342,37 @@ in the hundreds or thousands.
 \subsection{A numerical-implementation checklist}
 \label{sec:alg-checklist}
 
-The following checklist distills the common pitfalls we have encountered and addresses them
-pre-emptively. Each item is cheap to implement and pays for itself on even moderate-sized
-problems.
+The following checklist distills the common pitfalls we have encountered and translates them into
+implementation tests. Each item should be enforced either by a unit test, an assertion in the
+runtime path, or a recorded metadata check in the experiment pipeline.
 
 \begin{enumerate}\itemsep2pt
-\item \textbf{Log space everywhere.} Store all block evidences, moment numerators, and DP
-messages as $\log$ values from the start. Convert to linear space only for display.
-\item \textbf{logsumexp with a stable shift.} Implement \texttt{logsumexp} as
+\item \textbf{Log-space storage test.} Store all block evidences, moment numerators, and DP
+messages as $\log$ values from the start, with explicit tags for signed quantities. Convert to
+linear space only for display.
+\item \textbf{Stable-logsumexp test.} Implement \texttt{logsumexp} as
 $\mathrm{lse}(x)=m+\log\sum\exp(x_i-m)$ with $m=\max_i x_i$ \citep{blanchard2021lse}. Cache the
 maximum once and reuse for both numerator and denominator when normalizing.
-\item \textbf{Prefix sums in the right order.} Compute prefix sums of $w_t$, $w_t T(y_t)$, and
+\item \textbf{Prefix-array test.} Compute prefix sums of $w_t$, $w_t T(y_t)$, and
 (for Gaussian) $w_t y_t^2$ \emph{before} enumerating blocks. Store them as double-precision arrays
 of length $n+1$ initialized at index 0. Block summaries then cost one subtraction per block.
-\item \textbf{Numerical sanity checks.} After the forward recursion, verify that
+\item \textbf{DP-invariant test.} After the forward recursion, verify that
 $\log\widetilde L_{0,0}=0$ and $\log\widetilde L_{k,j}=-\infty$ for $j<k$; after the backward
 recursion, verify the analogous boundary conditions on $\log\widetilde R$. Verify that
 $\log\widetilde L_{k,n}=\log\widetilde R_{k,0}$ up to floating-point tolerance, that
 $\sum_k p(k\mid y)=1$, that the fixed-$k$ boundary marginal sums to $k-1$, and that the reported
 $C_k$ matches the prior convention used to form the block scores.
-\item \textbf{Moment overflow.} When computing Bayes regression curves via \eqref{eq:segmom},
+\item \textbf{Moment-scaling test.} When computing Bayes regression curves via \eqref{eq:segmom},
 subtract a block-specific shift (e.g., the block posterior-mean estimate) before exponentiating
 to reduce dynamic range, then add the shift back at the end.
-\item \textbf{Degenerate blocks.} Guard against $W_{ij}=0$ (missing-data blocks) by returning
+\item \textbf{Degenerate-block test.} Guard against $W_{ij}=0$ (missing-data blocks) by returning
 $\log A^{(0)}_{ij}=-\infty$ or a user-specified fallback. Guard against $Q_{ij}$ numerically
 negative (from catastrophic cancellation) by clamping to zero.
-\item \textbf{Reproducibility.} Fix a seed for EM initializations and record it in the run
+\item \textbf{Reproducibility-metadata test.} Fix a seed for EM initializations and record it in the run
 metadata; record hyperparameters, $k_{\max}$, the count prior $p(k)$, length factor $g$, approximation
 method and settings, data-preprocessing hashes, and the exact version of every family-specific
 \texttt{BlockRoutine} used.
+\item \textbf{Unit tests tied to theory.} Test the block-routine output contract, the forward/backward
+identity, MAP backtracking, fixed-$k$ boundary sums, signed-log moment reconstruction, and every
+reported complexity mode on small instances where exhaustive enumeration is possible.
 \end{enumerate}

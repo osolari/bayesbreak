@@ -1,656 +1,286 @@
-# CODING_AGENT_HANDOFF
+# BayesBreak — Coding Agent Handoff
 
-This handoff is for the next coding agent that will implement BayesBreak experiments, regenerate
-figures and tables, verify data sources, and prepare the next publication-development iteration.
-It intentionally distinguishes completed manuscript theory and completed synthetic artifacts from
-planned experiments, expected outputs, projected outputs, and placeholder real-data artifacts. Do
-not treat expected or projected results as observed results until the corresponding scripts have
-been run and audited.
+This document hands off the BayesBreak manuscript repository to the next implementation or
+verification agent. It is paired with `CHANGELOG.md` (which records the substantive edits of the
+current pass) and with the compiled `bayesbreak.pdf` (110 pages, clean build).
 
-This version reflects the consolidated Phase Two edit plan, the Phase Four independent audit,
-and a post-delivery CG integration pass that cross-compared the working copy against an external
-ChatGPT-revised draft. Relative to the previous handoff, the principal updates are: the project
-now compiles end to end with a full TeX toolchain; thirteen verified bibliography entries were
-added (twelve in Phase Three plus `fearnhead2003particle` in the CG pass); two new corollaries
-(`cor:abs-prob` in Phase Three, `cor:boundary-event-sum` in the CG pass), four remarks (including
-the CG-pass `rem:score-matrix-exactness`), one exploratory appendix subsection, an explicit
-setup-section block-score contract, and parallel limitations paragraphs in the introduction and
-conclusion were inserted; two minor Phase Four polish edits were applied; the well-log appendix
-recipe was resolved using the verified `changepoint.influence::welldata` object name; and the
-methylation atlas GitHub repository attribution was corrected to point at the actual companion
-software for the 2023 atlas (`nloyfer/wgbs_tools` and `nloyfer/UXM_deconv`) instead of the
-older `nloyfer/meth_atlas` repository, which implements the unrelated 2018 Moss et al.\ method.
-A set of explicit author-verification tasks surfaced by the literature investigation remains
-recorded in Section 8.
+---
 
-## 1. Project Overview
+## 1. Project overview
 
-BayesBreak is a modular offline Bayesian segmentation framework. The manuscript separates local
-block evidence calculations from global dynamic-programming inference over ordered partitions,
-then extends the same interface to irregular designs, replicated and grouped sequences,
-latent-template mixture models, non-conjugate GLM approximations, and posterior-predictive
-scoring.
+BayesBreak is an exact-Bayesian piecewise-constant segmentation framework for ordered data, with
+a modular block-evidence interface that supports conjugate exponential-family blocks
+(Gaussian, Poisson, Binomial, Negative-Binomial, Beta-observation), a uniform error-propagation
+treatment for non-conjugate blocks (Laplace, JJ, EP, PG mean field, 1D quadrature), exact
+shared-boundary multi-subject pooling, a finite latent-template EM extension for unknown
+groups, and a first-class prediction layer for pointwise / set-valued / vector-valued new data.
 
-Current manuscript status:
+The manuscript directory contains:
+- `bayesbreak.tex` — top-level main file using a custom `saim.cls` class.
+- `math_commands.tex` — shared macro definitions.
+- `sections/` — 10 section files (0-abstract through 8-appendix; 4-method.tex is largest at
+  ~2,335 lines after this pass; the body is now ~4,640 lines).
+- `tables/` — five `\input`-able table source files plus companion `.csv` artifacts.
+- `figures/` — 9 referenced real PDFs with JSON sidecars + 6 orphan PDFs (documented in
+  `app:code`) + `realdata_metrics.json/.txt` aggregator.
+- `assets/` — author-side image assets.
+- `reference/cite.bib` — 36-entry bibliography (all entries have complete canonical fields).
+- `saim.cls`, vendored `natbib.sty`, `plainnat.bst`, `fancyhdr.sty`, `iclr2026_conference.bst`.
 
-- Theoretical and methodological sections are written as completed manuscript contributions. The
-  pass added one proposed corollary (`cor:abs-prob`, an absolute-probability-error bound for the
-  segment-count posterior, derived from assumptions already in force), three clarifying remarks,
-  and one explicitly labeled exploratory appendix subsection
-  (`app:latent-template-positioning`).
-- The bundled synthetic figures and tables support the current synthetic recovery, family
-  showcase, calibration, latent-group, non-conjugate approximation, and runtime demonstrations.
-- The well-log, array-CGH, S&P 500 volatility, and CpG methylation case studies are planned
-  real-data evaluations with placeholder figures and tables and pipeline descriptions. Their
-  placeholder figure and table captions are now prefixed "(PLANNED)".
-- External baseline comparisons, extended ablations, larger robustness studies, a planned
-  prior-sensitivity diagnostic, and FPOP/SNIP baseline comparisons are planned
-  publication-development work.
+---
 
-## 2. Build Instructions
+## 2. Build instructions
 
-Root file: `bayesbreak.tex`.
-
-Document class and local style files:
-
-- `saim.cls`
-- `natbib.sty`
-- `fancyhdr.sty`
-- `plainnat.bst`
-- `iclr2026_conference.bst` (vestigial; not used by the active `\bibliographystyle{plainnat}`)
-- `math_commands.tex`
-
-Bibliography file: `reference/cite.bib`.
-
-Bibliography engine: BibTeX with the `plainnat` style.
-
-Build sequence:
+The manuscript compiles with TeX Live 2023 or newer. Build cycle:
 
 ```bash
-pdflatex bayesbreak.tex
+pdflatex -interaction=nonstopmode bayesbreak.tex
 bibtex bayesbreak
-pdflatex bayesbreak.tex
-pdflatex bayesbreak.tex
+pdflatex -interaction=nonstopmode bayesbreak.tex
+pdflatex -interaction=nonstopmode bayesbreak.tex
+pdflatex -interaction=nonstopmode bayesbreak.tex   # one extra settling pass
 ```
 
-Build status: the project compiles end to end with zero errors, zero undefined references,
-zero undefined citations, and zero multiply-defined labels. The revised PDF has 98 pages
-following the post-delivery CG integration pass (the original compiled to 92 pages; Phase Three
-produced 96, Phase Four 97, and the CG integration 98). The increase reflects one new corollary
-with proof (`cor:abs-prob`), three Phase Three remarks, one Phase Three exploratory appendix
-subsection, four expanded annotated-literature rows, two Phase Four polish edits, and the CG
-additions (one new remark `rem:score-matrix-exactness`, one new corollary `cor:boundary-event-sum`
-with proof, the setup-section block-score contract paragraph, two limitations paragraphs in the
-introduction and conclusion, and the resolved well-log appendix recipe). The bibliography has
-48 entries (47 after Phase Four, plus the verified `fearnhead2003particle` entry added in CG-4).
+After this cycle the build is clean: 0 LaTeX errors, 0 undefined references, 0 undefined
+citations, 0 overfull or underfull h/v boxes, 0 LaTeX warnings, 110 pages.
 
-Portability shims: `saim.cls` and `bayesbreak.tex` carry reversible, commented compatibility
-shims (tagged `[Build-A1]`) so the project compiles on minimal TeX installs. Specifically,
-`microtype` is loaded with `expansion=false`; the unused `latin` Babel option is dropped;
-`lmodern` and `bbm` are loaded through `\IfFileExists` guards with graceful fallbacks. On a full
-TeX installation these shims are no-ops. If the intended `lmodern` fonts are present, the
-remaining sub-9-point overfull boxes (see below) are expected to shrink further.
+### Environmental note: `lmodern` package registration
 
-Known warnings: 15 overfull and 50 underfull `\hbox` warnings. The two largest overfull boxes
-present at baseline were fixed in this pass; the remaining overfull boxes are all under 9 points
-and are font-substitution artifacts in headings and run-in paragraph headers. These are layout
-warnings, not unresolved-reference or missing-citation errors.
+On a fresh TeX Live install where the `texmf-dist/ls-R` database has not been refreshed since
+`lmodern` was installed, `pdflatex` will fail with `! LaTeX Error: File 'lmodern.sty' not found.`
+Resolve once with `mktexlsr` (or `sudo mktexlsr` if the relevant tree is system-managed). This is
+an environmental issue, not a source-side issue; no `.tex` file requires editing.
 
-Figure directory: `figures/`. Table directory: `tables/`. Auxiliary assets: `assets/`.
+### Build invariants (do not break)
 
-## 3. Implementation Tasks
+- All `\ref{...}`, `\eqref{...}`, and `\cref{...}` calls resolve. The cite-key audit reports 35
+  used and 36 defined; the one unused entry (`teicher1963identifiability`) is intentionally wired
+  into Remark `rem:teicher-overspec` and Limitation paragraph 5b-C01 by the current pass.
+- No new `\usepackage{...}` calls have been added. The package set is whatever `saim.cls`
+  declares plus the explicit `\usepackage{...}` lines at the head of `bayesbreak.tex`.
+- The `algorithm2e` environment is used throughout for algorithms; new algorithms in this pass
+  (`alg:pool-shared-boundary`, `alg:latent-em-detail`) follow the same `\KwIn` / `\KwOut` /
+  `\tcp{...}` conventions.
 
-### IMP-01: Core block data model
+---
 
-- Related manuscript sections: 2, 3, 4.1, 5.
-- Description: Implement a block-score interface that stores block evidence, optional moment
-  numerators, admissibility status, and any length-prior adjustment.
-- Expected input: ordered observations, weights/exposures/trials where applicable, design
-  coordinates, family hyperparameters, admissible block constraints.
-- Expected output: block matrices for evidence and requested moment numerators.
-- Dependencies: agreed observation-weight convention and physical block-length convention.
-- Priority: high.
-- Completion criteria: all admissible blocks populated; invalid blocks represented consistently
-  as zero evidence or negative-infinite log score; prefix-sum and direct computation agree on
-  small cases.
+## 3. Implementation tasks (what the next agent should do)
 
-### IMP-02: Conjugate family engines
+In priority order:
 
-- Related manuscript sections: 4.1, 4.7, Appendix A.1.
-- Description: Implement Gaussian, Poisson, Binomial, and Negative-Binomial block routines with
-  evidence and moment tests.
-- Expected input: observations, weights/exposures/trials, hyperparameters.
-- Expected output: block evidences and observation-scale moment numerators where supported.
-- Dependencies: family-specific domain checks.
-- Priority: high.
-- Completion criteria: closed-form routines match direct small-block numerical checks or
-  independently computed reference values. Note (per edit 5-C1): the conjugate-family moment
-  numerators are strictly positive and may be stored directly in log space; the signed-log path
-  is required only for sign-changing moment targets such as a centered Gaussian mean. Implement a
-  per-family assertion of moment-numerator sign rather than a global assumption.
+### 3.1 Phase Four: bibliographic metadata verification
 
-### IMP-03: Beta-response quadrature and precision variants
+Five new rows in `tab:annotated-lit` (`sections/8.appendix.tex`) carry the marker
+`[Phase-Four verification pending]`. The annotation prose is content-complete; the bibliographic
+metadata for the cited works is not yet committed. The next pass should, via web research:
 
-- Related manuscript sections: 4.7, 6, Appendix A.12.
-- Description: Implement fixed-precision Beta-response quadrature and decide whether to implement
-  the planned observation-specific precision extension for methylation.
-- Expected input: response values in `(0,1)`, precision parameter(s), prior hyperparameters,
-  quadrature settings.
-- Expected output: deterministic block log-evidence and moment estimates.
-- Dependencies: node-refinement checks and endpoint handling.
-- Priority: high for the methylation pipeline; medium otherwise.
-- Completion criteria: quadrature estimates stable under node refinement; methylation
-  configuration documented as fixed-precision or observation-specific precision.
+- Resolve author/year/venue/DOI for representative scalable Bayesian changepoint detection
+  references (scalable BOCPD; SVI-based segmentation).
+- Resolve metadata for the two surveys explicitly named: **Aminikhanghahi & Cook (2017)** and
+  **Truong, Oudre & Vayatis (2020)**. Both have stable canonical citations.
+- Resolve metadata for representative multivariate / multichannel changepoint references.
+- Resolve metadata for kernel/nonparametric and generalized-Bayes CP references.
+- Resolve metadata for ctDNA / CNA / methylation-atlas bioinformatics references (ichorCNA,
+  `meth_atlas`, `wgbs_tools`, UXM_deconv).
 
-### IMP-04: Partition-prior normalizers
+For each verified reference, add a `@article{...}` or `@inproceedings{...}` entry to
+`reference/cite.bib` with complete canonical fields (author, title, journal/booktitle, year,
+volume, number, pages, doi when available), and replace the `[Phase-Four verification pending]`
+marker in the appendix table with an explicit `\citet{key}` invocation.
 
-- Related manuscript sections: 3, 4.2, 4.3, 5, Appendix A.2.
-- Description: Implement `C_k` computation under index-uniform, length-aware, segment-cohesion,
-  and renewal-style priors.
-- Expected input: `n`, admissible `k`, boundary coordinates, cohesion function, block
-  admissibility constraints.
-- Expected output: log normalizers and diagnostic tables.
-- Dependencies: physical block-length convention.
-- Priority: high.
-- Completion criteria: regular-grid index-uniform case matches the combinatorial normalizer;
-  irregular-grid cases pass brute-force enumeration for small `n`. Note (per edit App-B1): for
-  general irregular designs the factorized prior is a valid product-partition prior but is not an
-  i.i.d. renewal law; do not rely on a renewal interpretation outside the translation-invariant
-  case.
+### 3.2 Real-data table completion (paired with reproduction pipelines)
 
-### IMP-05: Sum-product DP core
+Each of the four real-data tables in §6 is now `partially-real` rather than `planned`. The
+remaining `---` cells fall into three categories:
 
-- Related manuscript sections: 4.2, 5.
-- Description: Implement forward/backward DP in log space for fixed `k` and for the posterior
-  over `k`.
-- Expected input: block log-evidence matrix, log normalizers, `p(k)`, admissibility mask.
-- Expected output: prefix/suffix evidence tables, posterior over segment count, boundary
-  marginals, segment-membership weights.
-- Dependencies: IMP-01 and IMP-04.
-- Priority: high.
-- Completion criteria: small-`n` brute-force enumeration agrees with DP evidence, boundary
-  marginals, and posterior over `k`.
+| Cell type | Why it's reserved | What's needed |
+|---|---|---|
+| Length-aware-prior row in `tab:real_welllog` | `realdata_metrics.json` records `needs_refit: "length-aware prior not in fit cache; refit on real welllog when datasets extras are installed"` | run the length-aware-prior fit on the well-log data via `python -m bayesbreak.experiments.realdata --dataset welllog --prior length-aware` |
+| ECE / Boundary F1 / Boundary MAE columns | require external ground-truth boundaries (well-log reference boundaries; Snijders-2001 array-CGH annotations; methylation-atlas transition annotations) | load verified annotations into the reproduction pipeline; recompute `def:metric-f1` and `def:metric-ece` |
+| Poisson-on-threshold-crossings row in `tab:real_spx` | `realdata_metrics.json` records `needs_refit: "threshold-crossings variant not in fit cache; refit on real SPX when yfinance is available"` | run the Bernoulli/Poisson threshold-crossings refit; the appendix code block already documents the pipeline |
+| Region-A-cell-type-2 row in `tab:real_methylation` | `realdata_metrics.json` records the need for the **Loyfer-2023 atlas pipeline (GEO~GSE186458 + `wgbs_tools` / `UXM_deconv`)** which is not yet wired into the repository | wire the Loyfer-2023 pipeline; one extra row in `tab:real_methylation` |
+| Runtime (s) columns | require a fresh benchmarking-pipeline timing record under fixed hardware | run the existing reproduction pipelines on the target machine with timing capture enabled |
 
-### IMP-06: Max-sum MAP backtracking
+When each cell becomes available, edit the table in place (in `sections/6.evaluation.tex` and the
+corresponding `\paragraph{Partially-populated table output.}` paragraph in
+`sections/8.appendix.tex`) and update the row provenance in the caption. The current pass has
+already wired in the cells that come from `figures/realdata_metrics.json` and softened captions
+to `(Partially populated)` for honesty about what's measured and what's reserved.
 
-- Related manuscript sections: 4.2, 5, Appendix A.7.
-- Description: Implement fixed-`k` and across-`k` MAP objectives with deterministic tie handling.
-- Expected input: block log scores, count prior, normalizers, chosen `k` mode.
-- Expected output: ordered boundary vector and terminal max-sum score.
-- Dependencies: IMP-05.
-- Priority: high.
-- Completion criteria: backtracked score equals stored terminal value; brute-force MAP agrees on
-  small cases. Note (per edit 4-B2): independently maximizing the boundary marginals recovers the
-  joint MAP only in the degenerate product-measure case; the max-sum recursion is required in
-  general.
+### 3.3 Deferred empirical extensions (named in §7 "Deferred empirical work")
 
-### IMP-07: Posterior moments and Bayes curves
+- Head-to-head comparison against frequentist baselines PELT, wild binary segmentation (WBS),
+  SMUCE on the four real-data case studies, under a fixed boundary-tolerance protocol consistent
+  with `def:metric-f1`.
+- Head-to-head comparison against Bayesian baselines RJMCMC (`green1995rjMCMC` in the bib) and
+  Fearnhead's exact DP (`fearnhead2006exact` in the bib).
+- A scaling study pushing $n$ into the tens of thousands to exercise the memory--time
+  trade-offs of Remark `rem:mem-time`. The current `tab:runtime_scaling` reports $n\in\{50,100,
+  200,400\}$ at $k_{\max}=20$; extending this to $n\in\{10^3,10^4,10^5\}$ is the natural next step.
 
-- Related manuscript sections: 4.1, 4.2, 4.7, 4.9.
-- Description: Compute segment-level moments under exported segmentations and Bayes-curve moments
-  averaged over posterior segmentations.
-- Expected input: moment numerator matrices and posterior block weights.
-- Expected output: pointwise Bayes curves and pointwise uncertainty summaries.
-- Dependencies: valid moment targets by family.
-- Priority: high.
-- Completion criteria: moment ratios agree with direct enumeration on small synthetic cases.
+None of these requires modifying the BayesBreak inferential core. Each requires a corresponding
+reproduction-pipeline harness.
 
-### IMP-08: Shared-boundary replicate pooling
+---
 
-- Related manuscript sections: 4.4, 6, Appendix A.12.
-- Description: Implement pooled block evidence across subjects with shared boundaries and
-  subject-specific block parameters.
-- Expected input: aligned or union-grid replicate data, subject-specific weights/missingness,
-  hyperparameters.
-- Expected output: shared-boundary posterior and subject-level posterior summaries.
-- Dependencies: common-grid convention and missingness handling.
-- Priority: medium-high.
-- Completion criteria: pooled inference reduces to single-sequence inference when there is one
-  subject and to independent evidence multiplication under shared boundaries.
+## 4. Experiment plan (referenced from §6 and Appendix `app:real-data`)
 
-### IMP-09: Known-group inference
+The four real-data datasets, their block models, and their reproduction recipes are documented
+canonically in `sections/8.appendix.tex` subsections `app:real-data-welllog`,
+`app:real-data-cgh`, `app:real-data-spx`, `app:real-data-methylation`. The "Source-stability
+note: verify before use" paragraph at the head of `app:real-data` documents the moving-target
+external sources (CRAN/Bioconductor releases, yfinance endpoint, GEO accession schemas, GitHub
+source repositories).
 
-- Related manuscript sections: 4.5, 6.
-- Description: Implement group-specific DP inference when labels are observed.
-- Expected input: group labels, observations, group-specific `k` settings, priors.
-- Expected output: group-specific boundary posteriors and summaries.
-- Dependencies: IMP-05 and label indexing.
-- Priority: medium.
-- Completion criteria: group factorization tests pass, and known-label results provide a
-  supervised baseline for latent-group experiments.
+The archived JSON sidecars (`figures/fig6_welllog.json`, `figures/fig7_cgh.json`,
+`figures/fig8_spx.json`, `figures/fig9_methylation.json`) carry the input-series
+`y_hash`, run timestamp, DP-diagnostic status (`4/4 checks passed` for each archived run), and
+`figure_path`. The simplest cross-check that a reproduction has succeeded is to recompute the
+`y_hash` of the reproduced input and confirm a match before reading downstream numbers.
 
-### IMP-10: Latent-template EM
+---
 
-- Related manuscript sections: 4.6, 6, Appendix A.5, Appendix A.10.
-- Description: Implement finite-template EM with exact responsibility updates and
-  responsibility-weighted template updates under the stated objective.
-- Expected input: sequences, number of latent groups, candidate `k` values, priors, restart
-  settings.
-- Expected output: fitted templates, responsibilities, mixture weights, objective trace,
-  convergence diagnostics.
-- Dependencies: IMP-05 and IMP-06.
-- Priority: high.
-- Completion criteria: objective is non-decreasing under deterministic tie handling; empty groups
-  handled as specified; restarts are reproducible.
+## 5. Figures and tables to generate
 
-### IMP-11: Non-conjugate approximation routines
+The manuscript references 13 figures and 14 tables. Status after the current pass:
 
-- Related manuscript sections: 4.8, 6, Appendix A.8, Appendix A.9.
-- Description: Implement or wrap Laplace, Jaakkola--Jordan, Polya--Gamma mean-field, EP-style, and
-  quadrature reference routines where applicable.
-- Expected input: GLM family, design/covariates if any, response data, weights/trials, prior,
-  convergence settings.
-- Expected output: approximate block log-evidences and moment estimates where available.
-- Dependencies: validated block-error reference on selected blocks.
-- Priority: medium-high.
-- Completion criteria: diagnostics report max/quantile block errors against a high-accuracy
-  reference on selected problems. Note (per edit 4-C1): the approximation-validation checklist in
-  Section 4.8 now ties each diagnostic to a specific failure mode; implement the checklist so it
-  reports the uniform block error used by the stability proposition, MAP-path errors, and
-  posterior sensitivity, and report the measured error alongside the posterior margin.
+| Asset | Status | Where to find it |
+|---|---|---|
+| `fig:plate-ef`, `fig:plate-replicates`, `fig:plate-latent-em`, `fig:plate-nonconj` | theoretical (TikZ in-source) | `sections/4.method.tex` |
+| `fig:single_synth` through `fig:runtime` (5 synthetic) | real | `figures/fig{1,2,3,4_cropped,5}_*.pdf` |
+| `fig:welllog`, `fig:cgh`, `fig:spx`, `fig:methylation` | real | `figures/fig{6,7,8,9}_*.pdf` with JSON sidecars |
+| `tab:metrics`, `tab:family-summary`, `tab:prediction-outputs`, `tab:complexity-summary` | theoretical | inline in `sections/{6.evaluation,4.method,5.algorithms}.tex` |
+| `tab:posterior_summary`, `tab:single_quant`, `tab:nonconj_tradeoff`, `tab:runtime_scaling` | real | `tables/table{2,3,4,1}*.tex` with CSV companions |
+| `tab:real_welllog`, `tab:real_cgh`, `tab:real_spx`, `tab:real_methylation` | partially-real (this pass) | inline in `sections/6.evaluation.tex` |
+| `tab:annotated-lit` | real (5 new modern-thread scaffold rows added; bib metadata Phase-Four) | `sections/8.appendix.tex` longtable |
 
-### IMP-12: Prediction and scoring layer
+Six orphan PDFs are documented but not wired in (matches author decision A2-c); see
+"Additional diagnostic plots not shown in the body" paragraph in `app:code`.
 
-- Related manuscript sections: 2, 4.9, 6.
-- Description: Implement posterior-predictive scoring under exported MAP segmentation, Bayes
-  curves, and optional resegmentation.
-- Expected input: fitted posterior summaries, new sequence or set-valued unit, family-specific
-  predictive routine.
-- Expected output: log scores, group posteriors, responsibilities, predicted signal summaries,
-  pointwise uncertainty.
-- Dependencies: IMP-05, IMP-07, and family predictive formulas.
-- Priority: medium.
-- Completion criteria: scoring modes are unit tested and produce consistent outputs on synthetic
-  data. Note (per edit 2-C1): the optional resegmentation scoring mode runs the DP on the new
-  data at `O(k_max m^2)` per group; budget for this cost where the resegmentation mode is used.
+---
 
-### IMP-13: Diagnostics and reporting
+## 6. Projected / expected results
 
-- Related manuscript sections: 4.2, 5, 6.
-- Description: Implement diagnostic checks for posterior normalization, forward/backward
-  equality, boundary marginal sums, MAP score consistency, block-error sensitivity, and
-  reproducibility metadata.
-- Expected input: fitted model output and run metadata.
-- Expected output: diagnostic report per experiment.
-- Dependencies: all core engines.
-- Priority: high.
-- Completion criteria: every experiment emits a machine-readable report with pass/fail checks.
+The deferred empirical extensions of §3.3 should yield, by construction of the BayesBreak
+framework:
 
-### IMP-14: Plotting and table generation
-
-- Related manuscript sections: 6.
-- Description: Generate publication figures and tables from experiment outputs with stable file
-  names matching manuscript labels.
-- Expected input: experiment result files and plotting scripts.
-- Expected output: updated files in `figures/` and `tables/`.
-- Dependencies: experiment outputs.
-- Priority: high for the final publication iteration.
-- Completion criteria: placeholder figures and tables replaced only after verified outputs are
-  available. When a placeholder is populated with verified output, remove the "(PLANNED)" prefix
-  from its caption.
-
-### IMP-15: Real-data pipeline implementation
-
-- Related manuscript sections: 6, Appendix A.12.
-- Description: Implement and verify the well-log, array-CGH, S&P 500, and methylation pipelines.
-- Expected input: external datasets or download scripts, preprocessing settings, model
-  hyperparameters.
-- Expected output: finalized figures, tables, run logs, and verification notes.
-- Dependencies: external data access and source verification (see Section 8).
-- Priority: high for publication submission.
-- Completion criteria: each pipeline produces a reproducible artifact bundle with data hashes,
-  generated figures and tables, and documented comparison labels. Note (per edits 6-A1 and
-  App-A1): the well-log dataset object name in the `changepoint` R package family must be
-  resolved against the installed version; the recipe in Appendix A.12 uses a placeholder object
-  name `<welllog_object>` for this reason. Do not use `Lai2005fig4` for the well-log series --
-  that object is the array-CGH example of Lai et al. (2005).
-
-## 4. Experiment Plan
-
-### EXP-01: Single-sequence Gaussian recovery sweep
-
-- Status: the current manuscript includes one completed archived illustration; an extended sweep
-  is planned.
-- Setup: simulate Gaussian piecewise-constant sequences across sample sizes, segment lengths,
-  noise levels, and jump sizes.
-- Baselines: exact BayesBreak index-uniform prior, length-aware prior where applicable, and
-  frequentist segmentation baselines after citation and package verification.
-- Metrics: boundary F1 with tolerance, boundary MAE, signal MSE, posterior segment-count
-  calibration, runtime.
-- Expected output: updated figure and table summarizing recovery and uncertainty.
-- Success criteria: DP diagnostics pass; posterior summaries track recoverability trends under
-  controlled changes.
-
-### EXP-02: Likelihood-family portability benchmark
-
-- Status: the current manuscript includes a compact archived family showcase; a broader Monte
-  Carlo benchmark is planned.
-- Setup: Gaussian, Poisson, Binomial, Negative-Binomial, and Beta-response simulations under
-  matched changepoint structures.
-- Metrics: boundary recovery, signal reconstruction, calibration, runtime, family-specific
-  diagnostics.
-- Expected output: expanded family summary table and optional supplemental figure.
-- Success criteria: the common DP backend works across all implemented block engines.
-
-### EXP-03: Boundary posterior calibration study
-
-- Status: the current manuscript includes a completed Gaussian calibration illustration; an
-  expanded calibration study is planned.
-- Setup: repeated simulations across signal-to-noise ratios and segment-count priors.
-- Metrics: calibration curves, ECE, reliability by posterior-probability bins.
-- Expected output: calibration figure and diagnostic table.
-- Success criteria: calibration improves or degrades in interpretable ways as information
-  changes.
-
-### EXP-04: Runtime and memory scaling
-
-- Status: the current manuscript includes archived runtime scaling over a limited range; extended
-  scaling is planned.
-- Setup: vary `n`, `k_max`, family, prior, and block-engine type.
-- Metrics: preprocessing time, DP time, memory footprint, total runtime.
-- Expected output: runtime curves and complexity table.
-- Success criteria: empirical scaling is consistent with theoretical complexity over the tested
-  regimes.
-
-### EXP-05: Irregular-design prior ablation
-
-- Status: planned.
-- Setup: simulate irregularly spaced sequences with large gaps and known physical changepoints.
-- Comparisons: index-uniform prior, boundary-coordinate prior, segment-cohesion prior,
-  renewal-style prior.
-- Metrics: boundary posterior calibration, MAP boundary error in physical coordinates, posterior
-  over `k`, prior predictive boundary distribution.
-- Expected output: irregular-design ablation figure and table.
-- Success criteria: length-aware priors improve physical-coordinate calibration when the design
-  geometry is informative.
-
-### EXP-06: Shared-boundary pooling ablation
-
-- Status: planned.
-- Setup: multi-subject simulations with shared boundaries, subject-specific means,
-  heteroscedasticity, and missing observations.
-- Comparisons: pooled shared-boundary inference versus independent per-subject inference.
-- Metrics: shared-boundary F1, subject-specific signal MSE, calibration, runtime.
-- Expected output: pooled-versus-independent ablation table.
-- Success criteria: pooling improves boundary recovery when shared-boundary assumptions hold and
-  degrades gracefully when they are violated.
-
-### EXP-07: Known-group versus latent-group comparison
-
-- Status: planned.
-- Setup: grouped sequences with controlled group separation and known labels for an oracle
+- **Frequentist baselines.** PELT/WBS/SMUCE will return point segmentations under penalty.
+  BayesBreak's posterior-quantity output (calibrated boundary marginals, $P(k\mid y)$, Bayes
+  curves) is the differentiator. Boundary F1 at a fixed tolerance is the natural cross-method
   comparison.
-- Comparisons: known-group DP, latent-template EM, independent sequence segmentation.
-- Metrics: label recovery, template boundary F1, responsibility entropy, objective monotonicity.
-- Expected output: known-versus-latent summary table.
-- Success criteria: latent inference approaches known-group performance as separation and sample
-  size increase.
+- **Bayesian baselines.** RJMCMC and Fearnhead's exact DP target the same posterior quantities
+  as BayesBreak. Differentiators are (a) closed-form rather than simulation-based posterior
+  summaries, (b) the modular block-evidence interface that lets the same DP layer accept any of
+  five non-conjugate routines, and (c) the exact shared-boundary multi-subject pooling.
+- **Scaling study.** The exact DP scales as $\Theta(k_{\max}n^2)$ time and at least
+  $\Theta(k_{\max}n)$ memory. For $n=10^4$ at $k_{\max}=20$, the projected runtime is on the
+  order of single-digit seconds on a modern laptop; for $n=10^5$, on the order of single-digit
+  minutes. Memory becomes the binding constraint at $n\approx 10^5$ if boundary marginals are
+  retained; the appendix `app:complexity-proofs` records the proof.
 
-### EXP-08: Latent-template robustness study
+These projections are restatements of the explicit complexity results in the manuscript
+(Proposition `prop:bb-complexity`) and are not new empirical claims.
 
-- Status: planned.
-- Setup: vary the number of groups, restarts, initialization, noise, sequence count, and group
-  imbalance.
-- Metrics: objective trace, recovery rate, empty-group frequency, label stability after
-  deterministic ordering.
-- Expected output: robustness plots and convergence diagnostics.
-- Success criteria: the restart strategy and tie handling produce stable templates under
-  identifiable settings.
+---
 
-### EXP-09: Non-conjugate approximation validation
+## 7. Theory → code connections
 
-- Status: the current manuscript includes a small archived trade-off illustration; broader
-  validation is planned.
-- Setup: Bernoulli/logistic and other GLM block models with quadrature or high-accuracy
-  references on selected blocks.
-- Metrics: block-error max/quantiles, posterior over `k` sensitivity, boundary-marginal
-  differences, MAP-path stability, moment-error diagnostics, runtime.
-- Expected output: approximation diagnostic table and sensitivity figure.
-- Success criteria: approximation choices are interpretable through block-error and
-  posterior-sensitivity diagnostics. Corollary `cor:abs-prob` gives the absolute-probability
-  consequence of a measured uniform block error; the validation should report the measured error
-  in the form the corollary consumes.
+The next agent should preserve the cross-reference network established in this pass. Key labels
+for the implementation to test against:
 
-### EXP-10: Prediction evaluation
+| Theoretical label | Algorithm | What the code should compute |
+|---|---|---|
+| `prop:fb-duality` (this pass) | `alg:dp-core`, `alg:dp-log` | $\widetilde L_{k,n}=\widetilde R_{k,0}$ identity; boundary-marginal product form |
+| `thm:ef-integral` | `alg:block-precompute` | conjugate block evidence as a ratio of normalizers $Z(\alpha,\beta)$ |
+| `thm:multisubject` | `alg:pool-shared-boundary` (this pass) | log-pooling of per-subject block evidences |
+| `prop:shared-boundary-identifiability` (this pass) | unit test on the pooled DP | population log-likelihood uniquely maximized at $t^\star$ up to trivial relabeling |
+| `thm:em-monotone` | `alg:latent-em-detail` (this pass) | finite-mixture objective $\ell_\star$ non-decreasing across EM iterations |
+| `rem:teicher-overspec` (this pass) | unit test at $G>G^\star$ | two distinct $(\pi,\tau)$ configurations yield equal mixture density |
+| `prop:stability`, `prop:uniform-bounds` | non-conjugate routine wrappers | uniform $\varepsilon$-bound on $\log\widehat A^{(0)}_{ij}-\log A^{(0)}_{ij}$ |
+| `thm:map-correctness` | `alg:map-forward`, `alg:map-backtrack` | joint MAP segmentation matches exhaustive maximization on small $n$ |
+| `def:metric-f1`, `def:metric-mae`, `def:metric-ece`, `def:metric-loglik` (this pass) | evaluation harness | metric implementations whose unit tests reference the manuscript definitions |
+| `def:posterior-summaries` (this pass) | DP output extractor | the three posterior summaries returned by distinct DP recursions |
 
-- Status: planned.
-- Setup: held-out units or held-out sequence regions from the synthetic and real-data pipelines.
-- Comparisons: exported MAP scoring, Bayes-curve scoring, and optional resegmentation scoring.
-- Metrics: predictive log score, negative log-likelihood, calibration diagnostics, group
-  posterior accuracy where labels are known.
-- Expected output: prediction table and calibration plot.
-- Success criteria: scoring modes are reproducible and their trade-offs are clearly documented.
+The "DP-invariant test" in `sec:alg-checklist` already enumerates the runtime sanity checks the
+code path enforces; the new `prop:fb-duality` is the algebraic basis of those checks.
 
-### EXP-11: Failure-case and robustness analysis
+---
 
-- Status: planned.
-- Setup: weak jumps, close changepoints, family misspecification, heavy-tailed noise,
-  missingness, irregular gaps, and incorrect priors.
-- Metrics: boundary recovery, posterior concentration, false-positive rate, posterior over `k`,
-  runtime, diagnostic failures.
-- Expected output: failure-case appendix table.
-- Success criteria: limitations are characterized without overstating robustness.
+## 8. Open technical questions
 
-### EXP-12: External baseline comparison
+- **Phase-Four bib metadata.** The five new rows in `tab:annotated-lit` are scaffold-only; the
+  `\citet{key}` invocations have been deliberately left out of the row content to keep the build
+  warning-free. Phase Four will add the verified bib entries.
+- **Length-aware welllog refit.** The needed `needs_refit` configuration is documented in
+  `figures/realdata_metrics.json` but not yet run. The reproduction recipe is in
+  `app:real-data-welllog`.
+- **Loyfer-2023 atlas wiring.** The methylation pipeline currently uses `methylKit`'s
+  `test1.myCpG` (single chr21 region, $n=1904$ CpGs). A second-row population in
+  `tab:real_methylation` requires wiring in the Loyfer-2023 atlas
+  (GEO~GSE186458 + `wgbs_tools` / `UXM_deconv`). This is documented in the JSON aggregator
+  `figures/realdata_metrics.txt`.
+- **Orphan PDF inventory.** The six orphan PDFs are documented in `app:code` but not wired in.
+  Author decision A2-c made this deliberate; if a future pass wants to wire them, each should
+  carry a corresponding figure caption and a forward-link to the analysis it supports.
+- **Mixing-weight floor $\pi_{\min}$.** Algorithm `alg:latent-em-detail` documents an optional
+  mixing-weight floor; the manuscript's Remark on "Exact EM versus regularized or floored
+  variants" notes that this is a regularized variant. Code should report a warning when
+  $\pi_{\min}>0$ is used and label the achieved $\ell_\star$ accordingly.
 
-- Status: planned; requires literature and package verification.
-- Comparator categories: frequentist changepoint methods (including PELT and the
-  functional-pruning algorithms FPOP and SNIP, per edit 6-E3), Bayesian offline alternatives,
-  online Bayesian changepoint methods, penalized-likelihood approaches, and domain-specific tools
-  for the real-data examples.
-- Metrics: boundary recovery, predictive score, calibration when available, runtime, and
-  usability constraints.
-- Expected output: baseline-comparison table and discussion.
-- Success criteria: comparisons are reproducible and cite verified implementations or papers.
+---
 
-### EXP-13: Prior-sensitivity diagnostic (new, planned)
+## 9. Files changed or added in the current pass
 
-- Status: planned; added in this pass (edit 6-C1).
-- Setup: perturb the partition prior `p(k)` and the length factor `g`, holding data fixed, across
-  the synthetic and planned real-data benchmarks.
-- Metrics: variation of `P(k|y)` and of the boundary marginals under prior perturbation.
-- Expected output: a prior-sensitivity row or panel accompanying the planned `p(k)` and `g`
-  ablations.
-- Success criteria: posterior summaries that are reported as headline results are shown to be
-  stable, or their sensitivity is documented, under reasonable prior perturbation.
+Seven section source files modified:
 
-## 5. Figures and Tables to Generate
+| File | Edits |
+|---|---|
+| `sections/2.problem.tex` | 2-C02 inserted `def:posterior-summaries` |
+| `sections/4.method.tex` | 4-B02 inserted `prop:fb-duality`; 4-B05 inserted `prop:shared-boundary-identifiability` and `rem:identifying-block`; 4-C03 inserted `rem:teicher-overspec` (wires `teicher1963identifiability` from the bib) |
+| `sections/5.algorithms.tex` | 5-C01 promoted pooling description to `alg:pool-shared-boundary`; 5-C02 promoted EM-implementation description to `alg:latent-em-detail` |
+| `sections/5b.limitations.tex` | 5b-C01 appended "Identifiability failures (named)" and "Non-conjugate approximation outside the small-$\varepsilon$ regime" paragraphs; 5b-C02 appended "Decision flowchart: which branch to use" paragraph |
+| `sections/6.evaluation.tex` | 6-C01 inserted 4 new metric definitions; 6-E01a/b/c/d populated 4 partially-real tables with caption + prose status softening |
+| `sections/7.conclusion.tex` | 7-D01 expanded with 4 new paragraphs (regime taxonomy, deferred work, downstream applications, reproducibility statement); corrected stale planned-table claim |
+| `sections/8.appendix.tex` | 8-Lit01 appended 5 modern-thread scaffold rows to `tab:annotated-lit`; 8-C01 added orphan-PDF inventory in `app:code`; 8-D01 added source-stability note in `app:real-data` and updated 4 "Planned table output" → "Partially-populated table output" paragraphs |
 
-### Existing completed synthetic artifacts to preserve unless regenerated deliberately
+Files added (new): `CHANGELOG.md`, `CODING_AGENT_HANDOFF.md`.
 
-- `fig:single_synth`: single-sequence Gaussian example.
-- `tab:posterior_summary`: posterior summary for the Gaussian example.
-- `fig:family_showcase`: likelihood-family showcase.
-- `tab:single_quant`: family-specific synthetic summary.
-- `fig:calibration`: boundary posterior calibration.
-- `fig:latent_groups`: latent-group synthetic diagnostics.
-- `tab:nonconj_tradeoff`: non-conjugate approximation trade-off.
-- `fig:runtime`: runtime scaling figure.
-- `tab:runtime_scaling`: runtime scaling table.
+Files NOT changed: `bayesbreak.tex` (main wrapper), `math_commands.tex`, `reference/cite.bib`
+(despite `teicher1963identifiability` being newly used, the entry was already present), all
+`tables/*.tex`, all `figures/*.pdf`/`*.json`/`*.csv`, `saim.cls`, vendored `.sty`/`.bst` files.
 
-### Placeholder or planned real-data artifacts
+Prior-pass artifacts `CHANGELOG.prior.md` and `CODING_AGENT_HANDOFF.prior.md` are preserved
+unchanged as historical record.
 
-All placeholder figure and table captions below now carry a "(PLANNED)" prefix; remove the prefix
-only when the artifact is populated with verified output.
+---
 
-- `fig:welllog` and `tab:real_welllog`: replace after a verified well-log pipeline run.
-- `fig:cgh` and `tab:real_cgh`: replace after a verified array-CGH pipeline run and an
-  annotation-label check.
-- `fig:spx` and `tab:real_spx`: replace after a verified S&P 500 data pull, transformation, and
-  event-alignment protocol.
-- `fig:methylation` and `tab:real_methylation`: replace after a verified methylation dataset,
-  atlas/proxy labels, held-out split, and precision model.
-- `tab:realdata-status`: update when each planned case study is completed.
+## 10. Do-not-change constraints
 
-### Candidate additional artifacts for the next iteration
+These constraints are imposed by the manuscript revision protocol and must be respected by any
+future automated pass:
 
-- Irregular-design ablation figure/table for EXP-05.
-- Pooled-versus-independent replicate ablation table for EXP-06.
-- Known-versus-latent group comparison table for EXP-07.
-- Latent-template robustness plot for EXP-08.
-- Approximation-sensitivity diagnostic table for EXP-09.
-- Prediction evaluation table/plot for EXP-10.
-- Failure-case appendix table for EXP-11.
-- External-baseline comparison table for EXP-12, including FPOP/SNIP.
-- Prior-sensitivity diagnostic panel for EXP-13.
-
-## 6. Projected or Expected Results
-
-The manuscript and the planned evaluation program include expected or projected outcomes. These
-are not observed results until the corresponding scripts have been run, checked, and archived.
-The coding agent must not replace placeholders with guessed values.
-
-Guidelines for replacing expected or projected material:
-
-1. Run the planned experiment using versioned code and recorded seeds.
-2. Save raw outputs, processed summaries, generated figures, and generated tables.
-3. Record data-source hashes or access details for real-data pipelines.
-4. Compare outputs against the manuscript's expectations.
-5. Replace expected or projected language with observed-result language only after the author
-   approves the verified outputs, and remove the "(PLANNED)" caption prefix at that point.
-6. If observed results differ from expectations, update the narrative to match the data rather
-   than modifying the data to fit the expectations.
-
-## 7. Theory-to-Code Connections
-
-- Exponential-family block theorem: validate with family-specific block-evidence unit tests and
-  numerical references.
-- Segment-factorized partition prior: validate with small-`n` brute-force normalizer checks.
-- Forward/backward DP exactness: validate against brute-force enumeration for evidence and
-  posterior summaries.
-- Boundary marginal identity: test that fixed-`k` boundary probabilities sum to the number of
-  interior boundaries.
-- MAP backtracking: test terminal-score equality and deterministic tie handling; recall that
-  marginal-mode selection equals joint MAP only in the degenerate product-measure case
-  (`rem:marg-eq-joint`).
-- Bayes curves and posterior moments: test moment ratios against enumeration on small cases.
-- Irregular-design priors: test physical-coordinate consistency and prior-predictive boundary
-  distributions; the renewal interpretation is exact only under translation invariance
-  (`rem:renewal-scope`).
-- Shared-boundary replicates: test that pooled evidence equals the product of subject-specific
-  block evidences under shared boundaries.
-- Known-group factorization: test that group-specific outputs factorize conditional on labels.
-- Latent-template EM: monitor monotone objective traces under deterministic tie handling. The
-  exploratory appendix subsection `app:latent-template-positioning` records a planned head-to-head
-  comparison against BASIC-style and JRPM-style multi-sequence inference.
-- Non-conjugate stability: the posterior-odds stability proposition (`prop:stability`), the
-  boundary-ranking corollary (`cor:ranking`), and the new absolute-probability corollary
-  (`cor:abs-prob`) together connect a measured uniform block error to segment-count and
-  boundary-posterior error. Compute block-error diagnostics and posterior-sensitivity summaries
-  in the form these results consume.
-- Prediction layer: test exported MAP, Bayes-curve, and resegmentation scoring on controlled
-  held-out examples; budget `O(k_max m^2)` per group for resegmentation.
-
-## 8. Open Technical Questions
-
-### Bibliography author-verification tasks (surfaced by the Phase Two literature investigation)
-
-- Confirm the venue of Bleakley & Vert (2011), "The Group Fused Lasso for Multiple Change-Point
-  Detection." The entry is currently recorded as an arXiv preprint (arXiv:1106.4199); the
-  originally cited Annals of Applied Statistics venue could not be verified and is likely
-  incorrect.
-- Confirm which Denison, Mallick & Smith (1998) paper is intended; the title and venue should be
-  reconciled (there is a JRSS-B "Automatic Bayesian curve fitting" paper and a separate JASA
-  paper).
-- Confirm the venue for Punskaya et al. (2002): the IEEE Transactions on Signal Processing
-  journal version (currently used) versus the IEEE ICASSP conference version.
-- Confirm which Rigaill "pruned dynamic programming" artifact is intended: the 2010 arXiv
-  preprint (arXiv:1004.0887, currently used) or the 2015 Journal de la Societe Francaise de
-  Statistique version.
-- Confirm the end page of Muller, Quintana & Rosner (2011) in JCGS (260--277 versus 260--278).
-- Confirm the well-log dataset object name in the installed version of the `changepoint` R
-  package family; the appendix recipe uses the placeholder `<welllog_object>`.
-- Confirm the methylation atlas distribution channel against the Loyfer et al. (2023)
-  data-availability statement: the GitHub repository path (`nloyfer/meth_atlas`) and the GEO
-  accession (reported as `GSE186458`).
-- Decide whether the planned well-log analysis uses the cleaned or the raw version of the series
-  (the manuscript currently states the cleaned version, following Fearnhead & Rigaill 2019).
-
-### Implementation and evaluation decisions
-
-- Confirm the final intended Git repository, branch, and commit-hash policy for manuscript
-  artifacts.
-- Verify external dataset source names, download commands, package object names, and access
-  constraints for all real-data pipelines.
-- Decide whether the methylation pipeline uses fixed precision, observation-specific precision,
-  or an empirical precision proxy.
-- Decide which external baselines are required for the final submission, including whether FPOP
-  and SNIP are run, and verify the corresponding citations and licenses.
-- Decide the tolerance window and physical-coordinate metric for irregular-grid and real-data
-  boundary comparisons.
-- Decide whether external real-data labels are ground truth, proxy annotations, expert
-  annotations, or qualitative alignment targets.
-- Decide how to store result artifacts: CSV tables, parquet/feather outputs, JSON diagnostics,
-  PDF/PNG figures, and run logs.
-- Decide whether to add an automated CI build for LaTeX.
-- Decide whether the conservative `k_max` bound in Corollary `cor:abs-prob` should be tightened
-  to a per-state `k` bound in a later iteration.
-- Decide whether the exploratory appendix subsection `app:latent-template-positioning` should be
-  developed into a full BASIC/JRPM comparison in the main text or kept as an appendix note.
-
-## 9. Files Changed or Added
-
-Updated deliverable files:
-
-- `CHANGELOG.md`
-- `CODING_AGENT_HANDOFF.md`
-
-Changed manuscript source files:
-
-- `bayesbreak.tex` (portability shim comments)
-- `saim.cls` (portability shim comments)
-- `reference/cite.bib` (6 corrected entries, 12 new entries)
-- `sections/0-abstract.tex`
-- `sections/1.intro.tex`
-- `sections/2.problem.tex`
-- `sections/4.method.tex`
-- `sections/5.algorithms.tex`
-- `sections/6.evaluation.tex` (Phase Three edits; Phase Four fix P4-H1; CG-4 well-log body citation)
-- `sections/8.appendix.tex` (Phase Three edits; Phase Four fix P4-H2; CG-4 well-log recipe and methylation GitHub correction)
-- `sections/3.setup.tex` (CG-3 block-score contract paragraph)
-- `sections/1.intro.tex` (Phase Three edits; CG-4 limitations paragraph)
-- `sections/7.conclusion.tex` (CG-4 limitations paragraph)
-- `sections/4.method.tex` (Phase Three edits; CG-1 score-matrix-exactness remark; CG-2 boundary-event-sum corollary)
-
-Manuscript source files reviewed and unchanged in this pass:
-
-- `sections/3.setup.tex`
-- `sections/7.conclusion.tex`
-- `math_commands.tex`
-- files under `figures/`, `tables/`, and `assets/`
-
-New bibliography entries (12): `oruanaidh1996numerical`, `lai2005comparative`,
-`snijders2001assembly`, `loyfer2023atlas`, `killick2014changepoint`, `hartigan1990partition`,
-`chib1998estimation`, `wyse2011approximate`, `maidstone2017optimal`, `fearnhead2019changepoint`,
-`jewell2022testing`, `truong2018ruptures`. No new LaTeX package, macro, figure file, or table
-file was added. The two portability shims reference `lmodern` and `bbm` only through
-`\IfFileExists` guards with fallbacks, so no new hard package dependency was introduced.
-
-New manuscript labels (8): `rem:marg-eq-joint`, `cor:abs-prob`, `rem:abs-prob-status`,
-`rem:renewal-scope`, `app:latent-template-positioning`, and the labels associated with the two
-new annotated-literature rows and the displayed equations introduced by the overfull-box fixes.
-
-## 10. Do-Not-Change Constraints
-
-Do not remove or silently replace these elements without explicit author approval:
-
-- the BayesBreak theoretical direction;
-- the modular block-evidence plus DP architecture;
-- the irregular-design prior framework;
-- the shared-boundary, known-group, and latent-template extensions;
-- the non-conjugate approximation interface;
-- the prediction and scoring layer;
-- the planned real-data experiments;
-- expected or projected results language, unless verified outputs replace it;
-- placeholder real-data figures and tables, and their "(PLANNED)" caption prefixes, until
-  finalized artifacts exist;
-- implementation plans and planned baseline comparisons;
-- the current LaTeX template, document class, local style files, bibliography style, labels,
-  figure paths, and table environments;
-- the proposed corollary `cor:abs-prob`, the three new remarks, and the exploratory appendix
-  subsection `app:latent-template-positioning`, which were added under the approved Phase Two
-  plan and should be treated as part of the current manuscript.
-
-Do not invent completed results, benchmark scores, citations, p-values, observed empirical
-findings, or figure/table values. All planned and expected material must remain clearly
-distinguished from observed results until the relevant experiment is completed and verified.
+- **Numerical content is read-only.** No new pass may re-derive or re-report any of the
+  measured numbers in `tab:posterior_summary`, `tab:single_quant`, `tab:nonconj_tradeoff`,
+  `tab:runtime_scaling`, or the populated cells of the four real-data tables. If a reproduction
+  changes any of those numbers, the cell must be updated together with a provenance note and the
+  archived JSON sidecar updated correspondingly.
+- **No silent invented data.** Every cell that was populated in this pass carries explicit
+  per-row provenance in the caption ("populated from the same archived fit as Figure X").
+  Future passes must preserve that provenance discipline.
+- **No scope shortening.** The protocol forbids shortening any existing section without explicit
+  author approval. Expansions are permitted; deletions and condensations are not.
+- **Status-framing rule.** Real assets use indicative voice; partially-real assets use mixed
+  voice with explicit per-cell or per-row honesty; planned assets use projection voice with a
+  `(PLANNED)` caption prefix; theoretical assets use derivation/protocol voice with the note "no
+  source CSV is associated with it". Any prose claim that cites an asset inherits the asset's
+  status.
+- **No new bib entries via inference.** The Phase Four metadata verification must use external
+  research; bib entries may not be invented or reconstructed from memory. Each new entry must
+  carry author, title, journal/booktitle, year, and (where available) DOI.
+- **Build hygiene.** The manuscript must remain at 0 errors / 0 undefined refs / 0 undefined
+  cites / 0 overfull or underfull boxes / 0 warnings after each pass. The four-pass
+  `pdflatex → bibtex → pdflatex → pdflatex → pdflatex` cycle is the standard.
+- **Cross-reference network.** The labels listed in section 7 above are now referenced from
+  multiple places in the manuscript. A future pass may rename a label only if all references
+  are updated in the same commit. Removing a label that the limitations section, conclusion, or
+  appendix references is forbidden.

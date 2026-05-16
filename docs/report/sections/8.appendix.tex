@@ -212,8 +212,8 @@ Normalizing preserves invariance.
 \begin{remark}
 Permutation invariance does not prevent accurate segmentation or clustering; it only implies that the label names carry no meaning.
 For reporting, impose an ordering constraint (e.g., by evidence, segment count, or a canonical parameter summary) or
-post-process posterior samples to align labels. For the EM template mixture, a deterministic label
-record the ordering and deterministic tie-breaking with the run metadata.
+post-process posterior samples to align labels. For the EM template mixture, record the deterministic
+label ordering and deterministic tie-breaking rule with the run metadata.
 The EM algorithm in Section~\ref{sec:latent-em} can converge to any one of the symmetric modes.
 \end{remark}
 
@@ -225,26 +225,23 @@ m(y; \pi, \tau_{1:G}) = \sum_{g=1}^G \pi_g \, p(y\mid \tau_g),
 \qquad
 p(y\mid \tau_g) = \frac{p(k_g)}{C_{k_g}} \prod_{q=1}^{k_g} A^{(0)}_{t^{(g)}_{q-1} t^{(g)}_q}(y),
 \]
-where the block-evidence factors $A^{(0)}_{ij}(y)$ are strictly positive on the support of $y$ by
-hypothesis (I3). By exchangeability across subjects, the joint distribution of
-$(y^{(1)},\dots,y^{(S)})$ determines and is determined by the marginal $m(\cdot;\pi,\tau_{1:G})$.
-The claim of the proposition is therefore equivalent to identifiability of the finite mixture
-$m(\cdot;\pi,\tau_{1:G})$ as a $G$-component mixture of the templates $\{p(\cdot\mid\tau_g)\}_{g=1}^G$.
-
-For two parameter tuples $(\pi,\tau_{1:G})$ and $(\pi',\tau'_{1:G})$ to induce the same marginal we
-need
-\(
-\sum_g \pi_g\, p(y\mid \tau_g) \equiv \sum_g \pi'_g\, p(y\mid \tau'_g)
-\)
-pointwise in $y$. Under hypothesis (I2), the family $\{p(\cdot\mid\tau_g)\}_{g=1}^G$ is a set of
-$G$ distinct probability densities on the data space, because distinct templates assign different
-products of block factors to a generic $y$ (the difference is a polynomial in $y$ of degree
-determined by the sufficient statistics, vanishing on a measure-zero set only). Distinct finite
-mixtures with strictly positive weights have distinct mixing distributions on the (now finite)
-template parameter space by standard finite-mixture identifiability (e.g.\ \citet{teicher1963identifiability}),
-which establishes that the unordered multiset
-$\{(\pi_g,\tau_g)\}_{g=1}^G$ is identifiable, i.e.\ identifiability holds up to a permutation
-$\sigma$ of the group indices. \hfill$\square$
+where the block-evidence factors are strictly positive on the declared support by hypothesis (I3).
+At the population level, observing the mixture law determines the function
+$m(\cdot;\pi,\tau_{1:G})$. Suppose another parameter tuple induces the same population density:
+\[
+\sum_{g=1}^G \pi_g p(\cdot\mid\tau_g)
+=
+\sum_{g=1}^G \pi'_g p(\cdot\mid\tau'_g).
+\]
+Move all terms to one side and combine equal component densities. Hypothesis (I2) gives linear
+independence of the component densities in the admissible template family, so every combined
+coefficient must be zero. Strictly positive weights then imply that the two representations contain
+the same unordered collection of component densities with the same weights. Because the template map
+$\tau\mapsto p(\cdot\mid\tau)$ is restricted to the declared identifiable component family, equality
+of component densities identifies the corresponding templates. Hence the unordered multiset
+$\{(\pi_g,\tau_g)\}_{g=1}^G$ is determined, which is exactly identifiability up to a simultaneous
+permutation of group labels. This argument is population-level; finite samples only estimate the
+mixture law and do not remove the permutation symmetry. \hfill$\square$
 
 \begin{example}[Label-switching counterexample]
 \label{ex:label-switch-counterexample}
@@ -372,6 +369,70 @@ analyzed in isolation as a local approximation to a single-block log-evidence; t
 its block-level error to global posterior odds over an exponentially large segmentation space is
 not addressed and is the gap closed by Proposition~\ref{prop:stability} and the per-routine
 bounds of Proposition~\ref{prop:uniform-bounds}. \\
+
+\midrule
+\multicolumn{3}{l}{\emph{Modern threads
+(2018--2024); concrete bibliographic metadata to be verified in the Phase-Four
+literature-verification pass.}} \\
+\midrule
+
+Scalable Bayesian changepoint detection &
+\emph{[Phase-Four verification pending]} (e.g.\ scalable BOCPD with sparse hazard parameterization;
+linear-time particle-filter BOCPD; SVI for segmentation models) &
+This thread targets the same offline/online Bayesian regime as BayesBreak but emphasizes
+sub-quadratic time for very large $n$ at the cost of either online streaming
+restrictions or variational approximations of the posterior. The present paper is the
+complementary regime: $O(k_{\max}n^2)$ exact offline inference at moderate $n$ rather than
+sub-quadratic approximate inference at very large $n$. \emph{Limitation of the cited
+work:} streaming or variational families forgo the closed-form boundary marginals,
+Bayes-curve summaries, and posterior-odds stability guarantees that BayesBreak provides at the
+moderate-$n$ regime. \\
+
+Survey and benchmark literature &
+\emph{[Phase-Four verification pending]} (Aminikhanghahi \& Cook 2017 survey; Truong, Oudre \& Vayatis 2020 selective review)
+&
+These surveys provide the canonical reference catalogues against which any new changepoint
+method is positioned, and they distinguish offline vs.\ online targets and parametric vs.\
+nonparametric block models. BayesBreak occupies the offline-parametric quadrant with a
+posterior-quantity target; the surveys help locate the present work against alternative
+quadrants. \emph{Limitation of the cited work:} survey-level coverage is necessarily
+breadth-first and does not engage with the specific block-evidence interface or
+posterior-odds error propagation that motivate this paper. \\
+
+Multivariate and multichannel changepoint methods &
+\emph{[Phase-Four verification pending]} (e.g.\ multichannel multivariate exact DP for
+high-dimensional time series; group-fused-lasso follow-ups) &
+This thread is the natural comparator for the multi-subject pooling of
+Section~\ref{sec:replicates} when subjects are heterogeneous. BayesBreak's posterior-quantity
+output is its main differentiator: penalized multichannel methods return point segmentations under
+penalty, while BayesBreak returns the calibrated boundary posteriors of
+Definition~\ref{def:posterior-summaries}. \emph{Limitation of the cited work:} penalized
+multichannel methods provide neither marginal boundary probabilities nor a held-out predictive
+score per channel, both of which BayesBreak supports via the prediction layer of
+Section~\ref{sec:prediction}. \\
+
+Kernel/nonparametric and generalized-Bayes changepoint &
+\emph{[Phase-Four verification pending]} (e.g.\ kernel changepoint, generalized Bayes under
+misspecification) &
+These methods relax the parametric block-family assumption and target robustness to model
+misspecification. BayesBreak is parametric by design and pays the corresponding price under
+heavy-tailed or zero-inflated within-segment distributions
+(Section~\ref{sec:limitations}'s ``Block-model misspecification'' paragraph).
+\emph{Limitation of the cited work:} robust nonparametric methods forgo the closed-form
+$O(n^2)$ block evidence and typically rely on bootstrap or resampling for uncertainty
+quantification rather than on the closed-form posterior summaries reported here. \\
+
+ctDNA / copy-number bioinformatics applications &
+\emph{[Phase-Four verification pending]} (e.g.\ ichorCNA-style ultra-low-pass CNA callers;
+methylation-atlas segmentation for tissue-of-origin) &
+This thread is the immediate downstream application target of BayesBreak's
+heteroscedastic-Gaussian pooled DP and Beta-response quadrature branches. The Coriell array-CGH
+fit of Section~\ref{sec:realdata-cgh} and the CpG-atlas methylation fit of
+Section~\ref{sec:realdata-methylation} are the proof-of-concept applications.
+\emph{Limitation of the cited work:} CNA-calling pipelines typically rely on hidden Markov
+models with discretized hidden states and do not return calibrated boundary posteriors or a
+generalized exponential-family block interface, both of which are core BayesBreak features. \\
+
 \bottomrule
 \end{longtable}
 
@@ -402,6 +463,15 @@ path by following $h^\star$.
 
 \subsection{Variational bounds for non-conjugate blocks}
 \label{app:variational-bounds}
+
+The routine-level statements in Proposition~\ref{prop:uniform-bounds} are conditional sufficient
+bounds rather than automatic guarantees. They require a declared finite reachable block class,
+positive exact block evidences on that class, and routine diagnostics that certify the relevant
+curvature, tail, ELBO-gap, quadrature-remainder, or EP-residual condition. For quadrature, the
+smoothness order $s$ in Proposition~\ref{prop:uniform-bounds} is a regularity parameter distinct from
+any moment index. For EP, the residual condition includes positive cavities, retained site
+normalizers, and a declared bound on the final moment-matching residual. The resulting
+$\varepsilon$ is the supremum of the certified block-local errors over that declared class.
 
 We recall two block-level variational bounds used in Section~\ref{sec:nonconj}.
 
@@ -485,6 +555,34 @@ hyperparameters, and data-cache hashes used for a given manuscript version. The 
 Appendix~\ref{app:real-data} assume either a local installation of the package or sufficient
 environment access to run the listed R/Bioconductor and Python download commands.
 
+\paragraph{Additional diagnostic plots not shown in the body.}
+The following diagnostic plots are produced by the same archived pipelines used for the body
+figures and are bundled in the project's \texttt{figures/} directory; they are referenced here
+rather than inserted in the body because the body already balances synthetic and real-data
+coverage. They are listed for completeness so that a reader running the reproduction can verify
+which artifacts come from the same pipeline run.
+\begin{itemize}\itemsep1pt
+\item \texttt{figures/fig6\_mixture\_discovery.pdf} -- mixture-discovery diagnostic over $G$ on a
+synthetic latent-template data set; companion to the body latent-group figure
+(Figure~\ref{fig:latent_groups}).
+\item \texttt{figures/fig7\_snr\_sensitivity.pdf} -- signal-to-noise-ratio sensitivity sweep on a
+Gaussian synthetic; intended as a sensitivity companion to the body calibration figure
+(Figure~\ref{fig:calibration}).
+\item \texttt{figures/fig8\_multivariate\_shared.pdf} -- multivariate shared-boundary visualization
+on a synthetic multi-subject Gaussian; companion to the shared-boundary derivation
+(Theorem~\ref{thm:multisubject}).
+\item \texttt{figures/fig9\_model\_selection.pdf} -- model-selection diagnostic plotting
+$P(k\mid y)$ across $k$ for a representative synthetic.
+\item \texttt{figures/fig10\_missing\_data.pdf} -- missingness-robustness diagnostic on a synthetic
+Gaussian sequence with deletion patterns.
+\item \texttt{figures/fig4\_latent\_groups.pdf} -- uncropped version of the body latent-group plot;
+the body uses the cropped variant \texttt{figures/fig4\_latent\_groups\_cropped.pdf} for layout
+reasons. The uncropped variant preserves the small right-panel annotations that are partially
+clipped in the cropped version.
+\end{itemize}
+None of these diagnostics is load-bearing for any claim in the body; each is an artifact of the
+same reproduction pipelines and is included in the repository for completeness.
+
 \subsection{Real-data sources, preprocessing, and reproduction notes}
 \label{app:real-data}
 
@@ -492,6 +590,19 @@ This appendix provides data-source targets, download commands, and preprocessing
 four real-data illustrations in Section~\ref{sec:realdata}. Each subsection is organized so that a
 reader with a shell, Python $\ge 3.10$, and R $\ge 4.3$ can regenerate the corresponding body
 figure (Figures~\ref{fig:welllog}--\ref{fig:methylation}).
+
+\paragraph{Source-stability note: verify before use.}
+The external data sources cited below (CRAN packages, Bioconductor releases, Yahoo Finance via
+\texttt{yfinance}, NCBI GEO accessions, and source-distribution GitHub repositories) are moving
+targets: data layouts, package APIs, accession indexes, and column labels can change between
+releases. Before reproducing the published numbers, re-verify (i) the package version that ships
+the cited data object (e.g.\ \texttt{DNAcopy::coriell}, \texttt{changepoint::Wellog}); (ii) the
+download endpoint and JSON schema for any web-pulled series; (iii) the GEO accession,
+sub-accession, and series-matrix file naming for the methylation atlas; and (iv) the per-CpG
+coverage convention used to instantiate the Beta-block precision $\phi_t$. Each archived JSON
+sidecar in \texttt{figures/} records the \texttt{y\_hash} of the input series under which the
+corresponding figure was generated, so the simplest cross-check is to recompute that hash from
+the reproduced input and confirm a match before reading downstream numbers.
 
 \subsubsection{Well-log NMR segmentation}
 \label{app:real-data-welllog}
@@ -531,11 +642,11 @@ $\rho^2=100$ (weak), $\sigma^2=$ robust within-layer estimate (median absolute d
 a Gaussian). Partition prior: $g\equiv 1$ (index uniform) and $g(\ell)\propto\ell$ (length
 aware) as contrast. $k_{\max}=30$. Prior on $k$: $p(k)\propto 1$.
 
-\paragraph{Outputs for Figure~\ref{fig:welllog} and Table~\ref{tab:real_welllog}.}
-Joint MAP segmentation, $P(k\mid y)$, marginal boundary posterior, ECE against visually obvious
-changepoints (labeled in the original Fearnhead paper), runtime in seconds. Expected diagnostic outcome: a
-handful of strong changepoints with tight boundary marginals, $\widehat k\in\{10,15\}$ depending
-on the prior.
+\paragraph{Completed figure output.}
+Figure~\ref{fig:welllog} is regenerated from the processed diagnostic window and records the exported joint MAP segmentation, $P(k\mid y)$, and marginal boundary posterior for that window.
+
+\paragraph{Partially-populated table output.}
+Table~\ref{tab:real_welllog} now reports the index-uniform row populated from the same archived fit as Figure~\ref{fig:welllog}, and reserves the length-aware-prior row pending the prior-sensitivity rerun and the loading of verified reference boundaries needed to compute ECE. Once that rerun records evidence, calibration, and timing under the same preprocessing convention, the full table will be available.
 
 \subsubsection{Array-CGH multi-subject copy-number}
 \label{app:real-data-cgh}
@@ -571,11 +682,11 @@ Heteroscedastic Gaussian block with known $\sigma^2\equiv 1$ absorbed into $w_t$
 pooling with shared boundaries (Assumption~\ref{ass:cond-indep-subjects}). Subject-specific
 priors $\mu\sim\mathcal{N}(0,100)$. $k_{\max}=20$ per chromosome. Index-uniform prior.
 
-\paragraph{Outputs for Figure~\ref{fig:cgh} and Table~\ref{tab:real_cgh}.}
-Per-subject exported segmentations vs.\ pooled shared-boundary segmentation; boundary F1 against
-Snijders 2001 annotations; pooled log-evidence for independent vs.\ shared-boundary models.
-Expected diagnostic outcome: shared-boundary pooling yields higher boundary F1 when the true boundaries are
-shared.
+\paragraph{Completed figure output.}
+Figure~\ref{fig:cgh} is regenerated from the selected panel and records the pooled shared-boundary fit, pooled boundary posterior, posterior over $k$, and per-subject evidence display.
+
+\paragraph{Partially-populated table output.}
+Table~\ref{tab:real_cgh} now reports the pooled-log-evidence column populated from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint pooled log-evidence at $k_{\mathrm{MAP}}=15$, and the independent-per-subject entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. Boundary~F1, Boundary~MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record.
 
 \subsubsection{S\&P 500 volatility regimes}
 \label{app:real-data-spx}
@@ -607,9 +718,11 @@ $\sigma^2$ from a stable subperiod. Weak Gaussian prior on $\mu$. (B) Poisson-wi
 block on daily threshold-crossing counts aggregated into weekly bins. Both calls use index-uniform
 prior, $k_{\max}=15$.
 
-\paragraph{Outputs for Figure~\ref{fig:spx} and Table~\ref{tab:real_spx}.}
-Exported joint MAP with boundary marginals for each block model; qualitative alignment of top-5
-posterior boundaries with annotated macro events (COVID-19 onset in March 2020, Feb 2022).
+\paragraph{Completed figure output.}
+Figure~\ref{fig:spx} is regenerated for the primary volatility specification and records the exported joint MAP segmentation, Bayes curve, boundary posterior, posterior over $k$, and cumulative evidence display.
+
+\paragraph{Partially-populated table output.}
+Table~\ref{tab:real_spx} now reports the Gaussian-on-$\log r_t^2$ primary row populated from the same archived fit as Figure~\ref{fig:spx}, and reserves the Poisson-on-threshold-crossings comparator row pending the secondary refit under a fixed macro-event annotation list. The visual-alignment column substitutes a qualitative description for a numerical boundary metric in the absence of ground-truth boundary labels for daily macro events.
 
 \subsubsection{CpG atlas DNA methylation}
 \label{app:real-data-methylation}
@@ -656,11 +769,11 @@ Beta-response block (\S\ref{sec:families}) with per-CpG precision $\phi_t$ from 
 Quadrature order $G=64$ Gauss--Legendre nodes on $\mu\in[\epsilon,1-\epsilon]$. Prior
 $\mu\sim\mathrm{Beta}(1,1)$. $k_{\max}=25$. Index-uniform partition prior.
 
-\paragraph{Outputs for Figure~\ref{fig:methylation} and Table~\ref{tab:real_methylation}.}
-Per-region-per-cell-type exported segmentation, marginal boundary posterior, held-out
-log-predictive on a random 20\% held-out CpG subset within each region, and boundary F1 against
-the atlas block annotations. Expected diagnostic outcome: sharp transitions aligned with known methylation
-block boundaries in housekeeping regions; more diffuse posterior in variable regions.
+\paragraph{Completed figure output.}
+Figure~\ref{fig:methylation} is regenerated for the selected CpG-atlas region and records the exported segmentation, Bayes curve, marginal boundary posterior, posterior over $k$, and cumulative evidence display.
+
+\paragraph{Partially-populated table output.}
+Table~\ref{tab:real_methylation} now reports the chr21 region-A row populated from the same archived fit as Figure~\ref{fig:methylation} (\texttt{methylKit} \texttt{test1.myCpG}, $n=1904$ CpGs, held-out $m=381$): $\widehat k=15$ and held-out log-predictive $-387.50$. The second-cell-type/second-region row is reserved pending the Loyfer-2023 atlas pipeline (GEO~GSE186458 + \texttt{wgbs\_tools}/\texttt{UXM\_deconv}), and the Boundary~F1-vs.-atlas column is reserved pending verified atlas-reported transition annotations.
 
 \paragraph{Reproducibility note.}
 The four pipelines are designed to be lightweight; report runtime from the finalized environment. Version or hash intermediate data caches to detect upstream changes in

@@ -39,7 +39,10 @@ $\theta$ is
 p(\theta\mid\alpha,\beta)
   = \exp\{\eta(\theta)^\top\alpha - \beta A(\theta) - \log Z(\alpha,\beta)\},
 \]
-with normalizing integral $Z(\alpha,\beta)$ defined by \eqref{eq:Zconvention}.
+with normalizing integral $Z(\alpha,\beta)$ defined by \eqref{eq:Zconvention}. Let
+$\mathcal{D}_Z:=\{(\alpha,\beta):0<Z(\alpha,\beta)<\infty\}$ denote the natural
+conjugate-parameter domain; all prior and posterior hyperparameters below are assumed to lie in
+$\mathcal{D}_Z$.
 
 For a block $(i,j]$ define the cumulative sums
 \[
@@ -50,9 +53,11 @@ H_{ij} := \sum_{t=i+1}^j \log h(y_t,w_t).
 
 \begin{theorem}[EF--conjugate block integration]
 \label{thm:ef-integral}
-Fix a block $(i,j]$ and a conjugate prior $p(\theta\mid\alpha_0,\beta_0)$. Assume the integral
-$Z(\alpha_0+S_{ij},\beta_0+W_{ij})$ is finite for every $(i,j]$ with $0\le i<j\le n$, and that the
-moment $\mathbb{E}[m(\theta)^r\mid\alpha_0+S_{ij},\beta_0+W_{ij}]$ is finite for each required
+Fix a block $(i,j]$ and a conjugate prior $p(\theta\mid\alpha_0,\beta_0)$ with
+$(\alpha_0,\beta_0)\in\mathcal{D}_Z$. Assume
+$(\alpha_0+S_{ij},\beta_0+W_{ij})\in\mathcal{D}_Z$ for every admissible block
+$0\le i<j\le n$, and assume that the moment
+$\mathbb{E}[m(\theta)^r\mid\alpha_0+S_{ij},\beta_0+W_{ij}]$ is finite for each required
 $r\ge 1$. Under the weighted EF model \eqref{eq:EFweighted}, the integrated single--segment
 evidence and the $r$th moment integral of the observation-scale EF mean
 $m(\theta):=\mathbb{E}[Y\mid\theta]$ are
@@ -142,12 +147,62 @@ R_{k+1,i}
 \end{equation}
 for $k\ge0$, $1\le j\le n$, and $0\le i\le n-1$, where sums are restricted to valid indices.
 
+\begin{proposition}[Forward--backward duality and total-evidence identity]
+\label{prop:fb-duality}
+Under Assumption~\ref{ass:standing-offline} and Assumption~\ref{ass:factorizing-prior}, with
+length-prior-adjusted block scores $\widetilde A^{(0)}_{ij}=A^{(0)}_{ij}g(\Delta_x(i,j))$
+\eqref{eq:Atilde}, let $\{\widetilde L_{k,j}\}$ and $\{\widetilde R_{k,i}\}$ denote the prefix and
+suffix sum-product messages of \eqref{eq:LR}. Then for every admissible
+$k\in\{1,\dots,k_{\max}\}$:
+\begin{enumerate}[label=\textnormal{(\roman*)}]
+\item \emph{Boundary conditions.}
+$\widetilde L_{0,0}=1$, $\widetilde L_{0,j}=0$ for $j>0$, $\widetilde R_{0,n}=1$, and
+$\widetilde R_{0,i}=0$ for $i<n$. Furthermore $\widetilde L_{k,j}=0$ whenever $j<k$ and
+$\widetilde R_{k,i}=0$ whenever $i>n-k$.
+\item \emph{Total-evidence identity.}
+$\widetilde L_{k,n}=\widetilde R_{k,0}=\sum_{t\in\mathcal T_{k,n}^{+}}\prod_{q=1}^k \widetilde A^{(0)}_{t_{q-1}t_q}$,
+i.e.\ the forward-evidence terminal and the backward-evidence initial value both equal the same
+length-prior-adjusted partition sum.
+\item \emph{Boundary marginal product form.}
+For interior boundary position $h\in\{p,\dots,n-(k-p)\}$ and $1\le p\le k-1$,
+\[
+p(t_p=h\mid y,k)=\frac{\widetilde L_{p,h}\,\widetilde R_{k-p,h}}{\widetilde L_{k,n}},
+\]
+and the boundary-event marginal of Definition~\ref{def:posterior-summaries}(a) satisfies
+$\mathrm{MB}_h(k)=\sum_{p=1}^{k-1}p(t_p=h\mid y,k)$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Boundary conditions follow from definition; the support constraints $j\ge k$ and $i\le n-k$
+restate that $k$ ordered boundaries require at least $k$ admissible positions on each side.
+For (ii), iterate \eqref{eq:LR} forward from $\widetilde L_{0,0}$: by induction on $k$,
+$\widetilde L_{k,j}=\sum_{t_0<\cdots<t_k=j}\prod_{q=1}^k\widetilde A^{(0)}_{t_{q-1}t_q}$,
+so $\widetilde L_{k,n}$ enumerates all $k$-segmentations of $\{1,\dots,n\}$. The same induction
+backward from $\widetilde R_{0,n}$ gives $\widetilde R_{k,i}=\sum_{i=t_0<\cdots<t_k=n}\prod_{q=1}^k\widetilde A^{(0)}_{t_{q-1}t_q}$,
+and $\widetilde R_{k,0}$ enumerates the same set. Both equal the asserted partition sum.
+For (iii), split each segmentation at the $p$th boundary: a segmentation with $t_p=h$ is uniquely
+described by its first $p$ blocks (counted by $\widetilde L_{p,h}$) and its last $k-p$ blocks
+(counted by $\widetilde R_{k-p,h}$). Their product, divided by $\widetilde L_{k,n}$, is the
+conditional probability that $t_p=h$. Summing over $p\in\{1,\dots,k-1\}$ yields the boundary-event
+marginal because the boundaries are strictly ordered, so for fixed $h$ at most one $p$ satisfies
+$t_p=h$ in any given $t$.
+\end{proof}
+
+The identity $\widetilde L_{k,n}=\widetilde R_{k,0}$ is also one of the DP invariants used in the
+runtime correctness checklist of Section~\ref{sec:alg-checklist}; Proposition~\ref{prop:fb-duality}
+states the algebraic basis of that numerical check.
+
 \paragraph{Implementation.}
-Algorithm~\ref{alg:dp-core} presents the core forward/backward recursions in a numerically stable log-space form.
-The routine takes as input a triangular array of block log-evidences $\log \mathcal{L}_{ij}$ (from Section~\ref{sec:ef} or Sections~\ref{sec:families}--\ref{sec:nonconj}) and returns the forward messages, backward messages, and segment-count posteriors needed for boundary and moment extraction.
+Algorithm~\ref{alg:dp-core} presents the algebraic sum-product recursions corresponding to
+\eqref{eq:LR}. It is a mathematical specification rather than the recommended floating-point
+implementation: Section~\ref{sec:alg-dp-impl} gives the implementable log-space version using
+\texttt{logsumexp}. The algebraic routine takes a triangular block-evidence array and returns the
+forward messages, backward messages, and segment-count posteriors needed for boundary and moment
+extraction.
 
 \begin{algorithm}[H]
-\caption{Generic DP for EF segmentation (prefix/suffix form)}
+\caption{Generic algebraic DP for EF segmentation (prefix/suffix form)}
 \label{alg:dp-core}
 \KwIn{Block evidences $\widetilde{A}^{(0)}_{ij}$ for $0\le i<j\le n$; $k_{\max}$; $C_k$ (default $C_k=\binom{n-1}{k-1}$)}
 Initialize $\widetilde{L}_{0,0}=1$, $\widetilde{L}_{0,j>0}=0$; $\widetilde{R}_{0,n}=1$, $\widetilde{R}_{0,i<n}=0$\;
@@ -324,6 +379,26 @@ If a fully $k$-marginalized curve is desired, compute the same conditional curve
 $k$ and average the resulting moments using $P(k\mid y)$ from \eqref{eq:post-k}. The empirical
 sections report curves conditional on the selected $\widehat k$ unless explicitly stated otherwise.
 
+\begin{proposition}[Block-covering decomposition for Bayes-curve moments]
+\label{prop:block-covering-decomposition}
+Fix $k$ and an index $t\in\{1,\dots,n\}$. Under the support and factorization hypotheses of
+Theorem~\ref{thm:dp-correctness}, the conditional posterior moment of the latent mean at $t$ is
+obtained by summing the block contributions $F^{(r)}_{ij}(k)$ over exactly those candidate blocks
+$(i,j]$ with $i<t\le j$. No segmentation contributes more than once to the sum in
+\eqref{eq:segmom}.
+\end{proposition}
+
+\begin{proof}
+Every admissible ordered boundary vector partitions $\{1,\dots,n\}$ into disjoint blocks, hence
+contains a unique block $(i,j]$ satisfying $i<t\le j$. Conditioning on that covering block splits
+the remaining boundaries into an $(m-1)$-segmentation of the prefix $y_{1:i}$ and a
+$(k-m)$-segmentation of the suffix $y_{j+1:n}$ for some segment position $m$. The prefix, block, and
+suffix contributions multiply as
+$\widetilde L_{m-1,i}\,\widetilde A^{(r)}_{ij}\,\widetilde R_{k-m,j}$, and summing over $m$ and
+over all covering blocks gives \eqref{eq:segmom}. Disjointness of the covering block proves that no
+segmentation is double counted.
+\end{proof}
+
 \begin{theorem}[Correctness of the DP]
 \label{thm:dp-correctness}
 Assume finite block evidences on all admissible blocks, a finite segment-count range, and a
@@ -381,14 +456,24 @@ block $(i,j]$ that contains index $t$.
 After every DP run, verify four invariants: normalized segment-count weights
 sum to one; the full-sequence forward and backward evidences agree, $\widetilde L_{kn}=\widetilde
 R_{k0}$; boundary-event marginals satisfy $\sum_{i=1}^{n-1}P(b_i=1\mid y,k)=k-1$; and the
-max-sum backtracking score equals the stored terminal max-sum value.
+max-sum backtracking score equals the stored terminal max-sum value. In log-space arithmetic these
+checks are evaluated with a declared tolerance, typically a small multiple of machine epsilon times
+the number of accumulated summands. A failure of the first two checks is treated as a normalization
+or admissibility mismatch; a failure of the boundary-sum check indicates an indexing or support
+error; and a failure of the backtracking check indicates inconsistent tie-breaking or stale
+backpointers.
 
 \begin{theorem}[Time and space complexity]
 \label{thm:dp-complexity}
 Assume single-block evidences $A^{(0)}_{ij}$ are available for all $0\le i<j\le n$.
-Then computing $L_{k j}$ and $R_{k i}$ for $k=0,\dots,k_{\max}$ via \eqref{eq:LR} requires
-$\mathcal{O}(k_{\max} n^2)$ arithmetic operations. Storing all $A^{(0)}_{ij}$ requires
-$\mathcal{O}(n^2)$ memory, and storing the DP arrays requires $\mathcal{O}(k_{\max} n)$.
+Then computing all forward and backward messages via \eqref{eq:LR} requires
+$\mathcal{O}(k_{\max} n^2)$ arithmetic operations. Storing the block-evidence matrix requires
+$\mathcal{O}(n^2)$ memory. Storing all forward and backward DP layers requires
+$\mathcal{O}(k_{\max} n)$ memory; max-sum backpointers require an additional
+$\mathcal{O}(k_{\max} n)$; storing all fixed-$k$ boundary marginals requires
+$\mathcal{O}(k_{\max} n)$; and storing Bayes-curve moment arrays for $R$ requested moments requires
+$\mathcal{O}(Rn)$ after the block matrix is available, or $\mathcal{O}(Rn^2)$ if all
+block-specific moment numerators are retained.
 \end{theorem}
 
 \begin{proof}
@@ -570,6 +655,22 @@ likelihood contributions coincide. If the prior depends only on physical segment
 block has the same endpoints in the physical domain and therefore the same prior factor.
 \end{proof}
 
+\begin{corollary}[Inherited-partition invariance is only a sufficient condition]
+\label{cor:inherited-partition-invariance}
+Under Proposition~\ref{thm:refine}, any posterior comparison restricted to the lifted inherited
+partitions has the same likelihood and physical-length-prior ratios as on the coarse grid. This is a
+sufficient invariance statement for inherited partitions only; it is not a necessary condition for
+other forms of refinement stability and it does not imply equality of the unrestricted fine-grid
+posterior.
+\end{corollary}
+
+\begin{proof}
+The lifted partitions preserve every block endpoint in physical coordinates and contain the same
+observations, so their block evidences and physical-length prior factors coincide term by term. Ratios
+among such lifted partitions are therefore unchanged. Once new fine-grid boundaries are admitted,
+additional terms enter the denominator, so no unrestricted posterior-invariance conclusion follows.
+\end{proof}
+
 \begin{remark}[Why full refinement invariance is generally false]
 The proposition above is deliberately weaker than a posterior invariance claim. Once the refined grid is
 allowed to place \emph{new} boundaries at the inserted pseudo-index, the admissible partition space changes,
@@ -638,11 +739,14 @@ Let $(i,j]$ denote a block and write subject-specific block sums as
 $(S^{(s)}_{ij},W^{(s)}_{ij},H^{(s)}_{ij})$ with subject-specific prior hyperparameters
 $(\alpha^{(s)}_0,\beta^{(s)}_0)$.
 
-\begin{assumption}[Cross-subject conditional independence given shared boundaries]
+\begin{assumption}[Common-grid shared-boundary support and conditional independence]
 \label{ass:cond-indep-subjects}
-Conditional on a shared segmentation $t=(t_0,\dots,t_k)$, subjects $s=1,\dots,S$ are
-independent, and each subject has its own segment parameters
-$\theta^{(s)}_{1:k}$ with subject-specific conjugate priors.
+Subjects are aligned to a common ordered candidate-boundary grid, and every shared boundary vector
+$t=(t_0,\dots,t_k)$ used by the pooled DP lies in the intersection of the subject-specific
+admissible supports after missingness/exposure conventions are applied. Conditional on this shared
+segmentation, subjects $s=1,\dots,S$ are independent, each subject has its own segment parameters
+$\theta^{(s)}_{1:k}$ with subject-specific conjugate priors, and subject-level block evidences are
+finite and strictly positive on the pooled support.
 \end{assumption}
 
 \begin{theorem}[Exact pooling of block evidences]
@@ -679,6 +783,49 @@ $A^{(0)}_{ij}$ by $A^{(0)}_{ij,\mathrm{pool}}$ therefore computes the exact shar
 posterior for the pooled model; parameter posteriors remain available conditionally on boundaries
 from the subject-specific block updates.
 \end{proof}
+
+\begin{proposition}[Shared-boundary identifiability]
+\label{prop:shared-boundary-identifiability}
+Adopt the setting and notation of Theorem~\ref{thm:multisubject}. Treat the shared boundary vector
+$t\in\mathcal{T}_{k,n}^{+}$ as the structural parameter of interest after the subject-specific
+segment parameters $\theta^{(s)}_{1:k}$ have been integrated out. Assume in addition that for at
+least one subject $s^\star$ and every pair of distinct admissible boundaries
+$t,t'\in\mathcal{T}_{k,n}^{+}$ there exists a block $(i,j]$ appearing in exactly one of $t,t'$ on
+which the marginal log-evidence under subject $s^\star$ differs from the value implied by any
+union of $t'$-blocks covering the same indices. Then the population log-likelihood
+$\ell(t):=\lim_{S\to\infty}S^{-1}\sum_{s=1}^S\log A^{(0)}_{ij,s}$ aggregated over all blocks of $t$
+is uniquely maximized at the true shared boundary vector $t^\star$, up to the deterministic
+trivial relabeling $t_0=0$, $t_k=n$.
+\end{proposition}
+
+\begin{proof}
+Under conditional independence (Assumption~\ref{ass:cond-indep-subjects}), the pooled
+log-evidence at any candidate $t$ equals the sum of subject-wise contributions; the law of large
+numbers gives $S^{-1}\log A^{(0)}_{ij,\mathrm{pool}}(t)\to \ell_{\mathrm{block}}(t;i,j)$ subject by
+subject. Compare two candidate vectors $t\neq t'$: by the second hypothesis, there is a block
+$(i,j]$ appearing in exactly one of them on which the subject $s^\star$ Kullback--Leibler
+contribution
+\[
+D_{ij}(t,t')
+ :=\mathbb{E}_{p^\star}\bigl[\log p(y_{i+1:j}\mid t)-\log p(y_{i+1:j}\mid t')\bigr]
+\]
+is strictly positive when $t=t^\star$, by the strict positive-definiteness of KL divergence at
+distinct conditional distributions. Aggregating over blocks of $t^\star$ and using the assumed
+non-degeneracy gives $\ell(t^\star)>\ell(t')$ for every $t'\ne t^\star$. The trivial relabeling
+clause records that $t_0=0$ and $t_k=n$ are fixed by the segmentation-space definition
+(Definition~\ref{def:segmentation-space}) and are not free parameters.
+\end{proof}
+
+\begin{remark}[Conditions that make the identifying-block hypothesis automatic]
+\label{rem:identifying-block}
+The second hypothesis of Proposition~\ref{prop:shared-boundary-identifiability} is automatic when
+the chosen block family is identifiable at the segment-parameter level (e.g.\ all exponential
+families derived in Section~\ref{sec:families}) and the design grid contains at least one
+observation in every block of every admissible boundary vector. It can fail when two candidate
+boundary vectors differ only in blocks of length zero or in blocks where the design contains no
+observations under any subject, which is excluded by the support condition of
+Definition~\ref{def:admissible-blocks}.
+\end{remark}
 
 \section{Groups with known membership}
 \label{sec:groups-known}
@@ -740,18 +887,19 @@ $S$ subjects, and integrated subject-specific segment parameters under any of th
 exponential-family block evidences of Section~\ref{sec:families}. Assume that
 \begin{enumerate}
     \item[\textnormal{(I1)}] all mixing weights are strictly positive, $\pi_g>0$ for every $g\in\{1,\dots,G\}$;
-    \item[\textnormal{(I2)}] the group templates are pairwise distinct, i.e.\ $(k_g,t^{(g)})\neq(k_{g'},t^{(g')})$ whenever $g\neq g'$;
-    \item[\textnormal{(I3)}] the prior on segmentations $p(\tau)$ has positive support on every admissible template, and the block evidences are strictly positive on the support of $y^{(s)}$ for every subject $s$.
+    \item[\textnormal{(I2)}] the component densities $p(\cdot\mid \tau_g)$ induced by the admissible templates are linearly independent as functions of the subject-level data; in particular, the declared component family identifies pairwise distinct templates;
+    \item[\textnormal{(I3)}] the prior on segmentations $p(\tau)$ has positive support on every admissible template, and the block evidences are finite and strictly positive on the support of $y^{(s)}$ for every subject $s$.
 \end{enumerate}
-Then the joint distribution of $(y^{(1)},\dots,y^{(S)})$ determines the parameter tuple
+Then the population subject-level mixture distribution determines the unordered parameter multiset
+$\{(\pi_g,\tau_g):g=1,\dots,G\}$, equivalently the parameter tuple
 $(\pi,\tau_1,\dots,\tau_G)$ up to a permutation $\sigma$ of the group indices acting simultaneously
 on the weights and templates, $(\pi_g,\tau_g)\mapsto(\pi_{\sigma(g)},\tau_{\sigma(g)})$.
 \end{proposition}
 
-A proof is provided in Appendix~\ref{app:label-switching}. The proposition states what the EM
-algorithm can and cannot recover: the equivalence class of $(\pi,\tau_1,\dots,\tau_G)$ modulo label
-permutation is identifiable from finite-sample data, but no estimator can distinguish individual
-permutations of the latent labels without an external anchoring convention (such as ordering
+A proof is provided in Appendix~\ref{app:label-switching}. The proposition states a population
+identifiability condition, not a finite-sample exact-recovery guarantee: data estimate the equivalence
+class of $(\pi,\tau_1,\dots,\tau_G)$ modulo label permutation, and no estimator can distinguish
+individual permutations of the latent labels without an external anchoring convention (such as ordering
 templates by $k_g$ or by lexicographic order on $t^{(g)}$). The label-switching counterexample of
 Appendix~\ref{app:label-switching} makes the exception explicit.
 
@@ -849,6 +997,43 @@ objective $\ell_\star$ is non-decreasing by the generalized EM monotonicity theo
 \citep{dempster1977em}. A fixed point satisfies the coordinatewise maximization conditions for the
 auxiliary function, rather than differentiable stationarity in a continuous template space.
 \end{proof}
+
+\begin{remark}[Exact EM versus regularized or floored variants]
+The monotonicity statement in Theorem~\ref{thm:em-monotone} applies to the exact finite-mixture
+objective $\ell_\star$ with the closed-form unfloored update $\pi_g=S^{-1}\sum_s r_{sg}$. A
+Dirichlet pseudocount changes the optimized objective by adding the corresponding log-prior term on
+$\pi$; monotonicity then holds for that penalized objective when the M-step maximizes it exactly. An
+ad hoc lower floor on $\pi_g$ is a constrained or generalized EM step and must be reported as such,
+with the achieved $\ell_\star$ monitored after projection.
+\end{remark}
+
+\begin{remark}[Finite-mixture identifiability and the overspecified-$G$ counterexample]
+\label{rem:teicher-overspec}
+Monotonicity (Theorem~\ref{thm:em-monotone}) does not by itself imply that EM converges to the
+true mixture. Identifiability of the template mixture is the separate question of whether two
+parameter settings $(\pi,\tau)\ne (\pi',\tau')$ can produce the same population mixture density;
+\citet{teicher1963identifiability} gives the classical sufficient condition for finite mixtures
+of identifiable component families to be themselves identifiable up to label permutation. In the
+BayesBreak template-mixture context, the relevant components are the per-subject pooled
+likelihoods $S_g(y^{(s)};\tau_g)$ defined by \eqref{eq:template-lik}; when these are identifiable
+in the segment-level template (Definition~\ref{def:multiseq-classes}) and the true number of
+groups is $G^\star$, the Teicher condition gives identifiability up to relabeling at the
+saturated specification $G=G^\star$.
+
+\emph{Overspecified-$G$ counterexample.} When $G>G^\star$ is used in the EM run, two distinct
+$(\pi,\tau)$ configurations can give the same mixture density on a population of finite subjects:
+e.g.\ at $G=G^\star+1$, set the extra template to equal one of the true templates and split its
+prior weight between the duplicate components in any proportion $\pi_g+\pi_{g'}=\pi^\star$. The
+resulting mixture density is unchanged. The EM run still monotonically improves $\ell_\star$ but
+returns a non-unique solution under this redundancy. Practical mitigations are (i) selecting $G$
+by held-out predictive log-likelihood (Definition~\ref{def:metric-loglik}) on a separate sample
+of subjects, (ii) using cluster-stability diagnostics across restarts, or (iii) imposing a
+minimum prior weight floor as discussed in the preceding remark, which then trades exact
+monotonicity of $\ell_\star$ for a regularized objective. Identifiability under $G<G^\star$
+(undermerging) is a different failure mode and the saturated condition is not designed to
+address it; see also \citet{teicher1963identifiability} for the more general algebraic-independence
+form of the result.
+\end{remark}
 
 \paragraph{Implementation.}
 Algorithm~\ref{alg:multi-em} alternates exact responsibility updates with exact
@@ -1101,8 +1286,9 @@ and any Gauss--Legendre rule with $Q$ nodes returns an approximation
 \widehat A^{(r)}_{ij}
 = \sum_{q=1}^Q w_q^{\mathrm{GL}}\,\mu_q^r\,\exp\{\ell_{ij}(\mu_q)+\log\pi(\mu_q)\},
 \]
-whose log-evidence error is $\varepsilon_Q\downarrow 0$ as $Q\to\infty$ at the rate $O(Q^{-2r})$
-for $C^{2r}$ integrands.
+whose log-evidence error is $\varepsilon_Q\downarrow 0$ as $Q\to\infty$ at the rate $O(Q^{-2s})$
+for integrands with $2s$ continuous derivatives, using $s$ for smoothness rather than the moment
+order $r$.
 \end{proposition}
 
 \begin{remark}[Quadrature stability]
@@ -1166,7 +1352,8 @@ Beta-obs$(\mu,\phi_t)$ & $\mathrm{Beta}(a_0,b_0)$ & (1D quadrature) & Gauss--Leg
 $\exp\{H_{ij}\}$ is implicit in the conjugate rows. The first three rows are closed-form
 conjugate examples; the Negative-Binomial row distinguishes parameter-scale Beta moments from the
 observation-mean target; and the Beta-observation row is non-conjugate but remains compatible with
-the DP layer through one-dimensional quadrature.}
+the DP layer through one-dimensional quadrature. This is a derivation/reference table; no source
+CSV is associated with it.}
 \label{tab:family-summary}
 \end{table}
 
@@ -1440,25 +1627,32 @@ Return $\underline{A}^{(0)}_{ij}=\exp\{\mathcal{L}_{ij}(q)\}$ and moments from $
 \subsection{Expectation propagation (EP) for GLM blocks}
 Expectation propagation (EP) \citep{minka2001ep} provides a flexible deterministic approximation to the block posterior and block evidence by iteratively refining local site approximations and matching moments.
 EP approximates each likelihood term $p(y_t\mid\theta)$ by a Gaussian site
-$\tilde t_t(\theta)\propto\exp\{-\tfrac{1}{2}a_t\theta^2+b_t\theta\}$ so that moments match those
-of the tilted distribution. After convergence, the approximate posterior is Gaussian and yields
-an approximate evidence $\tilde A^{(0)}_{ij}=\int \pi(\theta)\prod \tilde t_t(\theta)\,d\theta$.
+$\tilde t_t(\theta)=c_t\exp\{-\tfrac{1}{2}a_t\theta^2+b_t\theta\}$ so that moments match those
+of the tilted distribution while the scalar $c_t>0$ records the site-normalization contribution.
+After convergence, the approximate posterior is Gaussian and the approximate evidence is
+$\widehat A^{(0,\mathrm{EP})}_{ij}=\int \pi(\theta)\prod_{t=i+1}^j \tilde t_t(\theta)\,d\theta$.
+The constants $c_t$ are part of the returned log evidence; dropping them changes the DP score.
 EP is neither a bound nor guaranteed to converge, but is often accurate in canonical GLMs.
 
 \begin{algorithm}[H]
 \caption{GLMBlock\_EP$(y,w,i,j,\texttt{prior})$}
 \label{alg:ep}
-\KwIn{Canonical GLM; prior $\pi(\theta)$}
-Initialize site parameters $\{a_t,b_t\}_{t=i+1}^j$; approximate posterior $\tilde p(\theta)\propto\pi(\theta)\prod \tilde t_t(\theta)$\;
-\Repeat{moments stable}{
+\KwIn{Canonical GLM; prior $\pi(\theta)$; tolerance and maximum iterations}
+Initialize site parameters $\{a_t,b_t,c_t\}_{t=i+1}^j$; set $\tilde p(\theta)\propto\pi(\theta)\prod_t \tilde t_t(\theta)$\;
+\Repeat{moments stable or maximum iterations reached}{
   \For{$t=i+1$ \KwTo $j$}{
-    Form cavity $\tilde p^{\setminus t}(\theta)\propto \tilde p(\theta)/\tilde t_t(\theta)$\;
+    Form cavity $\tilde p^{\setminus t}(\theta)\propto \tilde p(\theta)/\tilde t_t(\theta)$ and verify positive cavity precision\;
     Form tilted $p^{\text{tilt}}(\theta)\propto \tilde p^{\setminus t}(\theta)\,p(y_t\mid\theta)$\;
-    Moment-match $p^{\text{tilt}}$ and update site $\tilde t_t(\theta)$\;
+    Moment-match $p^{\text{tilt}}$ and update the site parameters $(a_t,b_t,c_t)$, damping if needed\;
   }
 }
-Return approximate evidence $\tilde A^{(0)}_{ij}=\int \tilde p(\theta)\,d\theta$ and moments from $\tilde p$.
+Return a convergence/failure flag, the approximate log evidence
+$\log\widehat A^{(0,\mathrm{EP})}_{ij}=\log\int \pi(\theta)\prod_{t=i+1}^j c_t\exp\{-a_t\theta^2/2+b_t\theta\}\,d\theta$, and moments from $\tilde p$.
 \end{algorithm}
+
+An implementation should export the convergence flag and the maximum site residual together with the
+block score. Downstream DP routines may then exclude failed EP blocks, retry them with stronger
+damping, or mark the whole EP approximation as uncertified for the stability analysis.
 
 \subsection{Pólya–Gamma augmentation (logistic and negative-binomial)}
 \begin{theorem}[P\'olya--Gamma identity and conditional conjugacy]
@@ -1622,6 +1816,23 @@ total, so each candidate-specific weight is perturbed by at most $e^{\pm k\varep
 therefore yields the factor $e^{\pm 2k\varepsilon}$ and hence \eqref{eq:stability-b-odds}.
 \end{proof}
 
+\begin{corollary}[Probability-error conversion for normalized finite weights]
+\label{cor:probability-error-conversion}
+Let $p_a=w_a/\sum_b w_b$ and $\widehat p_a=\widehat w_a/\sum_b\widehat w_b$ be two
+finite normalized distributions with $|\log\widehat w_a-\log w_a|\le\eta$ for every state $a$. Then
+$e^{-2\eta}\le \widehat p_a/p_a\le e^{2\eta}$ for every $a$, and
+$\|\widehat p-p\|_{\mathrm{TV}}\le e^{2\eta}-1$. Consequently, Assumption~\ref{ass:uniform-block-error}
+implies a fixed-$k$ boundary-distribution total-variation bound with $\eta=k\varepsilon$, and a
+segment-count posterior bound with $\eta=k_{\max}\varepsilon$. These absolute probability bounds are
+coarser than the odds bounds but require no additional margin condition.
+\end{corollary}
+
+\begin{proof}
+The normalizing denominator $\sum_b p_b\exp(\delta_b)$ lies in $[e^{-\eta},e^{\eta}]$ when
+$\delta_a=\log\widehat w_a-\log w_a$. Hence each probability ratio lies in
+$[e^{-2\eta},e^{2\eta}]$. Summing the positive parts of $\widehat p_a-p_a$ gives the stated total-variation bound.
+\end{proof}
+
 \begin{corollary}[Preservation of boundary rankings under a margin condition]
 \label{cor:ranking}
 Under the hypotheses of Proposition~\ref{prop:stability}, if there is a \emph{log-odds margin}
@@ -1650,7 +1861,7 @@ under the regularity conditions stated in Appendix~\ref{app:variational-bounds}:
 \begin{enumerate}
 \item \textbf{Quadrature ($\mathrm{Q}$).} For one-dimensional Gauss--Legendre quadrature with $Q$
 nodes on the prior-credible interval, there exists $\varepsilon_Q\downarrow 0$ as $Q\to\infty$ such
-that $|\delta^{\mathrm Q}_{ij}|\le \varepsilon_Q$ uniformly over blocks. The rate is $\varepsilon_Q=O(Q^{-2r})$ when the integrand is $C^{2r}$ on the integration interval.
+that $|\delta^{\mathrm Q}_{ij}|\le \varepsilon_Q$ uniformly over blocks. The rate is $\varepsilon_Q=O(Q^{-2s})$ when the integrand has $2s$ continuous derivatives on the integration interval.
 \item \textbf{Laplace ($\mathrm{Lap}$).} For a strictly concave block log-posterior with bounded
 fourth derivative, $|\delta^{\mathrm{Lap}}_{ij}|=O(|(i,j]|^{-1})$ uniformly over blocks; the
 implied $\varepsilon$ is therefore $O(n^{-1})$ on the typical reachable blocks of length $\Omega(n/k_{\max})$.
@@ -1758,13 +1969,24 @@ segment parameters $\theta_{1:k}$, and where $f(x)=\theta_{q(x)}$ is the segment
 parameter for the segment $q(x)$ containing $x$ under the boundary vector $t$.
 \end{definition}
 
+\begin{definition}[Segment-assignment map]
+\label{def:segment-assignment-map}
+For an exported boundary vector $\widehat t^{(g)}$ on ordered coordinates
+$u_0^{(g)}<\cdots<u_{n_g}^{(g)}$, a segment-assignment map is a declared function
+$a_g(x)\in\{1,\dots,\widehat k_g\}$ assigning each query coordinate $x$ to a training segment.
+The default interval-containment rule is
+$a_g(x)=q$ when $u_{\widehat t^{(g)}_{q-1}}^{(g)} < x \le u_{\widehat t^{(g)}_q}^{(g)}$, with
+endpoint conventions recorded by the implementation. Queries outside the training range are either
+rejected or assigned by an explicitly declared extrapolation rule; silent extrapolation is not part
+of the default interface.
+\end{definition}
+
 The \emph{exported segmentation} (Definition~\ref{def:exported-segmentation}) and the
 \emph{Bayes curve} (Definition~\ref{def:bayes-curve}) are distinct objects with different
-operational meanings: the exported segmentation is a fixed piecewise-constant function
-with a discrete change-point structure that is convenient for downstream tasks (e.g.\ region
-labeling, hypothesis testing, set-valued prediction); the Bayes curve is a continuous mixture
-that integrates segmentation uncertainty and is the appropriate target when smooth predictive
-quantities are needed.
+operational meanings: the exported segmentation is a fixed piecewise-constant function with a
+discrete change-point structure that is convenient for downstream tasks (e.g.\ region labeling,
+hypothesis testing, set-valued prediction); the Bayes curve is a continuous mixture that integrates
+segmentation uncertainty and is the appropriate target when smooth predictive quantities are needed.
 
 Prediction supports two primary tasks:
 
@@ -1794,7 +2016,7 @@ $\widehat f^{\mathrm{Bayes}}_g(X)$ & Bayes-curve posterior mean, optionally with
 Unit responsibilities & Optional probabilities for set-valued units or grouped observations. \\
 \bottomrule
 \end{tabular}
-\caption[Prediction-layer outputs]{Prediction-layer outputs exposed by fitted BayesBreak models. These interfaces support downstream scoring and calibration separately from the empirical result tables.}
+\caption[Prediction-layer outputs]{Prediction-layer outputs exposed by fitted BayesBreak models. These interfaces support downstream scoring and calibration separately from the empirical result tables. This is an interface-definition table; no source CSV is associated with it.}
 \label{tab:prediction-outputs}
 \end{table}
 
@@ -1950,8 +2172,12 @@ where $\mathcal{Y}^{\text{new}}_{u,B}$ is the subset of unit $u$’s internal ob
 fall into segment $B$ and each segment term uses \eqref{eq:pp-seg} with summaries for that subset.
 
 \paragraph{Dataset likelihood and independence assumption.}
-Assuming conditional independence of units given group membership, the dataset likelihood under
-group $g$ is:
+\begin{assumption}[Prediction-unit conditional independence]
+\label{ass:prediction-independence}
+For Case B prediction, units are conditionally independent given the exported group model, and each
+unit contributes only through the segment-restricted predictive factors used in \eqref{eq:unit-lik}.
+\end{assumption}
+Under Assumption~\ref{ass:prediction-independence}, the dataset likelihood under group $g$ is:
 \[
 \ell_g^{\text{MV}}(\mathcal{D}^{\text{new}}_{\text{mv}})=\sum_{u=1}^{U}\ell_{u g}.
 \]
@@ -2105,6 +2331,11 @@ For Case B, it is $\mathcal{O}(\sum_u R_u)$ per group, plus segment assignment f
 Vector-valued responses add a factor of $d$ in the factorized EF construction. Importantly,
 prediction does \emph{not} require rerunning the DP unless the optional resegmentation scoring
 mode is enabled.
+Membership posterior normalization is performed in log space by subtracting
+$\texttt{logsumexp}_g(\log\pi_g+\ell_g)$; unit responsibilities use the same normalization
+independently for each unit. Segment assignment is a numerical convention, not an inferential
+identity: implementations must record whether binary search, streaming pointers, nearest-neighbor
+assignment, or a declared extrapolation rule was used for out-of-range query points.
 \subsection{Prediction diagnostics}
 \label{sec:prediction-diagnostics}
 
