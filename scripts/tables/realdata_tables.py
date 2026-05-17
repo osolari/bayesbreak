@@ -60,6 +60,23 @@ def _load_pkl(name: str) -> Any:
     return obj.get("fit") if isinstance(obj, dict) else obj
 
 
+def _load_runtime(name: str) -> float | None:
+    """Read the cached fit's wall-clock runtime (if recorded). Old caches
+    that pre-date the timing extension return None."""
+    path = FITCACHE / f"{name}.fit.pkl"
+    if not path.exists():
+        return None
+    try:
+        with path.open("rb") as fh:
+            obj = pickle.load(fh)
+    except Exception:
+        return None
+    if isinstance(obj, dict):
+        rt = obj.get("runtime_s")
+        return float(rt) if rt is not None else None
+    return None
+
+
 def _boundary_entropy(p: np.ndarray | None) -> float | None:
     if p is None:
         return None
@@ -68,7 +85,7 @@ def _boundary_entropy(p: np.ndarray | None) -> float | None:
     return float(-(p * np.log(p) + (1.0 - p) * np.log1p(-p)).sum())
 
 
-def _row_from_estimator(est: Any, *, config: str) -> dict[str, Any]:
+def _row_from_estimator(est: Any, *, config: str, runtime_s: float | None = None) -> dict[str, Any]:
     return {
         "config": config,
         "k_hat": int(est.k_map_) if hasattr(est, "k_map_") else None,
@@ -80,23 +97,47 @@ def _row_from_estimator(est: Any, *, config: str) -> dict[str, Any]:
         else None,
         "n": int(est.n_) if hasattr(est, "n_") else None,
         "boundary_entropy_nats": _boundary_entropy(getattr(est, "boundary_marginals_", None)),
+        "runtime_s": runtime_s,
     }
 
 
 def welllog_rows() -> dict[str, Any]:
     est = _load_pkl("fig6_welllog")
+    runtime_s = _load_runtime("fig6_welllog")
     rows: list[dict[str, Any]] = []
     if est is not None:
-        rows.append(_row_from_estimator(est, config="Index-uniform prior, g ≡ 1"))
         rows.append(
-            {
-                "config": "Length-aware prior, g(ℓ) ∝ ℓ",
-                "k_hat": None,
-                "log_evidence": None,
-                "log_joint_map": None,
-                "needs_refit": "length-aware prior not in fit cache; refit on real welllog when datasets extras are installed",
-            }
+            _row_from_estimator(est, config="Index-uniform prior, g ≡ 1", runtime_s=runtime_s)
         )
+        # Refit the length-aware-prior variant on the cached training data
+        # so the prior-sensitivity row can be populated without network.
+        try:
+            from bayesbreak import BayesBreakGaussian
+
+            y = np.asarray(est._y_train_, dtype=float)
+            X = np.asarray(est.x_design_, dtype=float).reshape(-1, 1)
+            w = est.sample_weight_
+            t0 = time.perf_counter()
+            est_len = BayesBreakGaussian(
+                k_max=int(est.k_max),
+                length_prior=lambda d: float(d),
+                regression_curve="none",
+            ).fit(X, y, sample_weight=w)
+            rt_len = time.perf_counter() - t0
+            rows.append(
+                _row_from_estimator(
+                    est_len, config="Length-aware prior, g(ℓ) ∝ ℓ", runtime_s=rt_len
+                )
+            )
+        except Exception as exc:
+            rows.append(
+                {
+                    "config": "Length-aware prior, g(ℓ) ∝ ℓ",
+                    "k_hat": None,
+                    "log_evidence": None,
+                    "needs_refit": f"length-aware refit failed: {exc!r}",
+                }
+            )
     else:
         rows.append({"config": "(no cache available)", "needs_refit": "fig6_welllog cache missing"})
     return {
@@ -111,12 +152,17 @@ def welllog_rows() -> dict[str, Any]:
 
 def cgh_rows() -> dict[str, Any]:
     obj = _load_pkl("fig7_cgh")
+    runtime_s = _load_runtime("fig7_cgh")
     rows: list[dict[str, Any]] = []
     if obj is not None and isinstance(obj, dict):
         rep = obj.get("rep")
         per_le = obj.get("per_subj_logE", [])
         if rep is not None:
-            rows.append(_row_from_estimator(rep, config="Shared boundaries, subject-specific μ"))
+            rows.append(
+                _row_from_estimator(
+                    rep, config="Shared boundaries, subject-specific μ", runtime_s=runtime_s
+                )
+            )
         if per_le:
             rows.append(
                 {
@@ -148,18 +194,39 @@ def cgh_rows() -> dict[str, Any]:
 
 def spx_rows() -> dict[str, Any]:
     est = _load_pkl("fig8_spx")
+    runtime_s = _load_runtime("fig8_spx")
     rows: list[dict[str, Any]] = []
     if est is not None:
-        rows.append(_row_from_estimator(est, config="Gaussian on log r_t^2"))
-        rows.append(
-            {
-                "config": "Bernoulli on threshold crossings (95th pct)",
-                "k_hat": None,
-                "log_evidence": None,
-                "log_joint_map": None,
-                "needs_refit": "threshold-crossings variant not in fit cache; refit on real SPX when yfinance is available",
-            }
-        )
+        rows.append(_row_from_estimator(est, config="Gaussian on log r_t^2", runtime_s=runtime_s))
+        # Refit the Bernoulli-on-threshold-crossings variant on the
+        # cached SPX training data so the secondary specification row
+        # can be populated without yfinance.
+        try:
+            from bayesbreak import BayesBreakBernoulli
+
+            y = np.asarray(est._y_train_, dtype=float)
+            X = np.asarray(est.x_design_, dtype=float).reshape(-1, 1)
+            thresh = float(np.quantile(y, 0.95))
+            crossings = (y > thresh).astype(float)
+            t0 = time.perf_counter()
+            est_be = BayesBreakBernoulli(k_max=int(est.k_max)).fit(X, crossings)
+            rt_be = time.perf_counter() - t0
+            row = _row_from_estimator(
+                est_be,
+                config="Bernoulli on threshold crossings (95th pct)",
+                runtime_s=rt_be,
+            )
+            row["threshold_quantile"] = 0.95
+            rows.append(row)
+        except Exception as exc:
+            rows.append(
+                {
+                    "config": "Bernoulli on threshold crossings (95th pct)",
+                    "k_hat": None,
+                    "log_evidence": None,
+                    "needs_refit": f"threshold-crossings refit failed: {exc!r}",
+                }
+            )
     else:
         rows.append({"config": "(no cache available)", "needs_refit": "fig8_spx cache missing"})
     return {
@@ -174,9 +241,14 @@ def spx_rows() -> dict[str, Any]:
 
 def methylation_rows(*, do_holdout: bool = True) -> dict[str, Any]:
     est = _load_pkl("fig9_methylation")
+    runtime_s = _load_runtime("fig9_methylation")
     rows: list[dict[str, Any]] = []
     if est is not None:
-        row = _row_from_estimator(est, config="chr21 region A (methylKit test1.myCpG, n=1904)")
+        row = _row_from_estimator(
+            est,
+            config="chr21 region A (methylKit test1.myCpG, n=1904)",
+            runtime_s=runtime_s,
+        )
         rows.append(row)
 
         if do_holdout:

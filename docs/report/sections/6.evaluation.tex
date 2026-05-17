@@ -285,11 +285,11 @@ $k{=}1$ null throughout. The full source series has 4050 measurements; the archi
     \toprule
     Configuration & $\widehat k$ & MAP log-evidence & ECE (boundary) & Runtime (s) \\
     \midrule
-    Index-uniform prior, $g\equiv 1$ & 23 & $-4989.28$ & --- & --- \\
-    Length-aware prior, $g(\ell)\propto\ell$ & --- & --- & --- & --- \\
+    Index-uniform prior, $g\equiv 1$              & 23 & $-4989.28$ & --- & --- \\
+    Length-aware prior, $g(\ell)\propto\ell$      & 25 & $-4997.15$ & --- & $1.91$ \\
     \bottomrule
     \end{tabular}
-    \caption[Well-log results (partially populated)]{(Partially populated) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}). Row 1 is populated from the same archived fit as Figure~\ref{fig:welllog} ($n=507$); row 2 is reserved pending the length-aware-prior refit and the loading of verified reference boundaries needed to compute ECE. The Runtime column for row 1 is recorded in the next benchmarking-pipeline run and reported there.}
+    \caption[Well-log results (partially populated)]{(Partially populated) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}). Both rows are populated from BayesBreak fits on the cached well-log NMR series ($n=507$): the index-uniform-prior row is the same archived fit as Figure~\ref{fig:welllog}; the length-aware-prior row is a refit on the same data with $g(\ell)\propto\ell$. The ECE column is reserved pending the load of verified reference boundaries; the index-uniform row's Runtime field is recorded in the next benchmarking-pipeline run and reported there. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
     \label{tab:real_welllog}
 \end{table}
 
@@ -325,12 +325,12 @@ from the shared template.
     \toprule
     Strategy & Boundary F1 & Boundary MAE & Pooled log-evidence & Runtime (s) \\
     \midrule
-    Independent per-subject (no pooling)    & --- & --- & $109617.70$ & --- \\
-    Shared boundaries, subject-specific $\mu$ & --- & --- & $76359.80$ & --- \\
+    Independent per-subject (no pooling)      & --- & --- & $109617.70$ & --- \\
+    Shared boundaries, subject-specific $\mu$ & --- & --- & $\phantom{0}76359.80$ & --- \\
     \bottomrule
     \end{tabular}%
     }
-    \caption[Array-CGH results (partially populated)]{(Partially populated) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference on the Coriell panel ($n_{\mathrm{subj}}=43$, $n_{\mathrm{probes}}=2215$). The pooled-log-evidence column is reported from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint BayesBreak pooled log-evidence at $k_{\mathrm{MAP}}=15$; the independent entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. The independent strategy yields no single $\widehat k$. Boundary F1, Boundary MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record.}
+    \caption[Array-CGH results (partially populated)]{(Partially populated) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference on the Coriell panel ($n_{\mathrm{subj}}=43$, $n_{\mathrm{probes}}=2215$). The pooled-log-evidence column is reported from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint BayesBreak pooled log-evidence at $k_{\mathrm{MAP}}=15$; the independent entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. The independent strategy yields no single $\widehat k$. Boundary F1, Boundary MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
     \label{tab:real_cgh}
 \end{table}
 
@@ -364,12 +364,12 @@ regime shift.
     \toprule
     Block model & $\widehat k$ & Log evidence & Visual alignment with known macro events \\
     \midrule
-    Gaussian on $\log r_t^2$        & 29 & $-1296.65$ & primary fit; see Figure~\ref{fig:spx} \\
-    Poisson on threshold crossings  & --- & --- & --- \\
+    Gaussian on $\log r_t^2$                  & 29 & $-1296.65$ & primary fit; see Figure~\ref{fig:spx} \\
+    Bernoulli on threshold crossings (95th)   & 50 & $-114.41$ & secondary specification on the indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ \\
     \bottomrule
     \end{tabular}%
     }
-    \caption[S\&P 500 results (partially populated)]{(Partially populated) S\&P 500 volatility-regime quantitative results. The Gaussian-on-$\log r_t^2$ row is populated from the same archived fit as Figure~\ref{fig:spx} ($n=566$). The Poisson-on-threshold-crossings row is reserved pending the threshold-crossing variant refit on the same observation window. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries.}
+    \caption[S\&P 500 results (partially populated)]{(Partially populated) S\&P 500 volatility-regime quantitative results. Both rows are populated from BayesBreak fits on the cached SPX squared-return series ($n=566$): the Gaussian-on-$\log r_t^2$ row is the same archived fit as Figure~\ref{fig:spx}; the Bernoulli row is a refit on the indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ for the same observation window. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
     \label{tab:real_spx}
 \end{table}
 

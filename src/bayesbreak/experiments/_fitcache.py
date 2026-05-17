@@ -154,10 +154,18 @@ def fit_or_load(
 ) -> Any:
     """Return a cached fit if its key matches, otherwise call ``fit_fn`` and persist.
 
-    Cache is a single ``.pkl`` file containing ``{"key": <sha>, "fit": <obj>}``.
+    Cache is a single ``.pkl`` file containing
+    ``{"key": <sha>, "fit": <obj>, "runtime_s": <float|None>, "ran_at": <ts>}``.
+    The runtime / timestamp fields back the reproducibility-refresh
+    diagnostic (§5b reproducibility expectations) and are recovered by
+    ``scripts/tables/realdata_tables.py``. Old caches that lack these
+    keys are still loaded.
+
     Pickle is acceptable here because the figure pipeline runs only inside
     the user's own checkout — no untrusted input.
     """
+
+    import time as _time  # local to avoid top-level import drift
 
     resolved = _resolve_cache_path(cache_path)
     name = resolved.name
@@ -177,10 +185,20 @@ def fit_or_load(
     else:
         print(f"[fitcache] miss (no cache): {name}", flush=True)
 
+    t0 = _time.perf_counter()
     fit = fit_fn()
+    runtime_s = _time.perf_counter() - t0
+    ran_at = _time.time()
     slim = _slim_for_cache(fit)
     with resolved.open("wb") as fh:
-        pickle.dump({"key": key, "fit": slim}, fh, protocol=pickle.HIGHEST_PROTOCOL)
+        pickle.dump(
+            {"key": key, "fit": slim, "runtime_s": runtime_s, "ran_at": ran_at},
+            fh,
+            protocol=pickle.HIGHEST_PROTOCOL,
+        )
     size_mb = resolved.stat().st_size / 1024 / 1024
-    print(f"[fitcache] stored: {name} ({size_mb:.1f} MB)", flush=True)
+    print(
+        f"[fitcache] stored: {name} ({size_mb:.1f} MB, runtime {runtime_s:.2f}s)",
+        flush=True,
+    )
     return fit

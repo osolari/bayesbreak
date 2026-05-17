@@ -43,6 +43,7 @@ from .multivariate import (
     SharedBoundaryMultivariateSegmenter,
 )
 from .replicates import SharedBoundaryReplicatesSegmenter
+from .sliding_window import SlidingWindowSegmenter
 
 _FAMILY_REGISTRY = {
     ("gaussian", "normal"): BayesBreakGaussian,
@@ -99,6 +100,7 @@ __all__ = [
     "SharedBoundaryMultivariateSegmenter",
     "IndependentMultivariateSegmenter",
     "SharedBoundaryReplicatesSegmenter",
+    "SlidingWindowSegmenter",
     "BayesBreakGroupedClassifier",
     "BayesBreakMixtureClassifier",
     "DiagnosticCheck",

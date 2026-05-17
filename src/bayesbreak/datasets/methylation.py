@@ -18,14 +18,20 @@ When the network is unavailable, or the user provides a local CSV with the
 same column schema, the loader gracefully falls back to the deterministic
 simulated analog or the user-provided file.
 
-Caveat (for future maintainers): an earlier draft of the manuscript noted
-that ``nloyfer/meth_atlas`` actually implements Moss et al. 2018's array
-deconvolution, and that the companion software for the 2023 atlas is
-``nloyfer/wgbs_tools`` + ``nloyfer/UXM_deconv``. The current draft has
-rolled back to ``nloyfer/meth_atlas`` as the repository name; a finalized
-atlas pipeline that fails to locate the per-CpG ``coverage.tsv.gz`` matrix
-at the ``meth_atlas`` URL should look at ``wgbs_tools`` / ``UXM_deconv``
-under the same GitHub owner.
+Caveat (for future maintainers, verified May 2026): the manuscript
+appendix recipe points to ``nloyfer/meth_atlas`` as the companion code
+for Loyfer et al. 2023. This is **factually incorrect**:
+``nloyfer/meth_atlas`` is the code base for the older Moss et al. 2018
+array-deconvolution method (Nature Communications 9:5068), **not** the
+2023 atlas. The verified companion software for ``loyfer2023atlas`` is
+split between ``nloyfer/wgbs_tools`` (the ``wgbstools`` suite used to
+build the atlas) and ``nloyfer/UXM_deconv`` (the UXM fragment-level
+deconvolution tool). The Nature 2023 paper's data-availability statement
+itself names these repositories. The verified GEO accession remains
+**GSE186458** (data in bigWig and beta format compatible with
+wgbstools). A finalized atlas pipeline that fails to locate the per-CpG
+``coverage.tsv.gz`` matrix at the ``meth_atlas`` URL should switch to
+``wgbs_tools`` / ``UXM_deconv`` under the same GitHub owner.
 """
 
 from __future__ import annotations

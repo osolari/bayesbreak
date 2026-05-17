@@ -11,13 +11,18 @@ We prefer the ``well_log.txt`` file (full n=4050 series) and fall back to
 the ``well_log.json`` subset if that is unavailable. When neither can be
 fetched we return the deterministic simulated analog.
 
-Caveat (for future maintainers): an earlier draft of the manuscript
-attributed the bundled R copy to ``changepoint.influence::welldata`` /
-Fearnhead & Clifford (2003) and warned that the older ``Lai2005fig4`` is
-actually the array-CGH example of Lai et al. (2005), not the NMR series.
-The current draft has rolled back to the ``changepoint::Lai2005fig4``
-recipe; if a finalized run hits a label mismatch, the
-``changepoint.influence::welldata`` object is the safer ground truth.
+Caveat (for future maintainers, verified May 2026): the manuscript
+appendix recipe uses ``data(Lai2005fig4)`` from the ``changepoint``
+package, but this is **factually incorrect** — ``Lai2005fig4`` is the
+array-CGH example of Lai et al. (2005), not the well-log NMR series.
+The verified 4050-vector NMR series of Fearnhead & Clifford (2003)
+ships as the ``welldata`` object in the R package
+``changepoint.influence`` (CRAN). The CRAN page itself documents it as
+"a vector of length 4050. The data described and provided in
+Fearnhead and Clifford (2003)." This caveat is reproduced in the
+``CODING_AGENT_HANDOFF.md`` author-verification list; a finalized
+real-data run that hits the ``Lai2005fig4`` label-mismatch should
+switch to ``changepoint.influence::welldata``.
 """
 
 from __future__ import annotations
