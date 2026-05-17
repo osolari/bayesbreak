@@ -53,6 +53,13 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
     """Shared-boundary multi-subject segmentation via exact boundary-posterior pooling
     (Theorem ``multisubject``).
 
+    Identifiability of the pooled boundary structure is the content of
+    Proposition ``prop:shared-boundary-identifiability``: under the
+    common-grid + conditional-independence assumption
+    ``ass:cond-indep-subjects``, the shared boundary vector is identifiable
+    from the pooled subject-level evidences whenever the identifying-block
+    hypothesis (Remark ``rem:identifying-block``) holds.
+
     Parameters
     ----------
     base_estimator : BayesBreakSegmenter

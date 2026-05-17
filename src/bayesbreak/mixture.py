@@ -74,6 +74,14 @@ def _canonical_template_order(group_states: list[_GroupState]) -> list[int]:
     (smallest segment count first), then lexicographically on the boundary
     vector ``t^{(g)}``. Returns the index permutation that puts the input
     list into canonical order.
+
+    The anchoring covers the saturated-``G`` (``G = G^star``) case of
+    ``prop:latent-identifiability``. The overspecified-``G`` redundancy
+    (``rem:teicher-overspec``), where ``G > G^star`` admits distinct
+    parameter tuples with identical mixture densities, is *not* resolved
+    by this anchor; the recommended mitigation in §5b is to choose ``G``
+    by held-out predictive log-likelihood
+    (``def:metric-loglik``).
     """
     return sorted(
         range(len(group_states)),

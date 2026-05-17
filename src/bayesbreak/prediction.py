@@ -90,7 +90,13 @@ class Unit:
 
 
 def _assign_to_map_blocks(x_design: FloatArray, x_new: FloatArray) -> NDArray[np.intp]:
-    """Map each new ``x`` to the index of its nearest training design point."""
+    """Map each new ``x`` to the index of its nearest training design point.
+
+    Implements the exported segment-assignment map of
+    Definition ``def:segment-assignment-map``: under the exported MAP
+    boundary vector, this routine carries a new design point to the
+    training index of the segment that contains it.
+    """
 
     order = np.argsort(x_design)
     sorted_x = x_design[order]
@@ -107,7 +113,13 @@ def posterior_predictive_logpdf(
     sample_weight: ArrayLike | None = None,
     per_sample: bool = False,
 ) -> float | FloatArray:
-    """Pointwise posterior-predictive log-density under the fitted MAP segmentation."""
+    """Pointwise posterior-predictive log-density under the fitted MAP segmentation.
+
+    Implements the Case A (pointwise) branch of the prediction interface
+    of Definition ``def:prediction-cases``. Per-sample independence under
+    the exported segmentation is the content of
+    Assumption ``ass:prediction-independence``.
+    """
 
     from .base import BayesBreakSegmenter  # local import to avoid cycle
 

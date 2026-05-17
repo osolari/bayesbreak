@@ -49,9 +49,15 @@ base class. Every concrete family inherits from it.
 
 ### Manuscript cross-references
 
+- Standing assumption: `ass:standing-offline` (offline segmentation
+  support and block independence).
 - Time and space complexity: `prop:bb-complexity` (`Θ(n²)` block
   precomputation, `Θ(k_max n²)` DP, `Θ(k_max n)` working memory for
   evidences and `Θ(k_max n²)` when retaining backpointers).
+- DP invariants: `prop:fb-duality` (forward/backward total-evidence
+  identity — exercised by `run_dp_diagnostics`),
+  `prop:block-covering-decomposition` (Bayes-curve moments — implemented
+  by `bayes_regression_curve_*`).
 - Joint MAP correctness: `thm:map-correctness` (max-sum + backtrack
   returns the joint MAP at the chosen `k`; ties broken deterministically
   by the back-pointer convention).
@@ -59,15 +65,36 @@ base class. Every concrete family inherits from it.
   `prop:binomial-block`, `prop:negbin-block`, `prop:beta-block`.
 - Non-conjugate approximations:
   `ass:uniform-block-error` (uniform per-block log-evidence error `ε`),
-  `prop:stability` (posterior-odds stability), and
+  `prop:stability` (posterior-odds stability),
   `prop:uniform-bounds` (per-routine `ε` rates — Q: `O(Q^{-2r})`,
-  Lap/JJ/PG: `O(n^{-1})` on reachable blocks, EP: not uniformly bounded).
-- Latent-group mixture: `prop:latent-identifiability` (identifiable up to
-  label permutation) and `ex:label-switch-counterexample`.
-- Prediction inputs: `def:prediction-cases` (Case A pointwise — see
+  Lap/JJ/PG: `O(n^{-1})` on reachable blocks, EP: not uniformly bounded),
+  and `cor:probability-error-conversion` (TV bound on `P(k|y)` —
+  reported as `pk_tv_upper_bound` in `run_non_conjugate_diagnostics`).
+- Shared-boundary replicates:
+  `ass:cond-indep-subjects` (common-grid + conditional independence),
+  `prop:shared-boundary-identifiability` (when the identifying-block
+  hypothesis `rem:identifying-block` holds), implemented by
+  `SharedBoundaryReplicatesSegmenter`.
+- Latent-group mixture: `prop:latent-identifiability` (identifiable up
+  to label permutation), `ex:label-switch-counterexample`,
+  `rem:teicher-overspec` (overspecified-`G` redundancy — mitigate by
+  held-out `G` selection).
+- Inherited partitions / irregular designs:
+  `cor:inherited-partition-invariance` (`g(Δ)` interacts with prior
+  weight only, not with the likelihood).
+- Prediction: `def:prediction-cases` (Case A pointwise — see
   `posterior_predictive_logpdf`; Case B set-valued — see
   `prediction.Unit` + `predict_group`; Case C vector-valued — see
-  `SharedBoundaryMultivariateSegmenter` / `IndependentMultivariateSegmenter`).
+  `SharedBoundaryMultivariateSegmenter` / `IndependentMultivariateSegmenter`),
+  `def:segment-assignment-map` (the carry from a new design point to its
+  containing MAP segment — `_assign_to_map_blocks`),
+  `ass:prediction-independence` (per-unit conditional independence
+  given the exported group model).
+- Definitions of empirical metrics:
+  `def:metric-boundary-f1`, `def:metric-boundary-mae`,
+  `def:metric-ece-boundary`, `def:metric-loglik` (boundary F1, MAE,
+  ECE, held-out predictive log-likelihood — reported by
+  `bayesbreak.diagnostics` and `bayesbreak.prediction`).
 
 ## Families
 
@@ -123,13 +150,14 @@ block routines:
 `bayesbreak.diagnostics`:
 
 - `run_dp_diagnostics(estimator)` — checks the four §4 invariants
-  (`Σ P(k) = 1`, forward/backward agreement, `Σ P(b_i|y,k) = k − 1`
-  stated inline in the DP correctness theorem, MAP backtrack score
-  matching `thm:map-correctness`).
+  (`Σ P(k) = 1`, forward/backward total-evidence identity per
+  `prop:fb-duality`, `Σ P(b_i|y,k) = k − 1` stated inline in the DP
+  correctness theorem, MAP backtrack score matching
+  `thm:map-correctness`).
 - `run_non_conjugate_diagnostics(estimator, reference)` — reachable-block
   error quantiles (the empirical `ε` of `ass:uniform-block-error`),
-  posterior-sensitivity summaries, and a worst-case total-variation
-  bound on `P(k|y)` derivable from `prop:stability` (fields
+  posterior-sensitivity summaries, and the worst-case total-variation
+  bound on `P(k|y)` from `cor:probability-error-conversion` (fields
   `pk_tv_empirical`, `pk_tv_upper_bound`; check `pk_tv_bound_check`).
   Each check carries a `failure_mode` tag aligned with the §4
   approximation-validation checklist and §5b limitations on the

@@ -1,16 +1,28 @@
 r"""Dynamic-programming recursions over contiguous partitions.
 
-The recursions in this module are algebraically exact for whatever
-admissible block-score matrix is supplied to them. They have the literal
-Bayesian interpretation for the data-generating model only when the
-supplied entries are the true marginal likelihoods (eq. ``A0``) under a
-product-partition prior of the form fixed in §``sec:setup``; with surrogate
-non-conjugate block scores, the recursions return exact summaries of the
-surrogate model and the approximation must be assessed separately through
-Proposition ``prop:stability`` and the per-routine uniform-error bounds
-``prop:uniform-bounds`` (under Assumption ``ass:uniform-block-error``).
+The recursions assume the offline-segmentation standing assumption
+``ass:standing-offline`` of §``sec:problem`` (finite admissible
+segment-count set, finite/positive block evidences on admissible blocks,
+segment-parameter conditional independence given a segmentation) and the
+product-partition prior of Assumption ``ass:factorizing-prior``.
 
-Callers must satisfy a simple contract: block routines return finite
+The recursions are algebraically exact for whatever admissible block-score
+matrix is supplied to them. They have the literal Bayesian interpretation
+for the data-generating model only when the supplied entries are the true
+marginal likelihoods (eq. ``A0``); with surrogate non-conjugate block
+scores, the recursions return exact summaries of the surrogate model and
+the approximation must be assessed separately through Proposition
+``prop:stability``, the per-routine uniform-error bounds
+``prop:uniform-bounds`` (under Assumption ``ass:uniform-block-error``),
+and the TV-bound conversion of Corollary ``cor:probability-error-conversion``.
+
+Two invariants worth noting:
+``Σ_i P(b_i=1|y,k) = k − 1`` (the boundary-event normalization stated
+inline in the DP correctness theorem), and the forward/backward
+total-evidence identity ``L̃[k_map, n] = R̃[k_map, 0]``
+(Proposition ``prop:fb-duality``).
+
+Callers satisfy a simple contract: block routines return finite
 ``log A^{(0)}_{ij}`` on every admissible block and the sentinel ``-inf`` on
 every inadmissible block, the partition-prior normalizer ``log C_k`` is
 computed under the same admissibility mask as the score array, and exact and

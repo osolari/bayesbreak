@@ -62,8 +62,9 @@ class DiagnosticCheck:
       choice of approximation method;
     - ``"ep-nonconvergence"``: EP iteration failing to converge or oscillating
       (the canonical EP failure mode per ``prop:uniform-bounds`` (v));
-    - ``"tv-bound"``: total-variation bound on ``P(k|y)`` derivable from
-      Proposition ``prop:stability``.
+    - ``"tv-bound"``: total-variation bound on ``P(k|y)`` from
+      Corollary ``cor:probability-error-conversion`` (derivable from
+      Proposition ``prop:stability``).
     """
 
     name: str
@@ -158,9 +159,12 @@ def run_dp_diagnostics(
     The four checks are:
 
     1. ``Σ_k P(k | y) = 1``;
-    2. ``L̃[k_map, n] = R̃[k_map, 0]`` (forward/backward agreement);
-    3. ``Σ_i P(b_i = 1 | y, k_map) = k_map − 1`` (boundary-event sum);
-    4. max-sum backtracked score equals the stored ``log_joint_map_``.
+    2. ``L̃[k_map, n] = R̃[k_map, 0]`` — the forward/backward
+       total-evidence identity of Proposition ``prop:fb-duality``;
+    3. ``Σ_i P(b_i = 1 | y, k_map) = k_map − 1`` (boundary-event sum
+       identity, stated inline in the DP correctness theorem);
+    4. max-sum backtracked score equals the stored ``log_joint_map_``
+       (Theorem ``thm:map-correctness``).
     """
 
     n = int(estimator.n_)
@@ -202,7 +206,7 @@ def run_dp_diagnostics(
         )
     )
 
-    # 2. Forward/backward agreement at k = k_map.
+    # 2. Forward/backward total-evidence identity (prop:fb-duality).
     fwd = float(log_left[k_map, n])
     bwd = float(log_right[k_map, 0])
     delta = abs(fwd - bwd)
@@ -282,9 +286,10 @@ def run_non_conjugate_diagnostics(
     - ``boundary_marginal_l1`` at the chosen ``k_map``;
     - ``map_path_overlap`` (Jaccard of map_boundaries_);
     - ``pk_tv_upper_bound`` = ``exp(2 k_max ε_max) − 1``, the worst-case
-      total-variation bound on ``P(k | y)`` derivable directly from
-      Proposition ``prop:stability``; the bound is conservative since it
-      uses the worst-case ``k_max`` in place of the per-state ``k``;
+      total-variation bound on ``P(k | y)`` from
+      Corollary ``cor:probability-error-conversion`` (derivable directly
+      from Proposition ``prop:stability``); the bound is conservative
+      since it uses the worst-case ``k_max`` in place of the per-state ``k``;
     - ``pk_tv_empirical`` = ``0.5 · |P̂(k|y) − P_ref(k|y)|_1``, the
       empirical TV distance against the reference posterior. The
       ``pk_tv_bound_check`` passes when the empirical TV is dominated by
@@ -386,7 +391,8 @@ def run_non_conjugate_diagnostics(
             passed=tv_passed,
             detail=(
                 f"TV(P̂(k|y), P_ref(k|y)) = {pk_tv_empirical:.4f}; "
-                f"prop:stability worst-case bound exp(2·k_max·ε_max) − 1 = "
+                f"cor:probability-error-conversion bound "
+                f"exp(2·k_max·ε_max) − 1 = "
                 f"{pk_tv_upper_bound:.4f} for k_max={k_max}, ε_max={max_err:.4f}"
             ),
             measured=pk_tv_empirical,
@@ -522,13 +528,13 @@ def run_prior_sensitivity(
 
     if pk_perturbations is None:
 
-        def _uniform(km: int, k: int) -> float:
+        def _uniform(km: int, _k: int) -> float:
             return -math.log(float(km))
 
-        def _geom(km: int, k: int) -> float:
+        def _geom(_km: int, k: int) -> float:
             return k * math.log(0.8)
 
-        def _inv(km: int, k: int) -> float:
+        def _inv(_km: int, k: int) -> float:
             return -math.log(float(k))
 
         pk_perturbations = (_uniform, _geom, _inv)
