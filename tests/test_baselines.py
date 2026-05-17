@@ -149,3 +149,66 @@ class TestSMUCEImportSafety:
         from bayesbreak.baselines import available_algorithms
 
         assert "smuce" in available_algorithms()
+
+
+class TestRJMCMCImportSafety:
+    """The RJMCMC wrapper (R `mcp` via rpy2 + JAGS) raises a readable
+    ImportError when the upstream stack is missing. The wrapper is the
+    §5b RJMCMC baseline slot — mirrors the CBS / SMUCE contract."""
+
+    def test_rjmcmc_raises_importerror_when_rpy2_missing(self):
+        try:
+            import rpy2  # noqa: F401
+
+            pytest.skip("rpy2 is installed; this test is for the missing-dep path.")
+        except ImportError:
+            pass
+        with pytest.raises(ImportError, match="rpy2 .* 'mcp'"):
+            segment_with("rjmcmc", np.zeros(20), n_segments=2)
+
+    def test_rjmcmc_registered_in_available_algorithms(self):
+        from bayesbreak.baselines import available_algorithms
+
+        assert "rjmcmc" in available_algorithms()
+
+    def test_rjmcmc_alias_mcp_dispatches(self):
+        # We don't run rpy2 here; only verify the alias resolves to the wrapper.
+        from bayesbreak.baselines import _REGISTRY
+        from bayesbreak.baselines.rjmcmc import run_rjmcmc
+
+        assert _REGISTRY["mcp"] is run_rjmcmc
+
+
+class TestFearnheadExact:
+    """Fearnhead-2006 reference comparator drives BayesBreak's own DP at
+    a Fearnhead-config prior. No external dependency required — the
+    wrapper is a labelled reuse of bayesbreak.dp."""
+
+    def test_fearnhead_exact_runs_on_gaussian_signal(self):
+        rng = np.random.default_rng(0)
+        y = np.r_[rng.normal(0.0, 0.2, 40), rng.normal(2.0, 0.2, 40)]
+        res = segment_with("fearnhead_exact", y, k_max=6, geometric_rate=0.3)
+        assert res.algorithm == "fearnhead_exact"
+        assert res.package.startswith("bayesbreak")  # labelled provenance
+        assert res.n == y.size
+        # On clean 2-segment data the reference DP should locate the
+        # break within a small tolerance.
+        if res.boundaries.size:
+            closest = min(abs(int(b) - 40) for b in res.boundaries)
+            assert closest <= 5
+
+    def test_fearnhead_exact_geometric_rate_validated(self):
+        with pytest.raises(ValueError, match="geometric_rate"):
+            segment_with("fearnhead_exact", np.zeros(20), geometric_rate=1.5)
+
+    def test_fearnhead_exact_alias(self):
+        from bayesbreak.baselines import _REGISTRY
+        from bayesbreak.baselines.fearnhead_exact import run_fearnhead_exact
+
+        assert _REGISTRY["fearnhead"] is run_fearnhead_exact
+        assert _REGISTRY["fearnhead_exact"] is run_fearnhead_exact
+
+    def test_fearnhead_exact_registered_in_available_algorithms(self):
+        from bayesbreak.baselines import available_algorithms
+
+        assert "fearnhead_exact" in available_algorithms()

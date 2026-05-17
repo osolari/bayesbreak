@@ -192,6 +192,9 @@ bayesbreak.baselines.segment_with(algorithm, y, **kwargs) -> BaselineResult
 | `binary_segmentation` (`bs`) | `ruptures.Binseg` | classical BS |
 | `wild_binary_segmentation` (`wbs`) | `ruptures.Binseg` + random windows | Fryzlewicz (2014) |
 | `cbs` | `DNAcopy::segment` via `rpy2` | Olshen et al. (2004) |
+| `smuce` | `stepR::stepFit` via `rpy2` | Frick, Munk & Sieling (2014) |
+| `rjmcmc` (`mcp`) | `mcp::mcp` via `rpy2` + JAGS | Lindeløv (2020) |
+| `fearnhead_exact` (`fearnhead`) | `bayesbreak.dp` at Fearnhead-2006 prior config (labelled reference) | Fearnhead (2006) |
 
 Install extras:
 

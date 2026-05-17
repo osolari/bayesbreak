@@ -13,6 +13,14 @@ manuscript's planned baseline list in §6 (paragraphs 5-A1, 6-E3) and the
   driven through ``rpy2``.
 - ``smuce`` — via the CRAN ``stepR`` package
   (Frick, Munk & Sieling 2014), driven through ``rpy2``.
+- ``rjmcmc`` (alias ``mcp``) — Bayesian-MCMC multi-changepoint baseline
+  via the R ``mcp`` package (Lindeløv 2020), driven through ``rpy2``
+  with a JAGS backend.
+- ``fearnhead_exact`` (alias ``fearnhead``) — reference-comparator
+  wrapper around BayesBreak's own exact DP at the Fearnhead-2006 prior
+  configuration (geometric ``p(k)`` + optional length-aware cohesion).
+  No standalone third-party Fearnhead-2006 implementation is packaged;
+  see the module docstring for alternative sources.
 
 Upstream dependencies are loaded lazily; missing packages raise
 ``ImportError`` with a clear hint pointing to the right ``pip``/``R``
@@ -38,6 +46,8 @@ from typing import Any
 
 from ._types import BaselineResult
 from .cbs import run_cbs
+from .fearnhead_exact import run_fearnhead_exact
+from .rjmcmc import run_rjmcmc
 from .ruptures_wrapper import run_binseg, run_dynp, run_pelt, run_wbs
 from .smuce import run_smuce
 
@@ -53,6 +63,10 @@ _REGISTRY: dict[str, Callable[..., BaselineResult]] = {
     "wbs": run_wbs,
     "cbs": run_cbs,
     "smuce": run_smuce,
+    "rjmcmc": run_rjmcmc,
+    "mcp": run_rjmcmc,
+    "fearnhead_exact": run_fearnhead_exact,
+    "fearnhead": run_fearnhead_exact,
 }
 
 
@@ -65,6 +79,8 @@ def available_algorithms() -> list[str]:
         "wild_binary_segmentation",
         "cbs",
         "smuce",
+        "rjmcmc",
+        "fearnhead_exact",
     ]
 
 
@@ -95,7 +111,9 @@ __all__ = [
     "run_binseg",
     "run_cbs",
     "run_dynp",
+    "run_fearnhead_exact",
     "run_pelt",
+    "run_rjmcmc",
     "run_smuce",
     "run_wbs",
     "segment_with",
