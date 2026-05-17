@@ -1,0 +1,136 @@
+site_name: BayesBreak
+site_description: >-
+  Exact Bayesian segmentation with a scikit-learn compatible API: weighted
+  exponential-family block evidence + global dynamic programming, plus
+  non-conjugate approximations with stability theory, latent-template EM,
+  prediction, and a planned external-comparator suite.
+site_author: Omid Shams Solari
+repo_url: https://github.com/osolari/bayesbreak
+repo_name: osolari/bayesbreak
+edit_uri: edit/master/docs/
+
+docs_dir: docs
+site_dir: site
+
+# Files in docs/report/ are the manuscript source tree (sections, tables,
+# bibliography, changelogs), not site content. Exclude them from nav
+# warnings but keep them in the docs build so cross-links resolve.
+not_in_nav: |
+  report/**
+  CHANGELOG.prior.md
+  CODING_AGENT_HANDOFF.prior.md
+
+theme:
+  name: material
+  language: en
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: indigo
+      accent: indigo
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - search.suggest
+    - search.highlight
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quickstart: quickstart.md
+      - Installation: installation.md
+      - Concepts: concepts.md
+  - User guide:
+      - Model families: models.md
+      - Real-data loaders: datasets.md
+      - Diagnostics: diagnostics.md
+      - Baselines: baselines.md
+      - Reproducibility: reproducibility.md
+  - Tutorials:
+      - Quickstart notebook: tutorials/01_quickstart.ipynb
+      - Multivariate notebook: tutorials/02_multivariate.ipynb
+      - Real-data showcase: tutorials/03_real_data_showcase.ipynb
+      - Diagnostics walkthrough: tutorials/04_diagnostics.ipynb
+      - Baselines comparison: tutorials/05_baselines.ipynb
+      - Sliding-window for large n: tutorials/06_sliding_window.ipynb
+      - Latent-group EM: tutorials/07_latent_groups.ipynb
+  - Reference:
+      - API: api.md
+      - Math notes: math.md
+      - Manuscript PDF: report.md
+      - Changelog: changelog.md
+
+markdown_extensions:
+  - admonition
+  - footnotes
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      include: ["tutorials/*.ipynb"]
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_source: true
+            show_signature_annotations: true
+            members_order: source
+            docstring_style: numpy
+            heading_level: 3
+          paths:
+            - src
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/osolari/bayesbreak
+  generator: false

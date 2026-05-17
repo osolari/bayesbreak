@@ -76,7 +76,7 @@ def _resolve_log_g(log_g_table: FloatArray | None, n: int) -> FloatArray:
         return np.zeros((n + 1, n + 1), dtype=float)
     arr = np.asarray(log_g_table, dtype=float)
     if arr.shape != (n + 1, n + 1):
-        raise ValueError(f"log_g_table must have shape ({n+1}, {n+1}); got {arr.shape}.")
+        raise ValueError(f"log_g_table must have shape ({n + 1}, {n + 1}); got {arr.shape}.")
     return arr
 
 
@@ -140,7 +140,7 @@ def _resolve_log_p_k(log_p_k: FloatArray | None, k_max: int) -> FloatArray:
             full = np.full(k_max + 1, -np.inf, dtype=float)
             full[1:] = arr
             return full
-        raise ValueError(f"log_p_k must have shape ({k_max+1},) or ({k_max},); got {arr.shape}.")
+        raise ValueError(f"log_p_k must have shape ({k_max + 1},) or ({k_max},); got {arr.shape}.")
     return arr
 
 
@@ -225,7 +225,7 @@ def posterior_over_k(
         log_C_k = compute_log_C_k(log_g_table, n, k_max)
     log_C_k = np.asarray(log_C_k, dtype=float)
     if log_C_k.shape != (k_max + 1,):
-        raise ValueError(f"log_C_k must have shape ({k_max+1},); got {log_C_k.shape}.")
+        raise ValueError(f"log_C_k must have shape ({k_max + 1},); got {log_C_k.shape}.")
 
     log_p_k_full = _resolve_log_p_k(log_p_k, k_max)
 

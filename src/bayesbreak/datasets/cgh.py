@@ -96,8 +96,7 @@ def _load_acgh_real(individuals: list[int] | None) -> DatasetBundle | None:
         name="cgh",
         source="downloaded",
         description=(
-            f"Array-CGH log2-ratios from cran/ecp ACGH (n_probes={n_probes}, "
-            f"n_subj={y.shape[1]})."
+            f"Array-CGH log2-ratios from cran/ecp ACGH (n_probes={n_probes}, n_subj={y.shape[1]})."
         ),
         metadata={"url": _ACGH_URL, "individuals": individuals},
     )

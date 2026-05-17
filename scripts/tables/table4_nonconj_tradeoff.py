@@ -187,8 +187,7 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
         f.write("|---|---:|---:|---:|---:|---:|---:|\n")
         for name, mx, q95, md, t_fit, f1, k_sel in rows:
             f.write(
-                f"| {name} | {mx:.3f} | {q95:.3f} | {md:.3f} "
-                f"| {t_fit:.3f} | {f1:.3f} | {k_sel} |\n"
+                f"| {name} | {mx:.3f} | {q95:.3f} | {md:.3f} | {t_fit:.3f} | {f1:.3f} | {k_sel} |\n"
             )
 
     def _tex_escape(s: str) -> str:

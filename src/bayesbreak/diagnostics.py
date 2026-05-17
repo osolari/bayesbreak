@@ -319,7 +319,7 @@ def run_non_conjugate_diagnostics(
     finite = np.isfinite(lA0_a) & np.isfinite(lA0_r)
     mask = reachable & finite
     diffs = np.abs(lA0_a[mask] - lA0_r[mask])
-    measured_q = {f"q{int(q*100):02d}": float(np.quantile(diffs, q)) for q in quantiles}
+    measured_q = {f"q{int(q * 100):02d}": float(np.quantile(diffs, q)) for q in quantiles}
     median = float(np.median(diffs))
     max_err = float(np.max(diffs)) if diffs.size else 0.0
 

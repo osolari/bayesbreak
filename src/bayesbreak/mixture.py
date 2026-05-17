@@ -441,7 +441,7 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
             objective.append(obj)
 
             if self.verbose:
-                print(f"[mixture] iter {it+1:03d} obj={obj:.6f}")
+                print(f"[mixture] iter {it + 1:03d} obj={obj:.6f}")
 
             current_templates = [list(gs.template) for gs in group_states]
             if it > 0:

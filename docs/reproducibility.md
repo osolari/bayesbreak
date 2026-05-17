@@ -13,7 +13,7 @@ bayesbreak version
 
 ## Figures
 
-Each figure is driven by one script under [`scripts/figures/`](../scripts/figures):
+Each figure is driven by one script under [`scripts/figures/`](https://github.com/osolari/bayesbreak/tree/master/scripts/figures):
 
 | Script | Report figure |
 |---|---|

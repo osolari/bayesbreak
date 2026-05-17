@@ -1,9 +1,8 @@
 # Real-data loaders
 
 `bayesbreak.datasets` ships four loaders used by the real-data figures in the
-report (fig6–fig9). Every loader returns a
-[`DatasetBundle`][bayesbreak.datasets.DatasetBundle] with the same schema —
-fits directly into the sklearn `fit(X, y)` contract:
+report (fig6–fig9). Every loader returns a `DatasetBundle` with the same
+schema — fits directly into the sklearn `fit(X, y)` contract:
 
 ```python
 from bayesbreak import BayesBreakGaussian

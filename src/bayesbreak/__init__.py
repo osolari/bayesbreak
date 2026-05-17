@@ -25,6 +25,8 @@ from .diagnostics import (
     DiagnosticReport,
     run_dp_diagnostics,
     run_non_conjugate_diagnostics,
+    run_prior_sensitivity,
+    select_n_groups_by_holdout,
 )
 from .families import (
     BayesBreakBernoulli,
@@ -107,6 +109,8 @@ __all__ = [
     "DiagnosticReport",
     "run_dp_diagnostics",
     "run_non_conjugate_diagnostics",
+    "run_prior_sensitivity",
+    "select_n_groups_by_holdout",
     "make_bayesbreak",
     "__version__",
 ]

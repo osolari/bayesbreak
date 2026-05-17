@@ -192,7 +192,9 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
             u = np.asarray(self.boundary_coordinates, dtype=float).ravel()
             n = int(x_design.size)
             if u.size != n + 1:
-                raise ValueError(f"boundary_coordinates must have length n+1={n+1}; got {u.size}.")
+                raise ValueError(
+                    f"boundary_coordinates must have length n+1={n + 1}; got {u.size}."
+                )
             if not np.all(np.diff(u) > 0):
                 raise ValueError("boundary_coordinates must be strictly increasing.")
             return np.ascontiguousarray(u)
@@ -286,7 +288,7 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         lA0, A1 = self._compute_block_evidence(y_arr, self.hyper_, w_arr)
         if lA0.shape != (n + 1, n + 1) or A1.shape != (n + 1, n + 1):
             raise ValueError(
-                f"_compute_block_evidence must return ({n+1}, {n+1}) arrays; "
+                f"_compute_block_evidence must return ({n + 1}, {n + 1}) arrays; "
                 f"got {lA0.shape} and {A1.shape}."
             )
         self.log_block_evidence_ = lA0

@@ -100,7 +100,7 @@ def segment_with(algorithm: str, y: Any, **kwargs: Any) -> BaselineResult:
     key = algorithm.lower().replace("-", "_")
     if key not in _REGISTRY:
         raise ValueError(
-            f"Unknown baseline algorithm {algorithm!r}; " f"available: {sorted(set(_REGISTRY))}"
+            f"Unknown baseline algorithm {algorithm!r}; available: {sorted(set(_REGISTRY))}"
         )
     return _REGISTRY[key](y, **kwargs)
 
