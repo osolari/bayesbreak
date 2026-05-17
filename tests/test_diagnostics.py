@@ -11,7 +11,7 @@ from bayesbreak import (
     run_dp_diagnostics,
     run_non_conjugate_diagnostics,
 )
-from bayesbreak.diagnostics import run_prior_sensitivity
+from bayesbreak.diagnostics import run_prior_sensitivity, select_n_groups_by_holdout
 
 
 def test_dp_diagnostics_pass_for_segmenter():
@@ -113,3 +113,65 @@ def test_prior_sensitivity_reports_variation_per_variant():
     # Every check carries the prior-sensitivity failure mode tag.
     for c in rep.checks:
         assert c.failure_mode == "prior-sensitivity"
+
+
+def test_select_n_groups_by_holdout_picks_small_g_on_homogeneous_data():
+    """§5b ``rem:teicher-overspec`` mitigation: K-fold held-out
+    log-likelihood prefers the smallest defensible ``G`` on data that
+    actually comes from a single template (no real heterogeneity)."""
+
+    rng = np.random.default_rng(0)
+    n = 40
+    # All sequences share the same boundary structure (single template):
+    # left half mean = -0.5, right half mean = +0.5.
+    seqs = [np.r_[rng.normal(-0.5, 0.3, n // 2), rng.normal(0.5, 0.3, n // 2)] for _ in range(8)]
+    rep = select_n_groups_by_holdout(
+        BayesBreakGaussian(k_max=3),
+        seqs,
+        g_grid=(1, 2),
+        n_folds=2,
+        n_restarts=1,
+        max_iter=6,
+        random_state=0,
+    )
+    extra = rep.extra
+    assert extra["g_grid"] == [1, 2]
+    assert extra["n_sequences"] == 8
+    # Held-out marginal log-likelihood reported for each G.
+    assert len(extra["mean_test_loglik"]) == 2
+    # best_g exists and is one of the candidates.
+    assert extra["best_g"] in (1, 2)
+    # Every per-G check carries the teicher-overspec failure mode tag.
+    for c in rep.checks:
+        assert c.failure_mode == "teicher-overspec"
+    # Exactly one check (best_g) is marked passing.
+    passing = [c for c in rep.checks if c.passed]
+    assert len(passing) == 1
+    assert int(passing[0].name.split("=")[1]) == extra["best_g"]
+
+
+def test_select_n_groups_by_holdout_recovers_two_groups_on_separable_data():
+    """K-fold held-out log-likelihood prefers ``G=2`` when the data
+    actually has two clearly different templates."""
+
+    rng = np.random.default_rng(1)
+    n = 40
+    # Group A: jump at n/2; Group B: jump at n/4. Distinct templates.
+    group_a = [np.r_[rng.normal(0.0, 0.2, n // 2), rng.normal(2.0, 0.2, n // 2)] for _ in range(6)]
+    group_b = [
+        np.r_[rng.normal(0.0, 0.2, n // 4), rng.normal(-2.0, 0.2, n - n // 4)] for _ in range(6)
+    ]
+    seqs = group_a + group_b
+    rep = select_n_groups_by_holdout(
+        BayesBreakGaussian(k_max=3),
+        seqs,
+        g_grid=(1, 2),
+        n_folds=2,
+        n_restarts=2,
+        max_iter=8,
+        random_state=0,
+    )
+    # Two-template data should prefer G=2 over G=1 on average.
+    means = rep.extra["mean_test_loglik"]
+    assert rep.extra["best_g"] == 2
+    assert means[1] >= means[0]

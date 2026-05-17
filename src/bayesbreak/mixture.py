@@ -588,6 +588,40 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
     ) -> FloatArray:
         return np.argmax(self.predict_proba(X, y=y, sample_weight=sample_weight), axis=1)
 
+    def sequence_log_likelihood(
+        self,
+        X: SequenceInput,
+        y: SequenceInput | None = None,
+        sample_weight: SequenceInput | None = None,
+    ) -> FloatArray:
+        r"""Per-sequence marginal mixture log-likelihood ``log p(y^{(s)})``.
+
+        Returns the vector
+        ``log Σ_g π_g · S_g(y^{(s)}; τ_g)`` where ``S_g`` is the
+        prior-and-cohesion-adjusted template score. This is the quantity
+        named ``def:metric-loglik`` in §6 and is the recommended target
+        for held-out ``G`` selection (mitigating the overspecified-``G``
+        redundancy of ``rem:teicher-overspec``).
+        """
+        require_fitted(self, ["group_states_", "pi_"])
+        Y_in = X if y is None else y
+        ys = _as_list_of_1d(Y_in, name="y")
+        S = len(ys)
+        n = int(ys[0].shape[0])
+        if self.n_ is not None and n != self.n_:
+            raise ValueError(f"Expected length {self.n_}; got {n}.")
+        ws = _as_list_of_weights(sample_weight, n_seq=S, n=n)
+        log_A0_subjects, _ = self._per_subject_log_evidence(ys, ws)
+
+        G = len(self.group_states_)
+        log_u = np.full((S, G), -np.inf, dtype=float)
+        for g, gs in enumerate(self.group_states_):
+            lp = np.log(max(float(self.pi_[g]), 1e-300))
+            for s in range(S):
+                score = _template_log_score(log_A0_subjects[s], gs.template, self.log_g_table_)
+                log_u[s, g] = lp + gs.log_score_offset + score
+        return np.asarray(logsumexp(log_u, axis=1), dtype=float)
+
     def score(
         self,
         X: SequenceInput,

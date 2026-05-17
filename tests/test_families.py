@@ -216,7 +216,7 @@ class TestMomentSignContract:
 
 
 class TestNonConjugateApproximations:
-    @pytest.mark.parametrize("approx", ["laplace", "jj", "pg_vb", "ep", "quadrature"])
+    @pytest.mark.parametrize("approx", ["laplace", "jj", "pg_vb", "ep", "gh", "quadrature"])
     def test_logistic_normal_approximations_agree_approximately(self, approx):
         """All block approximations yield finite log-evidence and close-enough MAPs."""
 
@@ -228,3 +228,57 @@ class TestNonConjugateApproximations:
         est = BayesBreakLogisticNormal(k_max=6, approx=approx).fit(np.arange(n).reshape(-1, 1), y)
         assert np.isfinite(est.log_evidence_)
         assert len(est.map_boundaries_) >= 2
+
+
+class TestRealEP:
+    """The ``approx="ep"`` path is now real Minka-style per-observation EP
+    (not a Gauss--Hermite quadrature proxy). It exposes per-block
+    convergence flags consumed by ``prop:uniform-bounds`` (v) downstream
+    diagnostics, and recovers a coarse MAP segmentation on a well-separated
+    binary signal.
+    """
+
+    def test_ep_fit_exposes_convergence_flags(self):
+        rng = np.random.default_rng(0)
+        n = 40
+        p = np.r_[0.15 * np.ones(20), 0.85 * np.ones(20)]
+        y = rng.binomial(1, p).astype(float)
+        est = BayesBreakLogisticNormal(k_max=4, approx="ep", max_iter=8).fit(
+            np.arange(n).reshape(-1, 1), y
+        )
+        # New attributes for the EP path.
+        assert hasattr(est, "ep_converged_")
+        assert hasattr(est, "ep_all_converged_")
+        assert isinstance(est.ep_all_converged_, bool)
+        assert est.ep_converged_.shape == (n + 1, n + 1)
+        # Diagonal is True by construction (no EP run on empty blocks).
+        assert bool(est.ep_converged_[0, 0])
+
+    def test_ep_log_evidence_close_to_quadrature(self):
+        """On a clean signal where EP should converge, the per-block log
+        evidences should land close to a high-Q Gauss--Hermite reference.
+        We compare on the full-sequence block (0, n) which is the most
+        sensitive.
+        """
+        rng = np.random.default_rng(1)
+        n = 30
+        p = np.r_[0.15 * np.ones(15), 0.85 * np.ones(15)]
+        y = rng.binomial(1, p).astype(float)
+        X = np.arange(n).reshape(-1, 1)
+        ep = BayesBreakLogisticNormal(k_max=3, approx="ep", max_iter=20).fit(X, y)
+        ref = BayesBreakLogisticNormal(k_max=3, approx="quadrature", gh_points=120).fit(X, y)
+        # The two routines need not agree exactly, but on this clean
+        # 2-segment signal the gap should be well within a few nats.
+        gap = abs(float(ep.log_block_evidence_[0, n]) - float(ref.log_block_evidence_[0, n]))
+        assert gap < 5.0
+
+    def test_gh_alias_routes_to_low_node_quadrature(self):
+        rng = np.random.default_rng(2)
+        n = 20
+        y = rng.binomial(1, 0.5, size=n).astype(float)
+        X = np.arange(n).reshape(-1, 1)
+        gh = BayesBreakLogisticNormal(k_max=2, approx="gh", gh_points=25).fit(X, y)
+        # ``approx="gh"`` should NOT carry the EP convergence attributes.
+        assert not hasattr(gh, "ep_all_converged_")
+        # Output is finite.
+        assert np.isfinite(gh.log_evidence_)

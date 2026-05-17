@@ -168,6 +168,13 @@ block routines:
   existing `log_block_evidence_` under perturbed `p(k)` and `g`, and
   reports `Δ p(k|y)` (max / TV) and `Δ P(b_i|y, k_map)` (max / L1) per
   variant.
+- `select_n_groups_by_holdout(base_estimator, sequences, *,
+  g_grid=(1,2,3,4,5), n_folds=5, random_state=0, ...)` — K-fold
+  held-out log-likelihood `G`-selection for the latent-template mixture.
+  Mitigates the overspecified-`G` redundancy of `rem:teicher-overspec`
+  per the §5b "Identifiability failures (named)" guidance, using the
+  per-sequence marginal `log p(y^{(s)})` of `def:metric-loglik` as the
+  scoring rule (`BayesBreakMixtureClassifier.sequence_log_likelihood`).
 
 ## Baselines
 

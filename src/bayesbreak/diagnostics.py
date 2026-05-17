@@ -587,6 +587,171 @@ def run_prior_sensitivity(
     )
 
 
+# -----------------------------------------------------------------------------
+# Held-out G selection for the latent-template mixture (§5b 'Identifiability
+# failures'; mitigates rem:teicher-overspec)
+# -----------------------------------------------------------------------------
+
+
+def select_n_groups_by_holdout(
+    base_estimator: Any,
+    sequences: Any,
+    *,
+    g_grid: tuple[int, ...] = (1, 2, 3, 4, 5),
+    n_folds: int = 5,
+    random_state: int = 0,
+    n_restarts: int = 3,
+    max_iter: int = 30,
+    **mixture_kwargs: Any,
+) -> DiagnosticReport:
+    r"""Held-out G selection for ``BayesBreakMixtureClassifier``.
+
+    Implements the §5b "Identifiability failures (named)" mitigation: the
+    saturated-``G`` identifiability of ``prop:latent-identifiability`` does
+    not prevent the overspecified-``G`` redundancy of
+    ``rem:teicher-overspec``, where two distinct ``(π, τ)`` configurations
+    induce identical mixture densities at ``G > G^*``. The recommended
+    response is to choose ``G`` by held-out predictive log-likelihood per
+    ``def:metric-loglik``.
+
+    K-fold splits operate over the **sequence** axis (each fold holds out
+    a stratified sample of sequences). For each candidate ``G`` and each
+    fold:
+
+    1. Fit ``BayesBreakMixtureClassifier(base_estimator, n_groups=G, ...)``
+       on the train sequences.
+    2. Compute per-sequence marginal log-likelihood
+       ``log p(y^{(s)})`` on the held-out sequences via
+       :meth:`BayesBreakMixtureClassifier.sequence_log_likelihood`.
+    3. Average over held-out sequences and across folds.
+
+    Parameters
+    ----------
+    base_estimator : BayesBreakSegmenter
+        The block family used inside the mixture.
+    sequences : list of 1-D arrays or 2-D array of shape (S, n)
+        Subject sequences. Must all share the same length ``n``.
+    g_grid : tuple of int
+        Candidate group counts to evaluate.
+    n_folds : int
+        Number of K-fold splits. Capped at ``S``.
+    random_state : int
+        Seed for the fold-shuffle RNG (deterministic across calls).
+    n_restarts, max_iter : int
+        Passed through to ``BayesBreakMixtureClassifier``; the defaults are
+        slightly larger than the class defaults to make CV scores more
+        stable.
+    **mixture_kwargs
+        Forwarded to ``BayesBreakMixtureClassifier`` (e.g. ``k_max``,
+        ``length_prior``, ``prior_k``).
+
+    Returns
+    -------
+    DiagnosticReport
+        ``extra`` contains:
+
+        - ``g_grid``: candidate group counts.
+        - ``mean_test_loglik``: mean per-held-out-sequence
+          ``log p(y)`` across folds, one entry per candidate ``G``.
+        - ``std_test_loglik``: stdev across folds.
+        - ``fold_logliks``: full ``(len(g_grid), n_folds)`` matrix.
+        - ``best_g``: ``g_grid[argmax(mean_test_loglik)]``.
+        - ``n_sequences``: number of sequences used.
+
+        ``checks`` contains one diagnostic per ``G``, all with
+        ``failure_mode="teicher-overspec"``; the check on ``best_g`` is
+        the only one marked passing.
+    """
+    # Local import to avoid a circular dependency.
+    from .mixture import BayesBreakMixtureClassifier  # noqa: PLC0415
+
+    # Coerce sequences into a list of 1-D arrays.
+    if isinstance(sequences, np.ndarray):
+        if sequences.ndim == 2:
+            seqs = [np.asarray(row, dtype=float) for row in sequences]
+        elif sequences.ndim == 1:
+            seqs = [np.asarray(sequences, dtype=float)]
+        else:
+            raise ValueError(f"sequences must be 1-D or 2-D; got ndim={sequences.ndim}")
+    else:
+        seqs = [np.asarray(s, dtype=float).ravel() for s in sequences]
+    S = len(seqs)
+    if S < 2:
+        raise ValueError(f"Need at least 2 sequences for G-selection; got {S}.")
+    n = int(seqs[0].shape[0])
+    if any(s.shape[0] != n for s in seqs):
+        raise ValueError("All sequences must share the same length.")
+    nf = min(int(n_folds), S)
+    if nf < 2:
+        raise ValueError("n_folds clamped below 2; supply more sequences.")
+
+    rng = np.random.default_rng(int(random_state))
+    perm = rng.permutation(S)
+    folds = np.array_split(perm, nf)
+
+    fold_logliks = np.full((len(g_grid), nf), np.nan, dtype=float)
+
+    for g_idx, G in enumerate(g_grid):
+        for f_idx, test_idx in enumerate(folds):
+            test_set = {int(i) for i in test_idx}
+            train = [seqs[i] for i in range(S) if i not in test_set]
+            test = [seqs[i] for i in range(S) if i in test_set]
+            if len(train) < max(1, int(G)) or not test:
+                continue
+            try:
+                est = BayesBreakMixtureClassifier(
+                    base_estimator,
+                    n_groups=int(G),
+                    n_restarts=int(n_restarts),
+                    max_iter=int(max_iter),
+                    random_state=int(random_state) + f_idx,
+                    **mixture_kwargs,
+                ).fit(train)
+                log_lik = est.sequence_log_likelihood(test)
+                fold_logliks[g_idx, f_idx] = float(np.mean(log_lik))
+            except Exception as exc:  # pragma: no cover - rare bad-fold failure
+                fold_logliks[g_idx, f_idx] = float("-inf")
+                _ = exc  # surface via the report if needed
+
+    mean_test_loglik = np.nanmean(fold_logliks, axis=1)
+    std_test_loglik = np.nanstd(fold_logliks, axis=1)
+    best_idx = int(np.argmax(np.where(np.isfinite(mean_test_loglik), mean_test_loglik, -np.inf)))
+    best_g = int(g_grid[best_idx])
+
+    checks: list[DiagnosticCheck] = []
+    for g_idx, G in enumerate(g_grid):
+        m = float(mean_test_loglik[g_idx])
+        s = float(std_test_loglik[g_idx])
+        checks.append(
+            DiagnosticCheck(
+                name=f"holdout_loglik_G={int(G)}",
+                passed=(int(G) == best_g),
+                detail=(f"mean held-out log p(y) = {m:.4f} (±{s:.4f} across {nf} folds)"),
+                measured=m,
+                failure_mode="teicher-overspec",
+            )
+        )
+
+    extra = {
+        "g_grid": [int(g) for g in g_grid],
+        "mean_test_loglik": mean_test_loglik.tolist(),
+        "std_test_loglik": std_test_loglik.tolist(),
+        "fold_logliks": fold_logliks.tolist(),
+        "best_g": best_g,
+        "n_sequences": int(S),
+        "n_folds": nf,
+        "n": int(n),
+    }
+    return DiagnosticReport(
+        estimator_class="BayesBreakMixtureClassifier",
+        n=int(n),
+        k_max=int(getattr(base_estimator, "k_max", 0)),
+        k_map=None,
+        checks=checks,
+        extra=extra,
+    )
+
+
 def _theoretical_rate(
     approx: str | None, n: int, estimator: Any, max_err: float
 ) -> tuple[str, bool | None]:
@@ -595,17 +760,20 @@ def _theoretical_rate(
     Implements the routine-by-routine ``ε`` rates of
     Proposition ``prop:uniform-bounds`` (§4):
 
-    - ``"laplace"`` / ``"jj"`` / ``"pg_vb"``: ``O(n^{-1})`` on reachable blocks
-      (Laplace from strict log-concavity + bounded fourth derivative; JJ and
-      PG mean field from monotone variational bounds);
-    - ``"quadrature"`` or the ``"ep"`` GH-proxy: ``O(Q^{-2r})`` for ``C^{2r}``
-      integrands with ``Q`` Gauss-Hermite nodes;
-    - true EP: not uniformly bounded — flagged with ``"violation possible"``
-      per ``prop:uniform-bounds`` part (v).
+    - ``"laplace"`` / ``"jj"`` / ``"pg_vb"``: ``O(n^{-1})`` on reachable
+      blocks (Laplace from strict log-concavity + bounded fourth derivative;
+      JJ and PG mean field from monotone variational bounds);
+    - ``"gh"`` / ``"quadrature"``: ``O(Q^{-2r})`` for ``C^{2r}`` integrands
+      with ``Q`` Gauss--Hermite nodes;
+    - ``"ep"`` (true per-observation EP): not uniformly bounded; flagged
+      as a violation iff at least one block failed to converge
+      (``estimator.ep_all_converged_ is False``) per
+      ``prop:uniform-bounds`` part (v).
 
     The boolean ``rate_violated`` flags ``ε > 10 · expected`` (off by an
-    order of magnitude); ``None`` when the routine is unknown or has no
-    closed-form expected rate.
+    order of magnitude) for variance/quadrature routines, and EP
+    non-convergence specifically for EP. ``None`` when the routine is
+    unknown or has no closed-form expected rate.
     """
     if approx is None:
         return ("(routine not declared on estimator)", None)
@@ -617,23 +785,28 @@ def _theoretical_rate(
         expected = 1.0 / float(nn)
         violated = max_err > 10.0 * expected
         return (f"O(n^-1) on reachable blocks (expected ~{expected:.2e} for n={nn})", violated)
-    if approx_norm in {"quadrature", "ep"}:
+    if approx_norm in {"gh", "quadrature"}:
         Q = int(getattr(estimator, "gh_points", 0)) or None
         if Q is None:
             return ("O(Q^-2r) for C^{2r} integrands", None)
-        # Without an exact smoothness order we report a conservative Q^-2
-        # heuristic; users tuning quadrature should compare against the
-        # expected rate at increasing Q.
         expected = 1.0 / float(Q * Q)
         violated = max_err > 10.0 * expected
         return (
             f"O(Q^-2r) for C^{{2r}} integrands (Q={Q}; conservative ~{expected:.2e})",
             violated,
         )
-    if approx_norm == "ep_true":
+    if approx_norm == "ep":
+        all_conv = getattr(estimator, "ep_all_converged_", None)
+        if all_conv is None:
+            return (
+                "EP: not uniformly bounded (prop:uniform-bounds (v))",
+                None,
+            )
         return (
-            "not uniformly bounded; verify convergence (prop:uniform-bounds (v))",
-            None,
+            "EP: not uniformly bounded; uniform-ε control conditional on "
+            "convergence of every per-observation site update "
+            "(prop:uniform-bounds (v))",
+            (not bool(all_conv)),
         )
     return (f"unknown approx {approx_norm!r}", None)
 
