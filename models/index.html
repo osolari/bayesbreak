@@ -22,7 +22,7 @@
         
       
       
-      <link rel="icon" href="../assets/images/favicon.png">
+      <link rel="icon" href="../assets/favicon.ico">
       <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
@@ -48,12 +48,14 @@
         
         
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
-        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Inter";--md-code-font:"JetBrains Mono"}</style>
       
     
     
       <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+      <link rel="stylesheet" href="../assets/css/saim.css">
     
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
@@ -71,7 +73,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -96,8 +98,7 @@
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="BayesBreak" class="md-header__button md-logo" aria-label="BayesBreak" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/saim_logo.png" alt="logo">
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -127,7 +128,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 7a5 5 0 0 1 5 5 5 5 0 0 1-5 5 5 5 0 0 1-5-5 5 5 0 0 1 5-5m0 2a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3m0-7 2.39 3.42C13.65 5.15 12.84 5 12 5s-1.65.15-2.39.42zM3.34 7l4.16-.35A7.2 7.2 0 0 0 5.94 8.5c-.44.74-.69 1.5-.83 2.29zm.02 10 1.76-3.77a7.131 7.131 0 0 0 2.38 4.14zM20.65 7l-1.77 3.79a7.02 7.02 0 0 0-2.38-4.15zm-.01 10-4.14.36c.59-.51 1.12-1.14 1.54-1.86.42-.73.69-1.5.83-2.29zM12 22l-2.41-3.44c.74.27 1.55.44 2.41.44.82 0 1.63-.17 2.37-.44z"/></svg>
@@ -137,7 +138,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="custom" data-md-color-accent="custom"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="m17.75 4.09-2.53 1.94.91 3.06-2.63-1.81-2.63 1.81.91-3.06-2.53-1.94L12.44 4l1.06-3 1.06 3zm3.5 6.91-1.64 1.25.59 1.98-1.7-1.17-1.7 1.17.59-1.98L15.75 11l2.06-.05L18.5 9l.69 1.95zm-2.28 4.95c.83-.08 1.72 1.1 1.19 1.85-.32.45-.66.87-1.08 1.27C15.17 23 8.84 23 4.94 19.07c-3.91-3.9-3.91-10.24 0-14.14.4-.4.82-.76 1.27-1.08.75-.53 1.93.36 1.85 1.19-.27 2.86.69 5.83 2.89 8.02a9.96 9.96 0 0 0 8.02 2.89m-1.64 2.02a12.08 12.08 0 0 1-7.8-3.47c-2.17-2.19-3.33-5-3.49-7.82-2.81 3.14-2.7 7.96.31 10.98 3.02 3.01 7.84 3.12 10.98.31"/></svg>
@@ -170,6 +171,11 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
@@ -354,8 +360,7 @@
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="BayesBreak" class="md-nav__button md-logo" aria-label="BayesBreak" data-md-component="logo">
       
-  
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <img src="../assets/saim_logo.png" alt="logo">
 
     </a>
     BayesBreak
@@ -576,6 +581,8 @@
       
         
       
+        
+      
     
     
     
@@ -691,15 +698,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#conjugate-families" class="md-nav__link">
+  <a href="#conjugate-families-closed-form-block-evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Conjugate families
+        Conjugate families (closed-form block evidence)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Conjugate families">
+    <nav class="md-nav" aria-label="Conjugate families (closed-form block evidence)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -757,21 +764,32 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#bayesbreaknegbin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BayesBreakNegBin
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#non-conjugate-families" class="md-nav__link">
+  <a href="#non-conjugate-families-deterministic-approximations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Non-conjugate families
+        Non-conjugate families (deterministic approximations)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Non-conjugate families">
+    <nav class="md-nav" aria-label="Non-conjugate families (deterministic approximations)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -798,6 +816,17 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#multi-subject-and-grouped-wrappers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-subject and grouped wrappers
+      
+    </span>
+  </a>
   
 </li>
       
@@ -909,6 +938,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../results/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Results
   
 
     
@@ -1412,15 +1469,15 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#conjugate-families" class="md-nav__link">
+  <a href="#conjugate-families-closed-form-block-evidence" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Conjugate families
+        Conjugate families (closed-form block evidence)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Conjugate families">
+    <nav class="md-nav" aria-label="Conjugate families (closed-form block evidence)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1478,21 +1535,32 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#bayesbreaknegbin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BayesBreakNegBin
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#non-conjugate-families" class="md-nav__link">
+  <a href="#non-conjugate-families-deterministic-approximations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Non-conjugate families
+        Non-conjugate families (deterministic approximations)
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Non-conjugate families">
+    <nav class="md-nav" aria-label="Non-conjugate families (deterministic approximations)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -1522,6 +1590,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#multi-subject-and-grouped-wrappers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multi-subject and grouped wrappers
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1543,44 +1622,163 @@
 
 
 <h1 id="model-families">Model families<a class="headerlink" href="#model-families" title="Permanent link">&para;</a></h1>
-<p>Every family subclasses <code>BayesBreakSegmenter</code> and implements three hooks:
-<code>_estimate_hyperparameters</code>, <code>_compute_block_evidence</code>, and
-<code>_segment_posterior_mean</code> (plus <code>posterior_predictive_logpdf_block</code> for the
-prediction layer).</p>
-<p>All families expose the full scikit-learn contract (<code>fit</code>, <code>predict</code>, <code>score</code>,
-<code>transform</code>) and the same posterior attributes.</p>
-<h2 id="conjugate-families">Conjugate families<a class="headerlink" href="#conjugate-families" title="Permanent link">&para;</a></h2>
+<p>BayesBreak supplies a block routine per likelihood family; the DP layer
+is unchanged across families (<code>thm:dp-correctness</code>). Adding a new
+likelihood is a local block-routine change.</p>
+<p>Every family subclasses <code>BayesBreakSegmenter</code> and implements three hooks:</p>
+<ul>
+<li><code>_estimate_hyperparameters(y, sample_weight)</code> — empirical-Bayes
+  defaults; pass explicit hyperparameter overrides on the constructor
+  for a fully-specified run.</li>
+<li><code>_compute_block_evidence(y, hyper, sample_weight)</code> — returns the
+  triangular <code>(log A^(0)_{ij}, A^(1)_{ij})</code> arrays.</li>
+<li><code>_segment_posterior_mean(a, b, y, hyper, sample_weight)</code> — posterior
+  mean of the observation-scale parameter on block <code>(a, b]</code>.</li>
+</ul>
+<p>All families inherit the full scikit-learn contract (<code>fit</code>, <code>predict</code>,
+<code>score</code>, <code>transform</code>, <code>get_params</code>, <code>clone</code>) and the standard fitted
+attributes (<code>k_map_</code>, <code>map_boundaries_</code>, <code>boundary_marginals_</code>,
+<code>bayes_curve_mean_</code>, <code>log_evidence_</code>, <code>k_posterior_</code>, …).</p>
+<h2 id="conjugate-families-closed-form-block-evidence">Conjugate families (closed-form block evidence)<a class="headerlink" href="#conjugate-families-closed-form-block-evidence" title="Permanent link">&para;</a></h2>
+<p>The integrated single-segment evidence has a closed-form ratio of
+log-partition functions; see <code>prop:gaussian-block</code> / <code>prop:poisson-block</code>
+/ <code>prop:binomial-block</code> / <code>prop:negbin-block</code> / <code>prop:beta-block</code> in §4.</p>
 <h3 id="bayesbreakgaussian"><code>BayesBreakGaussian</code><a class="headerlink" href="#bayesbreakgaussian" title="Permanent link">&para;</a></h3>
-<p>Weighted Normal-Normal: <code>y_i | μ_q ~ N(μ_q, σ² / w_i)</code>, <code>μ_q ~ N(ν, ρ²)</code>.</p>
-<p>Hyperparameters: <code>nu</code>, <code>rho2</code>, <code>sigma2</code>. With <code>estimate_hyper=True</code> the code
-uses moment-type estimators (adjacent covariance for <code>rho2</code> by default).</p>
+<p>Weighted Normal–Normal:</p>
+<div class="arithmatex">\[y_i \mid \mu_q \sim \mathcal{N}(\mu_q,\, \sigma^2 / w_i),\qquad
+\mu_q \sim \mathcal{N}(\nu,\, \rho^2).\]</div>
+<p>Hyperparameters: <code>nu</code>, <code>rho2</code>, <code>sigma2</code>. With <code>estimate_hyper=True</code> the
+code estimates <code>(ν, ρ²)</code> via adjacent-pair moment-matching and <code>σ²</code> via
+the within-segment residual variance (<code>rho_estimation="cov"</code> by default;
+<code>"var"</code> is the alternative moment estimator).</p>
+<p><code>MOMENT_SIGN_CONTRACT = "signed"</code> — the segment mean can be negative;
+moment numerators use signed-linear storage per §5.</p>
 <h3 id="bayesbreakpoisson"><code>BayesBreakPoisson</code><a class="headerlink" href="#bayesbreakpoisson" title="Permanent link">&para;</a></h3>
-<p><code>y_i | λ_q ~ Poisson(λ_q w_i)</code>, <code>λ_q ~ Gamma(α, β)</code>.</p>
+<p><span class="arithmatex">\(y_i \mid \lambda_q \sim \text{Poisson}(\lambda_q\, w_i)\)</span>,
+<span class="arithmatex">\(\lambda_q \sim \text{Gamma}(\alpha, \beta)\)</span>.</p>
 <p>Hyperparameters: <code>alpha</code>, <code>beta</code> (shape, rate).</p>
 <h3 id="bayesbreakbinomial"><code>BayesBreakBinomial</code><a class="headerlink" href="#bayesbreakbinomial" title="Permanent link">&para;</a></h3>
-<p><code>y_i | p_q ~ Binomial(n_i, p_q)</code>, <code>p_q ~ Beta(α, β)</code>.</p>
-<p>Hyperparameters: <code>alpha</code>, <code>beta</code>, <code>n_trials</code> (scalar or array).</p>
+<p><span class="arithmatex">\(y_i \mid p_q \sim \text{Binomial}(n_i, p_q)\)</span>,
+<span class="arithmatex">\(p_q \sim \text{Beta}(\alpha, \beta)\)</span>.</p>
+<p>Hyperparameters: <code>alpha</code>, <code>beta</code>, <code>n_trials</code> (scalar or array of
+trial counts).</p>
 <h3 id="bayesbreakbernoulli"><code>BayesBreakBernoulli</code><a class="headerlink" href="#bayesbreakbernoulli" title="Permanent link">&para;</a></h3>
-<p>Special case of Binomial with <code>n_trials ≡ 1</code>.</p>
+<p>Convenience subclass for <code>n_trials ≡ 1</code>.</p>
 <h3 id="bayesbreakbeta"><code>BayesBreakBeta</code><a class="headerlink" href="#bayesbreakbeta" title="Permanent link">&para;</a></h3>
-<p>Fractional Beta-Binomial on <code>y ∈ (0, 1)</code> — maps each <code>y_i</code> to pseudo-counts
-<code>(κ y_i, κ (1 - y_i))</code> and reuses Beta-Binomial conjugacy.</p>
-<p>Hyperparameters: <code>alpha</code>, <code>beta</code>, <code>concentration</code> (<code>κ</code>).</p>
-<h2 id="non-conjugate-families">Non-conjugate families<a class="headerlink" href="#non-conjugate-families" title="Permanent link">&para;</a></h2>
+<p>Fractional Beta-Binomial on <span class="arithmatex">\(y \in (0, 1)\)</span>: maps each <code>y_i</code> to
+pseudo-counts <span class="arithmatex">\((\kappa y_i,\, \kappa (1-y_i))\)</span> and reuses Beta-Binomial
+conjugacy. Hyperparameters: <code>alpha</code>, <code>beta</code>, <code>concentration</code> (<span class="arithmatex">\(\kappa\)</span>).</p>
+<h3 id="bayesbreaknegbin"><code>BayesBreakNegBin</code><a class="headerlink" href="#bayesbreaknegbin" title="Permanent link">&para;</a></h3>
+<p>Negative-Binomial with fixed dispersion <span class="arithmatex">\(r\)</span> and Beta prior on the
+success probability <span class="arithmatex">\(p_q\)</span>:</p>
+<div class="arithmatex">\[y_i \mid p_q \sim \text{NegBin}(r,\, p_q),\qquad
+p_q \sim \text{Beta}(\alpha, \beta).\]</div>
+<p>Hyperparameters: <code>alpha</code>, <code>beta</code>, <code>r</code> (fixed dispersion), <code>r_predict</code>
+(optional dispersion used for observation-mean outputs).</p>
+<h2 id="non-conjugate-families-deterministic-approximations">Non-conjugate families (deterministic approximations)<a class="headerlink" href="#non-conjugate-families-deterministic-approximations" title="Permanent link">&para;</a></h2>
 <h3 id="bayesbreakbetaobs"><code>BayesBreakBetaObs</code><a class="headerlink" href="#bayesbreakbetaobs" title="Permanent link">&para;</a></h3>
-<p><code>y_i | μ_q ~ Beta(φ μ_q, φ (1 - μ_q))</code>, <code>μ_q ~ Beta(α, β)</code>. The segment-mean
-integral is computed via 1-D Gauss-Legendre quadrature on <code>(0, 1)</code>.</p>
+<p>Beta-response with known per-observation precision <span class="arithmatex">\(\phi_t\)</span>:</p>
+<div class="arithmatex">\[y_i \mid \mu_q \sim \text{Beta}(\phi_i \mu_q,\, \phi_i (1-\mu_q)),\qquad
+\mu_q \sim \text{Beta}(\alpha, \beta).\]</div>
+<p>The integral in <span class="arithmatex">\(\mu\)</span> is one-dimensional and is computed by
+Gauss–Legendre quadrature on <span class="arithmatex">\((0, 1)\)</span> (default 32 nodes,
+<code>quadrature_points</code> kwarg).</p>
 <h3 id="bayesbreaklogisticnormal"><code>BayesBreakLogisticNormal</code><a class="headerlink" href="#bayesbreaklogisticnormal" title="Permanent link">&para;</a></h3>
-<p><code>y_i | η_q ~ Bernoulli(sigmoid(η_q))</code>, <code>η_q ~ N(ν, ρ²)</code>. The segment-log-odds
-integral is not closed-form; pick one of:</p>
-<ul>
-<li><code>approx="laplace"</code> — Newton mode + Gaussian correction.</li>
-<li><code>approx="jj"</code> — Jaakkola-Jordan quadratic bound.</li>
-<li><code>approx="pg_vb"</code> — Pólya-Gamma variational Bayes (equivalent formulation).</li>
-<li><code>approx="ep"</code> — expectation propagation (Gauss-Hermite moment matching).</li>
-<li><code>approx="quadrature"</code> — high-accuracy Gauss-Hermite reference.</li>
-</ul>
-<p>See §5 of the report for the stability bound <code>|Δ log odds| ≤ (k + k') ε</code>.</p>
+<p>Bernoulli observations with a Normal prior on the log-odds:</p>
+<div class="arithmatex">\[y_i \mid \eta_q \sim \text{Bernoulli}(\sigma(\eta_q)),\qquad
+\eta_q \sim \mathcal{N}(\nu, \rho^2).\]</div>
+<p>The segment-evidence integral is not closed-form. Choose one
+approximation via <code>approx=</code>:</p>
+<table>
+<thead>
+<tr>
+<th><code>approx=</code></th>
+<th>Block routine</th>
+<th>Uniform-<span class="arithmatex">\(\varepsilon\)</span> rate (<code>prop:uniform-bounds</code>)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>"laplace"</code></td>
+<td>1-D Newton + Laplace expansion</td>
+<td><span class="arithmatex">\(O(n^{-1})\)</span> on reachable blocks</td>
+</tr>
+<tr>
+<td><code>"jj"</code></td>
+<td>Jaakkola–Jordan variational lower bound</td>
+<td><span class="arithmatex">\(O(n^{-1})\)</span> on reachable blocks</td>
+</tr>
+<tr>
+<td><code>"pg_vb"</code></td>
+<td>Pólya–Gamma mean-field</td>
+<td><span class="arithmatex">\(O(n^{-1})\)</span> on reachable blocks</td>
+</tr>
+<tr>
+<td><code>"ep"</code></td>
+<td>True Minka EP with accumulated site normalizers</td>
+<td>not uniformly bounded; convergence-conditional</td>
+</tr>
+<tr>
+<td><code>"gh"</code> / <code>"quadrature"</code></td>
+<td>1-D Gauss–Hermite (low / high node count)</td>
+<td><span class="arithmatex">\(O(Q^{-2r})\)</span> for <span class="arithmatex">\(C^{2r}\)</span> integrands</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>run_non_conjugate_diagnostics(est, ref)</code> to measure the empirical
+<span class="arithmatex">\(\varepsilon\)</span> against a high-Q reference; the report emits a
+<code>theoretical_rate_violated</code> flag when the empirical <span class="arithmatex">\(\varepsilon\)</span> exceeds
+the routine's expected rate by an order of magnitude, or when EP fails
+to converge on at least one block (<code>prop:uniform-bounds (v)</code>).</p>
+<p>The stability theorem (<code>prop:stability</code>) bounds the propagated effect on
+the segmentation posterior: <span class="arithmatex">\(\bigl|\Delta \log\frac{P(k\mid y)}{P(k'\mid y)}\bigr|
+\le (k+k')\,\varepsilon\)</span> for the segment-count odds and
+<span class="arithmatex">\(\bigl|\Delta \log\frac{P(b_i\mid y, k)}{P(b_{i'}\mid y, k)}\bigr|
+\le 2k\,\varepsilon\)</span> for the fixed-<span class="arithmatex">\(k\)</span> boundary-event odds. The total-
+variation bound on <span class="arithmatex">\(P(k\mid y)\)</span> is <span class="arithmatex">\(\exp(2 k_{\max} \varepsilon) - 1\)</span>
+(Corollary <code>cor:probability-error-conversion</code>).</p>
+<h2 id="multi-subject-and-grouped-wrappers">Multi-subject and grouped wrappers<a class="headerlink" href="#multi-subject-and-grouped-wrappers" title="Permanent link">&para;</a></h2>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>Manuscript reference</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SharedBoundaryReplicatesSegmenter(base)</code></td>
+<td><code>thm:multisubject</code>, <code>prop:shared-boundary-identifiability</code></td>
+<td>Multiple subjects on a common grid, <strong>shared</strong> changepoints.</td>
+</tr>
+<tr>
+<td><code>BayesBreakGroupedClassifier(base, class_prior=...)</code></td>
+<td>known-groups DP</td>
+<td>Supervised classification when each sequence's group label is observed.</td>
+</tr>
+<tr>
+<td><code>BayesBreakMixtureClassifier(base, n_groups=G)</code></td>
+<td><code>thm:em-monotone</code>, <code>prop:latent-identifiability</code></td>
+<td>Unknown group memberships; latent-template EM with canonical permutation anchor.</td>
+</tr>
+<tr>
+<td><code>SharedBoundaryMultivariateSegmenter(base)</code></td>
+<td>§4 multivariate extension</td>
+<td>Vector-valued response, single shared segmentation across channels.</td>
+</tr>
+<tr>
+<td><code>IndependentMultivariateSegmenter(base)</code></td>
+<td>§4 multivariate extension</td>
+<td>Vector-valued response, per-channel fits.</td>
+</tr>
+<tr>
+<td><code>SlidingWindowSegmenter(base, window_size, overlap)</code></td>
+<td>§5b <em>Computational regime</em></td>
+<td>Approximate DP for <span class="arithmatex">\(n \gtrsim 10^5\)</span>.</td>
+</tr>
+</tbody>
+</table>
 
 
 
@@ -1598,6 +1796,8 @@ integral is not closed-form; pick one of:</p>
             </div>
           
           
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
 <script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
         </div>
         
@@ -1625,10 +1825,7 @@ integral is not closed-form; pick one of:</p>
     
     
     
-      
-      
-    
-    <a href="https://github.com/osolari/bayesbreak" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+    <a href="https://github.com/osolari/bayesbreak" target="_blank" rel="noopener" title="BayesBreak on GitHub" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
     </a>
   
@@ -1647,7 +1844,7 @@ integral is not closed-form; pick one of:</p>
     
       
       
-      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "search.suggest", "search.highlight", "toc.follow"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "search.suggest", "search.highlight", "search.share", "toc.follow", "announce.dismiss"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
       <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
