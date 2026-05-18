@@ -1,5 +1,13 @@
 # Manuscript
 
+<div class="saim-cite" markdown>
+> **Solari, O. S.** (2026). *Generalized Hierarchical Bayesian
+> Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
+> Grouped/Latent-Group Designs.* sAIm Labs.
+> [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
+> [PDF](https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf){target=_blank}
+</div>
+
 The technical report (PDF) and source LaTeX are bundled in
 `docs/report/` and reproduced verbatim in `docs/report.zip`.
 

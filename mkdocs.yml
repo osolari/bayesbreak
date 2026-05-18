@@ -23,18 +23,24 @@ not_in_nav: |
 theme:
   name: material
   language: en
+  logo: assets/saim_logo.png
+  favicon: assets/favicon.ico
+  font:
+    text: Inter
+    code: JetBrains Mono
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      primary: indigo
-      accent: indigo
+      # saim indigo per docs/report/saim.cls
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-sunny
         name: Switch to dark mode
     - media: "(prefers-color-scheme: dark)"
       scheme: slate
-      primary: indigo
-      accent: indigo
+      primary: custom
+      accent: custom
       toggle:
         icon: material/weather-night
         name: Switch to light mode
@@ -48,11 +54,16 @@ theme:
     - navigation.indexes
     - content.code.copy
     - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
     - search.suggest
     - search.highlight
+    - search.share
     - toc.follow
+    - announce.dismiss
   icon:
     repo: fontawesome/brands/github
+    edit: material/file-edit-outline
 
 nav:
   - Home: index.md
@@ -66,6 +77,7 @@ nav:
       - Diagnostics: diagnostics.md
       - Baselines: baselines.md
       - Reproducibility: reproducibility.md
+      - Results: results.md
   - Tutorials:
       - Quickstart notebook: tutorials/01_quickstart.ipynb
       - Multivariate notebook: tutorials/02_multivariate.ipynb
@@ -125,6 +137,9 @@ plugins:
           paths:
             - src
 
+extra_css:
+  - assets/css/saim.css
+
 extra_javascript:
   - https://polyfill.io/v3/polyfill.min.js?features=es6
   - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
@@ -133,4 +148,9 @@ extra:
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/osolari/bayesbreak
+      name: BayesBreak on GitHub
   generator: false
+  saim:
+    primary: "#32127A"
+    accent:  "#5B36B7"
+    bg_soft: "#D6CFE4"

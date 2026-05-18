@@ -1,30 +1,41 @@
 # Real-data loaders
 
-`bayesbreak.datasets` ships four loaders used by the real-data figures in the
-report (fig6–fig9). Every loader returns a `DatasetBundle` with the same
-schema — fits directly into the sklearn `fit(X, y)` contract:
+`bayesbreak.datasets` ships four loaders, one per real-data case study
+in §6 of the manuscript. Every loader returns a `DatasetBundle` with a
+common schema and falls back to a deterministic simulated analog when
+the upstream download is unavailable — the test suite and CI stay
+reproducible offline.
 
 ```python
 from bayesbreak import BayesBreakGaussian
 from bayesbreak.datasets import load_welllog
 
-bundle = load_welllog()            # tries real download, falls back to simulation
-est = BayesBreakGaussian(k_max=20).fit(bundle.X, bundle.y,
-                                       sample_weight=bundle.sample_weight)
-print(bundle.source, est.map_boundaries_)
+bundle = load_welllog()                    # tries real download; falls back to sim
+est = BayesBreakGaussian(k_max=20).fit(
+    bundle.X, bundle.y, sample_weight=bundle.sample_weight
+)
+print(bundle.source, est.k_map_, est.map_boundaries_[:5])
 ```
 
 ## Available loaders
 
-| Loader | Real source | Fallback |
-|---|---|---|
-| `load_welllog()` | TCPD mirror of the Ó Ruanaidh NMR well-log (n=4050) via `pooch` | piecewise-Gaussian simulation with 10 true boundaries |
-| `load_cgh(csv_path=...)` | User-provided CSV of log2 ratios | simulated CGH with amplifications + deletion |
-| `load_spx()` | Daily `^GSPC` close via `yfinance`; log-squared returns | GARCH-like regime simulation |
-| `load_methylation(csv_path=...)` | User-provided CSV of methylation fractions | Beta-response plateau simulation |
+| Loader | Upstream | Block model | §6 case study |
+|---|---|---|---|
+| `load_welllog()` | Ó Ruanaidh well-log NMR series (4050 points; bundled by R `changepoint.influence::welldata`) | Gaussian with known variance | Well-log geology |
+| `load_cgh()` | Coriell array-CGH cell-line panel (Snijders et al. 2001; via `DNAcopy` or a CRAN `ecp` mirror) | Heteroscedastic Gaussian, multi-subject pooled | Array-CGH copy number |
+| `load_spx()` | S&P 500 daily closes via `yfinance` → $\log r_t^2$ | Gaussian with known variance | Equity-return volatility regimes |
+| `load_methylation()` | Loyfer 2023 CpG methylation atlas (companion code at `nloyfer/wgbs_tools` / `nloyfer/UXM_deconv`; GEO `GSE186458`); local fallback uses the `methylKit` chr21 test region | Beta-response with per-CpG precision $\phi_t$ | CpG-atlas methylation |
 
-Two of the four pull from the network; `load_cgh` and `load_methylation` accept
-a local CSV, since we do not redistribute a public mirror.
+!!! note "Author-verification caveat"
+    Two loader docstrings carry verified-fact notes (May 2026): (i) the
+    well-log `welldata` object lives in R `changepoint.influence`, **not**
+    in the `Lai2005fig4` slot of the older `changepoint` package
+    (`Lai2005fig4` is an unrelated array-CGH dataset); (ii) the Loyfer
+    2023 methylation atlas is at `nloyfer/wgbs_tools` +
+    `nloyfer/UXM_deconv`, **not** the older `nloyfer/meth_atlas`
+    (which implements the Moss 2018 array deconvolution).
+    See the relevant `datasets/welllog.py` and `datasets/methylation.py`
+    docstrings.
 
 ## `DatasetBundle` fields
 
@@ -32,44 +43,41 @@ a local CSV, since we do not redistribute a public mirror.
 @dataclass
 class DatasetBundle:
     X: np.ndarray                     # (n, 1) design matrix
-    y: np.ndarray                     # (n,) response
+    y: np.ndarray                     # (n,)  response or (n, S) for multi-subject CGH
     sample_weight: np.ndarray | None  # optional per-observation weight
-    true_boundaries: list[int]        # ground truth (always for simulated)
+    true_boundaries: list[int]        # ground truth (populated only for simulated bundles)
     name: str                         # "welllog", "cgh", "spx", "methylation"
     source: str                       # "downloaded" or "simulated"
     description: str
     metadata: dict
 ```
 
-`bundle.is_simulated` is a convenience for the figure scripts.
+`bundle.is_simulated` is the convenience predicate the figure scripts
+check before rendering provenance badges.
 
-## Caching & offline policy
+## Caching and offline policy
 
-- Cache directory defaults to `~/.cache/bayesbreak`; override with
+- Cache directory defaults to `~/.cache/bayesbreak`; override via
   `$BAYESBREAK_DATA`.
-- `pooch` must be installed for real downloads (ships in the
-  `bayesbreak[datasets]` extra). `yfinance` for live S&P prices ships in
-  `bayesbreak[datasets-live]`.
-- When the dependency is missing, the download fails, or parsing fails, the
-  loader prints a one-line `[bayesbreak.datasets] <name>: falling back …`
-  banner and returns the deterministic simulated analog. This keeps the test
-  suite and CI reproducible offline.
-- Pass `simulated=True` to force the fallback (useful for tests and
-  deterministic reports).
+- Real downloads require `pip install "bayesbreak[datasets]"`
+  (adds `pooch`, `pandas`). Live S&P prices require
+  `pip install "bayesbreak[datasets-live]"` (adds `yfinance`).
+- When the dependency is missing, the download fails, or parsing fails,
+  the loader prints a one-line banner
+  `[bayesbreak.datasets] <name>: falling back to simulated analog (...)`
+  and returns the deterministic simulated bundle. The simulated bundles
+  have known `true_boundaries`, which is what the test suite checks.
+- Pass `simulated=True` to force the fallback path (used by tests and
+  CI to keep figure regressions hermetic).
 
-## Example: running real-data experiments
+## Headline numbers from the real-data fits
 
-```bash
-pip install "bayesbreak[datasets,datasets-live]"
-bayesbreak reproduce figures     # figures 6–9 use real data when available
-```
+Reproduced from `docs/report/figures/realdata_metrics.json` — see
+[Results](results.md) for the full §6 panel.
 
-Each real-data figure follows the same four-panel template:
-
-1. raw `y` + MAP piecewise-constant fit (and Bayes curve when enabled),
-2. boundary-event marginals `P(b_i = 1 | y)`,
-3. segment-count posterior `P(k | y)`,
-4. cumulative held-out posterior-predictive log-density vs a `k = 1` null.
-
-The figure caption tags whether the panel was produced from real data or the
-simulated fallback so the provenance is always obvious.
+| Case study | Fit | Outcome |
+|---|---|---|
+| Well-log NMR (stride-8, $n=507$) | `BayesBreakGaussian(k_max=40)` | $\widehat k = 23$, $\log p(y) = -4989.28$ |
+| Coriell array-CGH (43 subjects, $n_{\mathrm{probes}}=2215$) | `SharedBoundaryReplicatesSegmenter(BayesBreakGaussian(k_max=15))` | $\widehat k = 15$, pooled $\log p(y) = 76\,359.8$ |
+| S&P 500 (stride-4, $n=566$) | `BayesBreakGaussian(k_max=50)` | $\widehat k = 29$, $\log p(y) = -1296.65$ |
+| Methylation (chr21 region, $n=1904$) | `BayesBreakBetaObs(k_max=15, phi=coverage)` | $\widehat k = 15$, held-out logpred $= -387.5$ |
