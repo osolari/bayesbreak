@@ -1,0 +1,122 @@
+% \pdfobjcompresslevel=0
+\documentclass[12pt]{saim}
+\input{math_commands.tex}
+
+\let\ab\allowbreak
+
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{multirow}
+\usepackage{pifont}
+\usepackage{tablefootnote}
+\usepackage{enumitem}
+\usepackage{graphicx}
+\usepackage{makecell}
+\usepackage{epigraph}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage[most]{tcolorbox}
+\usepackage{xcolor}
+\usepackage{wrapfig}
+\usepackage[ruled, vlined, linesnumbered]{algorithm2e}
+
+\usepackage{amsmath, amssymb, amsfonts, amsthm, mathtools, bm, bbm}
+\usepackage{booktabs, longtable, tabularx}
+\usepackage{tikz}
+\usetikzlibrary{bayesnet,positioning,fit}
+
+\definecolor{gray94}{gray}{.94}
+\definecolor{gray90}{gray}{.90}
+\definecolor{basegray}{RGB}{245,245,245}
+\definecolor{rlvrblue}{RGB}{230,245,255}
+
+\definecolor{lightred}{RGB}{255,240,240}
+\definecolor{lightgreen}{RGB}{240,255,240}
+\definecolor{lightblue}{RGB}{240,245,255}
+\definecolor{lightgray}{RGB}{245,245,245}
+\definecolor{MyGreen}{rgb}{0.13, 0.55, 0.13}
+
+\newtcolorbox{AIbox}[2][]{aibox,title=#2,#1}
+
+\definecolor{rliableolive}{HTML}{BBCC33}
+\definecolor{rliableblue}{HTML}{77AADD}
+\definecolor{rliablered}{HTML}{EE8866}
+\definecolor{SDEblue}{RGB}{28 58 88}
+\definecolor{cc1}{rgb}{1.0, 0.44, 0.37}
+\definecolor{cc2}{rgb}{0.0, 0.2, 0.6}
+\definecolor{cc3}{RGB}{255, 191, 0}
+\definecolor{cc4}{RGB}{0, 128, 128}
+
+\definecolor{myblue}{RGB}{0,77,64} \definecolor{mybg}{RGB}{240,248,247}
+
+\newtcolorbox{takeawaybox}{
+  enhanced,
+  colback=mybg,
+  colframe=myblue,
+  coltitle=myblue,
+  boxrule=0.6pt,
+  arc=6pt,
+  left=6pt,
+  right=6pt,
+  top=6pt,
+  bottom=6pt,
+  title=\textsc{Takeaway}
+}
+
+\newcommand{\ProofStep}[1]{\par\smallskip\noindent\textbf{#1}\quad}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{template}{Takeaway}
+
+\newtheorem{template2}{Finding}
+
+\title{Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs
+}
+
+\author[1]{Omid Shams Solari}
+% \author[1,2, *]{Omid Shams Solari}
+
+
+\affiliation[1]{sAIm Labs}
+% \contribution[*]{Work done during an internship at Meta AI.}
+
+
+% \correspondence{Hanqing Zhu at \email{zechunliu@meta.com}}
+\metadata[Author emails]{\email{omid.solari@saimai.com}}
+% \metadata[Date]{\today}
+
+\input{sections/0-abstract}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\listoffigures
+\listoftables
+
+\newpage
+\input{sections/1.intro}
+\input{sections/2.problem}
+\input{sections/3.setup}
+\input{sections/4.method}
+\input{sections/5.algorithms}
+\input{sections/5b.limitations}
+\input{sections/6.evaluation}
+\input{sections/7.conclusion}
+
+\newpage
+\bibliographystyle{plainnat}
+\bibliography{reference/cite}
+
+\newpage
+\appendix
+\input{sections/8.appendix}
+
+\end{document}

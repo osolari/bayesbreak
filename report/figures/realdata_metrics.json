@@ -1,0 +1,108 @@
+{
+  "packages": {
+    "numpy": "2.4.4",
+    "scipy": "1.17.1",
+    "bayesbreak": "1.0.0.dev50+g8a548bcfe.d20260508",
+    "python": "3.12.9"
+  },
+  "source": "loaded from .cache/fitcache/ (produced by fig6/7/8/9 scripts under real-data network access)",
+  "welllog": {
+    "dataset": "welllog",
+    "rows": [
+      {
+        "config": "Index-uniform prior, g \u2261 1",
+        "k_hat": 23,
+        "log_evidence": -4989.283473023698,
+        "log_joint_map": -4919.397104327655,
+        "n": 507,
+        "boundary_entropy_nats": 36.455289695331935,
+        "runtime_s": null
+      },
+      {
+        "config": "Length-aware prior, g(\u2113) \u221d \u2113",
+        "k_hat": 25,
+        "log_evidence": -4997.147814570523,
+        "log_joint_map": -4811.082159694992,
+        "n": 507,
+        "boundary_entropy_nats": 45.45633504451641,
+        "runtime_s": 1.9062122921459377
+      }
+    ],
+    "notes": "ECE (boundary) requires external ground-truth boundaries; left as `---` until verified annotations are loaded."
+  },
+  "cgh": {
+    "dataset": "cgh",
+    "rows": [
+      {
+        "config": "Shared boundaries, subject-specific \u03bc",
+        "k_hat": 15,
+        "log_evidence": 76359.79958695151,
+        "log_joint_map": 76443.79401508225,
+        "n": 2215,
+        "boundary_entropy_nats": 4.786477333836403,
+        "runtime_s": null
+      },
+      {
+        "config": "Independent per-subject (no pooling)",
+        "k_hat": null,
+        "log_evidence": 109617.69544504143,
+        "log_joint_map": null,
+        "n": 2215,
+        "n_subjects": 43,
+        "note": "log_evidence is the sum of per-subject log A^0_{0,n} under independent BayesBreakGaussian(k_max=15) fits; no single k_hat is reported."
+      }
+    ],
+    "notes": "Boundary F1 / MAE require external Snijders-2001 annotations; left as `---` until those annotations are bundled or verified at run time."
+  },
+  "spx": {
+    "dataset": "spx",
+    "rows": [
+      {
+        "config": "Gaussian on log r_t^2",
+        "k_hat": 29,
+        "log_evidence": -1296.6537252802884,
+        "log_joint_map": -1258.6203320206644,
+        "n": 566,
+        "boundary_entropy_nats": 106.04041063145411,
+        "runtime_s": null
+      },
+      {
+        "config": "Bernoulli on threshold crossings (95th pct)",
+        "k_hat": 50,
+        "log_evidence": -114.41004640965144,
+        "log_joint_map": -114.3994140625,
+        "n": 566,
+        "boundary_entropy_nats": 166.6162524947798,
+        "runtime_s": 1.7720804999116808,
+        "threshold_quantile": 0.95
+      }
+    ],
+    "notes": "Visual-alignment column is a qualitative description in \u00a76 prose; no automated metric is reported here."
+  },
+  "methylation": {
+    "dataset": "methylation",
+    "rows": [
+      {
+        "config": "chr21 region A (methylKit test1.myCpG, n=1904)",
+        "k_hat": 15,
+        "log_evidence": -9518.667508691196,
+        "log_joint_map": -9435.512688792523,
+        "n": 1904,
+        "boundary_entropy_nats": 0.47019161676587323,
+        "runtime_s": null,
+        "held_out_loglik": -387.50040013308154,
+        "held_out_n": 381,
+        "holdout_train_runtime_s": 2.3846050000283867,
+        "held_out_train_k_hat": 15
+      },
+      {
+        "config": "Second cell type / second region",
+        "k_hat": null,
+        "log_evidence": null,
+        "log_joint_map": null,
+        "needs_refit": "the methylKit test1.myCpG file is a single chr21 region; a second row requires the Loyfer 2023 atlas pipeline (GEO GSE186458 + wgbs_tools / UXM_deconv) which is not yet wired in this repo."
+      }
+    ],
+    "notes": "Boundary F1 vs. atlas requires verified annotations from the loyfer2023atlas pipeline; left as `---` until those annotations are bundled."
+  }
+}

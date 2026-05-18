@@ -1,0 +1,89 @@
+\section{Conclusion}
+\label{sec:conclusion}
+
+BayesBreak is organized around a simple but powerful decomposition: local block integrals capture
+all model-specific work, while a global dynamic program handles posterior inference over contiguous
+partitions. That decomposition yields exact offline Bayesian segmentation whenever block evidences
+are available in closed form, and it extends directly to controlled deterministic approximations
+when closed-form block integration is unavailable. Within that framework we obtained exact posterior
+quantities for segment counts, boundary marginals, and Bayes regression curves; clarified the
+necessary distinction between those posterior summaries and an exported joint MAP segmentation;
+showed how irregular designs are most naturally handled through design-aware partition priors;
+and preserved exactness for pooled shared-boundary analyses across replicates.
+
+For unknown groups, we introduced a latent-template mixture with an explicit finite objective.
+EM updates are monotone for that objective in the generalized-EM sense of
+\citet{dempster1977em}: responsibilities are exact for the current templates, each template
+update is an exact responsibility-weighted max-sum DP, and the finite-mixture objective is
+non-decreasing across iterations (Theorem~\ref{thm:em-monotone}). For non-conjugate blocks, the
+DP layer is unchanged, and approximation guarantees are stated in terms of block-evidence error
+and induced posterior-odds stability (Proposition~\ref{prop:stability},
+Corollary~\ref{cor:ranking}).
+
+\paragraph{What is exact and what is approximate.}
+For clarity in downstream use, the manuscript draws a sharp line between three regimes.
+\emph{Exact at machine precision:} the sum-product DP on a conjugate exponential-family block
+family with constant-time block evaluation (Sections~\ref{sec:ef}--\ref{sec:dp}), the
+forward--backward duality identity (Proposition~\ref{prop:fb-duality}), the pooled
+shared-boundary DP for conditionally independent subjects
+(Theorem~\ref{thm:multisubject}; Algorithm~\ref{alg:pool-shared-boundary}), and the max-sum
+backtracking that produces $\widehat t^{\mathrm{MAP}}(k)$ (Theorem~\ref{thm:map-correctness}).
+\emph{Exact for a finite-template objective but not Bayesian-exact:} the latent-template EM of
+Section~\ref{sec:latent-em} and Algorithm~\ref{alg:latent-em-detail}; EM optimizes a
+finite-mixture objective that is identifiable up to relabeling under
+\citet{teicher1963identifiability} at $G=G^\star$ but is non-unique at $G>G^\star$
+(Remark~\ref{rem:teicher-overspec}). \emph{Approximate at the block level, exact at the DP
+layer:} the non-conjugate routines (Laplace, JJ, EP, PG mean field, 1D quadrature) with
+posterior-odds stability quantified by $\varepsilon$ in
+Proposition~\ref{prop:stability}; large empirical $\varepsilon$ (as in the EP row of
+Table~\ref{tab:nonconj_tradeoff}) places the run outside the small-$\varepsilon$ regime and
+requires the diagnostic-based fallback of the limitations section.
+
+Empirically, the archived project provides a coherent synthetic validation suite showing posterior
+boundary recovery, family portability, calibration behavior, latent-group separation, local
+approximation trade-offs, and runtime scaling (Section~\ref{sec:experiments}). That suite is
+accompanied by four real-data case studies with completed BayesBreak fits (well-log NMR geology, array-CGH
+copy number, S\&P 500 volatility regimes, and CpG-atlas methylation; see
+Sections~\ref{sec:realdata-welllog}--\ref{sec:realdata-methylation} and reproduction pipelines in
+Appendix~\ref{app:real-data}), each chosen to exercise a different part of the framework. The
+companion per-case-study quantitative tables are now partially populated from the same archived
+fits as the figures: each table reports the cells that come directly from the recorded JSON
+sidecar of its figure, and reserves rows or columns that require an external annotation load,
+a comparator refit, or a second pipeline run.
+
+\paragraph{Deferred empirical work.}
+Four empirical extensions are explicitly deferred to the next-pass benchmarking run: (i)
+head-to-head comparison against the frequentist baselines PELT, wild binary segmentation, and
+SMUCE on the four real-data case studies under a fixed boundary-tolerance protocol; (ii)
+head-to-head comparison against the Bayesian baselines RJMCMC of \citet{green1995rjMCMC} and
+Fearnhead's exact DP \citep{fearnhead2006exact} on the same case studies; (iii) partition-prior
+and length-factor ablations populating the second row of Tables~\ref{tab:real_welllog} and
+\ref{tab:real_spx} and the held-out-region row of Table~\ref{tab:real_methylation}; and (iv) a
+scaling study pushing $n$ into the tens of thousands to exercise the memory--time trade-offs of
+Remark~\ref{rem:mem-time}. None of these extensions requires modifying the BayesBreak inferential
+core; each only requires the corresponding block-evidence or pipeline harness.
+
+\paragraph{Downstream applications.}
+The framework was designed with downstream genomic and biomedical applications in mind, and the
+real-data case studies map cleanly onto them. The Coriell array-CGH fit
+(Section~\ref{sec:realdata-cgh}) is the natural template for copy-number-alteration calling on
+ultra-low-pass whole-genome sequencing or ctDNA, where the shared-boundary multi-subject DP
+contracts subject heterogeneity into a single segmentation while preserving subject-level
+parameter posteriors. The CpG-atlas methylation fit
+(Section~\ref{sec:realdata-methylation}) is the natural template for segmenting methylation
+$\beta$-profiles in cell-type-of-origin and tissue-of-origin deconvolution pipelines, where the
+Beta-response non-conjugate block exercises the quadrature branch under known per-CpG precision.
+The S\&P 500 volatility-regime fit (Section~\ref{sec:realdata-spx}) demonstrates how a single
+non-genomic time-series application uses the same machinery without any framework change.
+
+\paragraph{Reproducibility statement.}
+The reproduction pipelines for all four real-data figures are documented in
+Appendix~\ref{app:real-data}, with the recorded JSON sidecars
+(\texttt{figures/fig6\_welllog.json}, \texttt{figures/fig7\_cgh.json},
+\texttt{figures/fig8\_spx.json}, \texttt{figures/fig9\_methylation.json}) carrying the
+\texttt{y\_hash}, runtime, and DP-diagnostic status for the archived runs. The companion code
+repository is referenced in Appendix~\ref{app:code}.
+
+An annotated literature review covering related work in
+Bayesian changepoint detection, product partition models, frequentist segmentation, and
+multi-subject analyses is provided in Appendix~\ref{app:annotated-lit}.

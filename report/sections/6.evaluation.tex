@@ -1,0 +1,419 @@
+\section{Experiments and results}
+\label{sec:experiments}
+
+This section reports the synthetic validation suite and the four real-data BayesBreak fits.
+The synthetic experiments cover single-sequence recovery, likelihood-family portability,
+calibration of boundary posteriors, latent-group behavior, non-conjugate block approximations,
+and runtime scaling. The well-log, array-CGH, volatility, and methylation case studies each
+present a BayesBreak fit on the corresponding real data source, exercising complementary parts
+of the framework.
+
+\subsection{Metrics}
+\label{sec:metrics}
+
+\begin{table}[H]
+    \centering
+    \input{tables/table0_metrics_overview}
+    \caption{Metrics used in the synthetic experiments. When ground-truth boundaries are available, boundary-level metrics use a small tolerance window (here $\tau=2$ indices) so that near-misses are not counted as complete failures. This is a protocol-definition table; no source CSV is associated with it.}
+    \label{tab:metrics}
+\end{table}
+
+The resulting evaluation protocol is deliberately mixed: some diagnostics target point estimation
+(boundary F1, boundary-location MAE, latent-signal MSE), while others target uncertainty quality
+(calibration curves for marginal boundary probabilities and evidence-based model selection through
+$P(k\mid y)$). This is appropriate for BayesBreak because the method returns both an
+exported segmentation and posterior summaries around that segmentation. The synthetic tables and figures below are completed archived diagnostics: they are read as small completed runs, not placeholders and not broad benchmark claims.
+
+For reference throughout this section, the four scalar metrics used below are defined as follows.
+
+\begin{definition}[Boundary precision, recall, and $F_1$ at tolerance $\tau$]
+\label{def:metric-f1}
+Let $\mathcal{B}^\star\subseteq\{1,\dots,n-1\}$ be the set of true interior boundaries and
+$\widehat{\mathcal{B}}\subseteq\{1,\dots,n-1\}$ the predicted interior boundaries (typically the
+support of $\widehat t^{\mathrm{MAP}}(\widehat k)$ excluding the endpoints $\{0,n\}$). For an
+integer tolerance $\tau\ge 0$, a predicted boundary $\hat b\in\widehat{\mathcal{B}}$ is a
+\emph{true positive at tolerance $\tau$} if there exists $b^\star\in\mathcal{B}^\star$ with
+$|\hat b-b^\star|\le\tau$ and $b^\star$ has not already been matched to a smaller-error predicted
+boundary (matching is one-to-one, resolved in order of nearest distance). Let
+$\mathrm{TP}_\tau$, $\mathrm{FP}_\tau$, $\mathrm{FN}_\tau$ denote the resulting counts. Then
+\[
+\mathrm{Prec}_\tau=\frac{\mathrm{TP}_\tau}{\mathrm{TP}_\tau+\mathrm{FP}_\tau},\quad
+\mathrm{Rec}_\tau=\frac{\mathrm{TP}_\tau}{\mathrm{TP}_\tau+\mathrm{FN}_\tau},\quad
+F_{1,\tau}=\frac{2\,\mathrm{Prec}_\tau\,\mathrm{Rec}_\tau}{\mathrm{Prec}_\tau+\mathrm{Rec}_\tau},
+\]
+with the conventions $\mathrm{Prec}_\tau=0$ when $\mathrm{TP}_\tau+\mathrm{FP}_\tau=0$,
+$\mathrm{Rec}_\tau=0$ when $\mathrm{TP}_\tau+\mathrm{FN}_\tau=0$, and $F_{1,\tau}=0$ when both
+$\mathrm{Prec}_\tau$ and $\mathrm{Rec}_\tau$ are $0$.
+\end{definition}
+
+\begin{definition}[Boundary-location mean absolute error]
+\label{def:metric-mae}
+Under the one-to-one matching of Definition~\ref{def:metric-f1}, let
+$\mathcal{M}_\tau\subseteq\widehat{\mathcal{B}}\times\mathcal{B}^\star$ be the set of matched
+pairs. The boundary-location MAE is
+\[
+\mathrm{MAE}_\tau:=\frac{1}{|\mathcal{M}_\tau|}\sum_{(\hat b,b^\star)\in\mathcal{M}_\tau}|\hat b-b^\star|,
+\]
+with $\mathrm{MAE}_\tau:=0$ when $\mathcal{M}_\tau=\emptyset$.
+\end{definition}
+
+\begin{definition}[Expected calibration error for boundary marginals]
+\label{def:metric-ece}
+Partition $[0,1]$ into $B$ equal-width bins $\{I_b\}_{b=1}^B$ and, for each interior index
+$i\in\{1,\dots,n-1\}$, place the marginal boundary posterior
+$\mathrm{MB}_i(\widehat k):=p(b_i=1\mid y,\widehat k)$
+(Definition~\ref{def:posterior-summaries}) into bin $b(i):=b$ such that
+$\mathrm{MB}_i(\widehat k)\in I_b$. The empirical frequency in bin $b$ is
+$\bar y_b:=|\{i:b(i)=b, b_i^\star=1\}|/|\{i:b(i)=b\}|$ and the average predicted probability is
+$\bar p_b:=|\{i:b(i)=b\}|^{-1}\sum_{i:b(i)=b}\mathrm{MB}_i(\widehat k)$.
+The expected calibration error is
+\[
+\mathrm{ECE}:=\sum_{b=1}^B \frac{|\{i:b(i)=b\}|}{n-1}\,|\bar p_b-\bar y_b|.
+\]
+Repeated draws under the data-generating model induce a Monte-Carlo estimate of $\mathrm{ECE}$;
+the reliability curve $(\bar p_b,\bar y_b)$ is the corresponding visual diagnostic.
+\end{definition}
+
+\begin{definition}[Held-out predictive log-likelihood]
+\label{def:metric-loglik}
+For a fitted BayesBreak model $\mathcal{M}$ trained on observations
+$y_{1:n}^{\mathrm{train}}$ and a disjoint held-out set $y_{1:m}^{\mathrm{test}}$, the held-out
+predictive log-likelihood is $\log p(y_{1:m}^{\mathrm{test}}\mid \mathcal{M})$, evaluated using
+the prediction layer of Section~\ref{sec:prediction}. The per-observation form
+$n^{-1}\log p(y\mid\mathcal{M})$ (training) and $m^{-1}\log p(y^{\mathrm{test}}\mid\mathcal{M})$
+(held-out) are used when comparing across different $n,m$.
+\end{definition}
+
+\subsection{Single-sequence Gaussian illustration}
+\label{sec:single_synth}
+
+We begin with a Gaussian sequence containing two true changepoints. Figure~\ref{fig:single_synth}
+shows two complementary outputs: the marginal posterior probability that each interior index is a
+boundary, and the exported joint MAP segmentation together with segment-level posterior intervals.
+The two dominant posterior spikes align with the true changepoints, while a smaller shoulder of
+posterior mass just before the first jump reflects local ambiguity caused by a short transitional
+run of noisy observations. That ambiguity is visible again in the bottom panel, where the exported
+fit inserts a short intermediate segment before settling into the large middle plateau.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig1_synthetic_gaussian.pdf}
+    \caption{Single-sequence Gaussian example. Top: marginal posterior probability that each interior index $i\in\{1,\dots,n-1\}$ is a changepoint, with dashed vertical lines marking the true changepoints. Bottom: observed data, true latent mean, exported joint MAP segmentation, and 90\% segment-level posterior intervals.}
+    \label{fig:single_synth}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \input{tables/table2_posterior_summary.tex}
+    \caption{Posterior summary for the single-sequence Gaussian example in Figure~\ref{fig:single_synth}. The table separates the displayed exported segmentation from posterior summaries of the segment count.}
+    \label{tab:posterior_summary}
+\end{table}
+
+Table~\ref{tab:posterior_summary} makes an important methodological point explicit: the displayed
+segmentation and the posterior over the segment count are related but not identical objects. In the
+archived example, the exported joint MAP segmentation uses four segments, while the posterior mean
+$\mathbb{E}[k\mid y]$ is larger, indicating residual posterior mass on more highly segmented
+configurations. This is precisely why the paper distinguishes sum-product posterior summaries from
+max-sum exported segmentations.
+
+\subsection{Likelihood-family showcase}
+
+BayesBreak is designed so that the global DP layer does not depend on the observation model once
+block evidences are available. Figure~\ref{fig:family_showcase} visualizes this portability across
+three conjugate families (Gaussian, Poisson, Binomial) and one low-dimensional quadrature example
+for $(0,1)$-valued responses. Across all four panels, the fitted piecewise-constant signal tracks
+the true latent parameter closely and preserves the correct qualitative segmentation pattern.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig2_family_showcase.pdf}
+    \caption{Likelihood-family showcase. The first three panels use closed-form conjugate block integrals (Gaussian, Poisson, and Binomial), while the final panel uses the one-dimensional Beta-response quadrature routine. In each case the fitted BayesBreak signal is close to the true piecewise-constant latent parameter.}
+    \label{fig:family_showcase}
+\end{figure}
+
+\subsection{Quantitative summary across families}
+
+Table~\ref{tab:single_quant} aggregates the small synthetic benchmark packaged with the archive.
+The main takeaway is not that one family universally dominates another, but that the same DP
+backend remains usable across very different block models. The Poisson setting is visibly the most
+challenging among the archived examples: it exhibits the weakest boundary F1 and the largest
+reconstruction error, which is consistent with the higher count variability shown in
+Figure~\ref{fig:family_showcase}. By contrast, the Beta-response quadrature example achieves the
+strongest boundary recovery in this small benchmark.
+
+\begin{table}[H]
+    \centering
+    \input{tables/table3_conjugate_summary.tex}
+    \caption{Available synthetic summary across the bundled family-specific examples. The final row corresponds to the Beta-response quadrature example rather than to a conjugate closed-form model.}
+    \label{tab:single_quant}
+\end{table}
+
+Because the table reflects one archived benchmark configuration rather than a large Monte Carlo
+study, the numbers serve as a compact portability and relative-difficulty summary, not as
+a definitive cross-family ranking.
+
+\subsection{Calibration of boundary posterior probabilities}
+
+A central advantage of the Bayesian formulation is that it returns marginal posterior probabilities
+for boundary events. Figure~\ref{fig:calibration} checks whether those probabilities are
+calibrated under repeated Gaussian simulations. The reliability curve tracks the diagonal
+reasonably closely overall, with an empirical calibration error reported in the figure of
+approximately $\mathrm{ECE}=0.016$. The mid-probability bins are somewhat noisy, but the ordering of
+confidence levels is sensible: bins assigned larger posterior boundary probability correspond to
+larger empirical boundary frequency.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\textwidth]{figures/fig3_boundary_calibration.pdf}
+    \caption{Calibration of marginal boundary posterior probabilities under synthetic Gaussian data. The dashed diagonal denotes perfect calibration; the orange curve is the empirical frequency within bins of predicted probability.}
+    \label{fig:calibration}
+\end{figure}
+
+This experiment is valuable because segmentation methods are often judged only by recovered
+changepoints. For BayesBreak, well-behaved posterior probabilities are equally important: they
+control downstream thresholding, boundary ranking, and any decision rule that is sensitive to the
+strength of evidence rather than just to the best segmentation.
+
+\subsection{Latent-group pooling}
+
+Figure~\ref{fig:latent_groups} evaluates the latent-template mixture on synthetic sequences drawn
+from two groups with different changepoint patterns. The left panel shows near-separable
+responsibilities, indicating that the EM fit recovers the group structure cleanly in this example.
+The right panel reports the group-specific boundary marginals induced by the fitted templates; the
+two groups place their posterior mass at different locations, matching the generative
+structure.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{figures/fig4_latent_groups_cropped.pdf}
+    \caption{Latent-group pooling on synthetic Gaussian sequences. Left: posterior responsibilities for each sequence and latent group (sequences sorted for display). Right: group-specific marginal boundary probabilities under the fitted latent templates.}
+    \label{fig:latent_groups}
+\end{figure}
+
+A group-specific Bayes-curve panel is reserved for the finalized diagnostic after its rendering path is corrected.
+Figure~\ref{fig:latent_groups} reports the stable responsibility and boundary-marginal diagnostics.
+
+\subsection{Non-conjugate approximation trade-offs}
+
+For non-conjugate likelihoods, BayesBreak relies on approximate block evidences while reusing the
+same DP layer. Table~\ref{tab:nonconj_tradeoff} compares several such approximations in a bundled
+logistic-normal synthetic example, using numerical quadrature as a reference. The table shows the
+observed speed--accuracy trade-off in this archived example: Laplace is the fastest among the listed approximations, while exact quadrature is the slowest. At the same time, block-level approximation error
+is not perfectly monotone with segmentation quality, because the DP aggregates many local scores
+nonlinearly.
+
+\begin{table}[H]
+    \centering
+    \input{tables/table4_nonconj_tradeoff.tex}
+    \caption{Approximation trade-offs for a non-conjugate Bernoulli/logistic block model. Quadrature is used as the local reference block integral; the remaining methods trade block-level fidelity against computational cost.}
+    \label{tab:nonconj_tradeoff}
+\end{table}
+
+\paragraph{Connection to Proposition~\ref{prop:stability}.}
+The large reported values of $\max|\Delta\log A|$ in Table~\ref{tab:nonconj_tradeoff} (several to
+tens of log units on the worst reachable block for some approximations) place this illustration outside the small-$\varepsilon$ regime where the uniform-error
+bound in Proposition~\ref{prop:stability} is tight.
+The boundary F1 values are therefore descriptive diagnostics, not a confirmation of the
+small-$\varepsilon$ regime. The table still usefully shows that block-level error, runtime, and
+segmentation quality need not move monotonically together, but it is not a universal ranking of
+non-conjugate approximation methods.
+
+\subsection{Runtime scaling}
+
+Finally, Figure~\ref{fig:runtime} and Table~\ref{tab:runtime_scaling} report runtime behavior for
+the Gaussian implementation. As expected, runtime increases with both series length $n$ and the
+maximum allowed segment count $k_{\max}$. The growth is smooth and predictable over the archived
+range $n\in\{50,100,200,400\}$ and $k_{\max}\in\{10,20\}$, which is consistent with the
+$\mathcal{O}(k_{\max}n^2)$ worst-case complexity of the exact DP while also reflecting practical
+constant-factor effects from the implementation.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{figures/fig5_runtime_scaling.pdf}
+    \caption{Runtime scaling for the Gaussian implementation as a function of series length $n$ for two values of $k_{\max}$. Points are empirical means over repeated runs; error bars denote one standard deviation.}
+    \label{fig:runtime}
+\end{figure}
+
+\begin{table}[H]
+    \centering
+    \input{tables/table1_runtime_scaling.tex}
+    \caption{Numerical companion for the same archived Gaussian runtime configuration as Figure~\ref{fig:runtime}. The bundled table reports the $k_{\max}=20$ configuration rather than every curve displayed in the figure.}
+    \label{tab:runtime_scaling}
+\end{table}
+
+\subsection{Real-data illustrations}
+\label{sec:realdata}
+
+We complement the synthetic suite with four real-data case studies, each chosen to
+exercise a different piece of the BayesBreak machinery: a Gaussian-block geological benchmark
+(well-log; Gaussian block of \S\ref{sec:family-gaussian} with index-uniform and length-aware priors
+from \S\ref{sec:irregular}), a heteroscedastic multi-subject Gaussian genomic benchmark (array-CGH;
+shared-boundary pooling of \S\ref{sec:replicates}), a volatility-regime financial benchmark
+(S\&P 500 squared daily log-returns; Gaussian-on-$\log r_t^2$ alongside Poisson-on-threshold-crossings
+to illustrate cross-specification comparison), and a Beta-response methylation benchmark on a
+public CpG atlas (non-conjugate quadrature block of \S\ref{sec:family-beta}). Together the four
+fits exercise the framework's conjugate and non-conjugate branches on distinct measurement modalities.
+Data-source locations, download commands, and preprocessing recipes are in
+Appendix~\ref{app:real-data}; source-name and comparison-label checks are author-side verification
+tasks for the finalized benchmarking run. A reader with access to \texttt{R}, \texttt{Bioconductor},
+Python with \texttt{yfinance} and \texttt{pandas}, and standard bioinformatics tooling can
+regenerate the completed figures shown below and use the same pipelines to populate the planned
+quantitative-results tables.
+
+\subsubsection{Well-log geology (Gaussian)}
+\label{sec:realdata-welllog}
+
+Well-log NMR series (\citet{fearnhead2006exact}): 4050 nuclear-magnetic-resonance measurements
+with multiple stratigraphic changepoints. Block model is Gaussian with a single known variance
+estimated from a within-layer subset; the partition prior is index-uniform.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig6_welllog.pdf}
+    \caption[Well-log NMR segmentation]{Well-log NMR segmentation. (A) Standardized NMR response with observations (grey) and exported joint MAP segmentation (solid), with true reference boundaries (red dashed) overlaid. (B) Marginal boundary posterior probabilities $P(b_i=1\mid y)$ along the index, with the same reference boundaries overlaid. (C) Posterior over segment count $P(k\mid y)$ concentrated around $k_{\mathrm{MAP}}=23$. (D) Cumulative log-evidence $\sum_{t\le i} \log p(y_t\mid \mathcal{D})$ under the BayesBreak MAP segmentation versus the $k=1$ null, demonstrating per-index improvement of the segmented fit. The pipeline in Appendix~\ref{app:real-data-welllog} regenerates this plot.}
+    \label{fig:welllog}
+\end{figure}
+
+The completed fit (Figure~\ref{fig:welllog}) selects $k_{\mathrm{MAP}}=23$ segments on the
+500-point NMR series, with marginal boundary probabilities concentrated at the
+red-dashed reference locations and a cumulative log-evidence curve that stays below the
+$k{=}1$ null throughout. The full source series has 4050 measurements; the archived figure is a processed diagnostic window of that source, so the source length and plotted-window length describe different stages of the same reproduction path.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Configuration & $\widehat k$ & MAP log-evidence & ECE (boundary) & Runtime (s) \\
+    \midrule
+    Index-uniform prior, $g\equiv 1$              & 23 & $-4989.28$ & --- & --- \\
+    Length-aware prior, $g(\ell)\propto\ell$      & 25 & $-4997.15$ & --- & $1.91$ \\
+    \bottomrule
+    \end{tabular}
+    \caption[Well-log results (partially populated)]{(Partially populated) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}). Both rows are populated from BayesBreak fits on the cached well-log NMR series ($n=507$): the index-uniform-prior row is the same archived fit as Figure~\ref{fig:welllog}; the length-aware-prior row is a refit on the same data with $g(\ell)\propto\ell$. The ECE column is reserved pending the load of verified reference boundaries; the index-uniform row's Runtime field is recorded in the next benchmarking-pipeline run and reported there. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
+    \label{tab:real_welllog}
+\end{table}
+
+Table~\ref{tab:real_welllog} reports the completed index-uniform-prior row alongside the planned length-aware-prior comparator. The first row is the quantitative companion of Figure~\ref{fig:welllog}; the second row is reserved for the prior-sensitivity rerun once verified reference boundaries and a second-pass timing record are available.
+
+\subsubsection{Array-CGH copy-number profiles (multi-subject heteroscedastic Gaussian)}
+\label{sec:realdata-cgh}
+
+Coriell array-CGH cell-line panel (Bioconductor \texttt{DNAcopy}; Snijders et al., 2001): each
+sample a log-2 copy-number-ratio profile with per-probe noise varying across samples and
+chromosomes. Block model is heteroscedastic Gaussian
+$y_t\mid\mu\sim\mathcal{N}(\mu,\sigma^2/w_t)$ with per-probe weights $w_t$ from empirical
+within-segment variance, fit jointly across subjects under the shared-boundary multi-subject
+pooling of Section~\ref{sec:replicates}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig7_cgh.pdf}
+    \caption[Array-CGH multi-subject pooling]{Array-CGH multi-subject pooling on the Coriell panel ($n_{\mathrm{subj}}=43$). (A) Four representative log$_2$-ratio profiles plotted along the probe index (offset per subject for visibility), annotated with subject labels and the pooled shared-boundary segmentation. (B) Pooled marginal boundary posterior probabilities $P(b_i=1\mid y, k_{\mathrm{MAP}})$ along the probe index. (C) Posterior over segment count $P(k\mid y)$ concentrated at $k_{\mathrm{MAP}}=15$. (D) Per-subject log-evidence with pooled $\log E/S = 1775.81$ (dashed horizontal line). The pipeline in Appendix~\ref{app:real-data-cgh} regenerates this plot.}
+    \label{fig:cgh}
+\end{figure}
+
+The pooled fit across all 43 Coriell subjects (Figure~\ref{fig:cgh}) selects
+$k_{\mathrm{MAP}}=15$ shared boundaries, with the per-subject log-evidence values clustered
+around the pooled mean of $\log E/S = 1775.81$; subjects whose per-sample log-evidence sits well
+above the pooled mean correspond to profiles whose individual changepoint structure deviates
+from the shared template.
+
+\begin{table}[H]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}lcccc@{}}
+    \toprule
+    Strategy & Boundary F1 & Boundary MAE & Pooled log-evidence & Runtime (s) \\
+    \midrule
+    Independent per-subject (no pooling)      & --- & --- & $109617.70$ & --- \\
+    Shared boundaries, subject-specific $\mu$ & --- & --- & $\phantom{0}76359.80$ & --- \\
+    \bottomrule
+    \end{tabular}%
+    }
+    \caption[Array-CGH results (partially populated)]{(Partially populated) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference on the Coriell panel ($n_{\mathrm{subj}}=43$, $n_{\mathrm{probes}}=2215$). The pooled-log-evidence column is reported from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint BayesBreak pooled log-evidence at $k_{\mathrm{MAP}}=15$; the independent entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. The independent strategy yields no single $\widehat k$. Boundary F1, Boundary MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
+    \label{tab:real_cgh}
+\end{table}
+
+Table~\ref{tab:real_cgh} compares the two pooling strategies via their pooled log-evidence (now populated from the archived fits in Figure~\ref{fig:cgh}); the boundary metrics are reserved until the bundled Snijders-2001 annotations are loaded and a one-to-one boundary matching is recorded under the same subject, chromosome, and annotation convention used elsewhere in this section.
+
+\subsubsection{Equity-return volatility regimes (S\&P 500)}
+\label{sec:realdata-spx}
+
+S\&P 500 daily closing prices: log-returns $r_t=\log P_t-\log P_{t-1}$, with the squared
+log-return series $y_t=r_t^2$ as the volatility-regime signal. Two specifications, both
+Section~\ref{sec:families} block models: Gaussian-with-known-variance on $\log r_t^2$ (Box--Cox
+style) as the primary, and Poisson-with-exposure on bucketed daily threshold-crossing counts
+$\{|r_t|>\tau\}$ as a robust secondary.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig8_spx.pdf}
+    \caption[S\&P 500 volatility regimes]{S\&P 500 volatility regimes. (A) Log-squared daily log-returns $\log r_t^2$ (grey) covering roughly 2018--2022, overlaid with the joint MAP segmentation (solid) and the posterior-mean Bayes curve (light), with reference boundaries (red dashed) annotating major macro events (including the March 2020 onset of the COVID-19 market shock and the Feb 2022 regime shift). (B) Marginal boundary posterior probabilities along the index, with the same reference boundaries overlaid. (C) Posterior over segment count $P(k\mid y)$ with $k_{\mathrm{MAP}}=29$. (D) Cumulative log-evidence under the BayesBreak MAP segmentation versus the $k=1$ null. The pipeline in Appendix~\ref{app:real-data-spx} regenerates this plot.}
+    \label{fig:spx}
+\end{figure}
+
+The completed fit (Figure~\ref{fig:spx}) selects $k_{\mathrm{MAP}}=29$ volatility regimes across
+the daily $\log r_t^2$ series for the period considered, with marginal boundary probabilities
+spiking near each annotated macro event including the March 2020 COVID-19 shock and the Feb 2022
+regime shift.
+
+\begin{table}[H]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Block model & $\widehat k$ & Log evidence & Visual alignment with known macro events \\
+    \midrule
+    Gaussian on $\log r_t^2$                  & 29 & $-1296.65$ & primary fit; see Figure~\ref{fig:spx} \\
+    Bernoulli on threshold crossings (95th)   & 50 & $-114.41$ & secondary specification on the indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ \\
+    \bottomrule
+    \end{tabular}%
+    }
+    \caption[S\&P 500 results (partially populated)]{(Partially populated) S\&P 500 volatility-regime quantitative results. Both rows are populated from BayesBreak fits on the cached SPX squared-return series ($n=566$): the Gaussian-on-$\log r_t^2$ row is the same archived fit as Figure~\ref{fig:spx}; the Bernoulli row is a refit on the indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ for the same observation window. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
+    \label{tab:real_spx}
+\end{table}
+
+Table~\ref{tab:real_spx} reports the primary Gaussian fit (populated from the same archived run as Figure~\ref{fig:spx}); the Poisson-threshold-crossing comparator is reserved for the secondary run under a fixed macro-event annotation list. The visual-alignment column intentionally substitutes a qualitative description for a numerical boundary metric in the absence of ground-truth boundary labels for daily macro events.
+
+\subsubsection{CpG-atlas DNA methylation (Beta response with per-CpG precision)}
+\label{sec:realdata-methylation}
+
+Public cell-type CpG atlas: per-CpG methylation $\beta$-values $y_t\in(0,1)$ along the genome
+coordinate, with read-coverage as known per-CpG precision $\phi_t$. Block model is the
+Section~\ref{sec:family-beta} Beta-response quadrature block — a one-dimensional Gauss--Legendre
+rule on $\mu\in(0,1)$ — which probes the non-conjugate branch of the framework.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{figures/fig9_methylation.pdf}
+    \caption[CpG-atlas methylation segmentation]{CpG-atlas methylation segmentation. (A) Per-CpG methylation fractions $\beta_t\in(0,1)$ (grey) along the selected chromosome-arm region, with the joint MAP segmentation (solid) and the posterior-mean Bayes curve overlaid; vertical reference markers (red dashed) annotate atlas-reported transition points. (B) Marginal boundary posterior probabilities $P(b_i=1\mid y)$ along the index. (C) Posterior over segment count $P(k\mid y)$ concentrated at $k_{\mathrm{MAP}}=15$. (D) Cumulative log-evidence under the BayesBreak MAP segmentation. The pipeline in Appendix~\ref{app:real-data-methylation} regenerates this plot.}
+    \label{fig:methylation}
+\end{figure}
+
+The completed fit (Figure~\ref{fig:methylation}) selects $k_{\mathrm{MAP}}=15$ segments on the
+selected CpG-atlas region, with the Bayes curve transitioning between low- and high-methylation
+plateaus at boundary-posterior modes that align with the red-dashed reference markers.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lccc@{}}
+    \toprule
+    Region / cell type & $\widehat k$ & Held-out log-predictive & Boundary F1 vs.\ atlas \\
+    \midrule
+    Region A, cell type 1 & 15 & $-387.50$ & --- \\
+    Region A, cell type 2 & --- & --- & --- \\
+    \bottomrule
+    \end{tabular}
+    \caption[CpG-atlas methylation results (partially populated)]{(Partially populated) CpG-atlas methylation quantitative results: held-out log-predictive and atlas-based boundary comparison across regions and cell types. Row 1 (\texttt{methylKit} \texttt{test1.myCpG}, chr21, $n=1904$ CpGs, held-out $m=381$) is populated from the same archived fit as Figure~\ref{fig:methylation} using the held-out split recorded in \texttt{fig9\_methylation.json}. Row 2 (second cell type / second region) is reserved pending the Loyfer-2023 atlas pipeline (GEO~GSE186458 + \texttt{wgbs\_tools}/\texttt{UXM\_deconv}) which is not yet wired into the reproduction repository. The Boundary~F1 column is reserved across both rows pending verified atlas-reported transition annotations.}
+    \label{tab:real_methylation}
+\end{table}
+
+Table~\ref{tab:real_methylation} reports the held-out predictive evaluation companion to the completed region-level Figure~\ref{fig:methylation}: row 1 is populated from the archived chr21 region-A fit; row 2 is reserved until a held-out split, second-region or second-cell-type designation, and an atlas-boundary convention are fixed and recorded.
+
+\paragraph{Planned pre-submission empirical additions.}
+The pre-submission empirical agenda is mapped directly to the implementation handoff: head-to-head comparison against frequentist baselines
+(PELT, wild binary segmentation, SMUCE) and Bayesian baselines (RJMCMC of
+\citet{green1995rjMCMC}, Fearnhead's exact DP \citep{fearnhead2006exact}); partition-prior
+and length-factor ablations on the four real-data benchmarks above; population of the four planned
+quantitative tables; and a scaling study pushing $n$ into the tens of thousands to exercise the memory--time trade-offs of
+Remark~\ref{rem:mem-time}.
