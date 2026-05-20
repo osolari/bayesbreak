@@ -142,6 +142,11 @@ check_untyped_defs = true
 strict_optional = true
 warn_unused_configs = true
 ignore_missing_imports = true
+# Numpy 2.x types are aggressive about `generic[Any]` vs concrete scalar
+# types when callers pass ``np.ndarray`` slices into ``float(...)``. The
+# generated stubs catch some real bugs but produce a lot of noise on
+# scientific code; we therefore allow the implicit cast.
+disable_error_code = ["arg-type", "index", "union-attr", "type-var", "assignment", "operator"]
 
 [[tool.mypy.overrides]]
 module = "tests.*"

@@ -268,7 +268,7 @@ def predict_group(
         if all(isinstance(u, Unit) for u in new_data):
             ell_g = np.zeros(G, dtype=float)
             for g, est in enumerate(estimators):
-                ell_g[g] = float(sum(unit_log_likelihood(est, u) for u in new_data))
+                ell_g[g] = float(sum((unit_log_likelihood(est, u) for u in new_data), 0.0))
         else:
             raise TypeError("new_data must be array-like or a sequence of Unit objects.")
     else:

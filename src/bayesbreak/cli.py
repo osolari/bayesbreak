@@ -48,7 +48,7 @@ def main(argv: list[str] | None = None) -> int:
     args, extra = parser.parse_known_args(argv)
 
     if args.cmd == "synthetic":
-        from .experiments import synthetic as mod
+        from .experiments import synthetic as synthetic_mod
 
         forwarded = []
         if args.all:
@@ -61,7 +61,7 @@ def main(argv: list[str] | None = None) -> int:
             forwarded.extend(["--out", args.out])
         if args.include_supplementary:
             forwarded.append("--include-supplementary")
-        return mod.main(forwarded + list(extra))
+        return synthetic_mod.main(forwarded + list(extra))
 
     if args.cmd == "realdata":
         from .experiments import realdata as mod

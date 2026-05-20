@@ -494,7 +494,7 @@ def run_prior_sensitivity(
 
     def _eval(
         log_p_k: FloatArray, log_g_table: FloatArray, tag: str
-    ) -> tuple[DiagnosticCheck, dict[str, float]]:
+    ) -> tuple[DiagnosticCheck, dict[str, Any]]:
         L, R = _dp.forward_backward(lA0, n, k_max, log_g_table=log_g_table)
         log_C_k = _dp.compute_log_C_k(log_g_table, n, k_max)
         _, post_k, _ = _dp.posterior_over_k(L, n, k_max, log_C_k=log_C_k, log_p_k=log_p_k)
@@ -540,7 +540,7 @@ def run_prior_sensitivity(
         pk_perturbations = (_uniform, _geom, _inv)
 
     checks: list[DiagnosticCheck] = []
-    per_variant: list[dict[str, float]] = []
+    per_variant: list[dict[str, Any]] = []
 
     # p(k) perturbations under the fitted length factor.
     for fn in pk_perturbations:
