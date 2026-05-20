@@ -283,13 +283,19 @@ $k{=}1$ null throughout. The full source series has 4050 measurements; the archi
     \centering
     \begin{tabular}{@{}lcccc@{}}
     \toprule
-    Configuration & $\widehat k$ & MAP log-evidence & ECE (boundary) & Runtime (s) \\
+    Method & $\widehat k$ & MAP log-evidence & F1@3 vs BB & Runtime (s) \\
     \midrule
-    Index-uniform prior, $g\equiv 1$              & 23 & $-4989.28$ & --- & --- \\
-    Length-aware prior, $g(\ell)\propto\ell$      & 25 & $-4997.15$ & --- & $1.91$ \\
+    \textbf{BayesBreak (index-uniform prior, $g\equiv 1$)} & 23 & $-4989.28$ & --- & --- \\
+    \textbf{BayesBreak (length-aware prior, $g(\ell)\propto\ell$)} & 25 & $-4997.15$ & --- & $1.91$ \\
+    \midrule
+    PELT (\texttt{ruptures}) & 227 & --- & $0.18$ & $0.09$ \\
+    Optimal partitioning (\texttt{ruptures::Dynp}, $k$ fixed at BB $\widehat k$) & 23 & --- & $0.91$ & $3.64$ \\
+    Binary segmentation (\texttt{ruptures::Binseg}) & 23 & --- & $0.86$ & $0.03$ \\
+    Wild binary segmentation (\texttt{ruptures::WBS}) & 23 & --- & $0.05$ & $0.22$ \\
+    Fearnhead-2006 reference DP (geometric $p(k)$, $r=0.3$) & 20 & --- & $0.93$ & $0.85$ \\
     \bottomrule
     \end{tabular}
-    \caption[Well-log results (partially populated)]{(Partially populated) Well-log quantitative results across two partition-prior configurations (\S\ref{sec:irregular}). Both rows are populated from BayesBreak fits on the cached well-log NMR series ($n=507$): the index-uniform-prior row is the same archived fit as Figure~\ref{fig:welllog}; the length-aware-prior row is a refit on the same data with $g(\ell)\propto\ell$. The ECE column is reserved pending the load of verified reference boundaries; the index-uniform row's Runtime field is recorded in the next benchmarking-pipeline run and reported there. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
+    \caption[Well-log results with external baselines]{Well-log quantitative results across two BayesBreak partition-prior configurations (\S\ref{sec:irregular}) plus five external comparators on the cached length-507 NMR series. BayesBreak rows report \(\widehat k\) and MAP log-evidence on the same archived fit as Figure~\ref{fig:welllog}; comparator rows report \(\widehat k\) at the same data, F1@3 (boundary F1 at a 3-index tolerance window against the BayesBreak index-uniform MAP boundary set), and wall-clock runtime. Optimal partitioning at fixed \(\widehat k\) and the Fearnhead-2006 reference DP recover the BayesBreak boundaries to within F1$\approx 0.92$; PELT and WBS at the default tunings disagree more, illustrating the sensitivity of penalty-based and random-window methods to the changepoint-density regime. Provenance: \texttt{docs/report/figures/realdata\_metrics.json} and \texttt{baselines\_metrics.json}.}
     \label{tab:real_welllog}
 \end{table}
 
@@ -330,7 +336,7 @@ from the shared template.
     \bottomrule
     \end{tabular}%
     }
-    \caption[Array-CGH results (partially populated)]{(Partially populated) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference on the Coriell panel ($n_{\mathrm{subj}}=43$, $n_{\mathrm{probes}}=2215$). The pooled-log-evidence column is reported from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint BayesBreak pooled log-evidence at $k_{\mathrm{MAP}}=15$; the independent entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. The independent strategy yields no single $\widehat k$. Boundary F1, Boundary MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
+    \caption[Array-CGH results (partially populated)]{(Partially populated) Array-CGH quantitative results comparing independent per-subject segmentation to pooled shared-boundary inference on the Coriell panel ($n_{\mathrm{subj}}=43$, $n_{\mathrm{probes}}=2215$). The pooled-log-evidence column is reported from the same archived fits as Figure~\ref{fig:cgh}: the shared-boundaries entry is the joint BayesBreak pooled log-evidence at $k_{\mathrm{MAP}}=15$; the independent entry is the sum of per-subject log $A^{(0)}_{0,n}$ values under separate \texttt{BayesBreakGaussian}$(k_{\max}=15)$ fits. The independent strategy yields no single $\widehat k$. Boundary F1, Boundary MAE, and the Runtime column are reserved pending the Snijders-2001 annotation load and the next benchmarking-pipeline timing record. The single-trace baseline comparators (PELT, BS, WBS, OP, CBS, SMUCE) require the raw 43-subject log$_2$-ratio matrix; the cached fit retains only the pooled-mean piecewise-constant curve, which is not informative for those baselines, so the comparator row is intentionally left for the next benchmarking pass on the raw \texttt{cran/ecp::ACGH} download. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
     \label{tab:real_cgh}
 \end{table}
 
@@ -364,12 +370,17 @@ regime shift.
     \toprule
     Block model & $\widehat k$ & Log evidence & Visual alignment with known macro events \\
     \midrule
-    Gaussian on $\log r_t^2$                  & 29 & $-1296.65$ & primary fit; see Figure~\ref{fig:spx} \\
-    Bernoulli on threshold crossings (95th)   & 50 & $-114.41$ & secondary specification on the indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ \\
+    \textbf{BayesBreak: Gaussian on $\log r_t^2$}                  & 29 & $-1296.65$ & primary fit; see Figure~\ref{fig:spx} \\
+    \textbf{BayesBreak: Bernoulli on threshold crossings (95th)}   & 50 & $-114.41$ & secondary specification on $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ \\
+    PELT (\texttt{ruptures}, pen.\ 10)                  & 79 & --- & F1@3 vs BB Gaussian: $0.53$ \\
+    Optimal partitioning ($k$ fixed at BB $\widehat k$) & 29 & --- & F1@3 vs BB Gaussian: $0.82$ \\
+    Binary segmentation ($k$ fixed at BB $\widehat k$)  & 29 & --- & F1@3 vs BB Gaussian: $0.43$ \\
+    Wild BS ($k$ fixed at BB $\widehat k$)              & 29 & --- & F1@3 vs BB Gaussian: $0.07$ \\
+    Fearnhead-2006 reference DP                         & 13 & --- & F1@3 vs BB Gaussian: $0.55$ \\
     \bottomrule
     \end{tabular}%
     }
-    \caption[S\&P 500 results (partially populated)]{(Partially populated) S\&P 500 volatility-regime quantitative results. Both rows are populated from BayesBreak fits on the cached SPX squared-return series ($n=566$): the Gaussian-on-$\log r_t^2$ row is the same archived fit as Figure~\ref{fig:spx}; the Bernoulli row is a refit on the indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$ for the same observation window. The ``visual alignment'' column is a qualitative description in lieu of ground-truth boundaries. Provenance: \texttt{docs/report/figures/realdata\_metrics.json}.}
+    \caption[S\&P 500 results with external baselines]{S\&P 500 volatility-regime quantitative results on the cached SPX squared-return series ($n=566$). The two BayesBreak rows are the same archived fits as Figure~\ref{fig:spx} (Gaussian on $\log r_t^2$) and a refit on the threshold-crossing indicator series $\mathbbm{1}\{|r_t|>\tau_{0.95}\}$. The five comparator rows are run on the same Gaussian signal; F1@3 reports boundary F1 at a 3-index tolerance window against the BayesBreak Gaussian MAP. Optimal partitioning at the matched \(\widehat k\) is the strongest comparator on this signal; the WBS row's low F1 reflects the random-window method's known weakness on closely-spaced volatility transitions. Provenance: \texttt{docs/report/figures/realdata\_metrics.json} and \texttt{baselines\_metrics.json}.}
     \label{tab:real_spx}
 \end{table}
 
@@ -396,15 +407,19 @@ plateaus at boundary-posterior modes that align with the red-dashed reference ma
 
 \begin{table}[H]
     \centering
-    \begin{tabular}{@{}lccc@{}}
+    \begin{tabular}{@{}lcccc@{}}
     \toprule
-    Region / cell type & $\widehat k$ & Held-out log-predictive & Boundary F1 vs.\ atlas \\
+    Method & $\widehat k$ & Held-out log-pred & F1@3 vs BB & Runtime (s) \\
     \midrule
-    Region A, cell type 1 & 15 & $-387.50$ & --- \\
-    Region A, cell type 2 & --- & --- & --- \\
+    \textbf{BayesBreak (Beta-response, per-CpG $\phi_t$)} & 15 & $-387.50$ & --- & --- \\
+    \midrule
+    PELT (\texttt{ruptures}, pen.\ 10)                    & 5  & --- & $0.44$ & $3.32$ \\
+    Optimal partitioning ($k=15$)                          & 15 & --- & $0.79$ & $46.89$ \\
+    Binary segmentation ($k=15$)                           & 15 & --- & $0.57$ & $0.10$ \\
+    Wild BS ($k=15$)                                       & 15 & --- & $0.14$ & $0.76$ \\
     \bottomrule
     \end{tabular}
-    \caption[CpG-atlas methylation results (partially populated)]{(Partially populated) CpG-atlas methylation quantitative results: held-out log-predictive and atlas-based boundary comparison across regions and cell types. Row 1 (\texttt{methylKit} \texttt{test1.myCpG}, chr21, $n=1904$ CpGs, held-out $m=381$) is populated from the same archived fit as Figure~\ref{fig:methylation} using the held-out split recorded in \texttt{fig9\_methylation.json}. Row 2 (second cell type / second region) is reserved pending the Loyfer-2023 atlas pipeline (GEO~GSE186458 + \texttt{wgbs\_tools}/\texttt{UXM\_deconv}) which is not yet wired into the reproduction repository. The Boundary~F1 column is reserved across both rows pending verified atlas-reported transition annotations.}
+    \caption[CpG-atlas methylation results with external baselines]{CpG-atlas methylation quantitative results on the \texttt{methylKit} \texttt{test1.myCpG} chr21 test region ($n=1904$ CpGs; held-out split $m=381$). The BayesBreak row is the same archived fit as Figure~\ref{fig:methylation}; the four comparator rows are run on the same $\beta$-value series. F1@3 reports boundary F1 at a 3-CpG tolerance window against the BayesBreak MAP boundary set. Optimal partitioning at the matched \(\widehat k\) is the strongest comparator on this signal but is two orders of magnitude slower; PELT under-fits at the default penalty and WBS scatters its boundaries across the region. The atlas-F1 column (boundary F1 against the Loyfer-2023 atlas-reported transitions) is reserved pending the Loyfer-2023 atlas pipeline (GEO~GSE186458 + \texttt{nloyfer/wgbs\_tools}/\texttt{UXM\_deconv}) which is not yet wired into the reproduction repository. Provenance: \texttt{docs/report/figures/realdata\_metrics.json} and \texttt{baselines\_metrics.json}.}
     \label{tab:real_methylation}
 \end{table}
 
