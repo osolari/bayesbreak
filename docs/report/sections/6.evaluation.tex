@@ -176,22 +176,31 @@ strength of evidence rather than just to the best segmentation.
 
 \subsection{Latent-group pooling}
 
-Figure~\ref{fig:latent_groups} evaluates the latent-template mixture on synthetic sequences drawn
-from two groups with different changepoint patterns. The left panel shows near-separable
-responsibilities, indicating that the EM fit recovers the group structure cleanly in this example.
-The right panel reports the group-specific boundary marginals induced by the fitted templates; the
-two groups place their posterior mass at different locations, matching the generative
-structure.
+Figure~\ref{fig:latent_groups} evaluates the latent-template mixture on $n_{\mathrm{seq}}=24$
+synthetic Gaussian sequences ($n=80$, $\sigma=1.0$) drawn from two groups with different
+changepoint patterns. The left panel shows the posterior responsibilities sorted by truth: the
+two groups are almost separable, with a small ambiguous band near the class boundary
+corresponding to a single mis-assignment (hard accuracy $96\%$). The right panel reports the
+group-specific boundary marginals induced by the fitted templates; both groups concentrate their
+posterior mass at the correct latent changepoints, with the cluster-1 marginal locating both
+boundaries near probability one and the cluster-0 marginal recovering its second boundary at
+$t\!\approx\!53$ and a softer mode near $t\!\approx\!26$ for the first.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.82\textwidth]{figures/fig4_latent_groups_cropped.pdf}
-    \caption{Latent-group pooling on synthetic Gaussian sequences. Left: posterior responsibilities for each sequence and latent group (sequences sorted for display). Right: group-specific marginal boundary probabilities under the fitted latent templates.}
+    \caption{Latent-group pooling on synthetic Gaussian sequences ($n=80$, $\sigma=1.0$, $n_{\mathrm{seq}}=24$). Left: posterior responsibilities $r_{sg}$ for each sequence and latent group, sorted by truth; the right-hand stripe encodes the true label. Right: group-specific marginal boundary probabilities under the fitted latent templates, with dotted vertical lines marking the true per-group changepoints.}
     \label{fig:latent_groups}
 \end{figure}
 
-A group-specific Bayes-curve panel is reserved for the finalized diagnostic after its rendering path is corrected.
-Figure~\ref{fig:latent_groups} reports the stable responsibility and boundary-marginal diagnostics.
+A six-panel companion diagnostic (uncropped figure \texttt{figures/fig4\_latent\_groups.pdf})
+unpacks the same fit further: per-group example sequences with the inferred piecewise mean,
+the boundary marginals, the responsibility heatmap, the group-averaged signal, and a
+per-sequence assignment-confidence diagnostic that plots $r_{s,y_s}$ (responsibility on the
+true group) sorted along the $x$-axis, with the $0.5$ decision threshold shaded and any
+mis-assigned sequences circled. Even when overall accuracy is high, this view exposes which
+sequences sit close to the decision boundary and is informative regardless of whether any
+hard mistakes are made.
 
 \subsection{Non-conjugate approximation trade-offs}
 

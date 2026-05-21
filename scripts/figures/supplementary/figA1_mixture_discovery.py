@@ -64,6 +64,7 @@ python scripts/figures/fig6_mixture_discovery.py
 
 from __future__ import annotations
 
+import logging
 import sys
 from pathlib import Path
 
@@ -78,6 +79,8 @@ from _style import COLORS, add_panel_label, save_figure, setup_style  # noqa: E4
 
 from bayesbreak import BayesBreakGaussian  # noqa: E402
 from bayesbreak.mixture import BayesBreakMixtureClassifier  # noqa: E402
+
+logger = logging.getLogger(__name__)
 
 
 # --------------------------------------------------------------------------- #
@@ -189,7 +192,7 @@ def make_figure(outdir: Path):
         r = r[:, ::-1]  # swap columns
 
     accuracy = max(acc_direct, acc_flipped)
-    print(f"Group assignment accuracy: {accuracy:.1%}")
+    logger.info("Group assignment accuracy: %.1f%%", accuracy * 100)
 
     # Get group boundaries
     gs0, gs1 = mix.group_states_
@@ -364,12 +367,13 @@ def make_figure(outdir: Path):
 
     # Save (don't call tight_layout - constrained_layout is enabled in style)
     save_figure(fig, outdir / "fig6_mixture_discovery", formats=("png", "pdf"))
-    print(f"Saved to {outdir / 'fig6_mixture_discovery.pdf'}")
+    logger.info("Saved to %s", outdir / "fig6_mixture_discovery.pdf")
 
 
 if __name__ == "__main__":
     import argparse
 
+    logging.basicConfig(level=logging.INFO, format="%(message)s")
     p = argparse.ArgumentParser()
     p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
     args = p.parse_args()

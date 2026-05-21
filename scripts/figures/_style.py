@@ -61,6 +61,10 @@ COLORS = {
     "black": "#222222",
     "lightgrey": "#DDDDDD",
     "orange": "#EE7733",
+    # Saim brand indigo — reserved for accents that should read as "BayesBreak".
+    "saim": "#32127A",
+    "saim_accent": "#5B36B7",
+    "saim_soft": "#D6CFE4",
 }
 
 COLOR_CYCLE = _MUTED_PALETTE[:7]
@@ -104,6 +108,7 @@ def setup_style(
         "axes.labelsize": base + 0.5,
         "axes.titlesize": base + 1.5,
         "axes.titleweight": "medium",
+        "axes.titlepad": 12.0,
         "axes.labelweight": "regular",
         "axes.linewidth": 1.0,
         "axes.edgecolor": "#222222",
@@ -170,11 +175,16 @@ def add_panel_label(
     title: str | None = None,
     *,
     fontsize: float | None = None,
-    offset: tuple[float, float] = (-0.14, 1.05),
+    offset: tuple[float, float] = (-0.22, 1.04),
 ) -> None:
-    """Add a small bold panel label (``A``, ``B``, …), optionally with a title."""
+    """Add a bold panel label (``A``, ``B``, …) outside the axes frame.
 
-    fs = fontsize if fontsize is not None else mpl.rcParams["axes.titlesize"] + 1
+    The label is anchored to the top-left, *outside* the axes box so that it
+    never collides with a centred title. If a ``title`` is given it is set with
+    ``loc="left"`` so that title and label share the same baseline.
+    """
+
+    fs = fontsize if fontsize is not None else mpl.rcParams["axes.titlesize"] + 2
     ax.text(
         offset[0],
         offset[1],
@@ -182,7 +192,7 @@ def add_panel_label(
         transform=ax.transAxes,
         fontsize=fs,
         fontweight="bold",
-        va="top",
+        va="baseline",
         ha="left",
     )
     if title:
