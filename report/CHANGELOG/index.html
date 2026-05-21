@@ -1389,6 +1389,17 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#2026-05-21-figure-refresh-and-empirical-headline-pass" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2026-05-21 — Figure refresh and empirical-headline pass
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -1619,6 +1630,54 @@ ls-R database; this environmental step is documented in the new <code>CODING_AGE
 <li><strong>[8-B01, 8-B02]</strong> Appendix proof headers (max-sum DP correctness, variational bounds) — audited;
   proof blocks already use <code>\begin{proof}</code> / <code>\end{proof}</code> delimiters correctly, no missing <code>\qed</code>.</li>
 </ul>
+<hr />
+<h2 id="2026-05-21-figure-refresh-and-empirical-headline-pass">2026-05-21 — Figure refresh and empirical-headline pass<a class="headerlink" href="#2026-05-21-figure-refresh-and-empirical-headline-pass" title="Permanent link">&para;</a></h2>
+<p>This pass refreshed every bundled figure to publication quality and propagated the new
+empirical headlines into the abstract, the relevant <code>§6</code> subsections, the <code>§8</code> supplementary
+figures list, and the runtime companion table.</p>
+<p><strong>[FIG-R01]</strong> All bundled figure scripts in <code>scripts/figures/</code> and <code>scripts/figures/supplementary/</code>
+were rewritten or restyled around the upgraded <code>_style.py</code> module (saim brand colors, larger
+<code>axes.titlepad</code>, panel-label/title baseline alignment so labels never collide with titles).
+Every figure under <code>docs/report/figures/</code> was re-rendered. Highlights:
+* <code>fig4_latent_groups.pdf</code> — six-panel composition (per-group examples; boundary marginals;
+  responsibility heatmap with truth stripe; group-averaged signal; assignment-confidence
+  diagnostic that plots <span class="arithmatex">\(r_{s,y_s}\)</span> per sequence with the 0.5 decision threshold shaded and
+  mis-assigned sequences circled). Default <span class="arithmatex">\(\sigma\)</span> raised from 0.35 to 1.0 so the EM faces a
+  non-trivial problem (96% hard accuracy, one mis-assignment).
+* <code>fig5_runtime_scaling.pdf</code> — extended to <span class="arithmatex">\(n=800\)</span>, added a panel-B <span class="arithmatex">\(k_{\max}\)</span> sweep, and now
+  annotates the empirical log-log slopes in both panels alongside theoretical <span class="arithmatex">\(\mathcal{O}(n^2)\)</span>
+  / linear-in-<span class="arithmatex">\(k_{\max}\)</span> reference lines.
+* <code>fig7_snr_sensitivity.pdf</code> (script <code>figA2_snr_sensitivity.py</code>) — F1 with IQR band and a
+  critical-<span class="arithmatex">\(\sigma\)</span> annotation, a column-normalised 2D histogram of selected <span class="arithmatex">\(\hat k\)</span>, and an MSE
+  panel against a <span class="arithmatex">\(\sigma^2\)</span> noise-oracle reference.
+* <code>fig9_model_selection.pdf</code> (script <code>figA4_model_selection.py</code>) — single tight row of three
+  posterior panels with shared <span class="arithmatex">\(y\)</span>-axis, per-panel posterior-mode <span class="arithmatex">\(\hat k\)</span> annotations, and an
+  inline rotated "true <span class="arithmatex">\(k^{\star}=3\)</span>" label on the leftmost panel.</p>
+<p><strong>[ABS-E01]</strong> <code>sections/0-abstract.tex</code>: appended one sentence carrying the empirical
+headlines now backed by the refreshed figures (ECE ≈ 0.010, Brier ≈ 0.011, 96% latent-mixture
+accuracy at <span class="arithmatex">\(\sigma=1.0\)</span>, principled posterior-<span class="arithmatex">\(k\)</span> drift under high noise, and the empirical
+near-linear runtime slopes <span class="arithmatex">\(\approx 1.07\)</span> and <span class="arithmatex">\(\approx 1.14\)</span> over <span class="arithmatex">\(n\in[50,800]\)</span>).</p>
+<p><strong>[6-C04]</strong> <code>sections/6.evaluation.tex</code> §6.4 (Calibration): corrected the quoted calibration
+number to <span class="arithmatex">\(\mathrm{ECE}\approx 0.010\)</span> with Brier <span class="arithmatex">\(\approx 0.011\)</span> to match the refreshed <code>fig3</code>
+inset.</p>
+<p><strong>[6-E03]</strong> <code>sections/6.evaluation.tex</code> §6.5 (Latent-group pooling): rewrote the prose, caption,
+and supporting paragraph to describe the refreshed <code>fig4</code> (<span class="arithmatex">\(\sigma=1.0\)</span>, 96% accuracy, six-panel
+companion description with the new assignment-confidence diagnostic).</p>
+<p><strong>[6-R01]</strong> <code>sections/6.evaluation.tex</code> §6.7 (Runtime scaling): rewrote the prose and figure
+caption to describe both panels of the refreshed <code>fig5</code>, quoted the empirical log-log slopes
+(<span class="arithmatex">\(\approx 1.07\)</span> at <span class="arithmatex">\(k_{\max}=10\)</span>, <span class="arithmatex">\(\approx 1.14\)</span> at <span class="arithmatex">\(k_{\max}=20\)</span>, <span class="arithmatex">\(\approx 0.88\)</span> for the
+<span class="arithmatex">\(k_{\max}\)</span> sweep), and explained the sub-quadratic empirical behavior through cumulative
+sufficient-statistics block caching.</p>
+<p><strong>[6-T01]</strong> <code>tables/table1_runtime_scaling.{tex,md,csv}</code>: extended to include the new <span class="arithmatex">\(n=800\)</span>
+row at <span class="arithmatex">\(k_{\max}=20\)</span>, taken from the refreshed <code>fig5</code> CSV sidecar.</p>
+<p><strong>[8-S01]</strong> <code>sections/8.appendix.tex</code> "Additional diagnostic plots" subsection: enriched the
+entries for <code>fig6_mixture_discovery.pdf</code>, <code>fig7_snr_sensitivity.pdf</code>, <code>fig8_multivariate_shared.pdf</code>,
+<code>fig9_model_selection.pdf</code>, <code>fig10_missing_data.pdf</code>, and the uncropped <code>fig4_latent_groups.pdf</code>
+so each entry describes the panel structure and the interpretive headline of the corresponding
+refreshed figure.</p>
+<p><strong>[5b-C01]</strong> <code>sections/5b.limitations.tex</code>: replaced a stale "(Table~\ref{tab:real_welllog},
+planned)" parenthetical with "(Table~\ref{tab:real_welllog}; length-aware row reserved)" since
+the index-uniform row is now populated.</p>
 
 
 
