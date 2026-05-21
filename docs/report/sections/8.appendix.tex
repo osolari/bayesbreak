@@ -562,23 +562,39 @@ rather than inserted in the body because the body already balances synthetic and
 coverage. They are listed for completeness so that a reader running the reproduction can verify
 which artifacts come from the same pipeline run.
 \begin{itemize}\itemsep1pt
-\item \texttt{figures/fig6\_mixture\_discovery.pdf} -- mixture-discovery diagnostic over $G$ on a
-synthetic latent-template data set; companion to the body latent-group figure
-(Figure~\ref{fig:latent_groups}).
+\item \texttt{figures/fig6\_mixture\_discovery.pdf} -- mixture-discovery diagnostic on a synthetic
+two-group latent-template data set, companion to the body latent-group figure
+(Figure~\ref{fig:latent_groups}). The figure pairs (i) example sequences from each recovered
+group with the per-group posterior mean, (ii) a sorted responsibility heatmap and a 2$\times$2
+confusion matrix against the truth, (iii) the recovered per-group boundary marginals against the
+true group-specific changepoints, and (iv) a pooling-benefit panel showing that the shared-template
+fit reduces mean boundary error relative to independent per-sequence segmentation.
 \item \texttt{figures/fig7\_snr\_sensitivity.pdf} -- signal-to-noise-ratio sensitivity sweep on a
-Gaussian synthetic; intended as a sensitivity companion to the body calibration figure
-(Figure~\ref{fig:calibration}).
+Gaussian synthetic, companion to the body calibration figure (Figure~\ref{fig:calibration}).
+Panel A reports boundary F1 vs.\ $\sigma$ with an IQR band and an annotated critical-$\sigma$ at
+which the median F1 drops below $0.5$; panel B is a column-normalised 2D histogram of the selected
+$\hat k$ across replicates as a function of $\sigma$, exposing the over-segmentation drift as the
+SNR deteriorates; panel C reports reconstruction MSE against the $\sigma^2$ noise-oracle reference.
 \item \texttt{figures/fig8\_multivariate\_shared.pdf} -- multivariate shared-boundary visualization
-on a synthetic multi-subject Gaussian; companion to the shared-boundary derivation
-(Theorem~\ref{thm:multisubject}).
+on a synthetic multi-subject Gaussian (three channels with different noise levels), companion to
+the shared-boundary derivation (Theorem~\ref{thm:multisubject}). Channels A--C overlay the
+observations, the true piecewise mean, the shared-boundary fit, and the per-channel independent
+fit; panel D reports the shared and per-channel-independent boundary marginals on a single axis,
+showing that pooling sharpens the joint boundary posterior where the per-channel signal is weak.
 \item \texttt{figures/fig9\_model\_selection.pdf} -- evidence-based model-selection diagnostic
 plotting the averaged segment-count posterior $P(k\mid y)$ across three noise regimes
 ($\sigma\in\{0.15,\,0.5,\,1.5\}$) for a three-segment Gaussian synthetic ($n=120$, true
 $k^{\star}=3$), with each panel annotated with the posterior mode $\hat k$. As the noise grows
 the posterior broadens (medium noise) and then drifts towards larger $k$ (high noise, $\hat
 k\!=\!7$), illustrating the model's principled uncertainty rather than a single point estimate.
-\item \texttt{figures/fig10\_missing\_data.pdf} -- missingness-robustness diagnostic on a synthetic
-Gaussian sequence with deletion patterns.
+\item \texttt{figures/fig10\_missing\_data.pdf} -- missingness-robustness diagnostic on a
+synthetic Gaussian sequence under three structured deletion patterns (random, contiguous-block,
+and periodic). The left column overlays observed and held-out points with the BayesBreak fit;
+the right column reports the boundary marginals from the full-data run alongside the
+weighted-likelihood run that down-weights deleted positions, showing that the recovered
+changepoint posterior is robust to all three patterns while contiguous-block missingness
+introduces the largest boundary-mass shift, as expected when an entire segment is removed from
+the observation window.
 \item \texttt{figures/fig4\_latent\_groups.pdf} -- six-panel companion to the body latent-group
 plot (the body uses the cropped variant \texttt{figures/fig4\_latent\_groups\_cropped.pdf} for
 layout). Panels A--B show example sequences from each latent group with the true piecewise mean

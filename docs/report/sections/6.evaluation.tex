@@ -156,11 +156,12 @@ a definitive cross-family ranking.
 
 A central advantage of the Bayesian formulation is that it returns marginal posterior probabilities
 for boundary events. Figure~\ref{fig:calibration} checks whether those probabilities are
-calibrated under repeated Gaussian simulations. The reliability curve tracks the diagonal
-reasonably closely overall, with an empirical calibration error reported in the figure of
-approximately $\mathrm{ECE}=0.016$. The mid-probability bins are somewhat noisy, but the ordering of
-confidence levels is sensible: bins assigned larger posterior boundary probability correspond to
-larger empirical boundary frequency.
+calibrated under repeated Gaussian simulations. The reliability curve tracks the diagonal closely
+across the full probability range, with an empirical calibration error reported in the figure
+inset of approximately $\mathrm{ECE}\approx 0.010$ and Brier score $\approx 0.011$. The
+mid-probability bins remain the noisiest because boundary events are intrinsically rare per
+sequence, but the ordering of confidence levels is sensible: bins assigned larger posterior
+boundary probability correspond to larger empirical boundary frequency.
 
 \begin{figure}[H]
     \centering
@@ -230,23 +231,32 @@ non-conjugate approximation methods.
 \subsection{Runtime scaling}
 
 Finally, Figure~\ref{fig:runtime} and Table~\ref{tab:runtime_scaling} report runtime behavior for
-the Gaussian implementation. As expected, runtime increases with both series length $n$ and the
-maximum allowed segment count $k_{\max}$. The growth is smooth and predictable over the archived
-range $n\in\{50,100,200,400\}$ and $k_{\max}\in\{10,20\}$, which is consistent with the
-$\mathcal{O}(k_{\max}n^2)$ worst-case complexity of the exact DP while also reflecting practical
-constant-factor effects from the implementation.
+the Gaussian implementation. Panel~A sweeps the series length $n\in\{50,100,200,400,800\}$ at two
+fixed segment budgets $k_{\max}\in\{10,20\}$; panel~B sweeps the segment budget
+$k_{\max}\in\{5,10,20,40,80\}$ at fixed $n=200$. Over the archived range, the empirical log-log
+slopes annotated on Figure~\ref{fig:runtime} are $\approx 1.07$ in $n$ at $k_{\max}=10$,
+$\approx 1.14$ in $n$ at $k_{\max}=20$, and $\approx 0.88$ in $k_{\max}$ at fixed $n=200$. Both
+sweeps therefore sit well below the $\mathcal{O}(k_{\max}n^2)$ worst case predicted by the exact
+sum-product DP. The discrepancy reflects two practical effects: (i) cumulative
+sufficient-statistics caching makes each candidate block evaluation effectively constant time, so
+the DP cost reduces to traversing the $\mathcal{O}(k_{\max}n)$ reachable $(k,\text{end-point})$
+pairs over the small archived range; and (ii) constant-factor overhead from prior evaluation and
+DP setup dominates at the smallest $n$, flattening the small-$n$ end of the curve. The
+$\mathcal{O}(k_{\max}n^2)$ worst case still controls the asymptotic profile and is the relevant
+bound for the much larger $n$ regimes flagged for the next-pass scaling study in
+Remark~\ref{rem:mem-time}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.82\textwidth]{figures/fig5_runtime_scaling.pdf}
-    \caption{Runtime scaling for the Gaussian implementation as a function of series length $n$ for two values of $k_{\max}$. Points are empirical means over repeated runs; error bars denote one standard deviation.}
+    \includegraphics[width=\textwidth]{figures/fig5_runtime_scaling.pdf}
+    \caption{Runtime scaling for the Gaussian implementation. Panel A: log-log wall-clock time vs.\ series length $n\in\{50,100,200,400,800\}$ at two segment budgets $k_{\max}\in\{10,20\}$; annotated slopes give the empirical $\log t$ vs.\ $\log n$ exponent for each curve, and a dashed reference line shows the theoretical $\mathcal{O}(n^2)$ worst case anchored at the smallest measured point. Panel B: log-log time vs.\ $k_{\max}\in\{5,10,20,40,80\}$ at fixed $n=200$ with a dashed linear-in-$k_{\max}$ reference. Points are means over 5 repetitions; error bars denote one standard deviation.}
     \label{fig:runtime}
 \end{figure}
 
 \begin{table}[H]
     \centering
     \input{tables/table1_runtime_scaling.tex}
-    \caption{Numerical companion for the same archived Gaussian runtime configuration as Figure~\ref{fig:runtime}. The bundled table reports the $k_{\max}=20$ configuration rather than every curve displayed in the figure.}
+    \caption{Numerical companion for the same archived Gaussian runtime configuration as Figure~\ref{fig:runtime}. The bundled table reports the $k_{\max}=20$ configuration of panel~A rather than every curve displayed in the figure; the $k_{\max}$ sweep of panel~B is recorded in the figure's CSV sidecar.}
     \label{tab:runtime_scaling}
 \end{table}
 

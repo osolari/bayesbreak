@@ -247,3 +247,62 @@ ls-R database; this environmental step is documented in the new `CODING_AGENT_HA
   for the author to decide whether to retain or drop.
 - **[8-B01, 8-B02]** Appendix proof headers (max-sum DP correctness, variational bounds) — audited;
   proof blocks already use `\begin{proof}` / `\end{proof}` delimiters correctly, no missing `\qed`.
+
+---
+
+## 2026-05-21 — Figure refresh and empirical-headline pass
+
+This pass refreshed every bundled figure to publication quality and propagated the new
+empirical headlines into the abstract, the relevant `§6` subsections, the `§8` supplementary
+figures list, and the runtime companion table.
+
+**[FIG-R01]** All bundled figure scripts in `scripts/figures/` and `scripts/figures/supplementary/`
+were rewritten or restyled around the upgraded `_style.py` module (saim brand colors, larger
+`axes.titlepad`, panel-label/title baseline alignment so labels never collide with titles).
+Every figure under `docs/report/figures/` was re-rendered. Highlights:
+* `fig4_latent_groups.pdf` — six-panel composition (per-group examples; boundary marginals;
+  responsibility heatmap with truth stripe; group-averaged signal; assignment-confidence
+  diagnostic that plots $r_{s,y_s}$ per sequence with the 0.5 decision threshold shaded and
+  mis-assigned sequences circled). Default $\sigma$ raised from 0.35 to 1.0 so the EM faces a
+  non-trivial problem (96% hard accuracy, one mis-assignment).
+* `fig5_runtime_scaling.pdf` — extended to $n=800$, added a panel-B $k_{\max}$ sweep, and now
+  annotates the empirical log-log slopes in both panels alongside theoretical $\mathcal{O}(n^2)$
+  / linear-in-$k_{\max}$ reference lines.
+* `fig7_snr_sensitivity.pdf` (script `figA2_snr_sensitivity.py`) — F1 with IQR band and a
+  critical-$\sigma$ annotation, a column-normalised 2D histogram of selected $\hat k$, and an MSE
+  panel against a $\sigma^2$ noise-oracle reference.
+* `fig9_model_selection.pdf` (script `figA4_model_selection.py`) — single tight row of three
+  posterior panels with shared $y$-axis, per-panel posterior-mode $\hat k$ annotations, and an
+  inline rotated "true $k^{\star}=3$" label on the leftmost panel.
+
+**[ABS-E01]** `sections/0-abstract.tex`: appended one sentence carrying the empirical
+headlines now backed by the refreshed figures (ECE ≈ 0.010, Brier ≈ 0.011, 96% latent-mixture
+accuracy at $\sigma=1.0$, principled posterior-$k$ drift under high noise, and the empirical
+near-linear runtime slopes $\approx 1.07$ and $\approx 1.14$ over $n\in[50,800]$).
+
+**[6-C04]** `sections/6.evaluation.tex` §6.4 (Calibration): corrected the quoted calibration
+number to $\mathrm{ECE}\approx 0.010$ with Brier $\approx 0.011$ to match the refreshed `fig3`
+inset.
+
+**[6-E03]** `sections/6.evaluation.tex` §6.5 (Latent-group pooling): rewrote the prose, caption,
+and supporting paragraph to describe the refreshed `fig4` ($\sigma=1.0$, 96% accuracy, six-panel
+companion description with the new assignment-confidence diagnostic).
+
+**[6-R01]** `sections/6.evaluation.tex` §6.7 (Runtime scaling): rewrote the prose and figure
+caption to describe both panels of the refreshed `fig5`, quoted the empirical log-log slopes
+($\approx 1.07$ at $k_{\max}=10$, $\approx 1.14$ at $k_{\max}=20$, $\approx 0.88$ for the
+$k_{\max}$ sweep), and explained the sub-quadratic empirical behavior through cumulative
+sufficient-statistics block caching.
+
+**[6-T01]** `tables/table1_runtime_scaling.{tex,md,csv}`: extended to include the new $n=800$
+row at $k_{\max}=20$, taken from the refreshed `fig5` CSV sidecar.
+
+**[8-S01]** `sections/8.appendix.tex` "Additional diagnostic plots" subsection: enriched the
+entries for `fig6_mixture_discovery.pdf`, `fig7_snr_sensitivity.pdf`, `fig8_multivariate_shared.pdf`,
+`fig9_model_selection.pdf`, `fig10_missing_data.pdf`, and the uncropped `fig4_latent_groups.pdf`
+so each entry describes the panel structure and the interpretive headline of the corresponding
+refreshed figure.
+
+**[5b-C01]** `sections/5b.limitations.tex`: replaced a stale "(Table~\ref{tab:real_welllog},
+planned)" parenthetical with "(Table~\ref{tab:real_welllog}; length-aware row reserved)" since
+the index-uniform row is now populated.

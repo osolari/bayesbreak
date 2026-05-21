@@ -60,10 +60,10 @@ and must not be conflated. Report both whenever boundary semantics matter for th
 The posterior over segment counts $p(k\mid y)$ is mildly sensitive to the prior $p(k)$
 and substantially sensitive to the length factor $g(\Delta_x(i,j))$ when the design grid is
 irregular. The framework supplies design-aware partition priors
-(Section~\ref{sec:irregular}); the well-log results table (Table~\ref{tab:real_welllog},
-planned) is the natural place to quantify this sensitivity for users. Until that
-ablation is populated, users are advised to compare an index-uniform prior to at least
-one length-aware alternative and report any disagreement explicitly.
+(Section~\ref{sec:irregular}); the well-log results table (Table~\ref{tab:real_welllog};
+length-aware row reserved) is the natural place to quantify this sensitivity for users.
+Until that ablation row is populated, users are advised to compare an index-uniform prior to
+at least one length-aware alternative and report any disagreement explicitly.
 
 \paragraph{Assumption-to-failure-mode map.}
 Assumption~\ref{ass:standing-offline} fails when the candidate boundary grid omits scientifically meaningful changepoints or when segment independence is inappropriate. Assumption~\ref{ass:factorizing-prior} fails when boundary dependence cannot be represented by a product cohesion, for example when enforcing global spacing patterns that depend on more than adjacent segment lengths. Assumption~\ref{ass:cond-indep-subjects} fails when shared-boundary replicates have unmodeled subject correlations after conditioning on segment parameters. Assumption~\ref{ass:uniform-block-error} fails when non-conjugate block routines cannot certify a blockwise log-evidence tolerance. Assumption~\ref{ass:prediction-independence} fails when prediction units are dependent after conditioning on the exported group model. These failures are model violations, not merely numerical warnings; the recommended response is to change the block model, prior class, dependence structure, or prediction target before interpreting posterior probabilities.
