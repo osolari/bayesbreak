@@ -71,8 +71,7 @@ def test_non_conjugate_diagnostics_quantile_consistency():
     # synthetic dataset where Laplace and quadrature can disagree on a few
     # boundary positions.
     assert 0.0 <= extra["map_path_jaccard"] <= 1.0
-    # Worst-case TV bound on P(k|y) derived from prop:stability:
-    # empirical TV ≤ exp(2·k_max·ε) − 1.
+    # Conditional worst-case TV bound on P(k|y) derived from stability.
     assert "pk_tv_empirical" in extra
     assert "pk_tv_upper_bound" in extra
     assert extra["pk_tv_empirical"] <= extra["pk_tv_upper_bound"] + 1e-9
@@ -80,13 +79,12 @@ def test_non_conjugate_diagnostics_quantile_consistency():
     tv_check = next(c for c in diag.checks if c.name == "pk_tv_bound_check")
     assert tv_check.failure_mode == "tv-bound"
     assert tv_check.passed
-    # Theoretical rate annotation from prop:uniform-bounds: Laplace on
-    # reachable blocks is O(n^-1). The field should be populated and the
-    # estimator's approx attribute round-trips.
+    # Phase 6 does not infer a routine-wide rate from the method name.
     assert extra["approx_routine"] == "laplace"
-    assert "O(n^-1)" in extra["theoretical_rate"]
-    # rate_violated may be True or False but must be a bool (not None) here.
-    assert isinstance(extra["theoretical_rate_violated"], bool)
+    assert "not established" in extra["theoretical_rate"]
+    assert extra["theoretical_rate_violated"] is None
+    assert extra["segment_error_record"]["max_log_score_error"] == extra["block_error_max"]
+    assert extra["pk_tv_upper_bound"] <= 1.0
 
 
 def test_prior_sensitivity_reports_variation_per_variant():

@@ -48,15 +48,14 @@ high-node Gauss–Hermite quadrature fit on the same data) and reports:
   reachable-block mask (the empirical uniform `ε` named in
   Assumption `ass:uniform-block-error`);
 - `k_posterior_l1` and `boundary_marginal_l1` between the two posteriors;
-- `pk_tv_upper_bound = exp(2 k_max ε_max) − 1`, the worst-case TV bound
+- `pk_tv_upper_bound = min(1, exp(2 k_max ε_max) − 1)`, the conditional TV bound
   from Corollary `cor:probability-error-conversion`;
 - `pk_tv_empirical = 0.5 · |P̂(k|y) − P_ref(k|y)|_1`;
-- per-routine `theoretical_rate` (e.g. `"O(n^{-1}) on reachable blocks"`
-  for Laplace / JJ / PG; `"O(Q^{-2r})"` for Gauss–Hermite;
-  `"EP: not uniformly bounded"` for true EP);
-- `theoretical_rate_violated` — `True` when the empirical ε exceeds the
-  routine's expected rate by an order of magnitude, or when EP failed to
-  converge on at least one block.
+- `segment_error_record` with the reachable-support hash, separate numerical
+  error components, and an explicit convergence/certification status;
+- `conditional_partition_bounds`, populated only when the reachable block
+  comparison supports propagation. Routine-wide convergence rates remain a
+  proof obligation and are not inferred from `approx`.
 
 ```python
 from bayesbreak import BayesBreakLogisticNormal, run_non_conjugate_diagnostics
@@ -67,8 +66,8 @@ fit = BayesBreakLogisticNormal(approx="laplace").fit(X, y)
 report = run_non_conjugate_diagnostics(fit, ref)
 print(report.extra["block_error_max"])
 print(report.extra["pk_tv_upper_bound"])
-print(report.extra["theoretical_rate"])
-print(report.extra["theoretical_rate_violated"])
+print(report.extra["segment_error_record"])
+print(report.extra["conditional_partition_bounds"])
 ```
 
 ## `run_prior_sensitivity`

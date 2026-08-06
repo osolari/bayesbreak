@@ -35,6 +35,7 @@ from sklearn.base import BaseEstimator, RegressorMixin, clone
 
 from . import dp as _dp
 from .base import BayesBreakSegmenter
+from .prediction import ExtrapolationPolicy, _record_prediction_policy, assign_to_partition
 from .validation import check_sample_weight, require_fitted
 
 FloatArray = NDArray[np.floating]
@@ -321,7 +322,12 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
 
     # ---- prediction / scoring ----------------------------------------
 
-    def predict(self, X: ArrayLike) -> FloatArray:
+    def predict(
+        self,
+        X: ArrayLike,
+        *,
+        extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
+    ) -> FloatArray:
         """Return the per-subject piecewise-constant fits at query points.
 
         Returns an array of shape ``(S, m)``.
@@ -331,14 +337,14 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
         X_arr = np.asarray(X, dtype=float)
         x_new = X_arr[:, 0] if X_arr.ndim == 2 else X_arr.ravel()
 
-        order = np.argsort(self.x_design_)
-        sorted_x = self.x_design_[order]
-        pos = np.searchsorted(sorted_x, x_new, side="right") - 1
-        pos = np.clip(pos, 0, len(sorted_x) - 1)
-        idx = order[pos]
-        seg = np.searchsorted(self.boundaries_internal_, idx, side="right") - 1
-        seg = np.clip(seg, 0, self.map_segment_means_.shape[1] - 1)
-        return self.map_segment_means_[:, seg]
+        segments = assign_to_partition(
+            x_new,
+            self.x_design_,
+            self.map_boundaries_,
+            extrapolation,
+        )
+        _record_prediction_policy(self, extrapolation)
+        return self.map_segment_means_[:, segments]
 
     def score(self, X: ArrayLike, y: Sequence[ArrayLike] | ArrayLike) -> float:
         """Mean per-subject log evidence on training data (scalar)."""

@@ -258,13 +258,36 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
             self._phi_arr_ = self._phi_array(n)
         phi_arr = self._phi_arr_
 
-        alpha0 = float(hyper["alpha"])
-        beta0 = float(hyper["beta"])
         if sample_weight is None:
             w = np.ones_like(y)
         else:
             w = np.asarray(sample_weight, dtype=float)
 
+        mu_grid, log_posterior_weights = self._segment_posterior_log_weights(
+            a,
+            b,
+            y,
+            hyper,
+            w,
+            phi_arr,
+        )
+        return float(np.sum(np.exp(log_posterior_weights) * mu_grid))
+
+    def _segment_posterior_log_weights(
+        self,
+        a: int,
+        b: int,
+        y: np.ndarray,
+        hyper: dict[str, float],
+        sample_weight: np.ndarray,
+        phi_arr: np.ndarray,
+    ) -> tuple[np.ndarray, np.ndarray]:
+        """Quadrature nodes and normalized log posterior weights for ``mu``."""
+
+        if not 0 <= a < b <= y.size:
+            raise ValueError("segment boundaries must satisfy 0 <= a < b <= n")
+        alpha0 = float(hyper["alpha"])
+        beta0 = float(hyper["beta"])
         n_quad = int(self.quadrature_points)
         mu_grid, w_grid = _legendre_nodes_weights(n_quad)
         log_w = np.log(w_grid)
@@ -274,7 +297,7 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
         )
 
         y_blk = y[a:b]
-        w_blk = w[a:b]
+        w_blk = sample_weight[a:b]
         phi_blk = phi_arr[a:b]
         log_y = np.log(y_blk)
         log_1my = np.log(1.0 - y_blk)
@@ -296,5 +319,62 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
             )
             log_integrand[g] += float(ll)
         log_norm = float(logsumexp(log_integrand))
-        w_norm = np.exp(log_integrand - log_norm)
-        return float(np.sum(w_norm * mu_grid))
+        return mu_grid, log_integrand - log_norm
+
+    def posterior_predictive_logpdf_block(
+        self,
+        *,
+        a: int,
+        b: int,
+        y_new: np.ndarray,
+        w_new: np.ndarray,
+    ) -> np.ndarray:
+        r"""Beta-observation posterior predictive on fitted block ``(a,b]``.
+
+        For this family ``w_new`` is the known new-observation precision
+        :math:`\phi_*`. Training likelihood-power weights remain separate in
+        ``sample_weight_``.
+        """
+
+        assert (
+            self.hyper_ is not None
+            and self.sample_weight_ is not None
+            and self._y_train_ is not None
+        )
+        y_new = np.asarray(y_new, dtype=float)
+        phi_new = np.asarray(w_new, dtype=float)
+        if y_new.shape != phi_new.shape:
+            raise ValueError("y_new and Beta precision must have the same shape")
+        if np.any(~np.isfinite(phi_new)) or np.any(phi_new <= 0):
+            raise ValueError("Beta prediction precision must be finite and positive")
+
+        phi_train = self._phi_arr_
+        mu_grid, log_posterior_weights = self._segment_posterior_log_weights(
+            a,
+            b,
+            self._y_train_,
+            self.hyper_,
+            self.sample_weight_,
+            phi_train,
+        )
+        output = np.full(y_new.shape, -np.inf, dtype=float)
+        supported = np.isfinite(y_new) & (y_new > 0.0) & (y_new < 1.0)
+        if not np.any(supported):
+            return output
+
+        values = y_new[supported]
+        precision = phi_new[supported]
+        alpha = mu_grid[:, None] * precision[None, :]
+        beta = (1.0 - mu_grid[:, None]) * precision[None, :]
+        log_density = (
+            gammaln(precision)[None, :]
+            - gammaln(alpha)
+            - gammaln(beta)
+            + (alpha - 1.0) * np.log(values)[None, :]
+            + (beta - 1.0) * np.log1p(-values)[None, :]
+        )
+        output[supported] = logsumexp(
+            log_posterior_weights[:, None] + log_density,
+            axis=0,
+        )
+        return output

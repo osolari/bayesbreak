@@ -135,15 +135,13 @@ Corollary `cor:probability-error-conversion` converts the odds bound on
 $P(k\mid y)$ into an absolute-probability total-variation bound:
 
 $$
-\operatorname{TV}\bigl(\widehat P(\cdot \mid y),\, P(\cdot \mid y)\bigr) \;\le\; \exp(2 k_{\max} \varepsilon) - 1.
+\operatorname{TV}\bigl(\widehat P(\cdot \mid y),\, P(\cdot \mid y)\bigr) \;\le\; \min\{1, \exp(2 k_{\max} \varepsilon) - 1\}.
 $$
 
-Per-routine $\varepsilon$ rates (`prop:uniform-bounds`):
-Laplace / JJ / PG mean-field $= O(n^{-1})$ on reachable blocks;
-Gauss–Hermite $= O(Q^{-2r})$ for $C^{2r}$ integrands; true EP is
-**not** uniformly bounded — convergence-conditional. `run_non_conjugate_diagnostics`
-records both the empirical $\varepsilon$ and the routine's expected rate
-in the `theoretical_rate_violated` flag.
+The current report does not establish routine-wide uniform rates for Laplace,
+JJ, PG mean-field, EP, or adaptive quadrature. Applying this bound requires a
+support-aligned segment-error record with the relevant convergence, tail, and
+quadrature conditions established for the specific calculation.
 
 ## Posterior-predictive scoring
 

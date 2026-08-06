@@ -13,7 +13,9 @@
     "optimization_residual",
     "tail_bound",
     "quadrature_error",
-    "convergence_status"
+    "convergence_status",
+    "n_reachable_blocks",
+    "failure_reason"
   ],
   "properties": {
     "schema_version": { "const": "1.0.0" },
@@ -26,7 +28,9 @@
     "quadrature_error": { "$ref": "#/$defs/nonnegativeOrNull" },
     "convergence_status": {
       "enum": ["verified", "unverifiable", "failed", "not-applicable"]
-    }
+    },
+    "n_reachable_blocks": { "type": "integer", "minimum": 0 },
+    "failure_reason": { "type": ["string", "null"] }
   },
   "$defs": {
     "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
