@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-title: "BayesBreak: Generalized Hierarchical Bayesian Segmentation"
+title: "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs"
 authors:
   - family-names: Solari
     given-names: Omid Shams

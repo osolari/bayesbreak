@@ -1,0 +1,43 @@
+\section{Implementation and validation sequence}
+\label{sec:exec-implementation}
+
+The existing package and archived results are not replaced by a new implementation in this phase. The next implementation cycle should apply the approved statistical definitions, preserve archived outputs, and produce new result identifiers for every corrected computation.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.98\textwidth}{!}{\input{shared/figures/tikz/roadmaps/executive_implementation_sequence.tex}}
+  \caption{Approved implementation and validation sequence. Green denotes completed manuscript-level work; neutral nodes denote implementation or validation still required. A stage advances only after its stated numerical and statistical criteria are met.}
+  \label{fig:exec-implementation-sequence}
+\end{figure}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.97\textwidth}{@{}p{0.10\textwidth}p{0.23\textwidth}p{0.25\textwidth}X@{}}
+\toprule
+\textbf{Stage} & \textbf{Principal tasks} & \textbf{Required output} & \textbf{Advance criterion} \\
+\midrule
+S1 & Separate segment cohesion from boundary hazard; integrate both with sum-product and max-sum recursions & Small-$n$ exhaustive-enumeration report and prior-sensitivity fixtures & Marginal likelihoods, posterior quantities, and MAP partitions agree with enumeration under seeded cases. \\
+S2 & Repair latent-group objective reporting; harden grouped log-domain aggregation & Objective traces, restart-selection tests, high-precision aggregation checks & Every exit returns the final objective; monotonicity holds to tolerance; adversarial magnitude tests preserve rankings. \\
+S3 & Implement Beta posterior prediction, explicit extrapolation, one-to-one boundary matching, and comparator-axis validation & Family-specific prediction tests, metric fixtures, schema validation & No family fallback; out-of-range behavior is explicit; incompatible axes fail before metric computation. \\
+S4 & Pin the environment and resolve the 17 bounded-run tests & Test manifest, profiles, environment hash, termination status & Every required test passes, fails, skips, or remains blocked with an owner and reason; no timeout is counted as a pass. \\
+S5 & Recompute the invalid CGH comparator and methylation predictive analyses with new result IDs & New sidecars, parent-result links, figures, tables, and interpretation records & Correct coordinate/family definitions, schema validation, source hashes, and independent review of the resulting conclusions. \\
+S6 & Run expanded calibration, robustness, misspecification, fairness, and scaling studies & Claim-mapped reports with repetitions and uncertainty intervals & Pre-specified positive, mixed, null, and falsifying outcomes are reported without changing the primary endpoint after observing results. \\
+S7 & Complete release review & Clean builds, reproducibility record, release notes, permanent artifact locations & Statistical, numerical, software, and source review completed with all unresolved items disclosed. \\
+\bottomrule
+\end{tabularx}
+\caption{Implementation stages and acceptance criteria. Task-level details are in the synchronized coding-agent handoff.}
+\label{tab:exec-stages}
+\end{table}
+
+\subsection{Resource profile}
+
+The work requires four coordinated roles, which may be held by fewer people when expertise overlaps:
+\begin{itemize}
+  \item a statistical-method lead to review priors, posterior prediction, approximation assumptions, metrics, and claim language;
+  \item a scientific-software engineer to implement the task registry, schemas, tests, and result lineage;
+  \item an empirical lead to run simulations and applications under fixed protocols and tuning budgets; and
+  \item an independent reviewer for the final proof, numerical, comparator, and release checks.
+\end{itemize}
+
+The dominant computation is expected in repeated simulation, nonconjugate segment integration, and multi-sequence comparator studies. Exact resource estimates should be produced after the profiled test run and a small pilot of the expanded simulation grid; the current archive does not support a defensible fixed compute estimate.

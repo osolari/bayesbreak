@@ -1,0 +1,683 @@
+{
+  "phase": "6",
+  "title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+  "status": "pass",
+  "checks": {
+    "required_paths_present": true,
+    "saim_template_applied_to_all_paper_form_artifacts": true,
+    "exact_title_in_shared_metadata": true,
+    "old_replacement_title_absent_from_active_source": true,
+    "rejected_branding_absent_from_active_source": true,
+    "technical_book_target_passes": true,
+    "two_column_paper_target_passes": true,
+    "single_column_paper_target_passes": true,
+    "executive_summary_target_passes": true,
+    "book_has_17_chapter_source_files": true,
+    "book_has_five_required_appendices": true,
+    "book_formal_results_have_immediate_proofs": true,
+    "book_has_one_proof_obligation": true,
+    "paper_formal_results_have_immediate_proofs": true,
+    "paper_has_one_proof_obligation": true,
+    "bibliography_annotations_complete": true,
+    "canonical_handoff_sync_check_passes": true,
+    "presentation_handoff_check_passes": true,
+    "repository_skeleton_check_passes": true,
+    "repository_is_explicitly_incomplete": true,
+    "visual_qa_complete": true,
+    "independent_mathematical_checks_pass": true,
+    "bibliography_verification_report_passes": true,
+    "canonical_registry_counts_match": true,
+    "historical_and_current_test_states_recorded": true,
+    "phase6_formula_repairs_present": true,
+    "distributable_source_audit_passes": true,
+    "archived_result_assets_are_unchanged": true,
+    "roadmap_location_policy_passes": true,
+    "no_slide_sources_generated": true,
+    "executive_has_eight_section_sources": true,
+    "excluded_result_ids_preserved": true,
+    "implementation_test_state_preserved": true
+  },
+  "missing_required_paths": [],
+  "targets": {
+    "technical_book": {
+      "exists": true,
+      "path": "build/bayesbreak-technical-book.pdf",
+      "sha256": "b1736341ef8a8400c491dda9db15649a0bdc257c234208e13f4670e90adb97ec",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 168,
+      "expected_pages": 168,
+      "page_count_matches": true,
+      "page_size": "595.276 x 841.89 pts (A4)",
+      "expected_page_size": "595.276 x 841.89 pts (A4)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 407,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 65,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 210,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    },
+    "main_paper_two_column": {
+      "exists": true,
+      "path": "build/paper/bayesbreak-main-paper.pdf",
+      "sha256": "de4205f1f0dcda438b834f883beef6cc8eea13e1ecc7b36813a62e23218707e2",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 35,
+      "expected_pages": 35,
+      "page_count_matches": true,
+      "page_size": "612 x 792 pts (letter)",
+      "expected_page_size": "612 x 792 pts (letter)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 496,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 61,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 17,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    },
+    "main_paper_single_column": {
+      "exists": true,
+      "path": "build/paper-single/bayesbreak-main-paper-single.pdf",
+      "sha256": "b978f68c1b199799659befc6b15b306203febad202ede4fd614307c1f60b8d8b",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 42,
+      "expected_pages": 42,
+      "page_count_matches": true,
+      "page_size": "612 x 792 pts (letter)",
+      "expected_page_size": "612 x 792 pts (letter)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 496,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 61,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 3,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    },
+    "executive_summary": {
+      "exists": true,
+      "path": "build/executive/bayesbreak-executive-summary.pdf",
+      "sha256": "9db1afb736f91969562cb2308f7162e597ca020f8f2a0b3f60a8831d1a8aefd2",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 12,
+      "expected_pages": 12,
+      "page_count_matches": true,
+      "page_size": "612 x 792 pts (letter)",
+      "expected_page_size": "612 x 792 pts (letter)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 888,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 29,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 24,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    }
+  },
+  "source_language": {
+    "files_checked": 144,
+    "old_title_hits": [],
+    "banned_language_hits": {
+      "auditable_or_auditability": [],
+      "generic_contract": [],
+      "evidence_architecture": [],
+      "evidence_gate": [],
+      "local_to_global_branding": [],
+      "positive_score_branding": [],
+      "quarantine_branding": [],
+      "protected_method_identity": []
+    }
+  },
+  "formal_results": {
+    "book": {
+      "established_statements": 28,
+      "proofs": 28,
+      "proof_obligations": 1,
+      "immediate_proof_gaps": []
+    },
+    "paper": {
+      "established_statements": 12,
+      "proofs": 12,
+      "proof_obligations": 1,
+      "immediate_proof_gaps": []
+    }
+  },
+  "bibliography": {
+    "bibliography_key_count": 38,
+    "unique_bibliography_key_count": 38,
+    "annotation_file_count": 38,
+    "manifest_entry_count": 38,
+    "one_to_one_complete": true,
+    "duplicate_bibliography_keys": [],
+    "duplicate_manifest_keys": [],
+    "missing_annotation_files": [],
+    "annotation_hash_mismatches": [],
+    "annotations_without_project_relationship": [],
+    "annotations_without_verification_status": []
+  },
+  "readonly_result_assets": {
+    "file_count": 53,
+    "missing": [],
+    "hash_mismatches": [],
+    "all_unchanged": true
+  },
+  "roadmaps": {
+    "references": {
+      "presentation_handoffs/executive/EXECUTIVE_DECK_BRIEF.md": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "presentation_handoffs/shared/ASSET_AND_DIAGRAM_INDEX.md": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "book/chapters/16-reproducibility-conclusion.tex": [
+        "shared/figures/tikz/roadmaps/implementation_validation_stages.tex"
+      ],
+      "book/appendices/reproducibility_traceability.tex": [
+        "shared/figures/tikz/roadmaps/implementation_validation_stages.tex"
+      ],
+      "executive/sections/06-decisions.tex": [
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "executive/sections/05-implementation.tex": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex"
+      ]
+    },
+    "main_paper_has_no_roadmap_references": true,
+    "technical_handoff_has_no_roadmap_references": true,
+    "executive_uses_exact_approved_roadmaps": true,
+    "executive_roadmaps": [
+      "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+      "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+    ]
+  },
+  "slide_source_paths": [],
+  "implementation_status": {
+    "scientific_implementation_complete": false,
+    "task_count": 16
+  },
+  "visual_qa": {
+    "phase": "6",
+    "status": "pass",
+    "renderer": "PDFium through /home/oai/skills/pdfs/scripts/render_pdf.py",
+    "dpi": 150,
+    "documents": {
+      "technical_book": {
+        "pages_inspected": 168,
+        "contact_sheets": 14,
+        "render_dir": "qa/renders/book_all",
+        "contact_sheet_pattern": "qa/contact_sheets/book_*.jpg"
+      },
+      "main_paper_two_column": {
+        "pages_inspected": 35,
+        "contact_sheets": 3,
+        "render_dir": "qa/renders/paper",
+        "contact_sheet_pattern": "qa/contact_sheets/paper_*.jpg"
+      },
+      "main_paper_single_column": {
+        "pages_inspected": 42,
+        "contact_sheets": 4,
+        "render_dir": "qa/renders/paper_single_all",
+        "contact_sheet_pattern": "qa/contact_sheets/paper_single_*.jpg"
+      },
+      "executive_summary": {
+        "pages_inspected": 12,
+        "contact_sheets": 1,
+        "render_dir": "qa/renders/executive",
+        "contact_sheet_pattern": "qa/contact_sheets/executive_*.jpg"
+      }
+    },
+    "total_pages_inspected": 257,
+    "total_contact_sheets_inspected": 22,
+    "targeted_full_page_checks": [
+      {
+        "document": "technical_book",
+        "page": 31,
+        "focus": "factorized product-partition prior and formal setup"
+      },
+      {
+        "document": "technical_book",
+        "page": 43,
+        "focus": "sum-product theorem and immediate proof"
+      },
+      {
+        "document": "technical_book",
+        "page": 56,
+        "focus": "Poisson interval-occupancy local odds"
+      },
+      {
+        "document": "technical_book",
+        "page": 62,
+        "focus": "latent-group Jensen minorization and objective"
+      },
+      {
+        "document": "technical_book",
+        "page": 71,
+        "focus": "nonconjugate score perturbation and total-variation bound"
+      }
+    ],
+    "checks": {
+      "blank_or_nearly_blank_pages": 0,
+      "clipped_text_or_equations": 0,
+      "overlapping_elements": 0,
+      "broken_or_missing_glyphs": 0,
+      "missing_figure_frames": 0,
+      "unreadable_tables": 0,
+      "unresolved_reference_markers": 0
+    },
+    "final_findings": {
+      "reported_defects": [],
+      "disposition": "All 257 pages were inspected in 22 contact sheets; targeted pages containing the principal Phase 6 mathematical corrections were also inspected at full-page scale. No release-blocking visual defect was observed."
+    }
+  },
+  "formal_numerical_verification": {
+    "verification_id": "VERIFY-BB-PHASE6-MATH-001",
+    "date": "2026-08-05",
+    "purpose": "Independent finite-case and numerical verification of central formulas and recursions; not a substitute for formal proofs.",
+    "seed": 20260805,
+    "passed": true,
+    "checks": [
+      {
+        "check_id": "MATH-BB-001",
+        "description": "Gaussian-known-variance segment marginal likelihood versus direct integration",
+        "passed": true,
+        "metrics": {
+          "formula": 0.0032767495902880734,
+          "quadrature": 0.003276749590288074,
+          "quad_abs_error": 4.6040722964667666e-14,
+          "relative_error": 4.336808689942018e-19
+        },
+        "tolerance": "relative error < 2e-11"
+      },
+      {
+        "check_id": "MATH-BB-002",
+        "description": "Gamma-Poisson segment marginal likelihood versus direct integration",
+        "passed": true,
+        "metrics": {
+          "formula": 0.0001329113758617592,
+          "quadrature": 0.00013291137586175913,
+          "quad_abs_error": 9.415824914591544e-15,
+          "relative_error": 8.131516293641283e-20
+        },
+        "tolerance": "relative error < 2e-11"
+      },
+      {
+        "check_id": "MATH-BB-003",
+        "description": "Beta-Binomial segment marginal likelihood versus direct integration",
+        "passed": true,
+        "metrics": {
+          "formula": 0.0139162307255416,
+          "quadrature": 0.013916230725541585,
+          "quad_abs_error": 2.096410594218364e-15,
+          "relative_error": 1.5612511283791264e-17
+        },
+        "tolerance": "relative error < 2e-11"
+      },
+      {
+        "check_id": "MATH-BB-004",
+        "description": "Beta-negative-binomial segment marginal likelihood versus direct integration",
+        "passed": true,
+        "metrics": {
+          "formula": 0.00012029487042101353,
+          "quadrature": 0.00012029487042101373,
+          "quad_abs_error": 1.3355413488570916e-18,
+          "relative_error": 2.0328790734103208e-19
+        },
+        "tolerance": "relative error < 2e-11"
+      },
+      {
+        "check_id": "MATH-BB-005",
+        "description": "Beta-observation one-dimensional Gauss-Legendre segment integration versus adaptive quadrature",
+        "passed": true,
+        "metrics": {
+          "reference": 1.3022547944210567,
+          "quad_scaled_abs_error": 2.2681157267340995e-15,
+          "node_counts": [
+            8,
+            16,
+            32,
+            64,
+            128
+          ],
+          "approximations": [
+            1.283688662844132,
+            1.3022566977372931,
+            1.3022547944210539,
+            1.3022547944210594,
+            1.3022547944210496
+          ],
+          "relative_errors": [
+            0.01425691167079075,
+            1.4615522728374437e-06,
+            2.2166014488037984e-15,
+            2.046093645049656e-15,
+            5.456249720132427e-15
+          ]
+        },
+        "tolerance": "128-node relative error < 2e-9; no monotonicity assertion"
+      },
+      {
+        "check_id": "MATH-BB-006",
+        "description": "Sum-product fixed-count partition evidence versus exhaustive enumeration",
+        "passed": true,
+        "metrics": {
+          "max_absolute_log_evidence_error": 4.440892098500626e-16,
+          "n": 7,
+          "kmax": 4
+        },
+        "tolerance": "absolute log-evidence error < 2e-12"
+      },
+      {
+        "check_id": "MATH-BB-007",
+        "description": "Max-sum recursion and backtracking versus exhaustive joint MAP search",
+        "passed": true,
+        "metrics": {
+          "max_objective_gap": 0.0,
+          "all_partitions_identical": "True"
+        },
+        "tolerance": "objective gap < 2e-12 and identical partition"
+      },
+      {
+        "check_id": "MATH-BB-008",
+        "description": "Ordered-boundary and boundary-event marginals versus exhaustive posterior enumeration",
+        "passed": true,
+        "metrics": {
+          "ordered_boundary_max_abs_error": 1.1102230246251565e-16,
+          "boundary_event_max_abs_error": 1.1102230246251565e-16
+        },
+        "tolerance": "maximum absolute error < 2e-12"
+      },
+      {
+        "check_id": "MATH-BB-009",
+        "description": "Posterior mean and second-moment curves from block-cover decomposition versus exhaustive averaging",
+        "passed": true,
+        "metrics": {
+          "mean_curve_max_abs_error": 2.220446049250313e-16,
+          "second_moment_curve_max_abs_error": 4.440892098500626e-16
+        },
+        "tolerance": "maximum absolute error < 3e-12"
+      },
+      {
+        "check_id": "MATH-BB-010",
+        "description": "Shared-boundary pooling by products of sequence-specific segment marginal likelihoods",
+        "passed": true,
+        "metrics": {
+          "sequences": 4,
+          "max_absolute_log_evidence_error": 2.220446049250313e-16
+        },
+        "tolerance": "absolute log-evidence error < 2e-12"
+      },
+      {
+        "check_id": "MATH-BB-011",
+        "description": "Conditional propagation of uniform segment log-score error through dynamic-programming evidences and normalized finite distributions",
+        "passed": true,
+        "metrics": {
+          "epsilon": 0.018,
+          "maximum_state_error_as_fraction_of_k_epsilon": 0.8737401983190273,
+          "eta_generic": 0.20683838098157126,
+          "minimum_probability_ratio": 0.8022823519856507,
+          "maximum_probability_ratio": 1.196351352406565,
+          "total_variation": 0.05541730626442494,
+          "total_variation_bound": 0.5123681929419355
+        },
+        "tolerance": "state error <= k epsilon; probability ratios within exp(+-2 eta); TV <= min(1, exp(2 eta)-1)"
+      },
+      {
+        "check_id": "MATH-BB-012",
+        "description": "Fixed-count Poisson interval occupancy gives local odds exp(Lambda_j)-1 after conditioning",
+        "passed": true,
+        "metrics": {
+          "max_abs_error_odds_formula": 1.1102230246251565e-16,
+          "max_abs_gap_if_occupancy_probabilities_used_instead": 0.1882129075646054,
+          "candidate_intervals": 5,
+          "occupied_intervals": 2
+        },
+        "tolerance": "odds formula error < 2e-15 and occupancy-probability alternative demonstrably differs"
+      },
+      {
+        "check_id": "MATH-BB-013",
+        "description": "Jensen minorizer tightness and responsibility-weighted latent-template score decomposition",
+        "passed": true,
+        "metrics": {
+          "jensen_tightness_gap": 0.0,
+          "template_decomposition_gap": 0.0,
+          "effective_group_weight_n_g": 2.396787252382345
+        },
+        "tolerance": "both absolute gaps < 2e-13"
+      }
+    ]
+  },
+  "bibliography_verification": {
+    "phase": "6",
+    "status": "pass",
+    "passed": true,
+    "scope": {
+      "structural": "All book bibliography keys, annotation files, manifest entries, annotation hashes, project-relationship declarations, and verification-status fields were checked.",
+      "metadata": "Phase 6 independently checked and corrected the records listed below against publisher, institutional, or archival records. The remaining entries retain the prior primary-source verification and were rechecked for structural consistency and explicit project relevance.",
+      "full_text_limit": "This is a metadata-and-use audit, not a claim that every cited work was reread in full during Phase 6."
+    },
+    "counts": {
+      "bibliography_keys": 38,
+      "unique_keys": 38,
+      "annotation_files": 38,
+      "manifest_entries": 38
+    },
+    "one_to_one_mapping": true,
+    "missing_annotation_files": [],
+    "annotation_hash_mismatches": [],
+    "annotations_without_explicit_project_relationship": [],
+    "annotations_without_verification_status": [],
+    "phase6_metadata_corrections": [
+      {
+        "bib_key": "auger1989segment",
+        "correction": "Corrected title, venue, volume, issue, pages, and DOI for Auger and Lawrence (1989).",
+        "verification_scope": "publisher or institutional bibliographic record"
+      },
+      {
+        "bib_key": "denison1998bayesian",
+        "correction": "Corrected title, authors, JRSS B volume/issue/pages, and DOI for Denison, Mallick, and Smith (1998).",
+        "verification_scope": "publisher bibliographic record"
+      },
+      {
+        "bib_key": "bleakley2011groupfused",
+        "correction": "Classified the cited record as arXiv:1106.4199 and removed unsupported journal metadata.",
+        "verification_scope": "arXiv record"
+      },
+      {
+        "bib_key": "yao1988biometrika",
+        "correction": "Corrected the author to Yi-Ching Yao and added the Statistics & Probability Letters DOI.",
+        "verification_scope": "publisher bibliographic record"
+      },
+      {
+        "bib_key": "frick2014smuce",
+        "correction": "Retained the corrected JRSS B 76(3), 495-580 record and DOI 10.1111/rssb.12047.",
+        "verification_scope": "publisher bibliographic record"
+      },
+      {
+        "bib_key": "rudin1992rof",
+        "correction": "Standardized the Rudin-Osher-Fatemi metadata and DOI.",
+        "verification_scope": "publisher bibliographic record"
+      },
+      {
+        "bib_key": "tibshirani2005fused",
+        "correction": "Standardized fused-lasso journal metadata and DOI.",
+        "verification_scope": "publisher bibliographic record"
+      },
+      {
+        "bib_key": "jaakkola2000logisticvb",
+        "correction": "Standardized the Jaakkola-Jordan variational-logistic citation metadata.",
+        "verification_scope": "proceedings or institutional record"
+      },
+      {
+        "bib_key": "dempster1977em",
+        "correction": "Standardized the EM paper metadata and DOI.",
+        "verification_scope": "publisher bibliographic record"
+      },
+      {
+        "bib_key": "teicher1963identifiability",
+        "correction": "Standardized the finite-mixture identifiability metadata and DOI.",
+        "verification_scope": "publisher bibliographic record"
+      }
+    ],
+    "interpretive_rule": "Annotations state how each source is used in BayesBreak and do not transfer results beyond the assumptions of the cited source."
+  },
+  "distributable_source_audit": {
+    "phase": "6",
+    "status": "pass",
+    "passed": true,
+    "scope": "Distributable source is created from the unified project while excluding build/, caches, Python bytecode, operating-system metadata, and font files.",
+    "excluded_build_products": true,
+    "cache_artifacts_present": [],
+    "font_files_present": [],
+    "latex_build_products_outside_build_present": [],
+    "exclusion_rules": [
+      "build/",
+      "**/__pycache__/**",
+      "**/.pytest_cache/**",
+      "**/*.pyc",
+      ".DS_Store",
+      "__MACOSX/",
+      "*.ttf",
+      "*.otf",
+      "*.woff",
+      "*.woff2",
+      "*.pfb",
+      "*.afm"
+    ]
+  },
+  "registry_counts": {
+    "coding_tasks": 16,
+    "experiment_protocols": 15,
+    "claims": 14,
+    "results": 17
+  },
+  "test_states": {
+    "historical": {
+      "collected": 179,
+      "passed": 157,
+      "skipped": 5,
+      "unresolved": 17
+    },
+    "current": {
+      "result_id": "RES-BB-QA-003",
+      "collected": 179,
+      "passed": 173,
+      "skipped": 5,
+      "unresolved": 1,
+      "failed": 0,
+      "per_test_time_cap_seconds": 20,
+      "unresolved_test": "tests/test_families.py::test_ep_logistic_normal"
+    }
+  },
+  "real_result_policy": {
+    "populated_archived_values_changed": false,
+    "research_experiments_rerun": false,
+    "implementation_tests_rerun": true,
+    "scientific_package_code_changed": false,
+    "RES-BB-CMP-002": "executed historical result; excluded from comparator conclusions because the coordinate axes are incompatible",
+    "RES-BB-RD-007Q": "executed historical result; excluded from posterior-predictive conclusions because the observation-family routine and coordinate rule were invalid"
+  }
+}

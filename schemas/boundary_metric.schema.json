@@ -1,0 +1,46 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://osolari.github.io/bayesbreak/schemas/boundary_metric-1.0.0.schema.json",
+  "title": "BayesBreak boundary metric record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "prediction_axis",
+    "reference_axis",
+    "tolerance",
+    "matching_rule",
+    "reference_type",
+    "matched_pairs",
+    "precision",
+    "recall",
+    "f1",
+    "mae_or_na",
+    "metric_version"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "prediction_axis": { "type": "string", "minLength": 1 },
+    "reference_axis": { "type": "string", "minLength": 1 },
+    "tolerance": { "type": "number", "minimum": 0 },
+    "matching_rule": {
+      "const": "maximum-cardinality-then-minimum-distance-one-to-one"
+    },
+    "reference_type": { "type": "string", "minLength": 1 },
+    "matched_pairs": {
+      "type": "array",
+      "items": {
+        "type": "array",
+        "prefixItems": [{ "type": "number" }, { "type": "number" }],
+        "items": false
+      }
+    },
+    "precision": { "type": "number", "minimum": 0, "maximum": 1 },
+    "recall": { "type": "number", "minimum": 0, "maximum": 1 },
+    "f1": { "type": "number", "minimum": 0, "maximum": 1 },
+    "mae_or_na": {
+      "oneOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
+    },
+    "metric_version": { "type": "string", "minLength": 1 }
+  }
+}

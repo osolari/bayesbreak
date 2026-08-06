@@ -1,0 +1,1072 @@
+{
+  "handoff_id": "HANDOFF-BB-CANONICAL-001",
+  "phase": "6",
+  "protected_thesis": "BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs. For supported observation models, family-specific segment marginal likelihoods and posterior moments enter common sum-product recursions for posterior quantities and a separate max-sum recursion with backtracking for the joint MAP partition. The implementation must preserve irregular-design priors, common and group-specific changepoints across multiple sequences, known groups, and the finite latent-group criterion stated in the manuscript.",
+  "do_not_change": [
+    "Do not change the manuscript title or replace generalized hierarchical Bayesian segmentation as the main scientific narrative without explicit author approval.",
+    "Do not overwrite populated archived numerical results; a corrected computation receives a new result ID and an explicit parent-result link.",
+    "Do not interpret the finite latent-group criterion as a normalized finite-mixture likelihood.",
+    "Do not use marginal changepoint modes as the joint MAP partition.",
+    "Do not treat agreement with BayesBreak MAP changepoints as accuracy against independent truth.",
+    "Do not use RES-BB-CMP-002 or RES-BB-RD-007Q in comparator or posterior-predictive conclusions.",
+    "Do not describe the method with vague branding; use the defined probability model, prior, recursion, optimization objective, metric, or numerical criterion."
+  ],
+  "environment": {
+    "python": "Use the pinned project environment; exact version reconciliation is CODE-BB-013.",
+    "test_commands": [
+      "python -m pytest -q",
+      "python -m pytest -q tests/test_dp_properties.py tests/test_dp_priors.py",
+      "python -m pytest -q tests/test_prediction.py tests/test_metrics.py"
+    ],
+    "build_commands": [
+      "latexmk -pdf -interaction=nonstopmode -halt-on-error book/main.tex",
+      "python scripts/validate_result_schema.py",
+      "python scripts/check_annotation_completeness.py"
+    ]
+  },
+  "data_schemas": {
+    "result_record": [
+      "result_id",
+      "parent_result_id",
+      "execution_status",
+      "scientific_interpretation",
+      "data_hash",
+      "config_hash",
+      "code_hash",
+      "metrics",
+      "artifacts"
+    ],
+    "boundary_metric": [
+      "prediction_axis",
+      "reference_axis",
+      "tolerance",
+      "matching_rule",
+      "matched_pairs",
+      "precision",
+      "recall",
+      "f1",
+      "mae_or_na"
+    ],
+    "approximation_error_record": [
+      "family",
+      "block_support_hash",
+      "reference_method",
+      "max_log_score_error",
+      "optimization_residual",
+      "tail_bound",
+      "quadrature_error",
+      "convergence_status"
+    ]
+  },
+  "tasks": [
+    {
+      "id": "CODE-BB-001",
+      "title": "Implement explicit segment-cohesion and boundary-hazard prior specification",
+      "files": "src/bayesbreak/priors.py;src/bayesbreak/design_prior.py;tests/test_priors.py",
+      "interfaces": "log_cohesion(i,j,x,config);log_boundary_hazard(j,x,config);partition_log_prior(t,x,config)",
+      "invariants": "hazard applies only to interior boundaries;regular-grid special case matches declared formula;local factors sum to normalized prior after DP normalizer",
+      "depends_on": "REV-BB-004",
+      "acceptance": "Analytic small-n enumeration and sensitivity fixtures pass."
+    },
+    {
+      "id": "CODE-BB-002",
+      "title": "Integrate repaired prior with exact DP and property tests",
+      "files": "src/bayesbreak/dp.py;tests/test_dp_priors.py;tests/test_dp_properties.py",
+      "interfaces": "local_partition_score(i,j,is_terminal,prior_config)",
+      "invariants": "sum-product and max-sum consume identical local prior factors;zero support is preserved;normalizers match exhaustive enumeration",
+      "depends_on": "CODE-BB-001;REV-BB-005",
+      "acceptance": "EPR-BB-001 randomized invariant suite passes."
+    },
+    {
+      "id": "CODE-BB-003",
+      "title": "Repair the finite latent-group criterion and restart selection",
+      "files": "src/bayesbreak/mixture.py;tests/test_mixture.py;tests/test_mixture_restarts.py",
+      "interfaces": "template_log_score;fit_score_templates;objective_trace_",
+      "invariants": "returned objective equals trace[-1];objective is monotone up to tolerance;selection uses final objective;API does not call the criterion a likelihood",
+      "depends_on": "REV-BB-007",
+      "acceptance": "All exit paths, ties, collapsed groups, and restart ordering tests pass."
+    },
+    {
+      "id": "CODE-BB-004",
+      "title": "Harden grouped and replicate log-domain aggregation",
+      "files": "src/bayesbreak/replicates.py;src/bayesbreak/groups.py;tests/test_replicates_stability.py",
+      "interfaces": "aggregate_block_log_evidence;shared_fit",
+      "invariants": "no direct exponentiation of unbounded log evidence;finite checks and diagnostic exceptions;small cases match high precision",
+      "depends_on": "REV-BB-006;REV-BB-012",
+      "acceptance": "Adversarial magnitude tests pass without overflow/underflow-induced ranking changes."
+    },
+    {
+      "id": "CODE-BB-005",
+      "title": "Add a schema for nonconjugate segment-error assessment",
+      "files": "src/bayesbreak/nonconjugate/error_bounds.py;src/bayesbreak/nonconjugate/integration.py;tests/test_nonconjugate_error_bounds.py",
+      "interfaces": "SegmentErrorRecord;evaluate_reachable_segment_error;propagate_partition_bounds",
+      "invariants": "reference and approximate values share block coordinates;tail and quadrature error are separate;global bound uses maximum reachable error",
+      "depends_on": "REV-BB-008",
+      "acceptance": "Nested tolerances tighten the verified bound or return an explicit failure state; synthetic propagation checks hold."
+    },
+    {
+      "id": "CODE-BB-006",
+      "title": "Implement Beta-observation posterior predictive scoring",
+      "files": "src/bayesbreak/families/beta_obs.py;tests/test_beta_obs_prediction.py",
+      "interfaces": "posterior_predictive_logpdf_block",
+      "invariants": "no Gaussian fallback;parameters respect Beta support;analytic/numerical reference agreement",
+      "depends_on": "REV-BB-009",
+      "acceptance": "Normalization/reference tests and edge-case finite checks pass."
+    },
+    {
+      "id": "CODE-BB-007",
+      "title": "Make extrapolation policy explicit",
+      "files": "src/bayesbreak/prediction.py;tests/test_prediction_support.py",
+      "interfaces": "predict(..., extrapolation=\"error\");assign_to_partition",
+      "invariants": "default rejects left/right out-of-range coordinates;named policies are recorded in provenance;in-range assignments are unchanged",
+      "depends_on": "REV-BB-009",
+      "acceptance": "Support-boundary and provenance tests pass for every policy."
+    },
+    {
+      "id": "CODE-BB-008",
+      "title": "Canonicalize boundary matching and metrics",
+      "files": "src/bayesbreak/metrics.py;tests/test_boundary_matching.py;scripts/baselines_metrics.py",
+      "interfaces": "match_boundaries_one_to_one;boundary_metrics",
+      "invariants": "maximum cardinality before minimum distance;no reference/prediction reuse;matched MAE is NA with zero matches;metric version recorded",
+      "depends_on": "REV-BB-009;REV-BB-010",
+      "acceptance": "Hand-computed, tie, empty, and symmetry fixtures pass."
+    },
+    {
+      "id": "CODE-BB-009",
+      "title": "Validate comparator axes and tuning budgets",
+      "files": "src/bayesbreak/comparators.py;scripts/run_comparators.py;tests/test_comparator_schemas.py",
+      "interfaces": "ComparatorInputSchema;TuningBudget;validate_axis",
+      "invariants": "multisequence methods receive raw matrix plus coordinate axis;flattening cannot pass schema validation;task type and tuning stratum are explicit",
+      "depends_on": "REV-BB-010",
+      "acceptance": "CGH cached single-trace artifact is rejected deterministically; valid raw matrix route is covered."
+    },
+    {
+      "id": "CODE-BB-010",
+      "title": "Version result and provenance schemas",
+      "files": "src/bayesbreak/provenance.py;schemas/result_sidecar.schema.json;tests/test_result_schema.py",
+      "interfaces": "ResultRecord;ResultStatus;write_sidecar",
+      "invariants": "executed/valid-for-stated-interpretation/excluded/planned are distinct;raw data, weights, split, configuration, environment, and output hashes are supported;absolute author paths are rejected in release mode",
+      "depends_on": "REV-BB-001;REV-BB-011",
+      "acceptance": "Every new sidecar validates and every archived sidecar has a documented migration/read-only path."
+    },
+    {
+      "id": "CODE-BB-011",
+      "title": "Synchronize real-data loaders, cards, captions, and hashes",
+      "files": "src/bayesbreak/datasets/;scripts/figures/;docs/data_cards/;tests/test_dataset_cards.py",
+      "interfaces": "DatasetCard;load_with_provenance",
+      "invariants": "source/date/n/stride/family/weights agree;external annotations have source and matching rule;MAP markers are never labeled external events",
+      "depends_on": "REV-BB-011;CODE-BB-010",
+      "acceptance": "Well-log, CGH, SPX, and methylKit cards validate against generated sidecars and captions."
+    },
+    {
+      "id": "CODE-BB-012",
+      "title": "Profile and re-run the full test suite",
+      "files": "pyproject.toml;environment-lock.*;.github/workflows/;tests/",
+      "interfaces": "test manifest;timeout marker;performance profile",
+      "invariants": "pass/skip/fail/unresolved reported separately;no bounded-run timeout is counted as pass;environment hash recorded",
+      "depends_on": "REV-BB-012",
+      "acceptance": "All required tests terminate under pinned profiles or remain explicitly blocked with owner and reason."
+    },
+    {
+      "id": "CODE-BB-013",
+      "title": "Reconcile version, CI, changelog, and preprint lineage",
+      "files": "pyproject.toml;src/bayesbreak/_version.py;CHANGELOG.md;README.md;CITATION.cff;docs/version_lineage.md;.github/workflows/",
+      "interfaces": "single version source;release provenance record",
+      "invariants": "badge points to existing workflow;generated version matches clean tag;preprint is lineage, not independent validation",
+      "depends_on": "REV-BB-012",
+      "acceptance": "Clean checkout reports one version and citation target; lineage table is complete."
+    },
+    {
+      "id": "CODE-BB-014",
+      "title": "Render canonical handoff and appendix fragments",
+      "files": "shared/handoffs/;book/appendices/coding_agent_handoff.tex;coding/CODING_AGENT_HANDOFF.md;scripts/check_sync.py",
+      "interfaces": "canonical handoff schema;Markdown renderer;LaTeX renderer",
+      "invariants": "stable IDs preserved;no manual divergent copies;hash of normalized content recorded",
+      "depends_on": "REV-BB-002;REV-BB-012",
+      "acceptance": "Book appendix and standalone handoff pass semantic and ID synchronization checks."
+    },
+    {
+      "id": "CODE-BB-015",
+      "title": "Regenerate figures and tables with semantic validation",
+      "files": "scripts/figures/;scripts/tables/;shared/tables/;tests/test_asset_semantics.py",
+      "interfaces": "asset sidecar;marker style registry;result-interpretation filter",
+      "invariants": "excluded archived values cannot enter incompatible scientific panels;planned cells remain visibly empty or planned;external, MAP, and contextual markers have distinct styles",
+      "depends_on": "REV-BB-001;REV-BB-010;REV-BB-011",
+      "acceptance": "Every figure/table has source hashes, status metadata, and caption anchor; visual QA passes."
+    },
+    {
+      "id": "CODE-BB-016",
+      "title": "Automate bibliography annotation completeness",
+      "files": "shared/bibliography/references.bib;shared/bibliography/annotated_entries/;scripts/check_annotations.py",
+      "interfaces": "annotation record schema;bibliography key scanner",
+      "invariants": "exactly one annotation per included key;each annotation has explicit project relationship;metadata verification status present",
+      "depends_on": "APP-BB-A;REV-BB-012",
+      "acceptance": "Completeness checker returns zero missing, duplicate, orphaned, or relationship-free entries."
+    }
+  ],
+  "experiments": [
+    {
+      "id": "EPR-BB-001",
+      "phase1_id": "EXP-BB-001",
+      "title": "Randomized exact-DP and semiring invariants",
+      "claims": "CLM-BB-001;CLM-BB-003;CLM-BB-004",
+      "status": "executed plus expansion planned",
+      "hypothesis": "Sum-product and max-sum implementations match exhaustive enumeration on all sampled admissible finite cases.",
+      "competing": "Agreement is limited to hand-picked priors or benign support.",
+      "design": "Property-based generation over n, k_max, local scores, zero-support blocks, priors, and ties; compare evidence, P(k), marginals, and joint MAP.",
+      "metrics": "absolute/relative error, normalization error, exact partition equality, failure count with seed.",
+      "uncertainty": "At least 1,000 deterministic seeded cases per configuration family; report zero-failure upper bound.",
+      "dependencies": "CODE-BB-002;CODE-BB-012",
+      "output": "tests and a machine-readable invariant report."
+    },
+    {
+      "id": "EPR-BB-002",
+      "phase1_id": "EXP-BB-002",
+      "title": "Conjugate-family recovery and null/misspecification grid",
+      "claims": "CLM-BB-002;CLM-BB-013",
+      "status": "executed real values plus expanded protocol planned",
+      "hypothesis": "The common interface preserves calibrated segmentation behavior across supported families when their data model is correct.",
+      "competing": "Apparent portability is driven by a narrow SNR or tuned prior.",
+      "design": "Factorial grid over family, n, segment count, spacing, SNR, weight/exposure patterns, null data, and selected misspecification.",
+      "metrics": "boundary precision/recall/F1 under external truth, k error, posterior coverage, log evidence, runtime.",
+      "uncertainty": "Predeclared repetitions with bootstrap or t-intervals by cell and family-level multiplicity control for headline contrasts.",
+      "dependencies": "CODE-BB-001;CODE-BB-002;CODE-BB-010",
+      "output": "family performance table, calibration plots, and null-control table."
+    },
+    {
+      "id": "EPR-BB-003",
+      "phase1_id": "EXP-BB-003",
+      "title": "Boundary posterior calibration",
+      "claims": "CLM-BB-003;CLM-BB-013",
+      "status": "executed ECE/Brier values retained; expanded uncertainty and calibration checks planned",
+      "hypothesis": "Bayes curve probabilities are calibrated for the declared model after marginalizing over k.",
+      "competing": "Low aggregate ECE is caused by severe class imbalance or bin choices.",
+      "design": "Repeated simulated datasets with fixed-k and k-marginalized posterior variants; preregistered equal-width and equal-mass bins.",
+      "metrics": "Brier, log score, ECE, reliability slope/intercept, prevalence, calibration curves.",
+      "uncertainty": "Dataset-level intervals and paired comparison of fixed-k versus marginalized variants.",
+      "dependencies": "CODE-BB-002;CODE-BB-010",
+      "output": "calibration figure with intervals and protocol sidecar."
+    },
+    {
+      "id": "EPR-BB-004",
+      "phase1_id": "EXP-BB-004",
+      "title": "Segment-count and SNR behavior",
+      "claims": "CLM-BB-003;CLM-BB-013",
+      "status": "executed plus interpretation expansion planned",
+      "hypothesis": "Posterior uncertainty over k changes predictably with signal strength and prior concentration.",
+      "competing": "Observed k behavior is a prior artifact or oversegmentation bias.",
+      "design": "Cross SNR, n, true k, minimum segment length, and prior settings; include no-change and dense-change controls.",
+      "metrics": "P(k_true), posterior entropy, k bias, boundary loss, false discoveries.",
+      "uncertainty": "Repeated-seed intervals and decomposition by prior regime.",
+      "dependencies": "CODE-BB-001;CODE-BB-002",
+      "output": "k-posterior panels and falsification table."
+    },
+    {
+      "id": "EPR-BB-005",
+      "phase1_id": "EXP-BB-005",
+      "title": "Finite latent-group criterion stress test",
+      "claims": "CLM-BB-008;CLM-BB-009;CLM-BB-013",
+      "status": "archived 96 percent value real; rerun required after semantic/code repair",
+      "hypothesis": "Coordinate updates monotonically improve the stated score and recover shared templates in identifiable finite simulations.",
+      "competing": "Recovery is restart luck, label coding, or collapse under overspecified G.",
+      "design": "Vary S, G_true/G_fit, n, noise, template separation, imbalance, initialization, and collapsed/duplicate templates.",
+      "metrics": "objective monotonicity, final objective, label-invariant ARI, template distance, collapse rate, restart selection stability.",
+      "uncertainty": "At least 50 datasets per cell and multiple restarts; paired pre/post repair diagnostic.",
+      "dependencies": "CODE-BB-003;CODE-BB-012",
+      "output": "stress-test table, objective traces, and regression report."
+    },
+    {
+      "id": "EPR-BB-006",
+      "phase1_id": "EXP-BB-006",
+      "title": "Shared-boundary weak-signal pooling",
+      "claims": "CLM-BB-006;CLM-BB-007",
+      "status": "executed supplementary outputs plus fair comparison planned",
+      "hypothesis": "Exact shared-boundary pooling improves boundary recovery when multiple subjects share changes and individual signals are weak.",
+      "competing": "Gains are caused by forced-sharing bias or tuned k.",
+      "design": "Vary subject count, information heterogeneity, shared fraction, subject-specific deviations, noise, and prior; compare shared, independent, and suitable multisequence methods.",
+      "metrics": "external-truth boundary loss, k error, calibration, predictive score under a common joint target, runtime.",
+      "uncertainty": "Repeated datasets with paired contrasts and heterogeneity-stratified intervals.",
+      "dependencies": "CODE-BB-004;CODE-BB-009;CODE-BB-010",
+      "output": "pooling benefit/failure surface and model-assumption table."
+    },
+    {
+      "id": "EPR-BB-007",
+      "phase1_id": "EXP-BB-007",
+      "title": "Nonconjugate local certificate and global sensitivity",
+      "claims": "CLM-BB-010;CLM-BB-011",
+      "status": "real benchmark values retained; certification expansion planned",
+      "hypothesis": "Measured reachable-block log-score tolerances predict the observed perturbation of evidence and posterior summaries.",
+      "competing": "Average block error hides rare reachable blocks that dominate the posterior.",
+      "design": "Construct high-accuracy references, census or sample all reachable blocks, separate truncation from numerical error, and rerun DP at nested tolerances.",
+      "metrics": "max/quantile block error, evidence ratio, posterior-odds distortion, TV distance, boundary/k changes, time/memory.",
+      "uncertainty": "Multiple datasets and tolerance ladders; deterministic reference checks where possible.",
+      "dependencies": "CODE-BB-005;CODE-BB-012",
+      "output": "certificate files and segment-to-partition error-bound table."
+    },
+    {
+      "id": "EPR-BB-008",
+      "phase1_id": "EXP-BB-008",
+      "title": "Runtime and memory decomposition",
+      "claims": "CLM-BB-003;CLM-BB-013",
+      "status": "real local slopes retained; extended scaling planned",
+      "hypothesis": "Measured cost decomposes into block construction and O(k_max n^2) DP transitions with predictable memory scaling.",
+      "competing": "Near-linear local slopes reflect cache/warmup or a narrow n range, not algorithmic structure.",
+      "design": "Extend n and k_max until resource limits; separate cold/warm cache, block construction, DP, backtracking, and I/O; use fixed hardware and repeated runs.",
+      "metrics": "wall time, CPU time, peak RSS, transition count, slope by range, residuals against n^2 k model.",
+      "uncertainty": "Median and dispersion across repetitions, machines reported separately.",
+      "dependencies": "CODE-BB-012",
+      "output": "scaling curves, resource table, and profiler artifacts."
+    },
+    {
+      "id": "EPR-BB-009",
+      "phase1_id": "EXP-BB-RD-001",
+      "title": "Well-log prior sensitivity case study",
+      "claims": "CLM-BB-005;CLM-BB-014",
+      "status": "two executed real fits retained",
+      "hypothesis": "Cohesion and boundary-hazard choices change segmentation in interpretable ways without being mislabeled as external accuracy.",
+      "competing": "Differences are arbitrary prior sensitivity with no physical interpretation.",
+      "design": "Reproduce archived index-uniform and length-aware fits, then vary repaired c/h choices on the same 507-point stride-8 series.",
+      "metrics": "k_hat, log evidence within a common model family, boundary stability, posterior uncertainty, runtime.",
+      "uncertainty": "Sensitivity grid rather than sampling uncertainty; external annotations only if independently verified.",
+      "dependencies": "CODE-BB-001;CODE-BB-011;CODE-BB-015",
+      "output": "case-study figure, prior sensitivity table, provenance card."
+    },
+    {
+      "id": "EPR-BB-010",
+      "phase1_id": "EXP-BB-RD-002",
+      "title": "Array-CGH shared-boundary case study",
+      "claims": "CLM-BB-006;CLM-BB-014",
+      "status": "43 by 2215 executed fits retained; invalid comparator excluded from comparator conclusions",
+      "hypothesis": "The shared model provides a coherent common-boundary summary across the multisequence matrix.",
+      "competing": "Forced sharing obscures subject-specific changes or comparator conclusions arise from axis mismatch.",
+      "design": "Reproduce shared and independent fits; validate axis before every comparator; use raw matrix for multisequence baselines and common joint targets for model comparison.",
+      "metrics": "boundary summaries, subject fit diagnostics, predictive/common-target scores, external annotations when verified, runtime.",
+      "uncertainty": "Subject bootstrap or simulation-based uncertainty where scientifically justified; no pseudo-replication across probes.",
+      "dependencies": "CODE-BB-004;CODE-BB-009;CODE-BB-011;CODE-BB-015",
+      "output": "valid multiple-sequence comparison table and provenance link to the excluded computation."
+    },
+    {
+      "id": "EPR-BB-011",
+      "phase1_id": "EXP-BB-RD-003",
+      "title": "SPX regime case study",
+      "claims": "CLM-BB-014",
+      "status": "Gaussian and Bernoulli fits are executed real results",
+      "hypothesis": "The two declared observation models expose different posterior regime summaries over 2015-2023.",
+      "competing": "Event alignment is post hoc and family evidence values are incommensurate.",
+      "design": "Reproduce stride-4 n=566 fits, define response transformations, and predeclare any out-of-sample or contextual-event analysis.",
+      "metrics": "k_hat, within-model evidence, posterior uncertainty, predictive score under declared target, qualitative event overlay.",
+      "uncertainty": "Block-aware time split or rolling evaluation for predictive claims; event overlay remains descriptive.",
+      "dependencies": "CODE-BB-007;CODE-BB-011;CODE-BB-015",
+      "output": "synchronized case-study figure/caption/data card."
+    },
+    {
+      "id": "EPR-BB-012",
+      "phase1_id": "EXP-BB-RD-004",
+      "title": "MethylKit chr21 segmentation and predictive repair",
+      "claims": "CLM-BB-002;CLM-BB-012;CLM-BB-014",
+      "status": "segmentation real; archived held-out value excluded from predictive conclusions; rerun planned",
+      "hypothesis": "A family-correct Beta-observation predictive distribution yields a valid held-out score on a scientifically justified in-support split.",
+      "competing": "The apparent score was an artifact of Gaussian fallback and endpoint clipping.",
+      "design": "Use exact executed methylKit test1.myCpG chr21 source, hash weights/split, implement Beta predictive, keep test coordinates in declared support or use named extrapolation, repeat block-aware splits.",
+      "metrics": "total and mean log predictive score with denominator m, calibration where defined, k_hat, boundary stability, runtime.",
+      "uncertainty": "Repeated splits with intervals; second region/cell type remains planned until sourced.",
+      "dependencies": "CODE-BB-006;CODE-BB-007;CODE-BB-010;CODE-BB-011",
+      "output": "new sidecar with lineage to the excluded value and corrected figure/table."
+    },
+    {
+      "id": "EPR-BB-013",
+      "phase1_id": "EXP-BB-009",
+      "title": "Comparator agreement, tuning fairness, and external accuracy",
+      "claims": "CLM-BB-014",
+      "status": "non-CGH archived agreement values real; fair comparison planned",
+      "hypothesis": "Conclusions remain stable when matched-k agreement, independently tuned prediction, and external-truth accuracy are reported as separate tasks.",
+      "competing": "Reported superiority is induced by BayesBreak-referenced labels or asymmetric tuning.",
+      "design": "Three strata: matched-k diagnostic, equal-budget prediction tuning, and external annotation/simulation truth; canonical one-to-one matcher.",
+      "metrics": "agreement F1/Jaccard/matched MAE, predictive proper score, external precision/recall/F1, runtime and tuning cost.",
+      "uncertainty": "Repeated splits/datasets and paired intervals; NA when no matched boundaries.",
+      "dependencies": "CODE-BB-008;CODE-BB-009;CODE-BB-010",
+      "output": "task-separated comparator table and tuning ledger."
+    },
+    {
+      "id": "EPR-BB-014",
+      "phase1_id": "EXP-BB-010",
+      "title": "Family-specific posterior-prediction tests",
+      "claims": "CLM-BB-012",
+      "status": "partial tests; expansion required",
+      "hypothesis": "Every family produces finite, normalized or correctly generalized predictive scores on supported inputs and rejects unsupported extrapolation by default.",
+      "competing": "Base-class fallbacks hide family-specific errors.",
+      "design": "Unit and integration cases for each family, MAP versus model-averaged prediction, left/right out-of-range coordinates, zero weights, edge parameters, and invalid inputs.",
+      "metrics": "analytic/reference agreement, finite checks, normalization where applicable, expected exceptions, reproducibility.",
+      "uncertainty": "Deterministic tests plus randomized property cases.",
+      "dependencies": "CODE-BB-006;CODE-BB-007;CODE-BB-012",
+      "output": "prediction certification report."
+    },
+    {
+      "id": "EPR-BB-015",
+      "phase1_id": "EXP-BB-011",
+      "title": "Misspecification, failure-boundary, and negative-control suite",
+      "claims": "CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013",
+      "status": "planned",
+      "hypothesis": "BayesBreak fails in predictable, detectable ways under declared boundary cases.",
+      "competing": "Diagnostics remain optimistic under heavy tails, zero inflation, dense changes, unequal information, or adversarial priors.",
+      "design": "Heavy tails, zero inflation, no change, dense change, short segments, unequal subject information, grid refinement, approximation failure, and prior conflict.",
+      "metrics": "false discoveries, missed changes, posterior entropy/calibration, certificate failure, runtime, warning/error behavior.",
+      "uncertainty": "Predeclared repetitions and regime-wise intervals; report reversed and null outcomes.",
+      "dependencies": "CODE-BB-001;CODE-BB-005;CODE-BB-010;CODE-BB-012",
+      "output": "failure map and decision thresholds."
+    }
+  ],
+  "claims": [
+    {
+      "claim_id": "CLM-BB-001",
+      "claim": "For any finite array of segment marginal likelihoods and a partition prior that factorizes over admissible segments or transitions, the same contiguous-partition recursions compute posterior sums and posterior maxima.",
+      "status": "established by derivation; exact-regime implementation checks support the finite algorithms",
+      "confidence": "high",
+      "disposition": "retain as the central computational statement",
+      "source_anchor": "docs/report/sections/2.problem.tex; 4.method.tex; src/bayesbreak/base.py; dp.py",
+      "obligation": "Position the recursions within established Bayesian changepoint and product-partition literature; do not claim that dynamic programming itself is new.",
+      "workstream_ids": "REV-BB-002;REV-BB-005",
+      "book_chapter_ids": "CH-BB-01;CH-BB-02;CH-BB-12;CH-BB-16",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-001",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-002",
+      "claim": "For supported regular exponential-family segment models with proper conjugate priors and finite normalizing constants, cumulative sufficient statistics determine exact segment marginal likelihoods and posterior moments.",
+      "status": "exactly derived under the stated regularity, propriety, integrability, and moment conditions",
+      "confidence": "high",
+      "disposition": "retain",
+      "source_anchor": "docs/report/sections/4.method.tex:54-125, 1088-1267",
+      "obligation": "Keep exposures or trial counts distinct from optional likelihood-power weights and state family-specific moment conditions.",
+      "workstream_ids": "REV-BB-003",
+      "book_chapter_ids": "CH-BB-03;CH-BB-04;CH-BB-13",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-04;PPR-BB-08;PPR-BB-09",
+      "experiment_protocol_ids": "EPR-BB-002;EPR-BB-012",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-003",
+      "claim": "The sum-product recursion yields fixed-count marginal likelihoods, the posterior distribution of the segment count, changepoint marginals, and partition-averaged signal moments for the declared factorized model.",
+      "status": "established by complete derivation and finite exhaustive-enumeration or invariant checks",
+      "confidence": "high",
+      "disposition": "retain and position against established exact Bayesian changepoint recursions",
+      "source_anchor": "docs/report/sections/4.method.tex:150-486; tests/test_dp*.py",
+      "obligation": "State the exact regime, admissible support, and prior normalization precisely.",
+      "workstream_ids": "REV-BB-005",
+      "book_chapter_ids": "CH-BB-02;CH-BB-05;CH-BB-13",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-05;PPR-BB-08;PPR-BB-09",
+      "experiment_protocol_ids": "EPR-BB-001;EPR-BB-003;EPR-BB-004;EPR-BB-008",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-004",
+      "claim": "A separate max-sum recursion with deterministic backtracking returns the joint MAP partition; marginal changepoint modes need not do so.",
+      "status": "established with a complete proof immediately after the statement",
+      "confidence": "high",
+      "disposition": "retain",
+      "source_anchor": "docs/report/sections/5.algorithms.tex:149-164; 8.appendix.tex:439-462",
+      "obligation": "Preserve the distinction between marginal posterior summaries and joint optimization in code and reporting.",
+      "workstream_ids": "REV-BB-005",
+      "book_chapter_ids": "CH-BB-06",
+      "main_paper_section_ids": "PPR-BB-05",
+      "experiment_protocol_ids": "EPR-BB-001",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-005",
+      "claim": "Irregular coordinates can enter through distinct segment-cohesion and interior-boundary-hazard factors while preserving the factorization required by dynamic programming.",
+      "status": "established at the model and recursion level; package implementation of the separated factors remains planned",
+      "confidence": "high for the formulation; implementation pending",
+      "disposition": "retain and implement without changing the partition recursions",
+      "source_anchor": "docs/report/sections/4.method.tex:580-697",
+      "obligation": "Implement and test the factors separately; do not attribute a Poisson-gap interpretation to a segment-length cohesion unless the probability model matches that derivation.",
+      "workstream_ids": "REV-BB-004",
+      "book_chapter_ids": "CH-BB-02;CH-BB-03;CH-BB-07;CH-BB-14",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-04;PPR-BB-06;PPR-BB-08;PPR-BB-10",
+      "experiment_protocol_ids": "EPR-BB-009;EPR-BB-015",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-006",
+      "claim": "For aligned sequences that are conditionally independent given a common partition, sequence-specific segment marginal likelihoods multiply before the same partition recursion is applied.",
+      "status": "established algebraically",
+      "confidence": "high",
+      "disposition": "retain",
+      "source_anchor": "docs/report/sections/4.method.tex:699-785; src/bayesbreak/replicates.py",
+      "obligation": "Use log-domain aggregation, validate aligned coordinates, and compare marginal likelihoods only between explicitly specified probability models.",
+      "workstream_ids": "REV-BB-006",
+      "book_chapter_ids": "CH-BB-02;CH-BB-08;CH-BB-13;CH-BB-14",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-06;PPR-BB-08;PPR-BB-09;PPR-BB-10",
+      "experiment_protocol_ids": "EPR-BB-006;EPR-BB-010",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-007",
+      "claim": "On a finite candidate set, the posterior for a common partition concentrates on the distinguished partition under a positive average expected log-score gap and suitable law-of-large-numbers conditions.",
+      "status": "established under the stated finite-candidate assumptions",
+      "confidence": "high under assumptions",
+      "disposition": "retain in the repaired form",
+      "source_anchor": "docs/report/sections/4.method.tex:787-827",
+      "obligation": "Do not claim that one informative sequence is sufficient as the number of sequences grows, and do not treat exponential-family identifiability as an automatic substitute for the score-gap condition.",
+      "workstream_ids": "REV-BB-006",
+      "book_chapter_ids": "CH-BB-08;CH-BB-15",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-06;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-006;EPR-BB-015",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-008",
+      "claim": "The finite latent-group criterion admits a Jensen minorization with normalized auxiliary weights, and each template update is solved by a responsibility-weighted max-sum recursion.",
+      "status": "the optimization statements are established for the stated finite criterion; one implementation path returns a stale final objective",
+      "confidence": "high for the derivation; implementation repair required",
+      "disposition": "retain as a finite latent-group minorization--maximization method",
+      "source_anchor": "docs/report/sections/4.method.tex:843-1016; src/bayesbreak/mixture.py:397-478",
+      "obligation": "Return the final objective on every exit path, test restart selection, and avoid normalized finite-mixture likelihood language.",
+      "workstream_ids": "REV-BB-007",
+      "book_chapter_ids": "CH-BB-02;CH-BB-09;CH-BB-13",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-07;PPR-BB-08;PPR-BB-09",
+      "experiment_protocol_ids": "EPR-BB-005",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-009",
+      "claim": "The current finite latent-group criterion is a normalized finite-mixture sampling density identifiable up to label permutation.",
+      "status": "not established and not asserted by the corrected manuscript",
+      "confidence": "low",
+      "disposition": "exclude from current claims; retain a normalized probabilistic mixture only as separate future work",
+      "source_anchor": "docs/report/sections/4.method.tex:883-919; 8.appendix.tex:220-252",
+      "obligation": "A normalized mixture would require a new probability model, identifiability analysis, implementation, and rerun of affected experiments.",
+      "workstream_ids": "REV-BB-007",
+      "book_chapter_ids": "CH-BB-09;CH-BB-15",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-07;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-005",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-010",
+      "claim": "A uniform error bound on reachable segment log marginal likelihoods gives explicit bounds on partition marginal likelihoods and posterior odds.",
+      "status": "established conditionally on the uniform segmentwise error assumption",
+      "confidence": "high under assumptions",
+      "disposition": "retain",
+      "source_anchor": "docs/report/sections/4.method.tex:1753-1851",
+      "obligation": "Distinguish bounds for marginal likelihoods, odds, probabilities, and ranking margins.",
+      "workstream_ids": "REV-BB-008",
+      "book_chapter_ids": "CH-BB-10;CH-BB-13;CH-BB-15",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-07;PPR-BB-08;PPR-BB-09;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-007;EPR-BB-015",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-011",
+      "claim": "Specific Laplace, quadrature, variational, Polya--Gamma, and expectation-propagation routines satisfy uniform rates over all reachable segments.",
+      "status": "proof obligation; no routine-wide rate is used as an established claim",
+      "confidence": "low without method-specific assumptions",
+      "disposition": "retain only as a bounded proof obligation or replace by numerical segment-error assessment",
+      "source_anchor": "docs/report/sections/4.method.tex:1450-1884; 8.appendix.tex:464-505",
+      "obligation": "State method-specific regularity assumptions and complete proofs, or report numerical segment-error records without a rate claim.",
+      "workstream_ids": "REV-BB-008",
+      "book_chapter_ids": "CH-BB-10",
+      "main_paper_section_ids": "PPR-BB-07",
+      "experiment_protocol_ids": "EPR-BB-007;EPR-BB-015",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-012",
+      "claim": "Posterior prediction must use the fitted observation family and an explicit coordinate-support or extrapolation rule.",
+      "status": "statistical requirement established; package coverage is incomplete for Beta observations and out-of-range coordinates",
+      "confidence": "high for the requirement; implementation pending",
+      "disposition": "retain and repair the implementation",
+      "source_anchor": "docs/report/sections/4.method.tex:1960-2140; src/bayesbreak/prediction.py",
+      "obligation": "Implement Beta-observation posterior prediction, reject unsupported family fallbacks, and record the extrapolation policy.",
+      "workstream_ids": "REV-BB-009",
+      "book_chapter_ids": "CH-BB-11;CH-BB-14;CH-BB-15",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-07;PPR-BB-08;PPR-BB-10;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-012;EPR-BB-014",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-013",
+      "claim": "The populated synthetic recovery, calibration, latent-group, approximation, model-selection, and timing values are real executed results for their recorded designs.",
+      "status": "empirically supported by archived outputs; scope remains design-specific",
+      "confidence": "high for execution provenance",
+      "disposition": "retain all populated values read-only",
+      "source_anchor": "docs/report/figures; tables; scripts; sidecars",
+      "obligation": "Add repetitions, uncertainty, falsifying cases, and larger scaling studies before making broader empirical claims.",
+      "workstream_ids": "REV-BB-010",
+      "book_chapter_ids": "CH-BB-12;CH-BB-13;CH-BB-15;CH-BB-16",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-08;PPR-BB-09;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-002;EPR-BB-003;EPR-BB-004;EPR-BB-005;EPR-BB-008;EPR-BB-015",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    },
+    {
+      "claim_id": "CLM-BB-014",
+      "claim": "The four populated real-data fits and populated comparator outputs are real executed computations, with interpretation determined by their coordinate, reference, model, and metric definitions.",
+      "status": "all populated outputs are real executions; two historical calculations are excluded from their stated comparator or predictive conclusions",
+      "confidence": "high for execution provenance; interpretation varies by result",
+      "disposition": "retain values, state limitations, and exclude invalid interpretations",
+      "source_anchor": "docs/report/figures/realdata_metrics.json; baselines_metrics.json; fitcache",
+      "obligation": "Do not use the incompatible-axis CGH comparator or invalid methylation predictive score in the corresponding scientific conclusions; corrected runs require new result IDs and parent links.",
+      "workstream_ids": "REV-BB-010;REV-BB-011",
+      "book_chapter_ids": "CH-BB-14;CH-BB-16",
+      "main_paper_section_ids": "PPR-BB-01;PPR-BB-08;PPR-BB-10;PPR-BB-11",
+      "experiment_protocol_ids": "EPR-BB-009;EPR-BB-010;EPR-BB-011;EPR-BB-012;EPR-BB-013",
+      "language_rule": "Use no stronger status than is supported by the mapped proof or empirical result."
+    }
+  ],
+  "results": [
+    {
+      "result_id": "RES-BB-SYN-001",
+      "asset": "Boundary calibration figure/table",
+      "classification": "real",
+      "populated_values": "ECE approximately 0.010; Brier approximately 0.011",
+      "interpretation_limit": "Archived synthetic protocol; uncertainty/repetition reporting must be expanded.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-002",
+      "asset": "Latent-group simulation",
+      "classification": "real",
+      "populated_values": "96% hard recovery at sigma=1.0, n_seq=24",
+      "interpretation_limit": "Behavior under current template-score objective; not proof of normalized mixture identifiability.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-003",
+      "asset": "Runtime scaling",
+      "classification": "real",
+      "populated_values": "Empirical slopes about 1.07 (k_max=10) and 1.14 (k_max=20), n=50..800",
+      "interpretation_limit": "Local empirical slopes, not algorithmic complexity or evidence of asymptotically linear runtime.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-004",
+      "asset": "Conjugate-family and nonconjugate tables/figures",
+      "classification": "real",
+      "populated_values": "All populated generated cells",
+      "interpretation_limit": "Routine-specific theoretical rates are not established by the benchmark.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-001",
+      "asset": "Well-log index-uniform fit",
+      "classification": "real",
+      "populated_values": "k_hat=23; log evidence=-4989.283473023698",
+      "interpretation_limit": "No verified external-boundary ECE; keep absent cell planned.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-002",
+      "asset": "Well-log length-aware fit",
+      "classification": "real",
+      "populated_values": "k_hat=25; log evidence=-4997.147814570523; runtime=1.9062122921459377 s",
+      "interpretation_limit": "Prior is real as implemented, but its Poisson-gap interpretation is not supported.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-003",
+      "asset": "Array-CGH shared-boundary fit",
+      "classification": "real",
+      "populated_values": "k_hat=15; pooled log evidence=76359.79958695151",
+      "interpretation_limit": "Not directly comparable as a Bayes factor with the independent evidence sum.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-004",
+      "asset": "Array-CGH independent fits",
+      "classification": "real",
+      "populated_values": "sum of per-subject log evidence=109617.69544504143",
+      "interpretation_limit": "Different factorization; no single k_hat; invalid single-trace comparator artifact excluded.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-005",
+      "asset": "SPX Gaussian fit",
+      "classification": "real",
+      "populated_values": "k_hat=29; log evidence=-1296.6537252802884",
+      "interpretation_limit": "Macro-event alignment is contextual/qualitative, not ground-truth accuracy.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-006",
+      "asset": "SPX Bernoulli threshold fit",
+      "classification": "real",
+      "populated_values": "k_hat=50; log evidence=-114.41004640965144; runtime=1.7720804999116808 s",
+      "interpretation_limit": "Different observation model; evidence not directly compared across responses without a common data model.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-007",
+      "asset": "Methylation region-A segmentation fit",
+      "classification": "real",
+      "populated_values": "k_hat=15; log evidence=-9518.667508691196; n=1904",
+      "interpretation_limit": "Executed methylKit test1.myCpG chr21 case study; second region/cell type and external atlas metrics remain planned; weight hash missing.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-CMP-001",
+      "asset": "Well-log/SPX/methylation comparator sidecar",
+      "classification": "real diagnostic",
+      "populated_values": "All populated F1/Jaccard/MAE/runtime values",
+      "interpretation_limit": "Agreement with BayesBreak, not external accuracy; asymmetric tuning.",
+      "interpretation_status": "real diagnostic",
+      "release_action": "Use only as agreement/sensitivity diagnostic and relabel reference explicitly.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-CMP-002",
+      "asset": "CGH comparator sidecar rows",
+      "classification": "real computation; invalid comparison definition",
+      "populated_values": "Runs on incompatible cached map-curve axis",
+      "interpretation_limit": "Exclude from statistical comparisons because the cached comparator output and the BayesBreak reference use incompatible coordinate axes; retain as a historical computation.",
+      "interpretation_status": "excluded from comparator conclusions",
+      "release_action": "Retain the historical value and documented axis mismatch; omit it from scientific comparison until a valid raw-matrix rerun receives a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-QA-001",
+      "asset": "Mixture stale-objective diagnostic",
+      "classification": "real Phase 1 QA execution",
+      "populated_values": "1 of 3 restarts violated returned==final trace; difference 0.003137360860080 in the reproducing run",
+      "interpretation_limit": "Implementation diagnostic, not a manuscript performance result.",
+      "interpretation_status": "implementation verification result",
+      "release_action": "Use in implementation and reproducibility discussion, not as a performance result.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-007Q",
+      "asset": "Methylation archived held-out score",
+      "classification": "real computation; invalid predictive definition",
+      "populated_values": "held_out_loglik=-387.50040013308154 on m=381",
+      "interpretation_limit": "BetaObs uses Gaussian fallback and all post-training coordinates are silently clipped to the endpoint MAP block; not a valid Beta held-out predictive likelihood.",
+      "interpretation_status": "excluded from posterior-predictive conclusions",
+      "release_action": "Retain the exact archived value and documented failure mechanism; replace its scientific use only after the Beta predictive calculation and coordinate-support rule are repaired and rerun.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-QA-002",
+      "asset": "Current Phase 1 test verification",
+      "classification": "real Phase 1 QA execution",
+      "populated_values": "179 collected; 157 passed; 5 skipped; 17 unresolved under bounded runs",
+      "interpretation_limit": "Unresolved grouped-mixture and nonconjugate cases are neither passes nor failures; historical 174/5 log is provenance only.",
+      "interpretation_status": "implementation verification result",
+      "release_action": "Report 157 passed, 5 skipped, and 17 unresolved exactly; retain the historical 174/5 run only as an earlier verification record.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-QA-003",
+      "asset": "Independent Phase 6 bounded test verification",
+      "classification": "real Phase 6 QA execution",
+      "populated_values": "179 collected; 173 passed; 5 skipped; 1 unresolved under a 20-second per-test cap; 0 failed",
+      "interpretation_limit": "The EP logistic-normal test exceeded the declared per-test time cap; a timeout is neither a pass nor a failure. This verification did not modify package code.",
+      "interpretation_status": "implementation verification result",
+      "release_action": "Report this as the current bounded verification and retain RES-BB-QA-002 as the historical Phase 1 verification state.",
+      "rerun_in_phase2": "no"
+    }
+  ],
+  "definition_of_done": [
+    "The exact title and generalized hierarchical Bayesian segmentation narrative remain unchanged across the book, main paper, executive summary, code handoff, and presentation handoffs.",
+    "Exact finite-case dynamic-programming properties match exhaustive enumeration under seeded tests.",
+    "Posterior prediction is family-specific and out-of-range coordinates follow an explicit recorded policy.",
+    "Comparator axes, reference type, matching rule, and tuning budget are validated before metric computation.",
+    "Every corrected result has a new ID, a parent link, and data, configuration, code, and environment hashes; archived populated values remain unchanged.",
+    "Book appendix, standalone coding handoff, repository registries, figures, tables, and metadata pass synchronization checks.",
+    "Every unresolved proof, test, computation, annotation, or release decision is stated directly rather than represented as complete."
+  ],
+  "non_goals": [
+    "No normalized latent-mixture model is implemented in this work program.",
+    "No online changepoint detector, slope-change model, or graph segmentation method is introduced.",
+    "No archived result is silently corrected in place.",
+    "No fixed package version, compute budget, or completion date is invented before version and resource profiling are resolved.",
+    "No slide deck is generated by this manuscript workflow."
+  ],
+  "repository_bootstrap": {
+    "root": "coding/repository_skeleton",
+    "status": "interface blueprint; scientific implementation intentionally incomplete",
+    "python": "Use a pinned environment selected during CODE-BB-012; the exact package version source is unresolved under CODE-BB-013.",
+    "install_note": "Do not publish or install the skeleton as a completed BayesBreak release. It exists to expose approved modules, schemas, task IDs, and explicit incomplete states.",
+    "required_top_level": [
+      "src/bayesbreak",
+      "tests",
+      "configs",
+      "schemas",
+      "experiments",
+      "scripts",
+      "data",
+      "docs/data_cards",
+      "artifacts",
+      "provenance"
+    ]
+  },
+  "module_ownership": [
+    {
+      "path": "src/bayesbreak/families/",
+      "responsibility": "Observation-family segment marginal likelihoods, posterior moments, and family-specific posterior prediction.",
+      "tasks": "CODE-BB-005;CODE-BB-006"
+    },
+    {
+      "path": "src/bayesbreak/priors.py;src/bayesbreak/design_prior.py",
+      "responsibility": "Segment cohesion, interior-boundary hazard, and partition-prior factors.",
+      "tasks": "CODE-BB-001;CODE-BB-002"
+    },
+    {
+      "path": "src/bayesbreak/dp.py;src/bayesbreak/map.py;src/bayesbreak/posterior.py",
+      "responsibility": "Sum-product posterior calculations, max-sum joint MAP recovery, and posterior summaries.",
+      "tasks": "CODE-BB-002"
+    },
+    {
+      "path": "src/bayesbreak/replicates.py;src/bayesbreak/groups.py",
+      "responsibility": "Common-partition pooling and known-group fits with stable log-domain aggregation.",
+      "tasks": "CODE-BB-004"
+    },
+    {
+      "path": "src/bayesbreak/mixture.py",
+      "responsibility": "Finite latent-group minorization--maximization and restart selection.",
+      "tasks": "CODE-BB-003"
+    },
+    {
+      "path": "src/bayesbreak/prediction.py",
+      "responsibility": "Coordinate assignment, explicit extrapolation, and family-specific posterior prediction.",
+      "tasks": "CODE-BB-006;CODE-BB-007"
+    },
+    {
+      "path": "src/bayesbreak/metrics.py;src/bayesbreak/comparators.py",
+      "responsibility": "One-to-one boundary matching, metrics, comparator-axis validation, and tuning-budget records.",
+      "tasks": "CODE-BB-008;CODE-BB-009"
+    },
+    {
+      "path": "src/bayesbreak/provenance.py;schemas/",
+      "responsibility": "Versioned result records, parent links, hashes, interpretation status, and schema validation.",
+      "tasks": "CODE-BB-010"
+    },
+    {
+      "path": "src/bayesbreak/datasets/;docs/data_cards/",
+      "responsibility": "Data loading, provenance, preprocessing descriptions, and application-specific cards.",
+      "tasks": "CODE-BB-011"
+    },
+    {
+      "path": "tests/;scripts/;experiments/",
+      "responsibility": "Unit, numerical, statistical, regression, reproducibility, and claim-mapped experiment execution.",
+      "tasks": "CODE-BB-012;CODE-BB-015;CODE-BB-016"
+    }
+  ],
+  "configuration_keys": {
+    "observation_model": [
+      "model.family",
+      "model.family_descriptors",
+      "model.prior",
+      "model.likelihood_power_weights"
+    ],
+    "partition": [
+      "partition.k_max",
+      "partition.min_segment_length",
+      "partition.segment_cohesion",
+      "partition.boundary_hazard",
+      "partition.allowed_boundaries"
+    ],
+    "inference": [
+      "inference.posterior_marginals",
+      "inference.joint_map",
+      "inference.tie_breaking",
+      "inference.numeric_dtype"
+    ],
+    "hierarchy": [
+      "hierarchy.common_partition",
+      "hierarchy.known_group_labels",
+      "hierarchy.n_latent_groups",
+      "hierarchy.n_restarts",
+      "hierarchy.optimization_tolerance"
+    ],
+    "approximation": [
+      "approximation.method",
+      "approximation.reference_method",
+      "approximation.tolerance",
+      "approximation.tail_control"
+    ],
+    "prediction": [
+      "prediction.extrapolation",
+      "prediction.coordinate_support",
+      "prediction.return_log_score"
+    ],
+    "metrics": [
+      "metrics.boundary_tolerance",
+      "metrics.matching_rule",
+      "metrics.reference_type",
+      "metrics.metric_version"
+    ],
+    "execution": [
+      "execution.seed",
+      "execution.environment_lock_hash",
+      "execution.data_hash",
+      "execution.config_hash",
+      "execution.code_hash",
+      "execution.result_id",
+      "execution.parent_result_id"
+    ]
+  },
+  "commands": {
+    "skeleton_validation": [
+      "python coding/repository_skeleton/scripts/check_skeleton.py",
+      "python scripts/check_sync.py"
+    ],
+    "implementation_tests_after_code_exists": [
+      "python -m pytest -q",
+      "python -m pytest -q tests/test_dp_properties.py tests/test_dp_priors.py",
+      "python -m pytest -q tests/test_prediction_support.py tests/test_boundary_matching.py tests/test_comparator_schemas.py"
+    ],
+    "document_builds": [
+      "make book",
+      "make paper-all",
+      "make executive",
+      "make validate-phase6"
+    ],
+    "result_validation_after_runs": [
+      "python scripts/validate_result_schema.py",
+      "python scripts/check_asset_semantics.py",
+      "python scripts/check_annotation_completeness.py"
+    ]
+  },
+  "test_matrix": [
+    {
+      "class": "unit",
+      "scope": "Family calculations, prior factors, coordinate assignment, schema parsing, and metric edge cases.",
+      "acceptance": "Declared outputs and exceptions match hand-computed fixtures."
+    },
+    {
+      "class": "property",
+      "scope": "Sum-product and max-sum recursions over randomized finite cases, zero-support blocks, priors, and ties.",
+      "acceptance": "Marginal likelihoods, posterior normalizers, and MAP partitions match exhaustive enumeration."
+    },
+    {
+      "class": "numerical",
+      "scope": "Log-domain aggregation, nonconjugate reference comparisons, finite checks, and tolerance tightening.",
+      "acceptance": "No overflow-induced ranking change; reference discrepancies and failure states are recorded."
+    },
+    {
+      "class": "statistical",
+      "scope": "Calibration, repeated recovery, misspecification, fairness-controlled comparison, and posterior prediction.",
+      "acceptance": "Pre-specified repetitions, uncertainty summaries, reference definitions, and falsifying outcomes are reported."
+    },
+    {
+      "class": "regression",
+      "scope": "Archived result read-only behavior, corrected result parent links, figure/table semantics, and dataset cards.",
+      "acceptance": "No populated archived value changes; invalid historical calculations cannot re-enter excluded conclusions."
+    },
+    {
+      "class": "reproducibility",
+      "scope": "Pinned environment, seeds, hashes, commands, clean checkout, and artifact regeneration.",
+      "acceptance": "A clean run reproduces declared artifacts or reports an explicit incomplete state with owner and reason."
+    }
+  ],
+  "logging_and_provenance": [
+    "Record result_id and parent_result_id before writing a corrected result.",
+    "Record data, configuration, code, and environment hashes for every new run.",
+    "Store the coordinate axis, observation family, prior, split, extrapolation policy, metric version, and tuning budget with each relevant result.",
+    "Report executed, valid for the stated interpretation, excluded from a named analysis, and planned as separate fields.",
+    "Reject absolute author-local paths in release records."
+  ],
+  "resource_expectations": [
+    "Profile the one test unresolved under the Phase 6 per-test cap before setting time or memory budgets.",
+    "Account explicitly for the O(n^2) segment-score table and O(k_max n^2) worst-case partition recursions.",
+    "Measure sequence count, candidate count, observation family, nonconjugate method, repetitions, and comparator tuning as separate resource drivers.",
+    "Produce pilot-based CPU, memory, storage, and wall-time estimates before the expanded experiment grid; the current archive does not support a defensible fixed estimate."
+  ],
+  "failure_states": [
+    {
+      "id": "FAIL-BB-001",
+      "condition": "Nonfinite or dimensionally inconsistent segment scores.",
+      "required_behavior": "Stop before partition inference and emit the offending family, segment coordinates, and configuration hash."
+    },
+    {
+      "id": "FAIL-BB-002",
+      "condition": "Comparator prediction and reference axes differ.",
+      "required_behavior": "Reject metric computation; preserve the attempted run only as a diagnostic record."
+    },
+    {
+      "id": "FAIL-BB-003",
+      "condition": "Posterior prediction requested for an unsupported family or coordinate outside support.",
+      "required_behavior": "Raise an explicit error unless a named, recorded extrapolation rule is selected."
+    },
+    {
+      "id": "FAIL-BB-004",
+      "condition": "Latent-group objective is nonmonotone beyond tolerance or returned objective differs from the final trace value.",
+      "required_behavior": "Mark the restart invalid and do not select it as the optimum."
+    },
+    {
+      "id": "FAIL-BB-005",
+      "condition": "A required test exceeds its profiled bound.",
+      "required_behavior": "Report unresolved with owner, environment, seed, and profile; do not count it as a pass."
+    },
+    {
+      "id": "FAIL-BB-006",
+      "condition": "A corrected result lacks a parent link or required hashes.",
+      "required_behavior": "Reject release of the result and retain the archived parent unchanged."
+    }
+  ],
+  "stage_sequence": [
+    {
+      "stage": "S1",
+      "title": "Prior factors and exact-DP integration",
+      "tasks": "CODE-BB-001;CODE-BB-002",
+      "advance": "Exhaustive finite-case checks and prior sensitivity fixtures pass."
+    },
+    {
+      "stage": "S2",
+      "title": "Latent-group objective and stable pooling",
+      "tasks": "CODE-BB-003;CODE-BB-004",
+      "advance": "Final-objective, monotonicity, restart, and high-precision aggregation tests pass."
+    },
+    {
+      "stage": "S3",
+      "title": "Prediction, metrics, comparator schemas, and result records",
+      "tasks": "CODE-BB-006;CODE-BB-007;CODE-BB-008;CODE-BB-009;CODE-BB-010;CODE-BB-011",
+      "advance": "Family, support, matching, axis, data-card, and result-schema tests pass."
+    },
+    {
+      "stage": "S4",
+      "title": "Pinned test completion and release-lineage repair",
+      "tasks": "CODE-BB-012;CODE-BB-013;CODE-BB-014;CODE-BB-016",
+      "advance": "Every required test has a terminal status and canonical sources are synchronized."
+    },
+    {
+      "stage": "S5",
+      "title": "Corrected CGH and methylation computations",
+      "tasks": "CODE-BB-009;CODE-BB-010;CODE-BB-011;CODE-BB-015",
+      "advance": "New result IDs, parent links, hashes, correct axes or observation family, and independent review are complete."
+    },
+    {
+      "stage": "S6",
+      "title": "Expanded calibration, robustness, fairness, and scaling",
+      "tasks": "experiment protocols EPR-BB-001 through EPR-BB-015 as applicable",
+      "advance": "Pre-specified repetitions, uncertainty, negative controls, and falsifying outcomes are reported."
+    },
+    {
+      "stage": "S7",
+      "title": "Independent scientific and software release review",
+      "tasks": "Phase 6 verification",
+      "advance": "All release checks are evaluated and every incomplete item is disclosed."
+    }
+  ]
+}

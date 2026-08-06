@@ -1,0 +1,80 @@
+\section{Algorithms, computational complexity, and numerical implementation}
+\label{sec:algorithms}
+
+The implementation separates calculations specific to an observation model from calculations over ordered partitions. Observation-model routines compute sufficient statistics, segment marginal likelihoods, posterior moments, numerical error information, and posterior-predictive quantities. The partition routines combine prior-adjusted segment scores, evaluate sum-product recursions, recover joint MAP partitions by max-sum recursion and backtracking, pool aligned sequences, and extract posterior summaries.
+
+\begin{algorithm*}[t]
+\caption{\BayesBreak offline fit}
+\label{alg:bayesbreak-fit-paper}
+\KwIn{Ordered observations $\{(u_r,y_r,d_r,a_r)\}_{r=1}^{n}$; observation family and hyperparameters; $k_{\max}$; segment-count prior $p(k)$; segment-cohesion and boundary-hazard factors $c_u,h_u$; numerical tolerances.}
+\KwOut{Posterior distribution over $k$; boundary-event and ordered-boundary marginals; joint MAP partitions; segment posterior states; Bayes curves; numerical diagnostics and result metadata.}
+Validate order, observation-family support, descriptors, power weights, and candidate-segment restrictions\;
+Construct cumulative sufficient statistics when available\;
+\For{each admissible segment $(i,j]$}{
+  compute $\log A^{(0)}_{ij}$ and the required moments or posterior state\;
+  record validity, convergence, and approximation diagnostics\;
+  assign score $-\infty$ to an inadmissible segment rather than substituting a finite value from another model\;
+}
+Compute $\log\gamma_u(i,j)=\log c_u(i,j)+\1\{j<n\}\log h_u(j)$ once for each segment\;
+Run log-space forward and backward recursions and normalize Equation~\eqref{eq:k-posterior}\;
+Compute ordered-boundary marginals, boundary-event probabilities, and Bayes-curve moments\;
+Run max-sum recursion and deterministic backtracking for every retained $k$ or for the selected $\widehat k$\;
+Check forward--backward equality, posterior normalization, boundary-event mass, and backtrack-score equality\;
+Export the observation-family identifier, fitted coordinate range, result metadata, and numerical diagnostics\;
+\end{algorithm*}
+
+\subsection{Inputs and returned quantities}
+The fit input separates four objects that have different statistical meanings: ordered coordinate $u_r$, response $y_r$, observation descriptor $d_r$, and optional likelihood power $a_r$. Descriptors such as exposure or trial count are interpreted by the corresponding observation model. Irregular geometry enters the prior through $u$ and the factors $c_u,h_u$; it is not treated as exposure in the observation likelihood.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Principal returned quantities and their inferential interpretation.}
+\label{tab:exported-objects}
+\begin{tabularx}{0.96\textwidth}{@{}L{0.19\textwidth}L{0.22\textwidth}Y L{0.18\textwidth}@{}}
+\toprule
+Quantity & Calculation & Interpretation & Numerical checks \\
+\midrule
+$\log A^{(0)}_{ij}$ & observation-model segment calculation & log integrated likelihood or declared numerical approximation & support, finiteness, convergence \\
+$p(k\mid y)$ & terminal sum-product quantities & posterior uncertainty in segment count & normalization, prior normalizer \\
+$p(t_p=h\mid y,k)$ & forward--backward factorization & marginal distribution of ordered boundary $p$ & normalization over $h$ \\
+$p(b_h=1\mid y,k)$ & sum over ordered boundaries & probability of any changepoint at $h$ & total mass $k-1$ \\
+$\widehat t^{\rm MAP}_k$ & max-sum recursion and backtracking & joint MAP partition for fixed $k$ & terminal-score equality \\
+$\mathbb E[m(\theta_s)^r\mid y]$ & sum over segments covering $s$ & model-averaged segment functional & common marginal-likelihood denominator \\
+Predictive score & observation-family posterior predictive & out-of-sample log score under the stated support rule & holdout, family dispatch, coordinates \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Log-space evaluation and failure handling}
+All segment and partition scores are stored in log space. Sums in Equations~\eqref{eq:forward}--\eqref{eq:backward} are evaluated by a stable \texttt{logsumexp}. Cumulative sufficient statistics should be centered or scaled when appropriate, and conjugate hyperparameters must lie in their proper domains. When a numerical segment calculation fails to converge, violates support, or lacks the stated error control, it returns a structured failure state. The analysis then follows a declared rule: exclude the segment by assigning $-\infty$, terminate the fit, or continue while labeling the posterior as based on an unverified approximation. It must not silently substitute a different observation model.
+
+Tie rules are deterministic and recorded. In max-sum recursion, the predecessor rule identifies which member of a set of equally scoring partitions is returned. In one-to-one boundary matching, the minimum-distance refinement and a fixed tie order identify the matching. These conventions make repeated calculations reproducible; they do not alter the statistical estimand.
+
+\subsection{Computational complexity}
+Table~\ref{tab:complexity-paper} separates asymptotic operation counts from finite-range timing measurements.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Computational complexity of the implemented calculations. Empirical timings are reported separately in Section~\ref{sec:results}.}
+\label{tab:complexity-paper}
+\begin{tabularx}{0.96\textwidth}{@{}L{0.23\textwidth}L{0.20\textwidth}L{0.20\textwidth}Y@{}}
+\toprule
+Component & Time & Working memory & Numerical consideration \\
+\midrule
+Conjugate segment precomputation & $\Theta(n^2)$ & $\Theta(n^2)$ & cumulative sufficient statistics; invalid segments receive $-\infty$ \\
+Nonconjugate segment precomputation & $\Theta(n^2T_{\rm seg})$ & $\Theta(n^2)$ plus method state & convergence and error diagnostics \\
+Sum-product recursion & $\Theta(k_{\max}n^2)$ & $\Theta(k_{\max}n)$ for all message layers & log-sum-exp evaluation \\
+Boundary and moment extraction & $\Theta(k_{\max}n^2)$ for streamed fixed-$k$ summaries & output dependent; $\Theta(k_{\max}^2n)$ for every ordered-boundary table & common marginal-likelihood normalizer \\
+Max-sum recursion and backtracking & $\Theta(k_{\max}n^2)$ & $\Theta(k_{\max}n)$ including backpointers & deterministic predecessor rule \\
+Shared-changepoint pooling & $\Theta(Sn^2+k_{\max}n^2)$ after sequence-specific segment calculations & sequence arrays or streamed log-score sum & add log marginal likelihoods across sequences \\
+Latent-group template update & $\Theta(GSn^2+Gk_{\max}n^2)$ per iteration & problem dependent & restart ranking must use the final objective value \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+Enumeration of all admissible segments is the principal cost of the exact calculation. Pruning, screening, or a restricted changepoint grid can reduce computation, but may also remove partitions unless the restriction is proved exact for the specified model. Such accelerations are not included in the exactness claims of this paper unless their preservation of the partition sum is established separately.
+
+\subsection{Reproducibility records}
+Each returned fit records the method version, data and configuration hashes when available, observation family and hyperparameters, fitted coordinate range, candidate-segment restrictions, priors, random seeds for restart-based calculations, convergence states, approximation diagnostics, and result identifiers. An executed numerical output is not overwritten: a corrected computation receives a new identifier and a link to the earlier result. This distinction is necessary when an output was genuinely computed but cannot answer the scientific question for which it was initially reported.

@@ -14,8 +14,8 @@ that should go into ``tab:real_welllog`` / ``tab:real_cgh`` /
 
 Outputs::
 
-    docs/report/figures/realdata_metrics.json
-    docs/report/figures/realdata_metrics.txt
+    results/figures/realdata_metrics.json
+    results/figures/realdata_metrics.txt
 """
 
 from __future__ import annotations
@@ -361,8 +361,6 @@ def main(outdir: Path) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument(
-        "--outdir", type=Path, default=Path("docs/report/figures"), help="output directory"
-    )
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"), help="output directory")
     args = ap.parse_args()
     main(outdir=args.outdir)

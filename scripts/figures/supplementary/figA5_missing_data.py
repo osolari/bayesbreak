@@ -45,8 +45,8 @@ Interpretation
 
 Outputs
 -------
-- docs/report/figures/fig10_missing_data.png
-- docs/report/figures/fig10_missing_data.pdf
+- results/figures/fig10_missing_data.png
+- results/figures/fig10_missing_data.pdf
 
 Usage
 -----
@@ -207,7 +207,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--miss-frac", type=float, default=0.25)

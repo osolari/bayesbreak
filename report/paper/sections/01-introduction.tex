@@ -1,0 +1,42 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Multiple-changepoint analysis represents an ordered sequence by contiguous regimes within which a parameter is constant or otherwise follows a simpler model. The problem appears in signal processing, genomics, econometrics, environmental monitoring, and machine learning. Given observations $y_{1:n}$, possibly recorded at irregular coordinates $x_1<\cdots<x_n$, the inferential targets include the number of regimes, the changepoint locations, the segment-specific parameters, and uncertainty in all of these quantities. Bayesian formulations are particularly useful because they average over partitions, provide posterior probabilities for changepoints and segment counts, and propagate segmentation uncertainty to posterior prediction and signal estimation \citep{barry1992ppm,barry1993bayesCP,fearnhead2006exact,hutter2006bpcr}.
+
+A central fact in Bayesian multiple-changepoint analysis is that exact posterior computation is possible when two conditions hold. First, the data contribution of a candidate segment can be integrated with respect to its segment-parameter prior. Second, the prior on an ordered partition factorizes into segmentwise or transitionwise terms. Product partition models express precisely this factorization \citep{barry1992ppm,barry1993bayesCP}. Exact recursions then sum over all admissible partitions without enumerating them explicitly \citep{fearnhead2006exact,hutter2006bpcr}. The statistical calculation for a segment and the combinatorial calculation over partitions are therefore distinct parts of the model.
+
+This separation is especially consequential for exponential families. For a regular exponential-family sampling model, a proper conjugate prior updates through sufficient statistics and yields a segment marginal likelihood as a ratio of normalizing constants \citep{diaconis1979conjugate,bernardo1994bayesian}. Once the segment marginal likelihoods have been computed, the same partition recursions apply regardless of whether the observations are Gaussian, Poisson, Binomial, Negative Binomial, or another member of the class satisfying the stated regularity and integrability conditions. The generality of BayesBreak lies in this observation-family independence of the partition calculation, together with hierarchical extensions that preserve the required factorization.
+
+\BayesBreak develops that idea into a generalized hierarchical Bayesian segmentation method for irregular designs, multiple sequences, observed groups, and latent groups. The method retains the standard Bayesian multiple-changepoint formulation: segment parameters are integrated out, the resulting segment marginal likelihoods are combined with a prior on ordered partitions, and dynamic programming evaluates posterior sums or posterior maxima. Hierarchical structure enters through shared or group-specific partitions and through a finite latent-group model over segmentation templates. The method is exact when the segment integrals are exact and the partition prior has the stated factorization; when a segment integral is approximated numerically, the partition calculation is exact for the supplied approximate marginal-likelihood array, and the discrepancy from the target posterior is controlled only under an explicit segmentwise error bound.
+
+\subsection{Inferential quantities}
+For candidate segment counts $1\le k\le k_{\max}$, the method distinguishes four inferential quantities:
+\begin{enumerate}
+  \item the fixed-$k$ marginal likelihood $p(y\mid k)$ and the segment-count posterior $p(k\mid y)$;
+  \item marginal posterior probabilities for changepoint events and ordered changepoint positions;
+  \item posterior moments of the piecewise-constant signal, including the Bayesian regression curve obtained by averaging over partitions; and
+  \item the joint maximum-a-posteriori partition, computed by max-sum dynamic programming and backtracking.
+\end{enumerate}
+These quantities solve different decision problems. In particular, selecting the marginal mode of each ordered changepoint position does not generally recover the joint posterior mode and may fail to define a valid ordered partition.
+
+\subsection{Contributions}
+The paper makes the following methodological and computational contributions.
+\begin{itemize}
+  \item \EstablishedTag\enspace \textbf{General exponential-family segment formulation.} We state an exposure-aware exponential-family model in which distributional descriptors, such as Poisson exposure or Binomial trial count, are separated from optional likelihood-power weights. A single conjugate calculation yields segment marginal likelihoods and posterior moments from cumulative sufficient statistics under the stated regularity conditions.
+
+  \item \EstablishedTag\enspace \textbf{Posterior computation over ordered partitions.} Sum-product recursions compute fixed-count marginal likelihoods, the posterior distribution of the segment count, changepoint marginals, and posterior signal moments. A separate max-sum recursion with deterministic backtracking is proved to return the joint MAP partition. The worst-case time complexity is $\mathcal O(k_{\max}n^2)$ after segment quantities have been tabulated.
+
+  \item \EstablishedTag\enspace \textbf{Irregular designs and multi-sequence hierarchies.} Design-dependent segment cohesions and candidate-boundary hazards are treated as distinct prior factors. For aligned conditionally independent sequences with a common partition, subject-specific segment marginal likelihoods multiply before the same partition recursion is applied. A finite-candidate consistency result is given under a positive average expected log-score gap.
+
+  \item \EstablishedTag\enspace \textbf{Known-group and latent-group segmentation.} Known groups are handled by groupwise pooling. For unknown memberships, we define a finite latent-group template objective and derive a Jensen minorization, normalized auxiliary weights, and exact responsibility-weighted max-sum updates. The resulting algorithm is a minorization--maximization procedure for the stated objective, not a claim of full Bayesian averaging over latent partitions.
+
+  \item \ConditionalTag\enspace \textbf{Nonconjugate segment models.} Laplace, variational, expectation-propagation, P\'olya--Gamma, or quadrature calculations may supply approximate segment marginal likelihoods. We prove how a uniform error in reachable segment log marginal likelihoods propagates to partition marginal likelihoods and posterior odds; no approximation-specific convergence rate is asserted without additional assumptions.
+
+  \item \RealResultTag\enspace \textbf{Executed simulations and case studies.} We report the archived simulation and real-data outputs as executed. Comparator values are interpreted according to their actual reference sets, and computations using an incompatible coordinate axis or the wrong predictive family are excluded from the conclusions rather than reinterpreted as valid statistical evidence.
+\end{itemize}
+
+\subsection{Scope}
+The central model is offline segmentation on a finite ordered candidate set, with piecewise-constant segment parameters and conditional independence given the partition and segment parameters. The exact algorithms require finite segment marginal likelihoods and a partition prior that factorizes over admissible segments or transitions. The method is intended for moderate sequence lengths for which an $n\times n$ segment table is feasible. Online filtering, nonordered spatial partitions, unrestricted dependence between adjacent segment parameters, and general within-segment dynamics require other models or enlarged state spaces.
+
+\subsection{Organization}
+Section~\ref{sec:related} relates the method to product partition models, exact Bayesian changepoint recursions, exponential-family conjugacy, irregular-design priors, and multi-sequence models. Sections~\ref{sec:model} and~\ref{sec:exact-inference} define the segment models and posterior recursions. Section~\ref{sec:extensions} develops irregular-design, shared-boundary, known-group, and latent-group extensions. Section~\ref{sec:approx-predict} treats nonconjugate segment calculations and posterior prediction. Section~\ref{sec:algorithms} gives algorithms, complexity, and numerical checks. Sections~\ref{sec:experimental-design} and~\ref{sec:results} describe the executed experiments, followed by limitations and conclusions.

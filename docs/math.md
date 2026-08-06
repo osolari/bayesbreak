@@ -1,8 +1,8 @@
 # Math notes
 
 Glossary mapping the manuscript's notation to the implementation. The
-full derivations are in [`docs/report/bayesbreak.pdf`](report.md); this
-page is the cheat-sheet that lives next to the code.
+full derivations are in the [Phase 6 report package](report.md); this page
+is the cheat-sheet that lives next to the code.
 
 ## Block evidence and moments
 

@@ -1,0 +1,61 @@
+\section*{Scope of this volume}
+This volume is the technical reference for
+\emph{Generalized Hierarchical Bayesian Segmentation with Irregular Designs,
+Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs}. It is based on the editable
+manuscript, the implementation archive, and the populated result files supplied with the project.
+The statistical statements, computational results, and implementation status are distinguished so
+that each conclusion can be read under its stated assumptions.
+
+\begin{statusbox}[Statistical formulation]
+\BayesBreak is a generalized hierarchical Bayesian multiple-changepoint method. For regular
+exponential-family observation models with proper conjugate priors, segment-specific parameters
+can be integrated out to obtain exact segment marginal likelihoods and posterior moments. These
+quantities enter sum-product dynamic programming for posterior distributions over ordered
+partitions. A separate max-sum recursion with backtracking returns a joint MAP partition. The
+method also treats irregular designs, common or group-specific changepoints across multiple
+sequences, finite latent groups, and explicitly identified numerical segment integration for
+nonconjugate models.
+\end{statusbox}
+
+\section*{Status terminology}
+\begin{longtable}{@{}p{0.20\textwidth}p{0.70\textwidth}@{}}
+\toprule
+\textbf{Status} & \textbf{Meaning in this volume}\\ \midrule
+\EstablishedTag & A complete proof is given under the stated assumptions.\\
+\ExactDerivedTag & The expression follows by direct algebra or exact finite summation.\\
+\RealResultTag & A populated value or figure is an archived executed computation.\\
+\PartialTag & An executed result addresses only part of a stated question or lacks a required comparison or uncertainty analysis.\\
+\ConditionalTag & A conclusion follows only if an additional assumption, such as a uniform numerical error bound, is established.\\
+\TargetTag & A proof, implementation correction, or experiment remains to be completed and is not used as an established result.\\
+\ExcludedTag & The computation was executed, but its observation model, coordinate axis, reference quantity, or support rule is incompatible with the scientific interpretation under discussion.\\
+\bottomrule
+\end{longtable}
+
+\begin{exclusionbox}[Archived computations excluded from stated conclusions]
+No populated archived numerical value is silently changed. Two computations are retained in the
+result history but excluded from the analyses for which they were originally reported:
+\resultid{RES-BB-CMP-002}, whose array-CGH comparator used incompatible coordinate axes, and
+\resultid{RES-BB-RD-007Q}, whose methylation held-out calculation used a Gaussian predictive
+routine for Beta-valued observations and assigned out-of-range coordinates to the last segment.
+A corrected calculation must receive a new result identifier.
+\end{exclusionbox}
+
+\section*{Reading routes}
+\begin{itemize}
+\item \textbf{Statistical formulation and exact inference:} Chapters~\ref{ch:orientation},
+\ref{ch:formal}, \ref{ch:block}, \ref{ch:sumproduct}, and \ref{ch:map}.
+\item \textbf{Irregular designs and hierarchical extensions:} Chapters~\ref{ch:priors},
+\ref{ch:shared}, \ref{ch:templates}, and \ref{ch:nonconj}.
+\item \textbf{Prediction, implementation, and empirical studies:} Chapters~\ref{ch:prediction},
+\ref{ch:software}, \ref{ch:synthetic}, \ref{ch:realdata}, and
+Appendices~\ref{app:implementation}--\ref{app:traceability}.
+\item \textbf{Literature and limitations:} Chapters~\ref{ch:lineage}, \ref{ch:failures}, and
+Appendix~\ref{app:annotated-lit}.
+\end{itemize}
+
+\section*{Source precedence}
+The editable manuscript and its archived numerical assets are the factual baseline. The author's
+explicit decisions fix the title and main narrative. Mathematical corrections are stated in place;
+implementation defects and unresolved experiments are reported without rewriting the archived
+outputs. External results are attributed to their sources and are not presented as BayesBreak
+results.

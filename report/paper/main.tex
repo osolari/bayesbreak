@@ -1,0 +1,114 @@
+% BayesBreak main journal paper - SAIM Professional Template v1.0.
+% Layout modes: two-column (default) or single-column.
+\providecommand{\SAIMPaperLayout}{two-column}
+\def\SAIMSingleColumnLayout{single-column}
+\ifx\SAIMPaperLayout\SAIMSingleColumnLayout
+  \documentclass[10pt,onecolumn]{paper/saim-paper}
+\else
+  \documentclass[10pt,twocolumn]{paper/saim-paper}
+\fi
+\newif\ifSAIMPaperTwoColumn
+\ifx\SAIMPaperLayout\SAIMSingleColumnLayout
+  \SAIMPaperTwoColumnfalse
+\else
+  \SAIMPaperTwoColumntrue
+\fi
+
+% Keep the SAIM opening-page contents concise for an archival paper.
+\setcounter{tocdepth}{1}
+\makeatletter
+\renewcommand{\SAIMPaperTableOfContents}{%
+  \vspace{3pt}%
+  \begin{tcolorbox}[
+    blanker,
+    left=10pt,
+    right=2pt,
+    top=1pt,
+    bottom=1pt,
+    before skip=0pt,
+    after skip=7pt,
+    borderline west={2.2pt}{0pt}{Primary}
+  ]
+    {\SAIMNavigationFont\fontsize{8}{9.6}\selectfont\color{Primary}\textls[165]{CONTENTS}\par}
+    \vspace{2pt}
+    {\footnotesize
+      \setlength{\columnsep}{18pt}%
+      \setlength{\parskip}{0pt}%
+      \begin{multicols}{2}
+        \@starttoc{toc}%
+      \end{multicols}}
+  \end{tcolorbox}%
+}
+\makeatother
+
+\input{shared/metadata.tex}
+\graphicspath{{shared/figures/results/}{shared/figures/tikz/}{shared/saim/brand/logos/}}
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools,bm,bbm}
+\usepackage{float,makecell,longtable,tablefootnote,pifont,adjustbox,xspace,multicol}
+\usepackage[ruled,vlined,linesnumbered]{algorithm2e}
+\input{shared/saim/components/table-columns.tex}
+\input{shared/components/math.tex}
+\usetikzlibrary{bayesnet,matrix,chains}
+\input{shared/components/tikz.tex}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\SAIMPaperTheoremStyle{theorem}
+\SAIMPaperTheoremStyle{proposition}
+\SAIMPaperTheoremStyle{lemma}
+\SAIMPaperTheoremStyle{corollary}
+\SAIMPaperTheoremStyle{definition}
+\input{shared/components/bayesbreak-paper.tex}
+\SAIMPaperTheoremStyle{assumption}
+\SAIMPaperTheoremStyle{proofobligation}
+
+\newcommand{\PaperTitle}{\ProjectTitle}
+\newcommand{\PaperShortTitle}{BayesBreak}
+\newcommand{\PaperVersion}{Main journal manuscript -- scientific-language correction}
+\paperlabel{SAIM RESEARCH / BAYESIAN COMPUTATION}
+\title{\PaperTitle}
+\shorttitle{\PaperShortTitle}
+\paperversion{\PaperVersion}
+\author[1]{\ProjectLeadAuthor}
+\affiliation[1]{\ProjectAffiliation}
+\metadata[Correspondence]{\email{\ProjectCorrespondence}}
+\metadata[Updated]{August 5, 2026}
+\metadata[Version]{\PaperVersion}
+\keywords{\ProjectKeywords}
+\hypersetup{
+  pdftitle={\PaperTitle},
+  pdfauthor={\ProjectAuthors},
+  pdfsubject={Generalized hierarchical Bayesian segmentation},
+  pdfkeywords={\ProjectKeywords}
+}
+\input{paper/sections/00-abstract.tex}
+
+\begin{document}
+\maketitle
+\input{paper/sections/01-introduction.tex}
+\input{paper/sections/02-related-work.tex}
+\input{paper/sections/03-model-block-evidence.tex}
+\input{paper/sections/04-exact-inference.tex}
+\input{paper/sections/05-structured-extensions.tex}
+\input{paper/sections/06-approximation-prediction.tex}
+\input{paper/sections/07-algorithms-complexity.tex}
+\input{paper/sections/08-experimental-design.tex}
+\input{paper/sections/09-results.tex}
+\FloatBarrier
+\input{paper/sections/10-limitations.tex}
+\input{paper/sections/11-conclusion.tex}
+\input{paper/sections/90-acknowledgements.tex}
+
+\bibliographystyle{shared/bibliography/iclr2026_conference}
+\bibliography{shared/bibliography/references}
+
+\beginappendix
+\input{paper/sections/99-appendix.tex}
+\end{document}

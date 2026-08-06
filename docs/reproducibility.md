@@ -8,8 +8,8 @@ version, so re-renders are cheap.
 ## CLI
 
 ```bash
-bayesbreak reproduce figures   # scripts/figures/*.py  → docs/report/figures/
-bayesbreak reproduce tables    # scripts/tables/*.py   → docs/report/tables/
+bayesbreak reproduce figures   # scripts/figures/*.py -> results/figures/
+bayesbreak reproduce tables    # scripts/tables/*.py -> results/tables/
 bayesbreak reproduce all
 bayesbreak version
 ```
@@ -36,7 +36,8 @@ importable from Python if you want to drive it programmatically.
 | `scripts/figures/supplementary/figA4_model_selection.py` | `fig:model_select` | Model selection demo |
 | `scripts/figures/supplementary/figA5_missing_data.py` | `fig:missing` | Missing-data handling |
 
-Each script writes both `.png` and `.pdf` to `docs/report/figures/`.
+Each script writes both `.png` and `.pdf` to `results/figures/`. The archived
+Phase 6 files under `report/shared/figures/results/` are read-only.
 
 ## Tables
 
@@ -49,9 +50,8 @@ Each script writes both `.png` and `.pdf` to `docs/report/figures/`.
 | `scripts/tables/table4_nonconj_tradeoff.py` | `tab:nonconj_tradeoff` | Laplace / JJ / EP / PG / quadrature trade-off |
 | `scripts/tables/realdata_tables.py` | `tab:real_*` (`tab:real_welllog`, `tab:real_cgh`, `tab:real_spx`, `tab:real_methylation`) | Per-row metrics from the cached real-data fits |
 
-Outputs land in `docs/report/tables/` as `.md`, `.tex`, and `.csv`, plus
-a JSON provenance manifest at
-`docs/report/figures/realdata_metrics.json` for the real-data tables.
+Outputs land in `results/tables/` as `.md`, `.tex`, and `.csv`, plus a JSON
+provenance manifest under `results/figures/` for the real-data tables.
 
 ## Fit cache (`.cache/fitcache/`)
 
@@ -71,8 +71,8 @@ git clone https://github.com/osolari/bayesbreak.git && cd bayesbreak
 pip install -e ".[dev,plots,datasets,docs,notebooks]"
 pre-commit install
 pytest                       # 179+ tests, conceptual-correctness + sklearn contract
-bayesbreak reproduce all     # regenerates figures + tables under docs/report/
-cd docs/report && latexmk -pdf bayesbreak.tex    # optional: rebuild the manuscript
+bayesbreak reproduce all     # writes new figures + tables under results/
+cd report && make validate-phase6               # rebuild and validate all report targets
 ```
 
 ## What's reproducible without network

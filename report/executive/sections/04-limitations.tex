@@ -1,0 +1,21 @@
+\section{Current limitations and excluded interpretations}
+\label{sec:exec-limitations}
+
+The principal limitations are scientific and computational, not presentational.
+
+\begin{cautionbox}[Two historical calculations excluded from named conclusions]
+\textbf{Array-CGH comparator.} The archived comparator calculation flattened a $43\times 2{,}215$ output to 95,245 values while the BayesBreak reference boundaries remained on the 2,215-probe coordinate axis. It is a real execution of an incompatible comparison and is excluded from comparator conclusions.
+
+\textbf{Methylation held-out score.} The archived value $-387.50040013308154$ for $m=381$ was produced through a Gaussian fallback for Beta observations and implicit assignment of post-training coordinates to the endpoint segment. It is a real execution but not a valid Beta posterior-predictive score and is excluded from predictive conclusions.
+\end{cautionbox}
+
+Additional limits are as follows.
+\begin{itemize}
+  \item The latent-group optimization can have label permutations, duplicate templates, local optima, or collapsed groups. One implementation path returns a stale objective value and must be repaired before restart selection relies on that value.
+  \item The nonconjugate theorem is conditional on a uniform error bound over reachable segment log marginal likelihoods. An approximate segment routine without such a bound produces an approximate posterior whose discrepancy is not certified by the current theory.
+  \item The independent Phase~6 bounded verification collected 179 tests: 173 passed, five were skipped because of optional dependencies, one EP logistic-normal test exceeded a 20-second per-test cap, and none failed. The remaining timeout is neither a pass nor a failure; the historical 157/5/17 state remains in the result ledger.
+  \item The current empirical archive does not contain a fully fairness-controlled comparator benchmark, broad repeated uncertainty intervals for every setting, comprehensive misspecification grids, or independent reference changepoints for the four applications.
+  \item Prediction outside the fitted coordinate range requires an explicit extrapolation policy; silent endpoint assignment is not acceptable.
+\end{itemize}
+
+These limitations do not change the research direction. They determine which claims are currently established, which empirical conclusions are justified, and which implementation tasks must precede a final release.

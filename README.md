@@ -5,10 +5,12 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![arXiv](https://img.shields.io/badge/arXiv-2603.14681-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.14681)
 
-**Exact Bayesian segmentation with a scikit-learn compatible API.**
+**Generalized hierarchical Bayesian segmentation with a scikit-learn compatible API.**
 
-BayesBreak turns the two-layer design of the accompanying report into a small,
-reusable library:
+BayesBreak implements the method developed in the accompanying technical book and
+journal paper. Supported conjugate exponential-family models use analytic segment
+integration; numerical segment integration produces explicitly approximate posterior
+quantities under the stated numerical assumptions.
 
 - **Block evidence** — a family-specific integrated single-segment marginal
   likelihood `A^0_{ij}` (Gaussian, Poisson, Binomial, Bernoulli, Beta,
@@ -282,8 +284,9 @@ preprint: [arXiv:2603.14681](https://arxiv.org/abs/2603.14681).
 }
 ```
 
-See also [`CITATION.cff`](CITATION.cff) and the full report at
-[`docs/report/bayesbreak.pdf`](docs/report/bayesbreak.pdf).
+See also [`CITATION.cff`](CITATION.cff), the
+[main journal paper](report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf),
+and the [complete Phase 6 report package](docs/report.md).
 
 ## Contributing
 

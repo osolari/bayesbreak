@@ -1,0 +1,31 @@
+{
+  "phase": "5",
+  "rendering": {
+    "technical_book": {"pages": 165, "dpi": 120, "contact_sheets": 14},
+    "main_paper_two_column": {"pages": 35, "dpi": 140, "contact_sheets": 3},
+    "main_paper_single_column": {"pages": 42, "dpi": 130, "contact_sheets": 4},
+    "executive_summary": {"pages": 12, "dpi": 170, "contact_sheets": 1}
+  },
+  "total_pages_inspected": 254,
+  "total_contact_sheets_inspected": 22,
+  "targeted_full_page_inspection": [
+    "executive page 4: shared-boundary and finite latent-group diagrams",
+    "executive page 10: release-decision diagram",
+    "technical-book page 61: finite latent-group update diagram",
+    "technical-book pages 119-143: expanded coding-agent handoff appendix"
+  ],
+  "defects_repaired_before_final_pass": [
+    "the initial executive decision diagram clipped at the page boundary; it was redesigned as a vertical decision sequence",
+    "the initial finite latent-group iteration arrow crossed diagram nodes; it was rerouted above the update sequence",
+    "two unbreakable implementation-status strings caused overfull cells in the coding handoff; the status vocabulary was rewritten in established statistical language"
+  ],
+  "final_findings": {
+    "clipped_text": false,
+    "overlap": false,
+    "blank_or_nearly_blank_pages": false,
+    "broken_glyphs": false,
+    "unresolved_figure_frames": false,
+    "unreadable_tables": false,
+    "reported_defects": []
+  }
+}

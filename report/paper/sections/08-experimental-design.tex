@@ -1,0 +1,61 @@
+\section{Experimental design and interpretation of results}
+\label{sec:experimental-design}
+
+The archive contains executed synthetic studies and real-data analyses, but it does not fill every validation condition needed for broad comparative claims. Each result is therefore interpreted only for the estimand, observation model, coordinate system, and reference definition used in its calculation. Planned studies are described separately from executed results.
+
+\subsection{Questions addressed by the empirical studies}
+The empirical analysis addresses five questions.
+\begin{enumerate}
+\item \textbf{Posterior computation and uncertainty:} do the exact-recursion identities hold, and are boundary-event posterior probabilities calibrated under repeated simulation from the fitted model class?
+\item \textbf{Generality across observation models:} can the same partition recursions use segment marginal likelihoods from materially different exponential-family and nonconjugate observation models?
+\item \textbf{Hierarchical structure:} do shared-changepoint and latent-group formulations recover the structures used to generate their synthetic data?
+\item \textbf{Numerical approximation:} how do segment log marginal-likelihood discrepancies, runtime, selected segment count, and boundary recovery vary among numerical methods?
+\item \textbf{Real-data behavior:} what posterior segmentations and uncertainty summaries are obtained for the archived well-log, array-CGH, equity-volatility, and methylation datasets?
+\end{enumerate}
+The executed studies address these questions in the stated designs. They do not establish universal superiority, external domain accuracy, or asymptotic improvements over the quadratic dynamic-programming complexity.
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{0.91\textwidth}{!}{\input{shared/figures/tikz/experiments/claim_experiment_result_map.tex}}
+  \caption{Relation among a statistical claim, the corresponding experiment, the executed output, and the permitted interpretation. Execution of a calculation is distinct from whether that calculation is valid for a particular scientific comparison.}
+  \label{fig:claim-evidence-paper}
+\end{figure*}
+
+\subsection{Synthetic studies}
+The single-sequence simulations use known piecewise-constant parameters and therefore permit direct boundary and signal-reconstruction metrics. Boundary estimates are matched to generating changepoints by Definition~\ref{def:boundary-matching-paper} at the stated tolerance. The Gaussian calibration study groups posterior boundary-event probabilities into bins and reports empirical frequencies, expected calibration error (ECE), and Brier score. The observation-model study uses Gaussian, Poisson, Binomial, and Beta-valued segment models with the same partition recursions; it is a test of the general segment-marginal-likelihood formulation, not a ranking of the four data-generating processes.
+
+The multiple-sequence study with a common changepoint configuration compares pooled and sequence-specific posterior summaries on aligned sequences. The latent-group study uses a finite set of group templates and reports hard allocation accuracy and group-specific boundary marginals in one simulated setting. Because the criterion in Equation~\eqref{eq:latent-group-objective} is not a normalized finite-mixture likelihood, this study does not test finite-mixture identifiability.
+
+The nonconjugate study compares quadrature with Laplace approximation, the Jaakkola--Jordan bound, P\'olya--Gamma mean-field approximation, and expectation propagation. It reports runtime, maximum absolute segment-score discrepancy relative to quadrature, selected segment count, and boundary $F_1$. These are descriptive comparisons for the archived example. They do not establish a uniform approximation rate for any method.
+
+\subsection{Real-data analyses and comparator definitions}
+The four case studies use the archived preprocessing, priors, segment-count bounds, and observation models. In each plot, red vertical lines denote fitted joint-MAP changepoints unless a separate annotation source is explicitly stated. The current archive does not contain independent changepoint labels for the four applications.
+
+Comparator boundary metrics use the same one-to-one matching rule. When the reference is the \BayesBreak joint-MAP boundary set, a comparator score measures agreement with that estimate, not accuracy against independent truth. Tuning and segment-count matching are reported when present. Marginal-likelihood values obtained from different response variables, priors, or factorizations are not interpreted as Bayes factors unless the models define probabilities for the same observed data under a common comparison.
+
+The well-log analysis uses a downsampled sequence from the archived NMR record. The array-CGH analysis uses 43 subjects observed at 2,215 aligned probes. The equity analysis uses the archived 2015--2023 series after stride-four preprocessing. The methylation analysis uses the \texttt{methylKit} \texttt{test1.myCpG} chromosome-21 example, not an external methylation-atlas analysis.
+
+\subsection{Status of the executed outputs}
+\begin{table*}[t]
+\centering
+\small
+\caption{Scientific interpretation of the executed outputs.}
+\label{tab:evidence-interpretation}
+\begin{tabularx}{0.96\textwidth}{@{}L{0.22\textwidth}L{0.22\textwidth}Y L{0.19\textwidth}@{}}
+\toprule
+Output & Supports & Does not support & Status \\
+\midrule
+Gaussian boundary calibration & calibration in the archived generating design & calibration under arbitrary misspecification & real, admissible \\
+Observation-model study & use of common partition recursions with the stated segment models & a universal performance ranking across families & real, admissible \\
+Latent-group simulation & allocation recovery in one finite-template setting & normalized-mixture identifiability & real, limited to the stated design \\
+Nonconjugate comparison & observed score-error, runtime, and segmentation differences & method-wide approximation rates & real, descriptive \\
+Runtime studies & wall-clock behavior over the measured ranges & asymptotically linear complexity & real, descriptive \\
+Four real-data fits & executed posterior summaries for the archived datasets & external changepoint accuracy or causal event attribution & real, descriptive \\
+Array-CGH flattened comparator & execution of a calculation on incompatible coordinate axes & comparator performance & real, excluded from comparison \\
+Methylation held-out value & execution of the archived fallback calculation & Beta posterior-predictive performance & real, excluded from prediction results \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Outstanding validation studies}
+The archive does not yet contain a fairness-controlled external benchmark for every observation model, repeated confidence intervals for all recovery tables, broad misspecification studies, scaling experiments beyond the bundled range, independent real-data changepoint annotations, or a uniform segmentwise error bound for each nonconjugate approximation. These are unresolved empirical or numerical questions. They are stated in Section~\ref{sec:limitations} and are not filled with synthetic placeholder values.

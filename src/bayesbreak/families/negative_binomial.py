@@ -32,6 +32,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from ..base import BayesBreakSegmenter
+from ..priors import PartitionPriorConfig
 from ..utils import gammaln
 
 
@@ -67,6 +68,7 @@ class BayesBreakNegBin(BayesBreakSegmenter):
         r_predict: float | None = None,
         alpha: float | None = None,
         beta: float | None = None,
+        partition_prior: PartitionPriorConfig | None = None,
     ) -> None:
         super().__init__(
             k_max=k_max,
@@ -75,6 +77,7 @@ class BayesBreakNegBin(BayesBreakSegmenter):
             length_prior=length_prior,
             boundary_coordinates=boundary_coordinates,
             prior_k=prior_k,
+            partition_prior=partition_prior,
         )
         self.r = r
         self.r_predict = r_predict

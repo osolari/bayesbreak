@@ -11,8 +11,8 @@ For each of welllog / cgh / spx / methylation:
 
 Output:
 
-    docs/report/figures/baselines_metrics.json
-    docs/report/figures/baselines_metrics.txt
+    results/figures/baselines_metrics.json
+    results/figures/baselines_metrics.txt
 
 Each row records algorithm, package + version, k_hat (= len(boundaries)+1),
 the interior boundaries, runtime, and the Jaccard / boundary-MAE

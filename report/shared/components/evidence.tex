@@ -1,0 +1,15 @@
+% Compact evidence-status labels usable in paper, slides, and book.
+% Requires xcolor; no other package dependency.
+\newcommand{\CSEvidenceTag}[3]{%
+  \begingroup
+  \setlength{\fboxsep}{2.6pt}%
+  \setlength{\fboxrule}{0.45pt}%
+  \raisebox{0.2ex}{\fcolorbox{#1}{#2}{%
+    \textcolor{#1}{\sffamily\bfseries\fontsize{7}{8}\selectfont\strut\MakeUppercase{#3}}}}%
+  \endgroup}
+\newcommand{\MeasuredTag}{\CSEvidenceTag{Positive}{PositivePale}{Measured}}
+\newcommand{\ReproducedTag}{\CSEvidenceTag{Secondary}{SecondaryPale}{Reproduced}}
+\newcommand{\SyntheticTag}{\CSEvidenceTag{Warning}{WarningPale}{Synthetic}}
+\newcommand{\PlannedTag}{\CSEvidenceTag{RuleDark}{LightPanel}{Planned}}
+\newcommand{\IllustrativeTag}{\CSEvidenceTag{PrimaryDark}{PrimaryWash}{Illustrative}}
+\newcommand{\ExternalTag}{\CSEvidenceTag{Secondary}{SecondaryPale}{External}}

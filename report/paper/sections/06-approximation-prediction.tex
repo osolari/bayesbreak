@@ -1,0 +1,123 @@
+\section{Approximate segment integration, posterior prediction, and evaluation}
+\label{sec:approx-predict}
+
+For a nonconjugate segment model, \BayesBreak requires a numerical approximation to the segment marginal likelihood. Posterior prediction requires the posterior predictive distribution associated with the fitted observation model. This section states the error condition under which segmentwise approximation error can be propagated through the partition recursions and then defines the prediction and boundary-evaluation rules used in the empirical analysis.
+
+\subsection{Propagation of segment marginal-likelihood error}
+Let $\ell_{ij}=\log A^{(0)}_{ij}$ be a reference log segment marginal likelihood and let $\widehat\ell_{ij}$ be the value returned by a numerical method such as Laplace approximation, the Jaakkola--Jordan bound, expectation propagation, P\'olya--Gamma mean-field approximation, or adaptive quadrature.
+
+\begin{assumption}[Uniform error bound over admissible segments]
+\label{ass:block-error}
+There exists $\varepsilon\ge0$ such that
+\begin{equation}
+ |\widehat\ell_{ij}-\ell_{ij}|\le\varepsilon
+\label{eq:block-error}
+\end{equation}
+for every segment $(i,j]$ that can occur in a partition with $k\le k_{\max}$. The numerical analysis must identify the reference value and, when applicable, separate optimization residual, truncation or tail error, quadrature error, and discrepancy from the reference calculation.
+\end{assumption}
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{0.91\textwidth}{!}{\input{shared/figures/tikz/theory/segment_error_propagation.tex}}
+  \caption{Propagation of a uniform log marginal-likelihood error through the partition recursions. The global bounds require an independently established segmentwise error bound; they do not provide such a bound for a numerical approximation.}
+  \label{fig:stability-chain-paper}
+\end{figure*}
+
+\begin{theorem}[Stability of marginal likelihoods and posterior odds]
+\label{thm:stability-paper}
+Under Assumption~\ref{ass:block-error}, every $k$-segment forward or backward quantity satisfies
+\begin{align}
+e^{-k\varepsilon}L_{k,j}
+&\le\widehat L_{k,j}\le e^{k\varepsilon}L_{k,j},\nonumber\\
+e^{-k\varepsilon}R_{k,i}
+&\le\widehat R_{k,i}\le e^{k\varepsilon}R_{k,i}.
+\label{eq:message-sandwich}
+\end{align}
+Consequently, for $k,k'\le k_{\max}$,
+\begin{equation}
+\left|
+\log\frac{\widehat p(k\mid y)}{\widehat p(k'\mid y)}
+-\log\frac{p(k\mid y)}{p(k'\mid y)}
+\right|\le(k+k')\varepsilon,
+\label{eq:k-odds-stability}
+\end{equation}
+and, for two locations $h,h'$ of the same ordered boundary $t_p$ under fixed $k$,
+\begin{equation}
+\left|
+\log\frac{\widehat p(t_p=h\mid y,k)}{\widehat p(t_p=h'\mid y,k)}
+-\log\frac{p(t_p=h\mid y,k)}{p(t_p=h'\mid y,k)}
+\right|\le2k\varepsilon.
+\label{eq:boundary-odds-stability}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Each term in a $k$-segment partition sum is a product of exactly $k$ segment marginal likelihoods. Equation~\eqref{eq:block-error} therefore changes every path weight by a factor in $[e^{-k\varepsilon},e^{k\varepsilon}]$. Summation over positive path weights preserves this multiplicative bound, which proves Equation~\eqref{eq:message-sandwich}. Posterior odds for two segment counts divide terminal sums whose multiplicative errors are bounded by $e^{\pm k\varepsilon}$ and $e^{\pm k'\varepsilon}$, giving Equation~\eqref{eq:k-odds-stability}. The unnormalized probability of an ordered boundary at $h$ is $L_{p,h}R_{k-p,h}$ and therefore contains $k$ segment factors in total. Comparing two boundary locations doubles the largest possible log perturbation and gives Equation~\eqref{eq:boundary-odds-stability}.
+\end{proof}
+
+\begin{corollary}[Consequences for probabilities and modal locations]
+\label{cor:stability-paper}
+If finite unnormalized weights satisfy $|\log\widehat w_a-\log w_a|\le\eta$, then their normalized probabilities satisfy $e^{-2\eta}\le\widehat p_a/p_a\le e^{2\eta}$ and $\|\widehat p-p\|_{\mathrm{TV}}\le\min\{1,e^{2\eta}-1\}$. Moreover, a fixed-$k$ modal boundary separated from every alternative by exact log-odds margin $\Delta$ is unchanged whenever $\varepsilon<\Delta/(2k)$.
+\end{corollary}
+\begin{proof}
+Write $\widehat w_a=w_ae^{\delta_a}$ with $|\delta_a|\le\eta$. The normalizing multiplier $\sum_b p_be^{\delta_b}$ lies in $[e^{-\eta},e^{\eta}]$, which gives the probability-ratio bounds; summing positive probability differences yields the exponential bound, while total variation is at most one. Equation~\eqref{eq:boundary-odds-stability} perturbs each best-versus-alternative log-odds difference by at most $2k\varepsilon$. The ordering is therefore unchanged when $2k\varepsilon<\Delta$.
+\end{proof}
+
+\begin{proofobligation}[Error control for individual numerical methods]
+\label{obl:routine-certification-paper}
+This paper does not establish a uniform convergence rate for Laplace approximation, the Jaakkola--Jordan bound, expectation propagation, P\'olya--Gamma mean-field approximation, or adaptive quadrature over all admissible segments. To apply Theorem~\ref{thm:stability-paper}, a nonconjugate analysis must establish Assumption~\ref{ass:block-error} under conditions appropriate to the observation family, parameter domain, segment support, initialization, convergence event, and tail behavior. Without that step, the dynamic program is exact for the supplied approximate score array, but the theorem does not compare the resulting posterior with the posterior under the intended segment model.
+\end{proofobligation}
+
+\subsection{Family-specific posterior prediction}
+A fitted model records the observation family, the segment posterior state, and the coordinate range used for fitting. Prediction must use the posterior predictive distribution of that observation family. Coordinates outside the fitted range are rejected by default; an extrapolation rule is permitted only when it is stated as part of the predictive model before evaluation.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{0.96\columnwidth}{!}{\input{shared/figures/tikz/workflows/posterior_prediction_workflow.tex}}
+  \caption{Posterior prediction and evaluation. Observation-family dispatch and coordinate-support checks precede proper scoring; a location error is undefined when no boundary is matched.}
+  \label{fig:posterior-prediction-paper}
+\end{figure}
+
+Consider a fitted segment $B$ with posterior conjugate hyperparameters $(\alpha_B,\beta_B)$. Let $(S_B^{\rm new},W_B^{\rm new},H_B^{\rm new})$ denote the exposure-aware sufficient summaries of new observations assigned to $B$.
+
+\begin{proposition}[Posterior-predictive likelihood for a fixed segment]
+\label{prop:predictive-paper}
+Under the exponential-family formulation of Section~\ref{sec:model},
+\begin{equation}
+ p(y_B^{\rm new}\mid y_B)
+ =e^{H_B^{\rm new}}
+ \frac{Z(\alpha_B+S_B^{\rm new},\beta_B+W_B^{\rm new})}
+      {Z(\alpha_B,\beta_B)}.
+\label{eq:posterior-predictive}
+\end{equation}
+\end{proposition}
+\begin{proof}
+Use the posterior distribution for the segment parameter after observing $y_B$ as the prior distribution for the new observations. Multiplication by the new exposure-aware likelihood updates $(\alpha_B,\beta_B)$ by $(S_B^{\rm new},W_B^{\rm new})$. Integration over the segment parameter gives the ratio of conjugate normalizing constants and the base-measure factor in Equation~\eqref{eq:posterior-predictive}.
+\end{proof}
+
+Prediction may condition on an exported joint-MAP partition or average over partitions and segment counts. The first calculation is conditional on a selected partition; the second integrates segmentation uncertainty. In either case, assignment of prediction coordinates to segments is part of the statistical model. Assigning every out-of-range coordinate to the final segment without an explicit extrapolation assumption is not a valid posterior-predictive calculation.
+
+\subsection{Boundary metrics}
+\begin{definition}[One-to-one tolerance matching]
+\label{def:boundary-matching-paper}
+For estimated boundaries $\widehat{\mathcal B}$, reference boundaries $\mathcal B^\star$, and tolerance $\tau$, form the bipartite graph containing an edge $(\widehat b,b^\star)$ whenever $|\widehat b-b^\star|\le\tau$. Choose a matching of maximum cardinality; among maximum-cardinality matchings, choose one of minimum total absolute distance under a deterministic tie rule. Precision, recall, and $F_1$ use the resulting number of matches. No boundary is used more than once.
+\end{definition}
+
+\begin{definition}[Matched location error]
+\label{def:matched-mae-paper}
+For the matching $\mathcal M_\tau$,
+\[
+\operatorname{MAE}_\tau
+=|\mathcal M_\tau|^{-1}
+ \sum_{(\widehat b,b^\star)\in\mathcal M_\tau}|\widehat b-b^\star|
+\]
+when $|\mathcal M_\tau|>0$. When no pair is matched, the value is reported as \NA, not as zero.
+\end{definition}
+
+\begin{definition}[Admissible held-out predictive score]
+\label{def:heldout-score-paper}
+A held-out log score is used as predictive evidence only when the held-out observations were excluded from fitting, the posterior predictive distribution of the fitted observation family was used, and every prediction coordinate lay in the fitted support or followed a pre-specified extrapolation model. A violation of any condition invalidates the number for that predictive interpretation without changing the fact that the computation was executed.
+\end{definition}
+
+\begin{exclusionbox}[Excluded methylation predictive computation]
+The archived methylation value $-387.50040013308154$ for $m=381$ is a real executed output, but it is not a Beta-observation held-out log predictive density. The implementation used a Gaussian predictive routine and assigned coordinates beyond the fitted range to the last segment. The value remains recorded as \resultid{RES-BB-RD-007Q} and is excluded from predictive conclusions.
+\end{exclusionbox}

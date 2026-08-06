@@ -1,7 +1,7 @@
 exclude: |
   (?x)^(
-      docs/report/.*\.(tex|sty|cls|bst|bib)|
-      docs/report/assets/.*|
+      report/.*|
+      BayesBreak_Chatbot_Change_Guide\.md|
       conda-recipe/meta\.yaml
   )$
 

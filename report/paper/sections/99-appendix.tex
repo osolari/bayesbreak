@@ -1,0 +1,216 @@
+\section{Local block formula reference}
+\label{app:family-formulas}
+
+This appendix records the principal family instantiations used by the executed archive. They are direct substitutions into Theorem~\ref{thm:block-integration}; family descriptors remain distinct from optional likelihood powers.
+
+\subsection{Gaussian mean with known observation variance}
+For $y_r\mid\mu\sim\mathcal N(\mu,\sigma^2/w_r)$ and $\mu\sim\mathcal N(\nu,\rho^2)$, let
+\begin{align*}
+W_{ij}&=\sum_{r=i+1}^{j}w_r,
+& S_{ij}&=\sum_{r=i+1}^{j}w_ry_r,\\
+Q_{ij}&=\sum_{r=i+1}^{j}w_r(y_r-\nu)^2,
+& \kappa_{ij}&=\rho^2W_{ij}+\sigma^2.
+\end{align*}
+The posterior mean and variance are
+\[
+\nu_{ij}=\frac{\rho^2S_{ij}+\sigma^2\nu}{\kappa_{ij}},
+\qquad
+\rho_{ij}^2=\frac{\sigma^2\rho^2}{\kappa_{ij}},
+\]
+and the integrated block log evidence is
+\begin{align}
+\log A^{(0)}_{ij}
+={}&-\frac{j-i}{2}\log(2\pi\sigma^2)
++\frac12\sum_{r=i+1}^{j}\log w_r\nonumber\\
+&-\frac12\log\!\left(1+\frac{\rho^2W_{ij}}{\sigma^2}\right)
+-\frac{Q_{ij}}{2\sigma^2}\nonumber\\
+&+\frac{(S_{ij}-\nu W_{ij})^2}
+{2(\sigma^2W_{ij}+\sigma^4/\rho^2)}.
+\label{eq:gaussian-block-app}
+\end{align}
+The first two moment numerators multiply this evidence by $\nu_{ij}$ and $\rho_{ij}^2+\nu_{ij}^2$.
+
+\subsection{Poisson counts with exposure}
+For $y_r\mid\lambda\sim\operatorname{Pois}(\lambda e_r)$ and $\lambda\sim\operatorname{Gamma}(a_0,b_0)$ in shape--rate form, define $C_{ij}=\sum y_r$, $E_{ij}=\sum e_r$, and
+$H_{ij}=\sum[y_r\log e_r-\log(y_r!)]$ over the block. Then
+\begin{equation}
+A^{(0)}_{ij}
+=e^{H_{ij}}
+\frac{b_0^{a_0}\Gamma(a_0+C_{ij})}
+{\Gamma(a_0)(b_0+E_{ij})^{a_0+C_{ij}}},
+\label{eq:poisson-block-app}
+\end{equation}
+and the posterior is $\operatorname{Gamma}(a_0+C_{ij},b_0+E_{ij})$.
+
+\subsection{Binomial observations with known trials}
+For $y_r\mid p\sim\operatorname{Binom}(m_r,p)$ and $p\sim\operatorname{Beta}(a_0,b_0)$, define $C_{ij}=\sum y_r$, $M_{ij}=\sum m_r$, and $H_{ij}=\sum\log\binom{m_r}{y_r}$. Then
+\begin{equation}
+A^{(0)}_{ij}
+=e^{H_{ij}}
+\frac{B(a_0+C_{ij},b_0+M_{ij}-C_{ij})}{B(a_0,b_0)},
+\label{eq:binomial-block-app}
+\end{equation}
+and the posterior is $\operatorname{Beta}(a_0+C_{ij},b_0+M_{ij}-C_{ij})$.
+
+\subsection{Beta-valued observations}
+For $y_r\in(0,1)$ with known precision $\phi_r$ and block mean $\mu\in(0,1)$,
+\begin{align*}
+y_r\mid\mu,\phi_r
+&\sim\operatorname{Beta}(\phi_r\mu,\phi_r(1-\mu)),\\
+\mu&\sim\operatorname{Beta}(a_0,b_0).
+\end{align*}
+This pair is not conjugate in $\mu$. Write
+$g_s(\mu)=\operatorname{BetaPDF}(y_s\mid\phi_s\mu,\phi_s(1-\mu))$
+and $\pi_0(\mu)=\operatorname{BetaPDF}(\mu\mid a_0,b_0)$. The local interface uses deterministic one-dimensional quadrature,
+\begin{equation}
+A^{(r)}_{ij}
+=\int_0^1\mu^r
+\exp\!\left\{\sum_{s=i+1}^{j}\log g_s(\mu)+\log\pi_0(\mu)\right\}\dd\mu.
+\label{eq:betaobs-block-app}
+\end{equation}
+Node-count sensitivity and endpoint behavior are numerical diagnostics; this integral is not represented as a closed-form conjugate result.
+
+\ifSAIMPaperTwoColumn
+\clearpage
+\onecolumn
+\fi
+\section{Log-space dynamic programs}
+\label{app:algorithms}
+
+\begin{algorithm}[H]
+\caption{Log-space sum-product messages}
+\label{alg:log-sum-product-app}
+\KwIn{Prior-adjusted log scores $\widetilde\ell_{ij}$; $k_{\max}$.}
+Initialize $\Lambda_{0,0}=0$, $\Lambda_{0,j>0}=-\infty$, $\mathcal R_{0,n}=0$, and $\mathcal R_{0,i<n}=-\infty$\;
+\For{$k=0$ \KwTo $k_{\max}-1$}{
+  \For{$j=k+1$ \KwTo $n$}{
+    $\Lambda_{k+1,j}\leftarrow\logsumexp_{h=k}^{j-1}\{\Lambda_{k,h}+\widetilde\ell_{h,j}\}$\;
+  }
+  \For{$i\leftarrow n-k-1,n-k-2,\ldots,0$}{
+    $\mathcal R_{k+1,i}\leftarrow\logsumexp_{h=i+1}^{n-k}\{\widetilde\ell_{i,h}+\mathcal R_{k,h}\}$\;
+  }
+}
+Normalize $\log p(k)+\Lambda_{k,n}-\log C_k(u)$ over $k$\;
+\KwOut{$\Lambda$, $\mathcal R$, and $p(k\mid y)$.}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Joint-MAP max-sum and backtracking}
+\label{alg:max-sum-app}
+\KwIn{Prior-adjusted log scores $\widetilde\ell_{ij}$; fixed $k$.}
+Set $M_{0,0}=0$ and $M_{0,j>0}=-\infty$\;
+\For{$q=1$ \KwTo $k$}{
+  \For{$j=q$ \KwTo $n$}{
+    $h^\star(q,j)\leftarrow\arg\max_{h=q-1}^{j-1}\{M_{q-1,h}+\widetilde\ell_{h,j}\}$ under the declared tie rule\;
+    $M_{q,j}\leftarrow M_{q-1,h^\star(q,j)}+\widetilde\ell_{h^\star(q,j),j}$\;
+  }
+}
+Set $\widehat t_k=n$ and recursively $\widehat t_{q-1}=h^\star(q,\widehat t_q)$\;
+\KwOut{$\widehat t$ and terminal score $M_{k,n}$.}
+\end{algorithm}
+
+The recommended numerical checks are
+\begin{align*}
+\sum_{k=1}^{k_{\max}}p(k\mid y)&=1,\\
+|\Lambda_{k,n}-\mathcal R_{k,0}|&\le\delta,\\
+\sum_{h=1}^{n-1}p(b_h=1\mid y,k)&=k-1,\\
+\left|M_{k,n}-\sum_{q=1}^{k}
+\widetilde\ell_{\widehat t_{q-1},\widehat t_q}\right|&\le\delta.
+\end{align*}
+with a documented floating-point tolerance $\delta$.
+
+\section{Supplementary agreement diagnostics}
+\label{app:agreement}
+
+The tables below preserve executed comparator values while making the reference semantics explicit. They are not external-accuracy tables.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Well-log boundary agreement with the \BayesBreak MAP boundary set at tolerance three. No independent geology annotation was archived.}
+\label{tab:welllog-agreement-app}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Method & Agreement $F_1@3$ & Interpretation \\
+\midrule
+Fearnhead-configured reference DP & 0.93 & agreement with BB MAP \\
+Optimal partitioning & 0.91 & agreement with BB MAP \\
+Binary segmentation & 0.86 & agreement with BB MAP \\
+PELT & 0.18 & agreement with BB MAP \\
+Wild binary segmentation & 0.05 & agreement with BB MAP \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{S\&P 500 and methylation comparator agreement. Segment counts were matched where stated by the archived protocol.}
+\label{tab:spx-methyl-agreement-app}
+\begin{tabularx}{0.96\textwidth}{@{}L{0.20\textwidth}L{0.28\textwidth}R{0.11\textwidth}R{0.13\textwidth}Y@{}}
+\toprule
+Dataset & Method & $\widehat k$ & Agreement $F_1@3$ & Scope \\
+\midrule
+S\&P 500 & optimal partitioning, matched $k$ & 29 & 0.82 & vs BB Gaussian MAP \\
+S\&P 500 & PELT & 79 & 0.53 & vs BB Gaussian MAP \\
+S\&P 500 & binary segmentation, matched $k$ & 29 & 0.43 & vs BB Gaussian MAP \\
+S\&P 500 & wild binary segmentation, matched $k$ & 29 & 0.07 & vs BB Gaussian MAP \\
+S\&P 500 & Fearnhead-configured reference DP & 13 & 0.55 & vs BB Gaussian MAP \\
+Methylation & optimal partitioning, matched $k$ & 15 & 0.79 & vs BB Beta-valued MAP \\
+Methylation & binary segmentation, matched $k$ & 15 & 0.57 & vs BB Beta-valued MAP \\
+Methylation & PELT & 5 & 0.44 & vs BB Beta-valued MAP \\
+Methylation & wild binary segmentation, matched $k$ & 15 & 0.14 & vs BB Beta-valued MAP \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The incompatible array-CGH comparator output is intentionally absent from these tables. Its flattened 95,245-value axis and the 2,215-probe boundary axis do not define a common matching problem.
+
+\section{Result provenance and interpretation}
+\label{app:provenance}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\caption{Principal executed-result ledger used by the paper. ``Real'' records execution provenance; the final column states whether and how the output may support the stated scientific target.}
+\label{tab:result-ledger-app}
+\begin{tabularx}{0.98\textwidth}{@{}L{0.18\textwidth}L{0.19\textwidth}L{0.15\textwidth}Y L{0.16\textwidth}@{}}
+\toprule
+Record & Computation & Execution status & Scientific use & Interpretation status \\
+\midrule
+Synthetic Gaussian & posterior and MAP summaries & real & estimator separation, recovery illustration & valid for the stated target \\
+Family showcase & four local block models & real & interface portability & valid for the stated target, scoped \\
+Boundary calibration & repeated Gaussian simulation & real & ECE/Brier in generating design & valid for the stated target, scoped \\
+Latent-group templates & 24 labeled sequences & real & finite latent-group allocation behavior & partially scoped \\
+Nonconjugate table & five block routines & real & descriptive trade-off & uncertified globally \\
+Runtime sweep & $n$ and $k_{\max}$ sweeps & real & finite-range performance & descriptive \\
+Well-log & Gaussian case-study fit & real & descriptive segmentation & descriptive only; no reference truth \\
+Array-CGH & shared-boundary fit & real & descriptive pooled fit & descriptive only; no reference truth \\
+\resultid{RES-BB-CMP-002} & flattened CGH comparator & real & negative control for schema checks & excluded from the stated analysis \\
+S\&P 500 & Gaussian and Bernoulli fits & real & descriptive regime summaries & descriptive only; no reference truth \\
+Methylation segmentation & Beta-valued fit & real & descriptive CpG segmentation & descriptive only; no reference truth \\
+\resultid{RES-BB-RD-007Q} & held-out methylation value & real & negative control for family/support checks & excluded from the stated analysis \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+A corrected computation does not replace an excluded archived row. It receives a new identifier, records its parent, and states the corrected family, axis, support, configuration, and output hashes.
+
+\section{Reproducibility checklist}
+\label{app:reproducibility}
+
+A claim-supporting run should archive the following fields:
+\begin{enumerate}
+\item input data identity, preprocessing, coordinate system, split membership, and hash;
+\item observation family, descriptors, likelihood powers, hyperparameters, and support checks;
+\item segment-count prior, cohesion, hazard, candidate-block constraints, and $k_{\max}$;
+\item block routine, software version, convergence state, approximation reference, and error certificate when applicable;
+\item forward/backward and max-sum invariant checks with numerical tolerances;
+\item random seeds and complete objective traces for restart-based extensions;
+\item prediction family dispatch, fitted coordinate support, and extrapolation rule;
+\item metric tolerance, one-to-one matching implementation, and undefined-value policy;
+\item result identifier, lineage, configuration hash, artifact paths, and figure/table generator;
+\item package test summary with passes, skips, unresolved cases, and failures reported separately.
+\end{enumerate}
+
+The historical verification record \texttt{RES-BB-QA-002} contains 179 collected tests, 157 passes, five dependency-based skips, and 17 unresolved cases. The independent Phase~6 record \texttt{RES-BB-QA-003} contains 179 collected tests, 173 passes, five skips, one timeout under a 20-second per-test cap, and zero failures. Document compilation is not counted as package-level scientific validation.

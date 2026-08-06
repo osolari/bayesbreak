@@ -1,68 +1,64 @@
-# Manuscript
+# Phase 6 Report
 
 <div class="saim-cite" markdown>
 > **Solari, O. S.** (2026). *Generalized Hierarchical Bayesian
 > Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 > Grouped/Latent-Group Designs.* sAIm Labs.
 > [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
-> [PDF](https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf){target=_blank}
+> [Journal paper](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
 </div>
 
-The technical report (PDF) and source LaTeX are bundled in
-`docs/report/` and reproduced verbatim in `docs/report.zip`.
+The repository adopts the complete verified Phase 6 report under `report/`. The
+editable source includes the technical book, two journal layouts, executive summary,
+canonical implementation handoff, claim and result registries, experiment protocols,
+presentation handoffs, and release validators.
 
-- [`docs/report/bayesbreak.pdf`](https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf) — the rendered manuscript.
-- [`docs/report.zip`](https://github.com/osolari/bayesbreak/blob/master/docs/report.zip) — Overleaf-ready source tree (sections, figures, tables, bibliography, class files).
-- [`docs/report/CHANGELOG.md`](https://github.com/osolari/bayesbreak/blob/master/docs/report/CHANGELOG.md) — manuscript change log (separate from the repo CHANGELOG).
-- [`docs/report/CODING_AGENT_HANDOFF.md`](https://github.com/osolari/bayesbreak/blob/master/docs/report/CODING_AGENT_HANDOFF.md) — author-verification checklist mirrored in the repo.
+- [Technical book](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Technical_Book.pdf)
+- [Main journal paper, two-column](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf)
+- [Main journal paper, single-column](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf)
+- [Executive summary](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf)
+- [Canonical editable source](https://github.com/osolari/bayesbreak/tree/master/report)
+- [Phase 6 manifest](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md)
+- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/master/report/coding/CODING_AGENT_HANDOFF.md)
 
-## Sections
+## Scientific Status
 
-The manuscript is organised into:
+The methodology and research direction are unchanged. BayesBreak remains a generalized
+hierarchical Bayesian segmentation method built from family-specific segment marginal
+likelihoods, sum-product posterior recursions, and a separate max-sum recursion with
+backtracking for the joint MAP partition. Irregular designs, multiple related sequences,
+known groups, and latent-group structures are central components.
 
-1. **§1 Introduction** — contributions, related work, paper organisation.
-2. **§2 Problem formulation** — inferential targets, the standing assumption
-   `ass:standing-offline`, the segmentation-space and posterior-summary
-   definitions.
-3. **§3 Setup and notation** — the Bayesian segmentation model, partition
-   priors, weighted exponential-family blocks.
-4. **§4 Method** — block evidence, DP, irregular designs, pooling, latent
-   groups, families, non-conjugate blocks, prediction.
-5. **§5 Algorithms** — implementation-centric pseudocode, complexity
-   (`prop:bb-complexity`), max-sum correctness (`thm:map-correctness`).
-6. **§5b Limitations** — named failure modes, the assumption-to-failure-mode
-   map, the decision flowchart, identifiability failures.
-7. **§6 Experiments and results** — synthetic suite, four real-data case
-   studies, planned external-comparator agenda.
-8. **§7 Conclusion** — recap and planned next iteration.
-9. **§8 Appendix** — proofs, annotated literature review, real-data
-   reproduction pipelines, code-and-reproduction notes.
+Analytic segment integration is exact for supported regular exponential-family models
+with proper conjugate priors and finite normalizing constants. Posterior quantities based
+on numerical segment integration are approximate and retain their stated assumptions and
+error conditions.
 
-## Code-to-manuscript cross-reference
+## Result Status
 
-Every public surface in `bayesbreak` cites the manuscript label it
-implements. The `docs/api.md` page lists the canonical map. Highlights:
+The release contains 14 scientific result records. Twelve are usable subject to their
+recorded limitations. Two remain real historical computations but are excluded from their
+intended conclusions:
 
-- `bayesbreak.dp.forward_backward` ↔ `prop:fb-duality`, `eq:LR`.
-- `bayesbreak.dp.max_sum_segmentation` ↔ `thm:map-correctness`.
-- Each family's `_compute_block_evidence` ↔ `prop:gaussian-block` etc.
-- `bayesbreak.run_non_conjugate_diagnostics` ↔ `ass:uniform-block-error`,
-  `prop:stability`, `prop:uniform-bounds`,
-  `cor:probability-error-conversion`.
-- `bayesbreak.SharedBoundaryReplicatesSegmenter` ↔ `thm:multisubject`,
-  `prop:shared-boundary-identifiability`.
-- `bayesbreak.BayesBreakMixtureClassifier` ↔ `thm:em-monotone`,
-  `prop:latent-identifiability`, `rem:teicher-overspec`,
-  `ex:label-switch-counterexample`.
-- `bayesbreak.SlidingWindowSegmenter` ↔ §5b *Computational regime*.
+- `RES-BB-CMP-002`: excluded from comparator conclusions because the compared
+  objects use incompatible coordinate axes.
+- `RES-BB-RD-007Q`: excluded from posterior-predictive conclusions because a
+  Gaussian predictive calculation was used for Beta observations with an implicit
+  endpoint rule.
 
-## Reproducing manuscript figures and tables
+No archived numerical value changed during the manuscript revision. Corrected reruns must
+receive new result identifiers, parent-result links, and data, configuration, code, and
+environment hashes.
+
+## Build and Validation
 
 ```bash
-PYTHONPATH=src python -m bayesbreak.reproduce all
+cd report
+make validate-phase6
 ```
 
-This regenerates every figure and table under `scripts/figures/` and
-`scripts/tables/` into `results/` (the figure scripts also write into
-`docs/report/figures/` for the manuscript). See
-[Reproducibility](reproducibility.md) for full details.
+This builds the 168-page technical book, 35-page two-column paper, 42-page
+single-column paper, and 12-page executive summary, then runs the synchronization,
+skeleton, presentation, mathematical, bibliography, source, and result-integrity checks.
+The committed PDFs under `report/releases/phase6/` are the checksum-verified release
+artifacts.

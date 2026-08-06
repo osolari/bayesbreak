@@ -1,0 +1,13 @@
+\begin{tikzpicture}[node distance=7mm and 8mm]
+\node[neutralbox,text width=28mm] (part) {Common ordered partition\\$\tau=(t_0,\ldots,t_k)$};
+\node[secondarybox,below left=9mm and 5mm of part,text width=25mm] (s1) {Sequence 1\\segment scores $M^{(1)}_{ij}$};
+\node[secondarybox,below=9mm of part,text width=25mm] (s2) {Sequence $s$\\segment scores $M^{(s)}_{ij}$};
+\node[secondarybox,below right=9mm and 5mm of part,text width=25mm] (sS) {Sequence $S$\\segment scores $M^{(S)}_{ij}$};
+\node[primarybox,below=13mm of s2,text width=40mm] (pool) {Pooled segment score\\$\log M^{\rm shared}_{ij}=\sum_{s=1}^{S}\log M^{(s)}_{ij}$};
+\draw[arrPrimary] (part)--(s1);
+\draw[arrPrimary] (part)--(s2);
+\draw[arrPrimary] (part)--(sS);
+\draw[arrSecondary] (s1)--(pool);
+\draw[arrSecondary] (s2)--(pool);
+\draw[arrSecondary] (sS)--(pool);
+\end{tikzpicture}

@@ -1,0 +1,11 @@
+
+\begin{tikzpicture}[x=1.25cm,y=1cm]
+\coordinate (mid) at (4,0);
+\foreach \x/\lab in {0/$t_0$,2/$t_1$,5/$t_2$,8/$t_3$}{\fill[Ink] (\x,0) circle (1.5pt);\node[below=2pt] at (\x,0){\lab};}
+\draw[line width=1.1pt,Primary] (0,0)--(2,0) node[midway,above=7pt]{\small $c_x(t_0,t_1)$};
+\draw[line width=1.1pt,Primary] (2,0)--(5,0) node[midway,above=7pt]{\small $c_x(t_1,t_2)$};
+\draw[line width=1.1pt,Primary] (5,0)--(8,0) node[midway,above=7pt]{\small $c_x(t_2,t_3)$};
+\draw[Secondary,line width=1.3pt] (2,-.25)--(2,.25) node[above=16pt]{\small $h_x(t_1)$};
+\draw[Secondary,line width=1.3pt] (5,-.25)--(5,.25) node[above=16pt]{\small $h_x(t_2)$};
+\node[neutralbox,text width=83mm,below=12mm of mid] {$p(t\mid k,x)\propto \prod_q c_x(t_{q-1},t_q)\prod_{q<k}h_x(t_q)$; the terminal endpoint receives no boundary-hazard factor.};
+\end{tikzpicture}

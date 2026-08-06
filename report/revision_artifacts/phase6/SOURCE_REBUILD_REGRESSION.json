@@ -1,0 +1,51 @@
+{
+  "phase": "6",
+  "status": "pass",
+  "passed": true,
+  "source_archive_used": "BayesBreak_Phase6_Unified_Overleaf_Project_pre_regression.zip",
+  "clean_workspace": "qa/clean_source_rebuild/BayesBreak_Phase6_Unified_Overleaf_Project",
+  "command": "TERM=xterm make all",
+  "clean_build_validator_status": "pass",
+  "render_comparison_dpi": 72,
+  "all_257_pages_pixel_identical": true,
+  "total_changed_pages": 0,
+  "documents": {
+    "technical_book": {
+      "path": "build/bayesbreak-technical-book.pdf",
+      "pages": 168,
+      "release_sha256": "b1736341ef8a8400c491dda9db15649a0bdc257c234208e13f4670e90adb97ec",
+      "clean_build_sha256": "3cd1c637d6044ea4b09aebc5ed49c2a75d0cfb1a3f329e9df7b4a912829d28ae",
+      "byte_identical": false,
+      "pixel_identical_at_72_dpi": true,
+      "changed_pages": []
+    },
+    "main_paper_two_column": {
+      "path": "build/paper/bayesbreak-main-paper.pdf",
+      "pages": 35,
+      "release_sha256": "de4205f1f0dcda438b834f883beef6cc8eea13e1ecc7b36813a62e23218707e2",
+      "clean_build_sha256": "ecda083d2de13b17f6540214437081f19b23dd269f47d214f287ff1234af6c00",
+      "byte_identical": false,
+      "pixel_identical_at_72_dpi": true,
+      "changed_pages": []
+    },
+    "main_paper_single_column": {
+      "path": "build/paper-single/bayesbreak-main-paper-single.pdf",
+      "pages": 42,
+      "release_sha256": "b978f68c1b199799659befc6b15b306203febad202ede4fd614307c1f60b8d8b",
+      "clean_build_sha256": "837117f553a483cbe886bb8b4b866372c1f392b0cb55dd067374778c25a547bf",
+      "byte_identical": false,
+      "pixel_identical_at_72_dpi": true,
+      "changed_pages": []
+    },
+    "executive_summary": {
+      "path": "build/executive/bayesbreak-executive-summary.pdf",
+      "pages": 12,
+      "release_sha256": "9db1afb736f91969562cb2308f7162e597ca020f8f2a0b3f60a8831d1a8aefd2",
+      "clean_build_sha256": "f3249ddd2f1beaa23f93777f32f7e7cfc2248c80f11847fe219e0a71958ad86a",
+      "byte_identical": false,
+      "pixel_identical_at_72_dpi": true,
+      "changed_pages": []
+    }
+  },
+  "note": "PDF byte hashes may differ because TeX embeds build-dependent metadata. The rendered content is pixel-identical on every page."
+}

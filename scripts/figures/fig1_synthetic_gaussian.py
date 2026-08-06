@@ -21,8 +21,8 @@ uncertainty visualisation.
 
 Outputs
 -------
-- docs/report/figures/fig1_synthetic_gaussian.png
-- docs/report/figures/fig1_synthetic_gaussian.pdf
+- results/figures/fig1_synthetic_gaussian.png
+- results/figures/fig1_synthetic_gaussian.pdf
 
 Usage
 -----
@@ -198,7 +198,7 @@ def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> No
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    p.add_argument("--outdir", type=Path, default=Path("results/figures"))
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--n1", type=int, default=50)
     p.add_argument("--n2", type=int, default=50)

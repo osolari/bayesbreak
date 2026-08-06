@@ -30,7 +30,9 @@ from numpy.typing import ArrayLike, NDArray
 from sklearn.base import BaseEstimator, RegressorMixin, TransformerMixin
 
 from . import dp as _dp
+from .design_prior import build_log_prior_table
 from .prediction import posterior_predictive_logpdf
+from .priors import PartitionPriorConfig
 from .validation import check_segmentation_input, require_fitted
 
 FloatArray = NDArray[np.floating]
@@ -82,6 +84,10 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         Optional prior on the segment count, ``p(k) -> float`` for
         ``k = 1, ..., k_max``. Returned values are normalized internally.
         ``None`` means a uniform ``p(k)``.
+    partition_prior : PartitionPriorConfig or None, default=None
+        Explicit segment-cohesion and interior-boundary-hazard configuration.
+        When ``length_prior`` is also supplied, its value is multiplied as an
+        additional segment-cohesion factor.
 
     Notes
     -----
@@ -103,6 +109,7 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         length_prior: Callable[[float], float] | None = None,
         boundary_coordinates: ArrayLike | None = None,
         prior_k: Callable[[int], float] | None = None,
+        partition_prior: PartitionPriorConfig | None = None,
     ):
         # Store constructor args untouched (sklearn contract).
         self.k_max = k_max
@@ -111,6 +118,7 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         self.length_prior = length_prior
         self.boundary_coordinates = boundary_coordinates
         self.prior_k = prior_k
+        self.partition_prior = partition_prior
 
     # ------------------------------------------------------------------
     # Subclass hooks
@@ -217,24 +225,39 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         return np.ascontiguousarray(u)
 
     def _build_log_g_table(self, u: FloatArray, n: int) -> FloatArray | None:
-        """Materialise ``log g(Δ_x(i, j))`` from ``self.length_prior``.
+        """Materialise all local cohesion and interior-hazard factors.
 
-        Returns ``None`` (the index-uniform shortcut) when no length prior is set.
+        Returns ``None`` (the index-uniform shortcut) when neither prior is set.
         """
 
-        if self.length_prior is None:
+        if self.length_prior is None and self.partition_prior is None:
             return None
-        log_g = np.full((n + 1, n + 1), -np.inf, dtype=float)
-        # Vectorise over j for fixed i.
-        for i in range(n):
-            for j in range(i + 1, n + 1):
-                d = float(u[j] - u[i])
-                if d <= 0:
-                    continue
-                gv = float(self.length_prior(d))
-                if gv > 0 and np.isfinite(gv):
-                    log_g[i, j] = math.log(gv)
-        return log_g
+        legacy = None
+        if self.length_prior is not None:
+            legacy = np.full((n + 1, n + 1), -np.inf, dtype=float)
+            for i in range(n):
+                for j in range(i + 1, n + 1):
+                    d = float(u[j] - u[i])
+                    if d <= 0:
+                        continue
+                    value = float(self.length_prior(d))
+                    if value > 0 and np.isfinite(value):
+                        legacy[i, j] = math.log(value)
+
+        explicit = None
+        if self.partition_prior is not None:
+            if not isinstance(self.partition_prior, PartitionPriorConfig):
+                raise TypeError("partition_prior must be a PartitionPriorConfig or None")
+            explicit = build_log_prior_table(n, u, self.partition_prior)
+
+        if legacy is None:
+            return explicit
+        if explicit is None:
+            return legacy
+        combined = np.full((n + 1, n + 1), -np.inf, dtype=float)
+        supported = np.isfinite(legacy) & np.isfinite(explicit)
+        combined[supported] = legacy[supported] + explicit[supported]
+        return combined
 
     def _build_log_p_k(self, k_max: int) -> FloatArray | None:
         if self.prior_k is None:
@@ -304,6 +327,7 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         self.boundary_coordinates_ = u
         log_g = self._build_log_g_table(u, n)
         self.log_g_table_ = log_g
+        self.log_prior_table_ = log_g
         log_C_k = _dp.compute_log_C_k(log_g, n, k_max)
         self.log_C_k_ = log_C_k
         log_p_k = self._build_log_p_k(k_max)

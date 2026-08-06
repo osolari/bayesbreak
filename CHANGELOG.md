@@ -1,5 +1,20 @@
 # Changelog
 
+## Phase 6 Report Adoption - 2026-08-05
+
+- Replaced the legacy `docs/report/` manuscript wholesale with the complete Phase 6
+  source under `report/`, including the technical book, journal layouts, executive
+  summary, canonical registries, coding handoff, repository skeleton, presentation
+  handoffs, and verification records.
+- Added all signed release artifacts under `report/releases/phase6/` and verified them
+  against the supplied SHA-256 manifest.
+- Preserved all 53 archived numerical assets; each matches the Phase 4R read-only hash
+  baseline. The two excluded historical computations retain their recorded status.
+- Redirected figure and table generation to `results/` so new executions cannot
+  overwrite archived report assets.
+- Recorded the source archive's case-colliding bibliography manifests and the normalized
+  macOS adoption in `report/revision_artifacts/adoption/ADOPTION_LEDGER.md`.
+
 ## [2.0.0-rc3] — Unreleased
 
 Aligns the implementation with the 2026-05-15 Phase Three manuscript

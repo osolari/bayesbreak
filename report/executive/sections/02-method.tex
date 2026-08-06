@@ -1,0 +1,50 @@
+\section{Method and hierarchical extensions}
+\label{sec:exec-method}
+
+\subsection{Segment calculations and partition inference}
+
+For a partition $\tau=(0=t_0<t_1<\cdots<t_k=n)$, define a local segment score
+\[
+  A_{ij}=M_{ij}\,c(i,j)\,h(j)^{\mathbbm 1\{j<n\}},
+\]
+where $c(i,j)$ is a segment-cohesion term and $h(j)$ is an optional prior factor for an interior boundary at coordinate $j$. Treating these as separate objects prevents a physical segment-length prior from being confused with a local boundary hazard.
+
+The posterior weight of a partition with $k$ segments is proportional to
+\[
+  p(k)\prod_{r=1}^{k} A_{t_{r-1}+1,t_r}.
+\]
+Sum-product dynamic programming sums these weights over all admissible partitions. A max-sum version replaces summation by maximization and stores backpointers to recover the joint MAP partition. After all reachable segment scores have been tabulated, the worst-case recursion cost is $\mathcal O(k_{\max}n^2)$.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/workflows/segment_to_partition.tex}}
+  \caption{Statistical structure of BayesBreak. Observation-family-specific segment calculations feed two distinct dynamic-programming recursions: sum-product for posterior marginalization and max-sum with backtracking for the joint MAP partition.}
+  \label{fig:exec-segment-partition}
+\end{figure}
+
+\subsection{Irregular designs}
+
+Irregular coordinates $x_1<\cdots<x_n$ enter through the prior on partitions rather than through an index-only approximation. Segment cohesion may depend on physical span, while a boundary hazard may depend on a local design gap. The two factors have different probability interpretations and must be specified separately. The existing archived length-aware well-log fit is a real computation, but its former Poisson-gap interpretation is not retained until the implemented prior matches that derivation.
+
+\subsection{Multiple sequences and known groups}
+
+For aligned sequences $s=1,\ldots,S$ that are conditionally independent given a common partition, the segment marginal likelihood is
+\[
+  M^{\mathrm{shared}}_{ij}=\prod_{s=1}^{S}M^{(s)}_{ij}.
+\]
+The same partition recursion can then be applied to the pooled segment scores. Known groups use the same construction within each group. The shared-boundary model is appropriate only when the candidate coordinates are aligned and a common partition is substantively plausible.
+
+\subsection{Finite latent groups}
+
+When group membership is unknown, the current method optimizes a finite criterion over group weights, sequence responsibilities, and segmentation templates. A Jensen minorization produces normalized auxiliary weights, and each template update is solved by a responsibility-weighted max-sum recursion. This is a minorization--maximization procedure for the stated criterion. Its component scores are not normalized sampling densities, so the method is not described as a conventional finite-mixture likelihood and no mixture-identifiability result is claimed.
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.72\textwidth}{!}{\input{shared/figures/tikz/models/executive_shared_boundary.tex}}
+  \caption*{(a) Common partition across conditionally independent sequences.}
+  \vspace{7pt}
+  \resizebox{0.94\textwidth}{!}{\input{shared/figures/tikz/models/latent_group_templates.tex}}
+  \caption*{(b) Finite latent-group allocation and template updates.}
+  \caption{Hierarchical extensions. The shared-boundary model pools sequence-specific segment marginal likelihoods. The latent-group model alternates responsibility and template updates for the explicitly stated finite criterion.}
+  \label{fig:exec-hierarchy}
+\end{figure}

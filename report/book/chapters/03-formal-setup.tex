@@ -1,0 +1,386 @@
+\chapter{Formal setup, notation, and model specification}
+\label{ch:formal}
+\chapterpromise{Ordered segmentation, exposure-aware local likelihoods, posterior targets, and the exact factorization required by the partition dynamic program.}
+
+\section{Notation and symbols}
+\label{sec:notation}
+
+This section fixes notation used throughout the book. We use lower-case Roman letters for
+indices, reserve $t=(t_0,\dots,t_k)$ for boundary vectors, and adopt the half-open block notation
+$(i,j]:=\{i+1,\dots,j\}$ for $0\le i<j\le n$.
+
+For irregular designs, physical segment lengths are defined using candidate boundary coordinates
+$u_0<u_1<\cdots<u_n$ rather than by implicitly referencing an undefined observation location
+$x_0$. The physical length of block $(i,j]$ is
+$\Delta_x(i,j):=u_j-u_i$. On a regular index grid set $u_i=i$; for interval data the
+$u_i$ are the observed interval endpoints. Point observations without meaningful physical interval
+endpoints use the index-uniform prior or provide an external left endpoint $u_0$.
+
+\paragraph{Conjugate-prior normalization convention.}
+For exponential-family blocks we use the following (Diaconis--Ylvisaker) convention for the
+conjugate prior normalizer. For hyperparameters $(\alpha,\beta)$,
+\begin{equation}
+\begin{aligned}
+p(\theta\mid \alpha,\beta)
+  &= \exp\!\left\{\eta(\theta)^\top \alpha-\beta A(\theta)-\log Z(\alpha,\beta)\right\},\\
+Z(\alpha,\beta)
+  &:= \int \exp\!\left\{\eta(\theta)^\top \alpha-\beta A(\theta)\right\}\,d\theta.
+\end{aligned}
+\label{eq:Zconvention}
+\end{equation}
+With this convention, $Z$ is the integral itself (not its reciprocal) and block evidences take
+the ratio form $Z(\alpha_0+S_{ij},\beta_0+W_{ij})/Z(\alpha_0,\beta_0)$ (Theorem~\ref{thm:ef-integral}
+and Chapter~\ref{ch:block}).
+
+\begin{longtable}{@{}p{0.22\linewidth}p{0.72\linewidth}@{}}
+\caption[Notation and symbols]{Notation and symbols used throughout the book. This is a notation glossary; no source CSV is associated with it.}\label{tab:notation}\\
+\toprule
+\textbf{Symbol} & \textbf{Meaning} \\
+\midrule
+$n$ & Number of observations on the ordered design. \\
+$x_i$ & Design point / location of observation $y_i$. \\
+$u_i$ & Candidate boundary coordinate used for physical segment lengths, with $u_0<\cdots<u_n$. \\
+$\Delta_x(i,j)$ & Physical length of block $(i,j]$, defined as $u_j-u_i$. \\
+$y_i$ & Observation at location $x_i$ (single-sequence case). \\
+$d_i$ & Family-specific exposure, trial-count, offset, or precision descriptor when required by the observation model. Optional power/reliability weights are denoted $a_i$; neither role is inferred from irregular spacing. \\
+\midrule
+$k$; $k_{\max}$ & Number of segments; maximum segment count considered by the DP. \\
+$t=(t_0,\dots,t_k)$ & Boundary vector, with $0=t_0<t_1<\cdots<t_k=n$. \\
+$I_q(t)$ & Index set of segment $q$: $\{t_{q-1}+1,\dots,t_q\}$. \\
+$(i,j]$ & Candidate block $\{i+1,\dots,j\}$. \\
+\midrule
+$S(y,d)$, $E(d)$, $\eta(\theta)$, $A(\theta)$, $h(y,d)$ & Family-specific statistic contribution, exposure multiplier, natural-parameter map, log-partition function, and base measure for the chosen exponential-family block model. \\
+$m_\star(\theta)=m(\theta;d_\star)$ & Declared segment functional on the reporting scale, evaluated at a fixed reference descriptor $d_\star$ when the observation mean depends on exposure or trial structure. Examples include a Gaussian mean, a Poisson rate at unit exposure, and a Binomial success probability. \\
+\midrule
+$(\alpha,\beta)$ & Conjugate hyperparameters with normalizer $Z(\alpha,\beta)$ defined in \eqref{eq:Zconvention}. \\
+$(\alpha_0,\beta_0)$ & Prior hyperparameters before observing block data. \\
+\midrule
+$S_{ij}$ & Block statistic sum $\sum_{t=i+1}^j a_t S(y_t,d_t)$. \\
+$W_{ij}$ & Block log-partition multiplier $\sum_{t=i+1}^j a_t E(d_t)$. \\
+$H_{ij}$ & Powered base-measure sum $\sum_{t=i+1}^j a_t\log h(y_t,d_t)$. \\
+$A^{(0)}_{ij}$ & Block evidence on $(i,j]$. \\
+$A^{(r)}_{ij}$ & Block moment numerator $A^{(0)}_{ij}\,\mathbb{E}[m_\star(\theta)^r\mid y_{i+1:j}]$ (for integer $r\in\{1,2,\dots\}$; conjugate-case definition). In the non-conjugate Laplace discussion of Section~\ref{sec:nonconj}, the superscript is a test function rather than a moment order; those objects are denoted $M^{[g]}_{ij}$ to avoid collision. \\
+$\widetilde A^{(r)}_{ij}$ & Prior-adjusted block quantity $A^{(r)}_{ij}\gamma_x(i,j)$, where $\gamma_x$ combines cohesion and an interior-boundary hazard when appropriate. \\
+\midrule
+$L_{k,j}$ & Prefix evidence for $y_{1:j}$ with exactly $k$ segments. \\
+$R_{k,i}$ & Suffix evidence for $y_{i+1:n}$ with exactly $k$ segments. \\
+$C_k$ & Normalizer of $p(t\mid k)$ under a segment-factorized partition prior. \\
+$p(k\mid y)$ & Posterior over segment counts. \\
+$p(t_p=h\mid y,k)$ & Marginal posterior of the $p$th boundary given $k$. \\
+$p(b_i=1\mid y,k)$ & Boundary-event marginal at interior index $i$, equal to $\sum_{p=1}^{k-1} p(t_p=i\mid y,k)$. This is the calibration target in Section~\ref{sec:experiments}. \\
+\midrule
+$\widehat t^{\mathrm{MAP}}(k)$ & Joint MAP segmentation given $k$, obtained by max-sum DP and backtracking. \\
+$\widehat\mu_q^{(r)}$ & Posterior moment of the segment-$q$ mean parameter conditional on a chosen segmentation. \\
+$\widehat f_t^{\mathrm{Bayes}}$ & Bayes regression curve at index $t$ (posterior mean of the latent piecewise-constant signal). \\
+\midrule
+$s\in\{1,\dots,S\}$ & Sequence / subject index in multi-sequence settings. \\
+$g\in\{1,\dots,G\}$ & Group index. \\
+$r_{sg}$ & Auxiliary allocation weight for sequence $s$ and latent group $g$ in the finite latent-group criterion. \\
+\midrule
+$\mathcal{M}_g$ & Fitted group-specific model exported for prediction. \\
+$\ell_g$ & Log predictive score of new data under group $g$. \\
+$\pi_g$ & Prior group weight used for prediction or in the score-template objective. \\
+\midrule
+$\varepsilon$ & Uniform per-block log-evidence error tolerance for non-conjugate block approximations; appears as the hypothesis controlling the posterior-odds stability bound in Section~\ref{sec:nonconj}. \\
+$\widehat A^{(0)}_{ij}$ & Approximate (non-conjugate) block evidence; satisfies $|\log\widehat A^{(0)}_{ij} - \log A^{(0)}_{ij}| \le \varepsilon$ under the stability assumption. \\
+$\phi_t$ & Known per-observation precision used in the Beta-block likelihood for $y_t\in(0,1)$. \\
+$\omega_t$ & P\'olya--Gamma augmentation variable for logistic / negative-binomial mean-field block approximations. \\
+$M^{[g]}_{ij}$ & Block test-function numerator $\int g(\theta)\, p(y_{i+1:j}\mid \theta)\, p(\theta)\, d\theta$, used in the Laplace-approximation discussion of Section~\ref{sec:nonconj} where the superscript denotes a test function rather than a moment order. \\
+\midrule
+$f_{\mathrm{Lap}}$, $f_{\mathrm{JJ}}$, $f_{\mathrm{EP}}$, $f_{\mathrm{PG}}$, $f_{\mathrm{Q}}$ & Local block-evidence approximations:
+Laplace, Jaakkola--Jordan variational bound, expectation propagation, P\'olya--Gamma mean field,
+and one-dimensional quadrature. Each instantiates $\widehat A^{(0)}_{ij}$ and inherits the same DP layer. \\
+\bottomrule
+\end{longtable}
+
+\paragraph{Remarks.}
+Two recurring distinctions: \emph{design irregularity} may enter through the partition prior
+(\S\ref{sec:irregular}); $d_i$ enters the likelihood only when the observation model supplies
+genuine exposures or known precisions. \emph{Boundary marginals} and the \emph{joint MAP
+segmentation} are different posterior summaries (\S\ref{sec:dp}) and must not be conflated.
+
+\label{sec:problem}
+
+BayesBreak addresses \emph{offline} Bayesian segmentation of ordered data. Throughout, the
+fundamental unknown is a contiguous partition of the index set $\{1,\dots,n\}$ together with a
+segment parameter attached to each block. This section states the objects of interest in a
+model-agnostic way; Section~\ref{sec:notation} introduces the detailed notation used later.
+
+Unless stated otherwise, all inferential statements in the book use the following standing assumption.
+
+\begin{assumption}[Offline segmentation support and block independence]
+\label{ass:standing-offline}
+The observations are ordered on a fixed set of candidate boundary locations and the segment-count
+set $\{1,\dots,k_{\max}\}$ is finite. Structural admissibility of a candidate block is determined
+before observing the response values by the candidate grid, declared segment-length restrictions,
+and prior support. Every structurally admissible block has finite nonnegative block evidence; a zero
+evidence contributes zero to the likelihood-weighted partition sum but does not change the prior
+support or its normalizer $C_k$. Structurally excluded blocks have local prior factor zero and are
+stored with log-score $-\infty$. Segment parameters are conditionally independent across blocks
+given a segmentation, and the conditional partition prior factorizes over segments as in
+Assumption~\ref{ass:factorizing-prior}. For approximate non-conjugate blocks, the same statement
+applies to the supplied approximate score array, while comparison with the exact non-conjugate model
+requires the additional error hypothesis of Assumption~\ref{ass:uniform-block-error}.
+\end{assumption}
+
+\subsection{Single-sequence segmentation and Bayes regression}
+\label{sec:problem-single}
+
+We observe ordered pairs $\{(x_i,y_i)\}_{i=1}^n$ with strictly increasing design points
+$x_1<\cdots<x_n$. The design can be irregular. When the observation model includes known
+exposures, trial counts, or precision weights, we also allow deterministic nonnegative quantities
+$w_i$; unless explicitly stated otherwise, point-observation models use $w_i\equiv 1$.
+
+A segmentation into $k$ contiguous blocks is represented by a boundary vector
+\begin{equation}
+0=t_0<t_1<\cdots<t_{k-1}<t_k=n,
+\end{equation}
+where block $q\in\{1,\dots,k\}$ is the index set
+\begin{equation}
+I_q(t)\coloneqq \{t_{q-1}+1,\dots,t_q\}.
+\end{equation}
+
+\begin{definition}[Segmentation space and structural support]
+\label{def:segmentation-space}
+For fixed $n$ and $k$, let
+\[
+\mathcal{T}_{k,n}:=\{t=(t_0,\dots,t_k):0=t_0<t_1<\cdots<t_k=n\}.
+\]
+The \emph{structural support} $\mathcal{T}^{+}_{k,n}\subseteq\mathcal{T}_{k,n}$ consists of
+those boundary vectors for which every block satisfies the declared grid and length restrictions
+and has positive local prior factor $\gamma_x(t_{q-1},t_q)$. Conditional on the design and model
+specification, this set is fixed independently of the observed response values and of
+$A^{(0)}_{ij}$. A structurally admissible partition may have zero likelihood for the observed data;
+it then contributes zero to the posterior partition sum, while the prior normalizer $C_k$ continues
+to sum over the full structural support.
+\end{definition}
+
+The corresponding segment parameter is denoted $\theta_q\in\Theta$. Conditionally on
+$(k,t,\theta_{1:k})$, observations factorize across blocks:
+\begin{equation}
+p(y_{1:n}\mid k,t,\theta_{1:k})
+= \prod_{q=1}^k \prod_{i\in I_q(t)} p(y_i\mid \theta_q, w_i),
+\label{eq:problem-lik}
+\end{equation}
+where $p(y_i\mid\theta_q,w_i)$ is interpreted according to the chosen family. For example,
+depending on the family, $w_i$ encodes exposure in Poisson models, trial count in Binomial models, or known precision
+in Gaussian models. Irregular spacing by itself does not force a non-unit $w_i$; design geometry
+can instead enter through the partition prior.
+
+For any candidate block $(i,j]$ with $0\le i<j\le n$, the key primitive is the integrated
+single-block evidence
+\begin{equation}
+\mathcal{L}(i,j;\alpha_0,\beta_0)
+\coloneqq p(y_{i+1:j}\mid \alpha_0,\beta_0)
+= \int \prod_{t=i+1}^j p(y_t\mid\theta,w_t)\,p(\theta\mid\alpha_0,\beta_0)\,d\theta,
+\label{eq:problem-block-evidence}
+\end{equation}
+where $p(\theta\mid\alpha_0,\beta_0)$ is the segment prior with hyperparameters $(\alpha_0,\beta_0)$
+(see Section~\ref{sec:notation}). When $\mathcal{L}(i,j)$ is available in closed form, the
+entire offline posterior can be computed exactly by dynamic programming. When it is only
+approximated, BayesBreak isolates the approximation at the block level and reuses the same global
+DP.
+
+\begin{definition}[Boundary-event variables, Bayes curve, and exported estimator]
+\label{def:problem-bayes-curve}
+For a boundary vector $t\in\mathcal{T}_{k,n}$, define the interior boundary indicator
+$b_i(t):=\sum_{p=1}^{k-1}\mathbf{1}\{t_p=i\}$ for $i=1,\dots,n-1$. Because the boundaries are
+strictly ordered, $b_i(t)\in\{0,1\}$. For fixed $k$, the Bayes regression curve at index $i$ is
+the posterior mean of the observation-scale segment mean covering $i$ after marginalizing over
+$t\in\mathcal{T}^{+}_{k,n}$ and over segment parameters. The exported segmentation estimator is a
+deterministic boundary vector, usually the joint MAP vector $\widehat t^{\mathrm{MAP}}(k)$, paired
+with segment-level posterior summaries for downstream prediction. These two objects need not
+coincide because the Bayes curve averages over boundary uncertainty whereas the exported estimator
+chooses one segmentation.
+\end{definition}
+
+The inferential targets are:
+\begin{enumerate}[label=(\roman*), leftmargin=2.3em]
+    \item the marginal evidence at fixed segment count,
+    \[
+      p(y_{1:n}\mid k)
+      =\sum_{t\in\mathcal{T}^{+}_{k,n}}p(t\mid k)
+        \prod_{q=1}^{k}\mathcal{L}(t_{q-1},t_q);
+    \]
+    \item the posterior $p(k,t\mid y)$ over segment counts and boundaries and its marginals
+    $p(k\mid y)$, $p(t_p=h\mid y,k)$, and the boundary-event marginal
+    \(p(b_i=1\mid y,k)=\sum_{p=1}^{k-1}p(t_p=i\mid y,k)\)
+    (the calibration target of \S\ref{sec:experiments});
+    \item posterior summaries of the latent piecewise-constant signal, namely
+    $p(\theta_i\mid y)$ and $\mathbb{E}[m_\star(\theta_i)\mid y]$ with $m_\star$ the
+    observation-scale mean parameter (the Bayes regression curve; conditional on the selected
+    $\widehat k$ unless stated otherwise);
+    \item point estimators for downstream use. In particular the \emph{joint} MAP segmentation
+    \(\widehat t^{\mathrm{MAP}}(k)\in\arg\max_t p(t\mid y,k)\)
+    differs from the vector of marginal boundary modes
+    \(\arg\max_h p(t_p=h\mid y,k)\)
+    and is recovered by max-sum DP. The prior on $k$ and the normalizer $\log C_k$ enter the
+    objective only when also optimizing over $k$.
+\end{enumerate}
+
+The three posterior summaries entering downstream analysis are isolated as labelled objects so
+that later sections can refer to them without re-deriving notation.
+
+\begin{definition}[Posterior summaries: marginal boundaries, segment count, and joint MAP]
+\label{def:posterior-summaries}
+Fix a sequence $y=y_{1:n}$, a maximum segment count $k_{\max}$, and Assumption~\ref{ass:standing-offline}.
+Define:
+\begin{enumerate}[label=(\alph*), leftmargin=2.3em]
+    \item the \emph{marginal boundary posterior}
+    \(\mathrm{MB}_i(k):=p(b_i=1\mid y,k)\)
+    for interior indices $i\in\{1,\dots,n-1\}$ and admissible $k\in\{1,\dots,k_{\max}\}$;
+    \item the \emph{posterior over segment count}
+    \(\mathrm{PK}(k):=p(k\mid y)\propto p(k)\,p(y\mid k)\)
+    for $k\in\{1,\dots,k_{\max}\}$;
+    \item the \emph{joint MAP segmentation at fixed $k$}
+    \(\widehat t^{\mathrm{MAP}}(k):=\arg\max_{t\in\mathcal{T}^{+}_{k,n}} p(t\mid y,k)\),
+    with ties broken by a deterministic rule (Section~\ref{sec:dp-alg}).
+\end{enumerate}
+These three objects are returned by distinct DP recursions (sum-product, sum-product with
+$k$-aggregation, and max-sum, respectively), and they are not in general consistent with each
+other: $\mathrm{MB}_i$ and $\widehat t^{\mathrm{MAP}}(k)$ can place boundary mass at different
+indices (Remark~\ref{rem:marg-vs-joint}), and the mode of $\mathrm{PK}$ need not coincide with
+the cardinality of any single thresholded set of marginal boundaries.
+\end{definition}
+
+\subsection{Multi-sequence structure}
+\label{sec:problem-multiseq}
+
+Many applications provide multiple related sequences observed on a common ordered grid or on a
+common set of candidate boundary locations. Let sequence $s\in\{1,\dots,S\}$ be denoted by
+$y^{(s)}_{1:n}$, with optional weights $w_i^{(s)}$ and subject-specific segment parameters
+$\theta_q^{(s)}$ when boundaries are shared. We use $z_s\in\{1,\dots,G\}$ for group membership,
+$\mathcal{S}_g:=\{s:z_s=g\}$ for known groups, and $r_{sg}$ for latent-group responsibilities.
+BayesBreak treats three progressively richer settings.
+
+\begin{definition}[Multi-sequence segmentation classes]
+\label{def:multiseq-classes}
+A shared-boundary replicate model has one boundary vector $t$ and subject-specific segment
+parameters $\theta^{(s)}_{1:k}$. A known-group model has observed labels $z_s$ and one boundary
+vector $t^{(g)}$ per group. A latent-template model has unobserved labels $z_s$ and a finite set of
+templates $\tau_g=(k_g,t^{(g)})$ optimized under the finite latent-group criterion of
+Section~\ref{sec:latent-em}. These three classes preserve the block-evidence interface; fully
+Bayesian averaging over both unknown labels and all group segmentations is a different target and
+is not claimed for the score-template model.
+\end{definition}
+
+\paragraph{Shared-boundary replicates.}
+All sequences share a common segmentation $t\in\mathcal{T}^{+}_{k,n}$, but each sequence has its
+own within-block parameters $\theta^{(s)}_{1:k}$. The common-grid requirement is an assumption on
+the candidate boundary coordinates; subject-specific missingness or exposures are handled inside
+the block evidences. Conditional on $t$, the sequences are independent:
+\begin{equation}
+p(\{y^{(s)}\}_{s=1}^S\mid t,\{\theta^{(s)}\})
+= \prod_{s=1}^S \prod_{q=1}^k \prod_{i\in I_q(t)} p\bigl(y_i^{(s)}\mid \theta_q^{(s)}, w_i^{(s)}\bigr).
+\end{equation}
+Integrating out the subject-specific segment parameters yields pooled block evidences obtained by
+multiplying subject-level block evidences.
+
+\paragraph{Known groups.}
+Sequences are partitioned into known groups $g\in\{1,\dots,G\}$. Each group has its own
+segmentation $t^{(g)}\in\mathcal{T}^{+}_{k_g,n}$, while sequences within a group share that
+segmentation and retain their own segment parameters. Conditional independence is within group
+and across subjects given $t^{(g)}$.
+
+\paragraph{Latent groups.}
+Group labels are unknown. A fully Bayesian formulation averages over both
+assignments and group-specific segmentations. BayesBreak adopts a tractable
+\emph{template-mixture} formulation: each group is associated with a single latent boundary
+template $\tau_g=(k_g,t^{(g)})$, and coordinate ascent alternates between soft assignments (normalized auxiliary weights for the current
+templates) and exact responsibility-weighted max-sum DP updates of those templates. The
+finite latent-group criterion is non-decreasing under the exact alternating updates
+(Theorem~\ref{thm:em-monotone}); this is a finite-template optimization model rather than exact Bayesian
+averaging over latent-group segmentations.
+
+\subsection{Computational scope}
+\label{sec:problem-computation}
+
+For fixed $k_{\max}$, the core BayesBreak workflow consists of:
+\begin{enumerate}[label=(\alph*), leftmargin=2.3em]
+\item precomputing all block evidences and required moment numerators;
+\item running sum-product DP recursions for evidences and posterior marginals; and
+\item optionally running a max-sum/backtracking recursion for a joint MAP segmentation.
+\end{enumerate}
+When block evaluation is constant time after prefix-sum preprocessing, this yields
+$\mathcal{O}(n^2)$ block precomputation and $\mathcal{O}(k_{\max}n^2)$ DP time. These worst-case
+costs make the exact method most natural for moderate sequence lengths (hundreds to low
+thousands), where exact posterior quantities are still computationally feasible and often worth
+the cost.
+
+\subsection{Prediction as a first-class inferential target}
+\label{sec:problem-prediction}
+
+Beyond posterior inference on the training sequence(s), BayesBreak treats \emph{prediction for new
+data} as an additional inferential target at the same level as evidence, posteriors, and point
+estimators. Given a fitted model $\mathcal{M}_g$ (one per group) and new observations
+$(X^{\mathrm{new}},y^{\mathrm{new}})$, the relevant quantities are (i) group-conditional
+posterior-predictive likelihoods $p(y^{\mathrm{new}}\mid \mathcal{M}_g)$, (ii) group membership
+posteriors $p(g\mid y^{\mathrm{new}})$, and (iii) signal predictions
+$\widehat f^{\mathrm{MAP}}_g(x^\star)$ or $\widehat f^{\mathrm{Bayes}}_g(x^\star)$ at query
+points $x^\star$. Section~\ref{sec:prediction} develops the prediction layer in detail, covering pointwise,
+set-valued, and vector-valued new data, and separates exported-segmentation scoring from optional
+full resegmentation of new data.
+
+\section{Exponential-family segment likelihood with exposure and power weights}
+\label{sec:setup}
+Let $d_t$ collect family-specific known information, such as Poisson exposure, Binomial trial count,
+or Gaussian precision. Let $a_t\ge 0$ be an optional power or reliability weight that, when used,
+multiplies the complete log contribution. The canonical local model is
+\begin{equation}
+ p(y_t\mid\theta,d_t)^{a_t}
+ =h(y_t,d_t)^{a_t}\exp\!\left\{a_t S(y_t,d_t)^\top\eta(\theta)-a_t E(d_t)A(\theta)\right\}.
+\label{eq:EFbasic}
+\end{equation}
+Thus
+\[
+ S_{ij}=\sum_{t=i+1}^j a_tS(y_t,d_t),\qquad
+ W_{ij}=\sum_{t=i+1}^j a_tE(d_t),\qquad
+ H_{ij}=\sum_{t=i+1}^j a_t\log h(y_t,d_t).
+\]
+This notation is deliberately more general than a scalar ``weight'': a Binomial trial count changes
+both the statistic and the log-partition coefficient, while a power weight scales the entire
+observation contribution.
+
+\begin{table}[H]
+\centering\small
+\begin{tabularx}{\textwidth}{@{}lXXX@{}}
+\toprule
+Family & $S(y,d)$ & $E(d)$ & Role of $d$\\ \midrule
+Gaussian, known precision $\omega$ & $\omega y$ & $\omega$ & precision/exposure in the quadratic family\\
+Poisson, exposure $e$ & $y$ & $e$ & mean is $e\lambda$; base measure contains $e^y/y!$\\
+Binomial, trials $m$ & $y$ & $m$ & log-partition is multiplied by the trial count\\
+Unweighted point observation & $T(y)$ & $1$ & $d$ is empty and $a=1$\\
+\bottomrule
+\end{tabularx}
+\caption{Valid specializations of the exposure-aware segment likelihood. Optional $a_t$ is a separate likelihood-power weight.}
+\label{tab:exposure-model}
+\end{table}
+
+\section{Ordered partitions and factorized priors}
+\begin{assumption}[Factorizing ordered-partition prior]
+\label{ass:factorizing-prior}
+For fixed $k$ and candidate-boundary coordinates $x$, the prior on
+$t=(0=t_0<\cdots<t_k=n)$ has the form
+\begin{equation}
+ p(t\mid k,x)=C_k(x)^{-1}
+ \prod_{q=1}^{k}c_x(t_{q-1},t_q)
+ \prod_{q=1}^{k-1}h_x(t_q),
+\label{eq:partition-prior-factor}
+\end{equation}
+where $c_x(i,j)\ge0$ is a segment cohesion and $h_x(j)\ge0$ is an interior-boundary hazard.
+The terminal endpoint $n$ receives no hazard factor. Define
+$\gamma_x(i,j)=c_x(i,j)h_x(j)^{\mathbf1\{j<n\}}$.
+\end{assumption}
+The normalizer is
+\begin{equation}
+ C_k(x)=\sum_{t\in\mathcal T^+_{k,n}}
+ \prod_{q=1}^{k}c_x(t_{q-1},t_q)\prod_{q<k}h_x(t_q),
+\label{eq:Ck-setup}
+\end{equation}
+and the prior-adjusted local arrays are
+\begin{equation}
+ \widetilde A^{(r)}_{ij}=A^{(r)}_{ij}\gamma_x(i,j).
+\label{eq:Atilde-setup}
+\end{equation}
+This factorization subsumes an index-uniform prior, a length cohesion, a local boundary-intensity
+model, or their product without confusing their interpretations.

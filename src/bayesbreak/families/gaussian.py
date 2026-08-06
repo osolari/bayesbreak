@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from ..base import BayesBreakSegmenter
+from ..priors import PartitionPriorConfig
 
 
 class BayesBreakGaussian(BayesBreakSegmenter):
@@ -57,6 +58,7 @@ class BayesBreakGaussian(BayesBreakSegmenter):
         nu: float | None = None,
         rho2: float | None = None,
         sigma2: float | None = None,
+        partition_prior: PartitionPriorConfig | None = None,
     ):
         super().__init__(
             k_max=k_max,
@@ -65,6 +67,7 @@ class BayesBreakGaussian(BayesBreakSegmenter):
             length_prior=length_prior,
             boundary_coordinates=boundary_coordinates,
             prior_k=prior_k,
+            partition_prior=partition_prior,
         )
         self.rho_estimation = rho_estimation
         self.nu = nu

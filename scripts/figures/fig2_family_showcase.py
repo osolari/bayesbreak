@@ -36,8 +36,8 @@ family's block-evidence computation.
 
 Outputs
 -------
-- docs/report/figures/fig2_family_showcase.png
-- docs/report/figures/fig2_family_showcase.pdf
+- results/figures/fig2_family_showcase.png
+- results/figures/fig2_family_showcase.pdf
 
 Usage
 -----
@@ -204,7 +204,7 @@ def main(outdir: Path, seed: int) -> None:
 
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
-    p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    p.add_argument("--outdir", type=Path, default=Path("results/figures"))
     p.add_argument("--seed", type=int, default=0)
     args = p.parse_args()
     main(args.outdir, args.seed)

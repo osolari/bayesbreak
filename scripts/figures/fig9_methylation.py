@@ -6,7 +6,7 @@ local CSV; otherwise the deterministic simulated analog is used.
 
 Outputs
 -------
-- docs/report/figures/fig9_methylation.{png,pdf}
+- results/figures/fig9_methylation.{png,pdf}
 """
 
 from __future__ import annotations
@@ -57,7 +57,7 @@ def main(outdir: Path, simulated: bool, csv_path: str | None) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--simulated", action="store_true")
     ap.add_argument("--csv-path", type=str, default=None)
     args = ap.parse_args()

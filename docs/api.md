@@ -138,6 +138,30 @@ block routines:
 - `max_sum_segmentation(log_block_evidence, k, *, log_length_prior=None)`
 - `bayes_regression_curve_fixed_k(...)`, `bayes_regression_curve_mixed_k(...)`
 
+## Partition priors
+
+`bayesbreak.priors.PartitionPriorConfig` declares segment cohesion separately
+from the interior-boundary hazard:
+
+- `log_cohesion(start, stop, x, config)` scores the complete segment. Supported
+  modes are uniform, physical-span power, and explicit per-segment factors;
+  minimum segment length/span and maximum span can assign zero support.
+- `bayesbreak.design_prior.log_boundary_hazard(boundary, x, config)` scores an
+  interior endpoint only. Supported modes are uniform, explicit factors, and
+  fixed-count Poisson interval occupancy.
+- `partition_log_prior(boundaries, x, config)` combines one cohesion per segment
+  with one hazard per nonterminal boundary.
+
+For the Poisson occupancy mode, candidate interval `j` uses local odds
+`exp(Lambda_j) - 1`, where `Lambda_j` is its integrated intensity. It does not
+use occupancy probability `1 - exp(-Lambda_j)`, and it does not reinterpret a
+physical-span cohesion as a Poisson-process prior.
+
+Every observation-family estimator accepts `partition_prior=config`. The same
+local prior table is used by the partition normalizer, sum-product posterior
+recursions, max-sum joint-MAP recursion, and Bayes curves. The legacy
+`length_prior` argument remains supported as an additional segment cohesion.
+
 ## Posterior predictive
 
 `bayesbreak.prediction`:
@@ -175,6 +199,25 @@ block routines:
   per the §5b "Identifiability failures (named)" guidance, using the
   per-sequence marginal `log p(y^{(s)})` of `def:metric-loglik` as the
   scoring rule (`BayesBreakMixtureClassifier.sequence_log_likelihood`).
+
+## Result provenance
+
+`bayesbreak.provenance` provides versioned result sidecars without rewriting
+historical assets:
+
+- `ResultRecord` separates execution status, scientific interpretation, and
+  original/corrected lineage. Executed records require data, configuration,
+  code, and environment SHA-256 hashes.
+- `validate_result_record(record, release_mode=True)` rejects invalid result
+  identifiers, missing corrected-result parent links, missing corrected output
+  hashes, and non-repository-relative artifact paths.
+- `write_sidecar(path, record)` writes deterministic schema-versioned JSON.
+- `read_sidecar(path, migration_manifest=...)` reads current records or applies
+  a hash-verified, in-memory path migration to an immutable legacy sidecar.
+
+The JSON Schema 2020-12 contracts are under `schemas/`. Corrected reruns must
+use a new result ID and identify their historical parent; reading a legacy
+record does not authorize changing its archived bytes or interpretation.
 
 ## Baselines
 

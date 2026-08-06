@@ -28,7 +28,7 @@ companion paper:
 > Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 > Grouped/Latent-Group Designs.* sAIm Labs.
 > [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
-> [PDF](https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf){target=_blank}
+> [PDF](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
 
 ```bibtex
 @article{solari2026bayesbreak,

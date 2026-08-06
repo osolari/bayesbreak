@@ -1,0 +1,174 @@
+{
+  "results": [
+    {
+      "result_id": "RES-BB-SYN-001",
+      "asset": "Boundary calibration figure/table",
+      "classification": "real",
+      "populated_values": "ECE approximately 0.010; Brier approximately 0.011",
+      "interpretation_limit": "Archived synthetic protocol; uncertainty/repetition reporting must be expanded.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-002",
+      "asset": "Latent-group simulation",
+      "classification": "real",
+      "populated_values": "96% hard recovery at sigma=1.0, n_seq=24",
+      "interpretation_limit": "Behavior under current template-score objective; not proof of normalized mixture identifiability.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-003",
+      "asset": "Runtime scaling",
+      "classification": "real",
+      "populated_values": "Empirical slopes about 1.07 (k_max=10) and 1.14 (k_max=20), n=50..800",
+      "interpretation_limit": "Local empirical slopes, not algorithmic complexity or evidence of asymptotically linear runtime.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-004",
+      "asset": "Conjugate-family and nonconjugate tables/figures",
+      "classification": "real",
+      "populated_values": "All populated generated cells",
+      "interpretation_limit": "Routine-specific theoretical rates are not established by the benchmark.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-001",
+      "asset": "Well-log index-uniform fit",
+      "classification": "real",
+      "populated_values": "k_hat=23; log evidence=-4989.283473023698",
+      "interpretation_limit": "No verified external-boundary ECE; keep absent cell planned.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-002",
+      "asset": "Well-log length-aware fit",
+      "classification": "real",
+      "populated_values": "k_hat=25; log evidence=-4997.147814570523; runtime=1.9062122921459377 s",
+      "interpretation_limit": "Prior is real as implemented, but its Poisson-gap interpretation is not supported.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-003",
+      "asset": "Array-CGH shared-boundary fit",
+      "classification": "real",
+      "populated_values": "k_hat=15; pooled log evidence=76359.79958695151",
+      "interpretation_limit": "Not directly comparable as a Bayes factor with the independent evidence sum.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-004",
+      "asset": "Array-CGH independent fits",
+      "classification": "real",
+      "populated_values": "sum of per-subject log evidence=109617.69544504143",
+      "interpretation_limit": "Different factorization; no single k_hat; invalid single-trace comparator artifact excluded.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-005",
+      "asset": "SPX Gaussian fit",
+      "classification": "real",
+      "populated_values": "k_hat=29; log evidence=-1296.6537252802884",
+      "interpretation_limit": "Macro-event alignment is contextual/qualitative, not ground-truth accuracy.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-006",
+      "asset": "SPX Bernoulli threshold fit",
+      "classification": "real",
+      "populated_values": "k_hat=50; log evidence=-114.41004640965144; runtime=1.7720804999116808 s",
+      "interpretation_limit": "Different observation model; evidence not directly compared across responses without a common data model.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-007",
+      "asset": "Methylation region-A segmentation fit",
+      "classification": "real",
+      "populated_values": "k_hat=15; log evidence=-9518.667508691196; n=1904",
+      "interpretation_limit": "Executed methylKit test1.myCpG chr21 case study; second region/cell type and external atlas metrics remain planned; weight hash missing.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Retain exact value; calibrate interpretation; any corrected rerun gets a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-CMP-001",
+      "asset": "Well-log/SPX/methylation comparator sidecar",
+      "classification": "real diagnostic",
+      "populated_values": "All populated F1/Jaccard/MAE/runtime values",
+      "interpretation_limit": "Agreement with BayesBreak, not external accuracy; asymmetric tuning.",
+      "interpretation_status": "real diagnostic",
+      "release_action": "Use only as agreement/sensitivity diagnostic and relabel reference explicitly.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-CMP-002",
+      "asset": "CGH comparator sidecar rows",
+      "classification": "real computation; invalid comparison definition",
+      "populated_values": "Runs on incompatible cached map-curve axis",
+      "interpretation_limit": "Exclude from statistical comparisons because the cached comparator output and the BayesBreak reference use incompatible coordinate axes; retain as a historical computation.",
+      "interpretation_status": "excluded from comparator conclusions",
+      "release_action": "Retain the historical value and documented axis mismatch; omit it from scientific comparison until a valid raw-matrix rerun receives a new result ID.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-QA-001",
+      "asset": "Mixture stale-objective diagnostic",
+      "classification": "real Phase 1 QA execution",
+      "populated_values": "1 of 3 restarts violated returned==final trace; difference 0.003137360860080 in the reproducing run",
+      "interpretation_limit": "Implementation diagnostic, not a manuscript performance result.",
+      "interpretation_status": "implementation verification result",
+      "release_action": "Use in implementation and reproducibility discussion, not as a performance result.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-RD-007Q",
+      "asset": "Methylation archived held-out score",
+      "classification": "real computation; invalid predictive definition",
+      "populated_values": "held_out_loglik=-387.50040013308154 on m=381",
+      "interpretation_limit": "BetaObs uses Gaussian fallback and all post-training coordinates are silently clipped to the endpoint MAP block; not a valid Beta held-out predictive likelihood.",
+      "interpretation_status": "excluded from posterior-predictive conclusions",
+      "release_action": "Retain the exact archived value and documented failure mechanism; replace its scientific use only after the Beta predictive calculation and coordinate-support rule are repaired and rerun.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-QA-002",
+      "asset": "Current Phase 1 test verification",
+      "classification": "real Phase 1 QA execution",
+      "populated_values": "179 collected; 157 passed; 5 skipped; 17 unresolved under bounded runs",
+      "interpretation_limit": "Unresolved grouped-mixture and nonconjugate cases are neither passes nor failures; historical 174/5 log is provenance only.",
+      "interpretation_status": "implementation verification result",
+      "release_action": "Report 157 passed, 5 skipped, and 17 unresolved exactly; retain the historical 174/5 run only as an earlier verification record.",
+      "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-QA-003",
+      "asset": "Independent Phase 6 bounded test verification",
+      "classification": "real Phase 6 QA execution",
+      "populated_values": "179 collected; 173 passed; 5 skipped; 1 unresolved under a 20-second per-test cap; 0 failed",
+      "interpretation_limit": "The EP logistic-normal test exceeded the declared per-test time cap; a timeout is neither a pass nor a failure. This verification did not modify package code.",
+      "interpretation_status": "implementation verification result",
+      "release_action": "Report this as the current bounded verification and retain RES-BB-QA-002 as the historical Phase 1 verification state.",
+      "rerun_in_phase2": "no"
+    }
+  ]
+}

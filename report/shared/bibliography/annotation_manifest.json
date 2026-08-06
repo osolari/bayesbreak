@@ -1,0 +1,275 @@
+{
+  "generated_from": "shared/bibliography/references.bib and project-specific annotation sources",
+  "bibliography_key_count": 38,
+  "annotation_count": 38,
+  "one_to_one_complete": true,
+  "entries": [
+    {
+      "annotation_id": "ANN-BB-001",
+      "bib_key": "adamsmackay2007bocpd",
+      "path": "shared/bibliography/annotated_entries/adamsmackay2007bocpd.tex",
+      "sha256": "200b24a44477c3fb9d5e821068f8df73b383cea2ae4822d225d905fc96a2d5ea",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-002",
+      "bib_key": "auger1989segment",
+      "path": "shared/bibliography/annotated_entries/auger1989segment.tex",
+      "sha256": "3717df9e7abc998c8434c3a7215ff9abe2dbbbd73818dc7c90e315e0f9a00f37",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-003",
+      "bib_key": "barry1992ppm",
+      "path": "shared/bibliography/annotated_entries/barry1992ppm.tex",
+      "sha256": "112c0ea201134dffc95ae8d320d3ad621147e85e1861394e44d3b91b8909b51d",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-004",
+      "bib_key": "barry1993bayesCP",
+      "path": "shared/bibliography/annotated_entries/barry1993bayesCP.tex",
+      "sha256": "2819bbd0965e4e4fb1024c32fa727381281d83464dce791118f73953dee319d9",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-005",
+      "bib_key": "bernardo1994bayesian",
+      "path": "shared/bibliography/annotated_entries/bernardo1994bayesian.tex",
+      "sha256": "0b4d9930a016e20b09c580e21aa2b77b2e99ecd11ae1be62541c58c4ac68f90a",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-006",
+      "bib_key": "bleakley2011groupfused",
+      "path": "shared/bibliography/annotated_entries/bleakley2011groupfused.tex",
+      "sha256": "9ef10440a70285c5fa02e2a37c853e6d055de4f53bbf66320396970d476a6107",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-007",
+      "bib_key": "carlin1992hierBayesCP",
+      "path": "shared/bibliography/annotated_entries/carlin1992hierBayesCP.tex",
+      "sha256": "dc624ab21caa59cd03a32c992295e007e20ebde04b76aff59410a8b13232fd9a",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-008",
+      "bib_key": "denison1998bayesian",
+      "path": "shared/bibliography/annotated_entries/denison1998bayesian.tex",
+      "sha256": "b5ec7dba0defa210e17468a33f2670eb8d1b1167e83833a0b3776041f99812d5",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-009",
+      "bib_key": "diaconis1979conjugate",
+      "path": "shared/bibliography/annotated_entries/diaconis1979conjugate.tex",
+      "sha256": "45e55cc6de3d6ecbfdae5eaee94130d1e1379ccb5f416a9a826e14a4707ac8e5",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-010",
+      "bib_key": "fearnhead2006exact",
+      "path": "shared/bibliography/annotated_entries/fearnhead2006exact.tex",
+      "sha256": "c9d723c634c53009976b15e6d4ccf459d23855b31957e1e4632b48359457d968",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-011",
+      "bib_key": "frick2014smuce",
+      "path": "shared/bibliography/annotated_entries/frick2014smuce.tex",
+      "sha256": "b23b075427eab553856b401989bbdb0904f8612cc15624e088b231c5f8961367",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-012",
+      "bib_key": "fryzlewicz2014wbs",
+      "path": "shared/bibliography/annotated_entries/fryzlewicz2014wbs.tex",
+      "sha256": "35cf86dd5d8d121549d4a5db117a9fc69f4b8418360a1b62f42c9750258e607b",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-013",
+      "bib_key": "green1995rjMCMC",
+      "path": "shared/bibliography/annotated_entries/green1995rjMCMC.tex",
+      "sha256": "3e29e0cce7c5fe07c06f3d97d8a5f184b21479810f288b1c5ee8169ac9adfe9b",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-014",
+      "bib_key": "hutter2006bpcr",
+      "path": "shared/bibliography/annotated_entries/hutter2006bpcr.tex",
+      "sha256": "c3ae8f614b8edef7570b2ac33637e9b77d252fd0a3c358ba2cf0781742b929d0",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-015",
+      "bib_key": "jaakkola2000logisticvb",
+      "path": "shared/bibliography/annotated_entries/jaakkola2000logisticvb.tex",
+      "sha256": "080c7ef9ce5ffe6cfb6c5fd905f40f570fc7816df74798330f9d979ae91e0e70",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-016",
+      "bib_key": "jackson2005optpart",
+      "path": "shared/bibliography/annotated_entries/jackson2005optpart.tex",
+      "sha256": "b985c76ecfbe20c66c9e6f793f3fed59160e26b6fb829e652d1ac49b1da74079",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-017",
+      "bib_key": "killick2012pelt",
+      "path": "shared/bibliography/annotated_entries/killick2012pelt.tex",
+      "sha256": "977598d543f694fe3df7037c4ae8d29d57cda3ae7c581337930d96011a7b5092",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-018",
+      "bib_key": "minka2001ep",
+      "path": "shared/bibliography/annotated_entries/minka2001ep.tex",
+      "sha256": "76e19cd42635a93a5b230d56c49fdbfca342ff80ddcc4e8e5af277d289157458",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-019",
+      "bib_key": "olshen2004cbs",
+      "path": "shared/bibliography/annotated_entries/olshen2004cbs.tex",
+      "sha256": "2058286ee5e4624def51fda35cda7d22b2f7bd03f6885b531c2b9ee3cd278b32",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-020",
+      "bib_key": "polson2013pg",
+      "path": "shared/bibliography/annotated_entries/polson2013pg.tex",
+      "sha256": "4dcb3c3765eb479596f1770c6e5dca33a89b5e7b3cac2f817ed1844d0c937ac1",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-021",
+      "bib_key": "punskaya2002bayesian",
+      "path": "shared/bibliography/annotated_entries/punskaya2002bayesian.tex",
+      "sha256": "29d43c595b4470724d991fa0fe88a29b3feef7a2026272e697225fa925d27588",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-022",
+      "bib_key": "rigaill2010pruned",
+      "path": "shared/bibliography/annotated_entries/rigaill2010pruned.tex",
+      "sha256": "ba9250818732b45540ee6651e4f2d69ae0352147e5e13260938bf231e989f412",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-023",
+      "bib_key": "rudin1992rof",
+      "path": "shared/bibliography/annotated_entries/rudin1992rof.tex",
+      "sha256": "820b44e05b72abadab7123ec93903aef05f6e397bd513b8234c77e0833747789",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-024",
+      "bib_key": "tibshirani2005fused",
+      "path": "shared/bibliography/annotated_entries/tibshirani2005fused.tex",
+      "sha256": "8886c658aa52c6cba921c8eb45dd53f96330c0292a9630605b405ac58413f208",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-025",
+      "bib_key": "yao1988biometrika",
+      "path": "shared/bibliography/annotated_entries/yao1988biometrika.tex",
+      "sha256": "5968c065c9d7d77a66e26c92c99430e8f89b5bd8235171e61d0a2fac42fcf91f",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-026",
+      "bib_key": "truong2020review",
+      "path": "shared/bibliography/annotated_entries/truong2020review.tex",
+      "sha256": "7494a0f25b267f7a1da96cfb243c95539e8a4298cdb62490d64f87beb44a8d8b",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-027",
+      "bib_key": "scargle2013bayesianblocks",
+      "path": "shared/bibliography/annotated_entries/scargle2013bayesianblocks.tex",
+      "sha256": "707a68a12e15a22a80a50ce63edef3bb9c01b87f403655b506c2d7e2535301e4",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-028",
+      "bib_key": "fearnhead2011dependence",
+      "path": "shared/bibliography/annotated_entries/fearnhead2011dependence.tex",
+      "sha256": "f60707e3002a4d63f385dbf15ae4c1da905bb6ed6a807f4cfeb89470d2ee3bec",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-029",
+      "bib_key": "ruggieri2014bcpvs",
+      "path": "shared/bibliography/annotated_entries/ruggieri2014bcpvs.tex",
+      "sha256": "ee9d92251ec1b57f8094f3951d2f80dfbdff7babb9295afd4dac0f546ca33e93",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-030",
+      "bib_key": "fan2017basic",
+      "path": "shared/bibliography/annotated_entries/fan2017basic.tex",
+      "sha256": "79fdbdf8c8d321471e3eae708cc125d964d2d767f494edf2e8996bedff0f4e6b",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-031",
+      "bib_key": "quinlan2024jrpm",
+      "path": "shared/bibliography/annotated_entries/quinlan2024jrpm.tex",
+      "sha256": "cdda879d4e85a571ed9a5222485d98f7c37cde1441d6e19feebf5c1e3afbf9ab",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-032",
+      "bib_key": "muller2011ppmx",
+      "path": "shared/bibliography/annotated_entries/muller2011ppmx.tex",
+      "sha256": "a40a175d336a9b0ab0185e2d21ff9d6fe087b8fe37a25f4ea153e4a031406fa1",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-033",
+      "bib_key": "park2010gppm",
+      "path": "shared/bibliography/annotated_entries/park2010gppm.tex",
+      "sha256": "21281635434ccfbe1ddde5c334da07d1910fbd7679a40c2c681890674dc8aef2",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-034",
+      "bib_key": "dempster1977em",
+      "path": "shared/bibliography/annotated_entries/dempster1977em.tex",
+      "sha256": "7809166ca7011da8bd566f1c5e80703b56afa803753104430fb86cdafa478216",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-035",
+      "bib_key": "blanchard2021lse",
+      "path": "shared/bibliography/annotated_entries/blanchard2021lse.tex",
+      "sha256": "d48901954f354d12b406506858027b534c65f3a025f9513144643f621bee06a7",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-036",
+      "bib_key": "teicher1963identifiability",
+      "path": "shared/bibliography/annotated_entries/teicher1963identifiability.tex",
+      "sha256": "44dffb5958ba391752430bac37f5fba7081f775b1fd545f3de696b85362cea4c",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-037",
+      "bib_key": "corradin2026commonstructural",
+      "path": "shared/bibliography/annotated_entries/corradin2026commonstructural.tex",
+      "sha256": "601168327f090eccb5713cfc3e4bb39b8ab6ff5515a282c8ef5e2e582b83a7c1",
+      "explicit_project_relationship": true
+    },
+    {
+      "annotation_id": "ANN-BB-038",
+      "bib_key": "tierney1986laplace",
+      "path": "shared/bibliography/annotated_entries/tierney1986laplace.tex",
+      "sha256": "6964901eb14c8864484239ecb27b79d847f41c43d13571476e8dc30836f8f4cf",
+      "explicit_project_relationship": true
+    }
+  ],
+  "verification_note": "Phase 6 verified the one-to-one bibliography/annotation mapping and independently corrected or supplemented publisher metadata where discrepancies were found. Scientific annotations describe each source's specific relationship to BayesBreak and do not transfer results beyond their stated assumptions."
+}

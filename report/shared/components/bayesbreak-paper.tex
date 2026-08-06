@@ -1,0 +1,45 @@
+% BayesBreak paper-specific mathematical and status layer for the SAIM renderer.
+\newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
+\newcommand{\BayesBreak}{\textsc{BayesBreak}\xspace}
+\newcommand{\ProofStep}[1]{\par\smallskip\noindent\textbf{#1}\quad}
+\newcommand{\1}{\mathbbm{1}}
+\newcommand{\NA}{\textsc{na}}
+\newcommand{\taskid}[1]{\texttt{#1}}
+\newcommand{\resultid}[1]{\texttt{#1}}
+\newcommand{\claimid}[1]{\texttt{#1}}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\given}{\,\middle|\,}
+\newcommand{\logsumexp}{\operatorname{LSE}}
+\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\Cov}{Cov}
+\DeclareMathOperator{\TV}{TV}
+\DeclareMathOperator{\KL}{KL}
+\newcommand{\EstablishedTag}{\SAIMEvidenceTag{Positive}{PositivePale}{Established}}
+\newcommand{\ExactDerivedTag}{\SAIMEvidenceTag{Secondary}{SecondaryPale}{Exact derivation}}
+\newcommand{\RealResultTag}{\SAIMEvidenceTag{Positive}{PositivePale}{Executed result}}
+\newcommand{\PartialTag}{\SAIMEvidenceTag{Warning}{WarningPale}{Partial}}
+\newcommand{\ConditionalTag}{\SAIMEvidenceTag{Warning}{WarningPale}{Conditional}}
+\newcommand{\ExcludedTag}{\SAIMEvidenceTag{Negative}{NegativePale}{Excluded}}
+\newcommand{\ExternalVerifiedTag}{\SAIMEvidenceTag{Secondary}{SecondaryPale}{Verified external}}
+\newtcolorbox{exclusionbox}[1][Excluded computation]{saim/amber,title={#1}}
+\newtcolorbox{evidencebox}[1][Result status]{saim/green,title={#1}}
+\newtcolorbox{specificationbox}[1][Mathematical specification]{saim/primary,title={#1}}
+\newtcolorbox{verificationbox}[1][Verification note]{saim/neutral,title={#1}}
+\newtheorem{assumption}[theorem]{Assumption}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{proofobligation}[theorem]{Proof obligation}
+
+% tikz-bayesnet emits standalone semicolon tokens in some macros; these
+% equivalent definitions draw the same graph without nullfont glyph warnings.
+\renewcommand{\edge}[3][]{%
+  \foreach \x in {#2}{%
+    \foreach \y in {#3}{%
+      \draw[->,#1] (\x) -- (\y);%
+    }%
+  }%
+}
+\renewcommand{\plate}[4][]{%
+  \node[wrap=#3] (#2-wrap) {};%
+  \node[plate caption=#2-wrap] (#2-caption) {#4};%
+  \node[plate=(#2-wrap)(#2-caption),#1] (#2) {};%
+}

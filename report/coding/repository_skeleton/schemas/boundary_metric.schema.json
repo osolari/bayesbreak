@@ -1,0 +1,58 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Boundary metric record blueprint",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "prediction_axis",
+    "reference_axis",
+    "tolerance",
+    "matching_rule",
+    "reference_type",
+    "matched_pairs",
+    "precision",
+    "recall",
+    "f1",
+    "mae_or_na",
+    "metric_version"
+  ],
+  "properties": {
+    "prediction_axis": {
+      "type": "string"
+    },
+    "reference_axis": {
+      "type": "string"
+    },
+    "tolerance": {
+      "type": "number",
+      "minimum": 0
+    },
+    "matching_rule": {
+      "const": "maximum-cardinality-then-minimum-distance-one-to-one"
+    },
+    "reference_type": {
+      "type": "string"
+    },
+    "matched_pairs": {
+      "type": "array"
+    },
+    "precision": {
+      "type": "number"
+    },
+    "recall": {
+      "type": "number"
+    },
+    "f1": {
+      "type": "number"
+    },
+    "mae_or_na": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "metric_version": {
+      "type": "string"
+    }
+  }
+}

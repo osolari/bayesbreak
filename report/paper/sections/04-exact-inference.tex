@@ -1,0 +1,121 @@
+\section{Posterior computation over ordered partitions}
+\label{sec:exact-inference}
+
+Once the prior-adjusted block array
+$\widetilde A^{(r)}_{ij}=A^{(r)}_{ij}\gamma_u(i,j)$ has been constructed, the observation family no longer enters the partition recursions. This section gives the two distinct inference routes used by \BayesBreak: sum-product for posterior quantities and max-sum for a joint maximizing partition.
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{0.91\textwidth}{!}{\input{shared/figures/tikz/workflows/semiring_inference_routes.tex}}
+  \caption{The same local scores support two algebraically related but inferentially different routes. Sum-product integrates over paths; max-sum selects one globally maximizing path. Coordinatewise modes of marginal boundary distributions need not form that path.}
+  \label{fig:semiring-routes}
+\end{figure*}
+
+\subsection{Forward and backward partition sums}
+For $k\in\{0,\ldots,k_{\max}\}$ and $j\in\{0,\ldots,n\}$, let $L_{k,j}$ be the integrated score of all $k$-block partitions of the prefix $(0,j]$. Let $R_{k,i}$ be the corresponding score for all $k$-block partitions of the suffix $(i,n]$. Set
+\begin{align*}
+L_{0,0}&=1,\qquad L_{0,j}=0\quad(j>0),\\
+R_{0,n}&=1,\qquad R_{0,i}=0\quad(i<n).
+\end{align*}
+The sum-product recursions are
+\begin{align}
+L_{k+1,j}&=\sum_{h=k}^{j-1}L_{k,h}\widetilde A^{(0)}_{h,j},
+\label{eq:forward}\\
+R_{k+1,i}&=\sum_{h=i+1}^{n-k}\widetilde A^{(0)}_{i,h}R_{k,h}.
+\label{eq:backward}
+\end{align}
+In implementation, Equations~\eqref{eq:forward}--\eqref{eq:backward} are evaluated in log space using \texttt{logsumexp}.
+
+\begin{theorem}[Partition-sum identities and boundary marginals]
+\label{thm:sum-product}
+Under Assumptions~\ref{ass:offline} and~\ref{ass:factorized-prior}, for every admissible $k$,
+\begin{equation}
+L_{k,n}=R_{k,0}
+=\sum_{0=t_0<\cdots<t_k=n}\prod_{q=1}^{k}\widetilde A^{(0)}_{t_{q-1},t_q}.
+\label{eq:partition-sum}
+\end{equation}
+Moreover, for $1\le p\le k-1$ and admissible $h$,
+\begin{align}
+p(t_p=h\mid y,k)
+&=\frac{L_{p,h}R_{k-p,h}}{L_{k,n}},\nonumber\\
+p(b_h=1\mid y,k)
+&=\sum_{p=1}^{k-1}p(t_p=h\mid y,k).
+\label{eq:boundary-marginals}
+\end{align}
+\end{theorem}
+\begin{proof}
+Induction on $k$ in Equation~\eqref{eq:forward} shows that $L_{k,j}$ sums the product of local scores over every ordered $k$-block path ending at $j$. Backward induction gives the same statement for $R_{k,i}$ on suffixes, proving Equation~\eqref{eq:partition-sum}. A partition satisfying $t_p=h$ has a unique decomposition into a $p$-block prefix ending at $h$ and a $(k-p)$-block suffix beginning at $h$. Their integrated scores multiply, and division by the total partition sum yields the first identity in Equation~\eqref{eq:boundary-marginals}. Strict ordering permits at most one boundary label $p$ at any fixed $h$ within a partition, so summing over $p$ gives the boundary-event probability.
+\end{proof}
+
+Let $p(k)$ be a segment-count prior. Because $C_k(u)$ normalizes Equation~\eqref{eq:partition-prior},
+\begin{equation}
+ p(k\mid y)\propto p(k)\frac{L_{k,n}}{C_k(u)},
+ \qquad k=1,\ldots,k_{\max}.
+\label{eq:k-posterior}
+\end{equation}
+The posterior may be reported in full; choosing $\widehat k=\arg\max_k p(k\mid y)$ is a separate decision rule. Conditional boundary distributions in Equation~\eqref{eq:boundary-marginals} and boundary-event probabilities can then be computed at fixed $k$ or averaged over $p(k\mid y)$.
+
+\subsection{Posterior moments and Bayes curves}
+For $r\in\{0,1,2\}$, define a block-covering contribution at fixed $k$,
+\begin{equation}
+F^{(r)}_{ij}(k)
+=\frac{1}{L_{k,n}}
+  \sum_{m=1}^{k}L_{m-1,i}\widetilde A^{(r)}_{ij}R_{k-m,j}.
+\label{eq:block-cover}
+\end{equation}
+When the target at coordinate $s$ is the segment-level quantity $m_\star(\theta)$, its conditional posterior moments are
+\begin{equation}
+\mathbb E\!\left[m(\theta_s)^r\mid y,k\right]
+ =\sum_{i<s\le j}F^{(r)}_{ij}(k).
+\label{eq:bayes-curve}
+\end{equation}
+The posterior mean Bayes curve uses $r=1$; the $r=2$ result gives pointwise posterior variance after subtracting the squared mean.
+
+\begin{proposition}[Block-covering decomposition]
+\label{prop:block-cover}
+If every admissible partition assigns each coordinate to exactly one block and $A^{(r)}_{ij}$ is the integrated $r$th moment numerator for that block, then Equation~\eqref{eq:bayes-curve} is the exact fixed-$k$ posterior moment of the segment-level target at $s$.
+\end{proposition}
+\begin{proof}
+Every partition contains one and only one block $(i,j]$ satisfying $i<s\le j$. For a specified block position $m$, the score of all compatible prefixes is $L_{m-1,i}$, the integrated target contribution on $(i,j]$ is $\widetilde A^{(r)}_{ij}$, and the score of all compatible suffixes is $R_{k-m,j}$. Summing over $m$, then over all blocks covering $s$, enumerates each $k$-block partition exactly once with its integrated target numerator. Division by $L_{k,n}$ normalizes the posterior.
+\end{proof}
+
+\subsection{Joint MAP segmentation}
+Define local log scores $\ell_{ij}=\log\widetilde A^{(0)}_{ij}$ and max-sum messages
+\begin{equation}
+M_{k,j}=\max_{h\in\{k-1,\ldots,j-1\}}
+       \{M_{k-1,h}+\ell_{h,j}\},
+\quad M_{0,0}=0,
+\label{eq:max-sum}
+\end{equation}
+with $M_{0,j}=-\infty$ for $j>0$. Store a deterministic maximizing predecessor $h^\star(k,j)$. Starting at $(k,n)$ and following these predecessors recovers a complete boundary vector.
+
+\begin{theorem}[Correctness of max-sum backtracking]
+\label{thm:map-correctness-paper}
+For fixed $k$, the boundary vector returned by Equation~\eqref{eq:max-sum} and its stored predecessors belongs to
+\begin{equation}
+\arg\max_{0=t_0<\cdots<t_k=n}
+  \sum_{q=1}^{k}\ell_{t_{q-1},t_q}.
+\label{eq:joint-map-objective}
+\end{equation}
+Consequently, it is a joint MAP segmentation conditional on $k$. Ties are resolved only by the declared predecessor convention.
+\end{theorem}
+\begin{proof}
+For $k=1$, $M_{1,j}=\ell_{0,j}$ is the only one-block path score. Suppose $M_{k-1,h}$ is the optimal score among all $(k-1)$-block paths ending at $h$. Every $k$-block path ending at $j$ has a unique penultimate endpoint $h$ and total score equal to its prefix score plus $\ell_{h,j}$. Maximizing over $h$ therefore produces the optimal $k$-block score. Induction proves optimality at $(k,n)$. Each stored predecessor attains the corresponding maximum, so backtracking constructs a path attaining that terminal score.
+\end{proof}
+
+\begin{cautionbox}[Marginal modes are not a joint MAP path]
+The vector formed from $\arg\max_h p(t_p=h\mid y,k)$ for each $p$ optimizes separate marginal decisions. Its entries can be incompatible or can have lower joint posterior probability than another partition. \BayesBreak therefore reports marginal modes as diagnostics and reserves ``joint MAP'' for Theorem~\ref{thm:map-correctness-paper}.
+\end{cautionbox}
+
+\subsection{Complexity and numerical invariants}
+If cumulative sufficient statistics make each local conjugate score constant time, there are $\Theta(n^2)$ blocks to precompute. Sum-product and max-sum each inspect $\Theta(k_{\max}n^2)$ predecessor transitions. Values and backpointers require $\Theta(k_{\max}n)$ working storage, while retaining all block-cover terms can require $\Theta(k_{\max}n^2)$ storage.
+
+\begin{proposition}[Complexity]
+\label{prop:complexity-paper}
+When cumulative sufficient statistics make each conjugate segment calculation constant time, segment precomputation costs $\Theta(n^2)$ time and storage; either partition recursion costs $\Theta(k_{\max}n^2)$ time. For a nonconjugate block routine with per-block cost $T_{\rm block}$, local precomputation costs $\Theta(n^2T_{\rm block})$ and the global recursions are unchanged.
+\end{proposition}
+\begin{proof}
+There are $n(n+1)/2=\Theta(n^2)$ admissible intervals. For each $k$ and endpoint $j$, a recursion scans at most $j$ predecessors, so $\sum_{k=1}^{k_{\max}}\sum_{j=k}^{n}\Theta(j)=\Theta(k_{\max}n^2)$ when all blocks are admissible. Replacing constant-time local evaluation by cost $T_{\rm block}$ multiplies only the block-construction term.
+\end{proof}
+
+Four numerical identities are checked in every implementation: the normalized segment-count posterior sums to one; forward and backward total evidence agree; conditional boundary-event probabilities sum to $k-1$; and the backtracked path score equals the terminal max-sum score within numerical tolerance. These checks test algebraic implementation rather than empirical model quality.
