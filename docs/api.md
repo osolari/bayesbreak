@@ -117,6 +117,22 @@ base class. Every concrete family inherits from it.
 - `BayesBreakMixtureClassifier(base_estimator, n_groups, max_iter, ...)` —
   latent-group EM.
 
+The latent-group estimator optimizes the finite-template objective stated in
+the report; it is not a normalized finite-mixture likelihood. Successful fits
+expose `objective_trace_`, `final_objective_`, `selected_restart_`, and one
+`RestartDiagnostic` per attempted restart. Nonfinite, stale, or nonmonotone
+traces are excluded from restart selection; objective ties select the earliest
+seeded restart before canonical template-label ordering. `objective_` remains a
+compatibility alias for `objective_trace_`.
+
+For exact shared-boundary pooling, `bayesbreak.groups.shared_fit(...)` fits a
+`SharedBoundaryReplicatesSegmenter`. Subject block log evidences are combined by
+`bayesbreak.replicates.aggregate_block_log_evidence(...)` without exponentiating
+unbounded values; `-inf` remains structural zero support and `NaN`/`+inf` are
+rejected. The fitted model exposes subject-specific MAP-segment means and a
+bounded `block_posterior_mean_` average diagnostic. It does not construct a
+single pooled first moment for distinct subject parameters.
+
 ## Factory
 
 ```python

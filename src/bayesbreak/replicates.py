@@ -25,6 +25,7 @@ The estimator wraps any :class:`~bayesbreak.base.BayesBreakSegmenter` family.
 
 from __future__ import annotations
 
+import math
 from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 
@@ -47,6 +48,46 @@ class _SubjectState:
     A1: FloatArray
     weights: FloatArray
     y: FloatArray
+
+
+@dataclass(frozen=True)
+class SharedBoundaryInput:
+    """Aligned subject-level log-evidence tables on one boundary axis."""
+
+    coordinate_axis: Sequence[float]
+    sequence_tables: Sequence[FloatArray]
+
+
+def aggregate_block_log_evidence(data: SharedBoundaryInput) -> FloatArray:
+    """Accurately sum aligned finite log evidence and preserve zero support."""
+
+    tables = [np.asarray(table, dtype=float) for table in data.sequence_tables]
+    if not tables:
+        raise ValueError("At least one sequence log-evidence table is required")
+    shape = tables[0].shape
+    if len(shape) != 2 or shape[0] != shape[1]:
+        raise ValueError("Sequence log-evidence tables must be square")
+    if any(table.shape != shape for table in tables[1:]):
+        raise ValueError("All sequence log-evidence tables must have the same shape")
+
+    axis = np.asarray(data.coordinate_axis, dtype=float)
+    if axis.ndim != 1 or axis.size != shape[0]:
+        raise ValueError(f"coordinate_axis must have length {shape[0]}")
+    if not np.all(np.isfinite(axis)) or not np.all(np.diff(axis) > 0):
+        raise ValueError("coordinate_axis must be finite and strictly increasing")
+    if any(np.any(np.isnan(table) | np.isposinf(table)) for table in tables):
+        raise FloatingPointError("Log-evidence tables may contain finite values or -inf only")
+
+    supported = np.logical_and.reduce([np.isfinite(table) for table in tables])
+    pooled = np.full(shape, -np.inf, dtype=float)
+    for start, stop in zip(*np.nonzero(supported), strict=True):
+        value = math.fsum(float(table[start, stop]) for table in tables)
+        if not math.isfinite(value):
+            raise FloatingPointError(
+                f"Pooled log evidence is not representable at block ({start}, {stop})"
+            )
+        pooled[start, stop] = value
+    return pooled
 
 
 class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
@@ -193,35 +234,37 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
                 _SubjectState(est=est_s, hyper=hyper_s, lA0=lA0_s, A1=A1_s, weights=ws[s], y=ys[s])
             )
 
-        # Pool by summing log evidences over subjects (Theorem multisubject).
-        lA0_pool = np.zeros_like(states[0].lA0)
-        mask = np.isfinite(states[0].lA0)
-        for st in states:
-            mask &= np.isfinite(st.lA0)
-        lA0_pool[~mask] = -np.inf
-        for st in states:
-            np.add(lA0_pool, st.lA0, out=lA0_pool, where=mask)
-        # Pool first-moments by summing per-subject contributions; we only use
-        # this for the optional Bayes curve, where the "pooled mean" is the
-        # arithmetic mean of subject means under the pooled model. We compute
-        # the canonical "mean of subject means" via A1_pool[i,j] = exp(lA0_pool)
-        # · ((1/S) Σ_s A1_s/exp(lA0_s)).
-        # In the report's regression-curve construction the curve is per-subject
-        # anyway (see ``map_segment_means_``). We expose A1_pool only for the
-        # average curve diagnostic.
-        with np.errstate(over="ignore", invalid="ignore", divide="ignore"):
-            mu_per_subject = np.zeros((S, n + 1, n + 1), dtype=float)
-            for s, st in enumerate(states):
-                ratio = np.where(np.exp(st.lA0) > 0, st.A1 / np.exp(st.lA0), 0.0)
-                ratio[~np.isfinite(ratio)] = 0.0
-                mu_per_subject[s] = ratio
-            mu_avg = mu_per_subject.mean(axis=0)
-        A1_pool = np.exp(lA0_pool) * mu_avg
-        A1_pool[~np.isfinite(A1_pool)] = 0.0
-
-        # Length prior + p(k).
         u = self._build_boundary_coordinates(self.x_design_)
         self.boundary_coordinates_ = u
+        lA0_pool = aggregate_block_log_evidence(
+            SharedBoundaryInput(
+                coordinate_axis=u,
+                sequence_tables=[state.lA0 for state in states],
+            )
+        )
+
+        # A shared-boundary model has subject-specific segment parameters, not
+        # one pooled A^(1). Expose the arithmetic mean of subject posterior
+        # means as a bounded diagnostic without exponentiating block evidence.
+        block_mean = np.zeros((n + 1, n + 1), dtype=float)
+        for start, stop in zip(*np.nonzero(np.isfinite(lA0_pool)), strict=True):
+            means = [
+                state.est._segment_posterior_mean(
+                    int(start),
+                    int(stop),
+                    state.y,
+                    state.hyper,
+                    state.weights,
+                )
+                for state in states
+            ]
+            if not all(math.isfinite(mean) for mean in means):
+                raise FloatingPointError(
+                    f"Nonfinite subject posterior mean at block ({start}, {stop})"
+                )
+            block_mean[start, stop] = math.fsum(means) / S
+
+        # Length prior + p(k).
         log_g = self._build_log_g_table(u, n)
         self.log_g_table_ = log_g
         log_C_k = _dp.compute_log_C_k(log_g, n, k_max)
@@ -272,9 +315,8 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
         self.map_curve_ = per_subject_curves
 
         self.subject_states_ = states
-        # Expose pooled tables under both names for diagnostics access.
         self.log_block_evidence_ = lA0_pool
-        self.block_first_moment_ = A1_pool
+        self.block_posterior_mean_ = block_mean
         return self
 
     # ---- prediction / scoring ----------------------------------------
