@@ -319,7 +319,7 @@ def main(
     axE.text(
         0.98,
         0.04,
-        f"acc = {acc*100:.0f}%",
+        f"acc = {acc * 100:.0f}%",
         transform=axE.transAxes,
         ha="right",
         va="bottom",
