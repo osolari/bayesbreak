@@ -1,0 +1,133 @@
+{
+  "artifacts": {
+    "results": "results/phase6/RES-BB-CMP-003/results.json",
+    "summary_figure": "results/phase6/RES-BB-CMP-003/boundary_agreement.png",
+    "summary_report": "results/phase6/RES-BB-CMP-003/SUMMARY.md",
+    "summary_table": "results/phase6/RES-BB-CMP-003/comparator_summary.csv"
+  },
+  "code_hash": "2ff4a49c4efca463d6314e141834aef2f6a1483874af46968ad7a2a651888477",
+  "config_hash": "f151d53e098adb29f2ddf98ea8f1300f5b04678a790f81e621af305665ad8252",
+  "coordinate_metadata": {
+    "comparator_request_orientation": "subject-by-probe",
+    "n_probes": 2215,
+    "n_subjects": 43,
+    "prediction_axis": "probe-index",
+    "raw_storage_orientation": "probe-by-subject",
+    "reference_axis": "probe-index",
+    "reference_type": "model-derived-map"
+  },
+  "data_hash": "9c368d425ad3a2246f7a7ea10e976894c840b232c3c51ff29153da1b67024787",
+  "environment_hash": "a2e9d7c71807f0e971e8d252ccce386d08819a32eccb2d27033ddb151d75687b",
+  "execution_status": "executed",
+  "lineage_status": "corrected",
+  "metrics": {
+    "captured_warnings": [
+      {
+        "category": "RuntimeWarning",
+        "line": 165,
+        "message": "overflow encountered in exp",
+        "source": "gaussian.py"
+      }
+    ],
+    "comparator_rows": [
+      {
+        "algorithm": "pelt",
+        "count_status": "closest-grid-count-mismatch",
+        "exact_boundary_jaccard": 0.3888888888888889,
+        "f1_tau3": 0.8,
+        "matched_count_tau3": 10,
+        "matched_mae_tau3": 0.3,
+        "n_bkps": 11,
+        "package_version": "v1.1.10",
+        "parameter_evaluations": 8,
+        "selected_runtime_seconds": 18.742506332986522,
+        "target_n_bkps": 14,
+        "tuning_runtime_seconds": 204.86351287504658
+      },
+      {
+        "algorithm": "optimal_partitioning",
+        "count_status": "exact-matched-k",
+        "exact_boundary_jaccard": 0.4,
+        "f1_tau3": 0.9285714285714286,
+        "matched_count_tau3": 13,
+        "matched_mae_tau3": 0.5384615384615384,
+        "n_bkps": 14,
+        "package_version": "v1.1.10",
+        "parameter_evaluations": 1,
+        "selected_runtime_seconds": 152.00696566700935,
+        "target_n_bkps": 14,
+        "tuning_runtime_seconds": 152.00696566700935
+      },
+      {
+        "algorithm": "binary_segmentation",
+        "count_status": "exact-matched-k",
+        "exact_boundary_jaccard": 0.21739130434782608,
+        "f1_tau3": 0.7142857142857143,
+        "matched_count_tau3": 10,
+        "matched_mae_tau3": 0.9,
+        "n_bkps": 14,
+        "package_version": "v1.1.10",
+        "parameter_evaluations": 1,
+        "selected_runtime_seconds": 1.2547008749679662,
+        "target_n_bkps": 14,
+        "tuning_runtime_seconds": 1.2547008749679662
+      },
+      {
+        "algorithm": "wild_binary_segmentation",
+        "count_status": "exact-matched-k",
+        "exact_boundary_jaccard": 0.3333333333333333,
+        "f1_tau3": 0.7857142857142857,
+        "matched_count_tau3": 11,
+        "matched_mae_tau3": 0.45454545454545453,
+        "n_bkps": 14,
+        "package_version": "v1.1.10",
+        "parameter_evaluations": 1,
+        "selected_runtime_seconds": 6.8949357910314575,
+        "target_n_bkps": 14,
+        "tuning_runtime_seconds": 6.8949357910314575
+      }
+    ],
+    "elapsed_wall_seconds": 785.0984583340469,
+    "independent_log_evidence_sum": 109617.69544504135,
+    "interpretation_limit": "Agreement is measured against the model-derived BayesBreak MAP on the common probe axis, not external biological truth. PELT reports the closest result in the predeclared eight-penalty grid because that grid did not attain 14 boundaries.",
+    "peak_rss": {
+      "units": "bytes",
+      "value": 2273460224
+    },
+    "pelt_grid_attained_target_count": false,
+    "protocol_ids": [
+      "EPR-BB-010",
+      "EPR-BB-013"
+    ],
+    "shared_boundaries": [
+      177,
+      263,
+      343,
+      1051,
+      1141,
+      1225,
+      1375,
+      1534,
+      1559,
+      1723,
+      1907,
+      1965,
+      2041,
+      2143
+    ],
+    "shared_k_map": 15,
+    "shared_log_evidence": 76359.79958695151
+  },
+  "output_hashes": {
+    "results": "d55ae87edea5c80eef90a191438eaef142d86d796ea749661d9eb76cf1242d67",
+    "summary_figure": "bad93f8a80517ede60c64e52f55d7f8beb419be47c7c5f41f507d496b6cf6845",
+    "summary_report": "43124fbb9590a2fdfba6517d2698234149904933ac690f8e8c9616746094287e",
+    "summary_table": "5d9e4964ca400eca8ffe5fc61414899b429d66a1218e04aee3621b1f6f402724"
+  },
+  "parent_result_id": "RES-BB-CMP-002",
+  "result_id": "RES-BB-CMP-003",
+  "schema_version": "1.0.0",
+  "scientific_interpretation": "valid-for-stated-interpretation",
+  "split_hash": null,
+  "weights_hash": "b47230bd390a41413b0e57ae4742aa247a9a85594884d2fa877ca6c6b6fbbc90"
+}

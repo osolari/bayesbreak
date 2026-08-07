@@ -795,6 +795,17 @@
       "interpretation_status": "valid for the stated interpretation, with limitations",
       "release_action": "Use as the corrected child of RES-BB-SYN-002 while retaining the parent and its historical 96 percent value unchanged.",
       "rerun_in_phase2": "executed 2026-08-06"
+    },
+    {
+      "result_id": "RES-BB-CMP-003",
+      "parent_result_id": "RES-BB-CMP-002",
+      "asset": "Corrected raw-matrix array-CGH comparator",
+      "classification": "real corrected Phase 6 execution",
+      "populated_values": "Raw 2215-probe by 43-subject matrix; shared k_hat=15; F1 at tolerance 3: PELT=0.8000 (11 boundaries; closest-grid count mismatch), Dynp=0.9286, binary segmentation=0.7143, WBS=0.7857",
+      "interpretation_limit": "Agreement is against the model-derived BayesBreak MAP on the common probe axis, not external biological truth or predictive superiority. The predeclared PELT grid did not attain the 14-boundary target and was not retuned post hoc.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Use as the corrected child of RES-BB-CMP-002 for common-axis agreement diagnostics while retaining the excluded parent computation unchanged.",
+      "rerun_in_phase2": "executed 2026-08-06"
     }
   ],
   "definition_of_done": [
