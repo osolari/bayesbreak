@@ -1,5 +1,13 @@
 # Real-data loaders
 
+`bayesbreak.datasets.load_with_provenance(dataset_id, config)` returns the
+normalized `DatasetBundle` together with a versioned `DatasetCard`. The card
+hashes the post-preprocessing coordinate/response arrays and any family
+descriptor, records source kind/date/URI, stride, coordinate semantics, family,
+and sequence count, and keeps external annotations separate from model-derived
+MAP markers. See the [data cards](data_cards/index.md) for the four application
+sources and their unresolved provenance limitations.
+
 `bayesbreak.datasets` ships four loaders, one per real-data case study
 in §6 of the manuscript. Every loader returns a `DatasetBundle` with a
 common schema and falls back to a deterministic simulated analog when

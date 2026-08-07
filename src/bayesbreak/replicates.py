@@ -249,7 +249,7 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
         # means as a bounded diagnostic without exponentiating block evidence.
         block_mean = np.zeros((n + 1, n + 1), dtype=float)
         for start, stop in zip(*np.nonzero(np.isfinite(lA0_pool)), strict=True):
-            means = [
+            subject_means = [
                 state.est._segment_posterior_mean(
                     int(start),
                     int(stop),
@@ -259,11 +259,11 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
                 )
                 for state in states
             ]
-            if not all(math.isfinite(mean) for mean in means):
+            if not all(math.isfinite(mean) for mean in subject_means):
                 raise FloatingPointError(
                     f"Nonfinite subject posterior mean at block ({start}, {stop})"
                 )
-            block_mean[start, stop] = math.fsum(means) / S
+            block_mean[start, stop] = math.fsum(subject_means) / S
 
         # Length prior + p(k).
         log_g = self._build_log_g_table(u, n)

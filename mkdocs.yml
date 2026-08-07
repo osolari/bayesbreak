@@ -69,6 +69,12 @@ nav:
   - User guide:
       - Model families: models.md
       - Real-data loaders: datasets.md
+      - Data cards:
+          - Overview: data_cards/index.md
+          - Well log: data_cards/welllog.md
+          - Array CGH: data_cards/cgh.md
+          - SPX: data_cards/spx.md
+          - Methylation: data_cards/methylation.md
       - Diagnostics: diagnostics.md
       - Baselines: baselines.md
       - Reproducibility: reproducibility.md
