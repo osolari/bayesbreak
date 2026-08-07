@@ -2,7 +2,7 @@
 
 Canonical handoff: `HANDOFF-BB-CANONICAL-001`
 Phase: `6`
-Canonical JSON SHA-256: `a113a4b1d78b76ef26890e4aeac951686430913d505c9d9325ec0fcb06d94588`
+Canonical JSON SHA-256: `80e3dfa55518002babd26d001b20b798522e38b2d807a839199d63c41c43ba93`
 
 ## Author-fixed scientific scope
 
@@ -736,6 +736,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 | RES-BB-QA-003 | real Phase 6 QA execution | implementation verification result | Report this as the current bounded verification and retain RES-BB-QA-002 as the historical Phase 1 verification state. |
 | RES-BB-SYN-005 | real corrected Phase 6 execution | valid for the stated interpretation, with limitations | Use as the corrected child of RES-BB-SYN-002 while retaining the parent and its historical 96 percent value unchanged. |
 | RES-BB-CMP-003 | real corrected Phase 6 execution | valid for the stated interpretation, with limitations | Use as the corrected child of RES-BB-CMP-002 for common-axis agreement diagnostics while retaining the excluded parent computation unchanged. |
+| RES-BB-RD-008Q | real corrected Phase 6 execution | valid for the stated interpretation, with limitations | Use as the corrected child of RES-BB-RD-007Q for the declared family-correct in-support predictive evaluation while retaining the excluded parent value unchanged. |
 
 ## Test matrix
 

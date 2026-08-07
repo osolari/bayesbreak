@@ -806,6 +806,17 @@
       "interpretation_status": "valid for the stated interpretation, with limitations",
       "release_action": "Use as the corrected child of RES-BB-CMP-002 for common-axis agreement diagnostics while retaining the excluded parent computation unchanged.",
       "rerun_in_phase2": "executed 2026-08-06"
+    },
+    {
+      "result_id": "RES-BB-RD-008Q",
+      "parent_result_id": "RES-BB-RD-007Q",
+      "asset": "Corrected methylation posterior-predictive block evaluation",
+      "classification": "real corrected Phase 6 execution",
+      "populated_values": "Ten disjoint in-support blocks; 1520 held-out CpGs; total Beta-observation log predictive score=-23605.6749; pooled mean=-15.5300; split-mean 95% t interval -23.1445 to -7.9156; mean boundary-stability F1@3=0.8786",
+      "interpretation_limit": "Scores use held-out coverage as positive phi_new under the Beta-observation predictive distribution with extrapolation=error. Blocks are regions of one chromosome rather than independent biological samples; PIT calibration and external biological accuracy are not available. The score is not numerically comparable to the excluded parent because the family and split changed.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Use as the corrected child of RES-BB-RD-007Q for the declared family-correct in-support predictive evaluation while retaining the excluded parent value unchanged.",
+      "rerun_in_phase2": "executed 2026-08-06"
     }
   ],
   "definition_of_done": [
