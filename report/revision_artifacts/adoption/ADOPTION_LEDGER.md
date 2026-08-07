@@ -125,13 +125,16 @@ under Python 3.11.14. No baseline test failed.
 
 ## Remaining Gates
 
-- Package and interface convergence remains incomplete for all tasks not marked validated
-  in the Phase 2 ledger.
-- The latent-group, array-CGH, and methylation corrected reruns have not been executed.
-- The routine-specific nonconjugate rate proof obligation and bounded EP timeout remain
-  unresolved as recorded by Phase 6.
-- Journal venue, permanent repository, data-release locations, and independent external
-  changepoint annotations remain unset.
+- Gate D implementation, corrected reruns, and integrated validation are complete. Gate E
+  release promotion awaits explicit author approval; no merge, `v2.0.0rc3` tag, or PyPI
+  publication has been performed.
+- Nonblocking scientific limitations remain explicit: routine-specific nonconjugate rate
+  proofs are not established; Beta-observation PIT calibration is unavailable; independent
+  external changepoint annotations are unavailable; and the removed historical EP node
+  remains unresolved lineage even though its current successor tests pass.
+- Default sklearn cross-validation still produces nonfinite fold scores when validation
+  coordinates exceed fitted support unless a named extrapolation policy or model is selected.
+- Journal venue, permanent repository, and permanent data-release locations remain unset.
 
 ## Gate D Corrected Reruns
 
