@@ -5,11 +5,13 @@ from pathlib import Path
 import numpy as np
 import pytest
 
+from bayesbreak.baselines._types import BaselineResult
 from bayesbreak.comparators import FAILURE_ID_AXIS_MISMATCH, ComparatorValidationError
 from scripts.phase6_cgh_comparator_rerun import (
     algorithm_signal,
     build_raw_request,
     choose_pelt_candidate,
+    comparator_record,
     exact_boundary_jaccard,
     verify_source,
 )
@@ -48,3 +50,16 @@ def test_pelt_selection_uses_count_then_neutral_multiplier() -> None:
 def test_exact_boundary_jaccard_handles_empty_and_partial_sets() -> None:
     assert exact_boundary_jaccard([], []) == 1.0
     assert exact_boundary_jaccard([10, 20], [20, 30]) == pytest.approx(1 / 3)
+
+
+def test_comparator_record_preserves_wrapper_extra_metadata() -> None:
+    result = BaselineResult(
+        algorithm="wild_binary_segmentation",
+        package="ruptures",
+        package_version="test",
+        n=20,
+        boundaries=np.asarray([10], dtype=np.intp),
+        extra={"candidate_selection": "candidate-constrained-dynamic-programming"},
+    )
+    record = comparator_record(result, [10], runtime=0.1, tuning={"n_bkps": 1})
+    assert record["extra"] == result.extra

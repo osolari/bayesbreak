@@ -11,6 +11,7 @@ import platform
 import resource
 import subprocess
 import time
+import warnings
 from pathlib import Path
 from typing import Any
 
@@ -277,6 +278,7 @@ def comparator_record(
         "boundaries": predicted,
         "runtime_seconds": runtime,
         "tuning": tuning,
+        "extra": dict(result.extra),
         "exact_boundary_jaccard": exact_boundary_jaccard(predicted, reference),
         "boundary_metrics_tau3": metric.to_dict(),
     }
@@ -471,7 +473,9 @@ def main() -> int:
     weights = np.ascontiguousarray(full_weights[:n_probes, :n_subjects])
     axis = np.arange(n_probes, dtype=float)
     request = build_raw_request(matrix, axis)
-    reference = fit_bayesbreak_reference(request, weights.T, k_max=k_max)
+    with warnings.catch_warnings(record=True) as caught_warnings:
+        warnings.simplefilter("default")
+        reference = fit_bayesbreak_reference(request, weights.T, k_max=k_max)
     reference_boundaries = list(reference["shared"]["boundaries"])
     comparators = run_comparators(request, reference_boundaries, random_seed=args.seed)
     elapsed = time.perf_counter() - started
@@ -529,6 +533,15 @@ def main() -> int:
         "environment": environment_record(),
         "bayesbreak": reference,
         "comparators": comparators,
+        "warnings": [
+            {
+                "category": warning.category.__name__,
+                "message": str(warning.message),
+                "source": Path(warning.filename).name,
+                "line": warning.lineno,
+            }
+            for warning in caught_warnings
+        ],
         "resources": {
             "elapsed_wall_seconds": elapsed,
             "peak_rss": peak_rss(),
@@ -536,6 +549,9 @@ def main() -> int:
             "full_work_projection_formula": "pilot_wall*(2215/n)^2*(43/S)*(15/k_max)",
             "full_work_ratio": work_ratio,
             "projected_full_wall_seconds": elapsed * work_ratio,
+            "estimated_full_subject_table_bytes": (
+                2 * (EXPECTED_SHAPE[0] + 1) ** 2 * 8 * EXPECTED_SHAPE[1]
+            ),
         },
         "limitations": [
             "Matched-k agreement uses the BayesBreak MAP count and is not independent tuning.",
