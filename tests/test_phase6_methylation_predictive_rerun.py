@@ -12,6 +12,7 @@ from scripts.phase6_methylation_predictive_rerun import (
     build_splits,
     interval_summary,
     map_boundaries_to_original,
+    projected_full_wall_seconds,
     verify_source,
 )
 
@@ -52,3 +53,10 @@ def test_wrong_source_hash_is_rejected(tmp_path: Path) -> None:
     source.write_text("not the authorized methylKit source\n", encoding="utf-8")
     with pytest.raises(RuntimeError, match="source hash"):
         verify_source(source)
+
+
+def test_full_resource_projection_uses_observed_runtime() -> None:
+    assert projected_full_wall_seconds(3.0, "pilot") == 16.5
+    assert projected_full_wall_seconds(30.0, "full") == 30.0
+    with pytest.raises(ValueError, match="mode"):
+        projected_full_wall_seconds(1.0, "unknown")

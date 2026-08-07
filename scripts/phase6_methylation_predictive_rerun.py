@@ -317,6 +317,14 @@ def peak_rss() -> dict[str, Any]:
     }
 
 
+def projected_full_wall_seconds(elapsed: float, mode: str) -> float:
+    if mode == "full":
+        return float(elapsed)
+    if mode == "pilot":
+        return float(elapsed) * (N_SPLITS + 1) / 2
+    raise ValueError(f"Unknown execution mode: {mode!r}")
+
+
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload["resources"]["output_bytes"] = 0
@@ -437,7 +445,7 @@ def main() -> int:
             "elapsed_wall_seconds": elapsed,
             "peak_rss": peak_rss(),
             "output_bytes": 0,
-            "projected_full_wall_seconds": elapsed * (N_SPLITS + 1) / 2,
+            "projected_full_wall_seconds": projected_full_wall_seconds(elapsed, args.mode),
             "projected_full_fits": N_SPLITS + 1,
         },
         "limitations": [
