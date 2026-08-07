@@ -144,3 +144,25 @@ under Python 3.11.14. No baseline test failed.
 The parent result remains immutable. New artifacts are under
 `results/phase6/RES-BB-SYN-005/` and were generated from clean code commit
 `734ea3b241f0c0ae0ecbc30ad2ae144a2a2f3750`.
+
+### Gate D Terminal State
+
+- Corrected results validated: `RES-BB-SYN-005`, `RES-BB-CMP-003`, and
+  `RES-BB-RD-008Q`; each has a distinct parent link, execution/configuration/data/code/
+  environment hashes, versioned artifacts, and a current result sidecar.
+- Final package suite at commit `28a04c209614911bb06dd0551d73190df97aa871`:
+  324 collected, 324 passed, zero skipped, zero failed, 76 percent package coverage.
+  The ten warnings are the declared sklearn cross-validation support-policy behavior.
+- Repository checks: all-file pinned pre-commit hooks passed; Ruff lint passed; the
+  repository-pinned Ruff 0.4.10 formatter passed; mypy passed 53 package source files;
+  strict MkDocs passed under the separate Python 3.12 profile with output under `/tmp`.
+- Release validation: sdist and wheel built under `/tmp`; both passed Twine; wheel
+  metadata reports `2.0.0rc3`; PyPI tag/workflow guards passed. No tag or publication
+  was created.
+- Integrity checks: canonical handoff synchronization passed with 20 unique results;
+  all 38 bibliography annotations passed; all 53 historical asset hashes and semantics
+  passed; all corrected sidecar/artifact hashes passed; `RES-BB-CMP-002` and
+  `RES-BB-RD-007Q` remain unchanged and excluded from their original conclusions.
+- The Gate C environment lock remains a preserved historical snapshot. Gate D added
+  `ruptures==1.1.10` and `rdata==1.1.0` for the authorized executions; each corrected
+  sidecar records its execution-specific environment hash.
