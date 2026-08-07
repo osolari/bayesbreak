@@ -1,0 +1,482 @@
+{
+  "schema_version": "1.0.0",
+  "record_role": "resource-pilot",
+  "result_id": "RES-BB-CMP-003",
+  "parent_result_id": "RES-BB-CMP-002",
+  "protocol_ids": [
+    "EPR-BB-010",
+    "EPR-BB-013"
+  ],
+  "execution_status": "executed",
+  "scientific_interpretation": "implementation-verification",
+  "source": {
+    "uri": "https://github.com/cran/ecp/raw/master/data/ACGH.RData",
+    "cache_path": "$HOME/.cache/bayesbreak/ACGH.RData",
+    "sha256": "b82da97ffe6b5c431a60c3f811ee5c339708562126ed4a3d0b0344f2f2e09a63",
+    "matrix_sha256": "1551547d50564227ac020c196e56cae0b29c76ccf76eb4140d47628019cdb9a8",
+    "matrix_shape": [
+      2215,
+      43
+    ],
+    "subject_ids": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      21,
+      22,
+      24,
+      26,
+      28,
+      30,
+      31,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      53,
+      54,
+      57
+    ]
+  },
+  "dataset_card": {
+    "schema_version": "1.0.0",
+    "dataset_id": "cgh",
+    "source_kind": "downloaded",
+    "source_uri": "https://github.com/cran/ecp/raw/master/data/ACGH.RData",
+    "source_date": "source-date-not-recorded",
+    "n_observations": 2215,
+    "n_sequences": 43,
+    "stride": 1,
+    "observation_family": "gaussian-shared-boundary",
+    "coordinate_axis": "probe-index",
+    "descriptor_role": "gaussian-precision",
+    "descriptor_hash": "b47230bd390a41413b0e57ae4742aa247a9a85594884d2fa877ca6c6b6fbbc90",
+    "data_hash": "9c368d425ad3a2246f7a7ea10e976894c840b232c3c51ff29153da1b67024787",
+    "preprocessing": "loader-normalized; stride=1",
+    "external_annotations": [],
+    "fitted_map_marker_role": "model-derived-map"
+  },
+  "coordinate_metadata": {
+    "raw_storage_orientation": "probe-by-subject",
+    "validated_request_orientation": "subject-by-probe",
+    "algorithm_orientation": "probe-by-subject",
+    "prediction_axis": "probe-index",
+    "reference_axis": "probe-index",
+    "reference_type": "model-derived-map",
+    "external_annotations": "none-independently-verified"
+  },
+  "config": {
+    "mode": "pilot",
+    "n_probes": 300,
+    "n_subjects": 4,
+    "subject_ids": [
+      3,
+      4,
+      5,
+      6
+    ],
+    "k_max": 6,
+    "metric_tolerance": 3,
+    "metric_reference_type": "model-derived-map",
+    "cost_model": "l2",
+    "min_size": 2,
+    "jump": 1,
+    "pelt_multipliers": [
+      0.125,
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      8.0,
+      16.0
+    ],
+    "wbs_random_windows": 100,
+    "random_seed": 261003,
+    "stratum": "matched-k-agreement-only"
+  },
+  "config_sha256": "00fd69a704d26436a5f321aecf3dd7d92f6b596f0edccf7ce5b16a81e2f672a0",
+  "code": {
+    "commit": "8c0a29807a4118434aa56f427a733e095ed1bd11",
+    "commit_sha256": "099824a90386a485575d68f0d0bed9e6005910b292d35f0241c333ef09a4224a",
+    "relevant_paths_clean": true
+  },
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.3-arm64-arm-64bit",
+    "bayesbreak_module_version": "2.0.0rc3",
+    "packages": {
+      "bayesbreak": "2.0.0rc3",
+      "numpy": "2.4.2",
+      "rdata": "1.1.0",
+      "ruptures": "1.1.10",
+      "scipy": "1.17.0"
+    },
+    "sha256": "a2e9d7c71807f0e971e8d252ccce386d08819a32eccb2d27033ddb151d75687b"
+  },
+  "bayesbreak": {
+    "shared": {
+      "estimator": "SharedBoundaryReplicatesSegmenter[BayesBreakGaussian]",
+      "k_max": 6,
+      "k_map": 6,
+      "boundaries": [
+        149,
+        150,
+        259,
+        281,
+        282
+      ],
+      "log_evidence": 1960.436555088515,
+      "wall_seconds": 0.576545541989617
+    },
+    "independent": [
+      {
+        "subject_index": 0,
+        "k_map": 6,
+        "boundaries": [
+          149,
+          150,
+          263,
+          281,
+          282
+        ],
+        "log_evidence": 509.92304384926456
+      },
+      {
+        "subject_index": 1,
+        "k_map": 6,
+        "boundaries": [
+          75,
+          115,
+          177,
+          281,
+          282
+        ],
+        "log_evidence": -7.440220161707594
+      },
+      {
+        "subject_index": 2,
+        "k_map": 6,
+        "boundaries": [
+          43,
+          52,
+          83,
+          102,
+          155
+        ],
+        "log_evidence": 198.625481019533
+      },
+      {
+        "subject_index": 3,
+        "k_map": 6,
+        "boundaries": [
+          37,
+          55,
+          56,
+          220,
+          274
+        ],
+        "log_evidence": 1330.4134692043767
+      }
+    ],
+    "independent_wall_seconds": 0.5030389580060728
+  },
+  "comparators": [
+    {
+      "algorithm": "pelt",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 300,
+      "k_hat": 6,
+      "boundaries": [
+        146,
+        155,
+        263,
+        280,
+        282
+      ],
+      "runtime_seconds": 0.09759812499396503,
+      "tuning": {
+        "selection_rule": "minimum absolute boundary-count distance; no F1 access",
+        "target_n_bkps": 5,
+        "scale": 0.7913298989145329,
+        "candidates": [
+          {
+            "multiplier": 0.125,
+            "penalty": 0.09891623736431661,
+            "n_bkps": 30,
+            "runtime_seconds": 0.1065811250009574
+          },
+          {
+            "multiplier": 0.25,
+            "penalty": 0.19783247472863322,
+            "n_bkps": 17,
+            "runtime_seconds": 0.0435299159726128
+          },
+          {
+            "multiplier": 0.5,
+            "penalty": 0.39566494945726643,
+            "n_bkps": 6,
+            "runtime_seconds": 0.08681783400243148
+          },
+          {
+            "multiplier": 1.0,
+            "penalty": 0.7913298989145329,
+            "n_bkps": 5,
+            "runtime_seconds": 0.09759812499396503
+          },
+          {
+            "multiplier": 2.0,
+            "penalty": 1.5826597978290657,
+            "n_bkps": 5,
+            "runtime_seconds": 0.1041888750041835
+          },
+          {
+            "multiplier": 4.0,
+            "penalty": 3.1653195956581315,
+            "n_bkps": 4,
+            "runtime_seconds": 0.20948525000130758
+          },
+          {
+            "multiplier": 8.0,
+            "penalty": 6.330639191316263,
+            "n_bkps": 1,
+            "runtime_seconds": 0.29028841701801866
+          },
+          {
+            "multiplier": 16.0,
+            "penalty": 12.661278382632526,
+            "n_bkps": 0,
+            "runtime_seconds": 0.26637454197043553
+          }
+        ],
+        "selected_index": 3,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1
+      },
+      "exact_boundary_jaccard": 0.1111111111111111,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6,
+        "mae_or_na": 1.3333333333333333,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    },
+    {
+      "algorithm": "optimal_partitioning",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 300,
+      "k_hat": 6,
+      "boundaries": [
+        146,
+        155,
+        263,
+        280,
+        282
+      ],
+      "runtime_seconds": 0.4374798749922775,
+      "tuning": {
+        "selection_rule": "fixed to shared BayesBreak MAP boundary count",
+        "target_n_bkps": 5,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1
+      },
+      "exact_boundary_jaccard": 0.1111111111111111,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6,
+        "mae_or_na": 1.3333333333333333,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    },
+    {
+      "algorithm": "binary_segmentation",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 300,
+      "k_hat": 6,
+      "boundaries": [
+        146,
+        149,
+        155,
+        263,
+        282
+      ],
+      "runtime_seconds": 0.01413208298617974,
+      "tuning": {
+        "selection_rule": "fixed to shared BayesBreak MAP boundary count",
+        "target_n_bkps": 5,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1
+      },
+      "exact_boundary_jaccard": 0.25,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6,
+        "mae_or_na": 1.3333333333333333,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    },
+    {
+      "algorithm": "wild_binary_segmentation",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 300,
+      "k_hat": 6,
+      "boundaries": [
+        146,
+        155,
+        263,
+        280,
+        282
+      ],
+      "runtime_seconds": 0.1709507090272382,
+      "tuning": {
+        "selection_rule": "fixed to shared BayesBreak MAP boundary count",
+        "target_n_bkps": 5,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1,
+        "n_random_windows": 100,
+        "random_state": 261003
+      },
+      "exact_boundary_jaccard": 0.1111111111111111,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ]
+        ],
+        "precision": 0.6,
+        "recall": 0.6,
+        "f1": 0.6,
+        "mae_or_na": 1.3333333333333333,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    }
+  ],
+  "resources": {
+    "elapsed_wall_seconds": 4.028130542021245,
+    "peak_rss": {
+      "value": 218054656,
+      "units": "bytes"
+    },
+    "output_bytes": 11756,
+    "full_work_projection_formula": "pilot_wall*(2215/n)^2*(43/S)*(15/k_max)",
+    "full_work_ratio": 1465.0532986111114,
+    "projected_full_wall_seconds": 5901.425937824389
+  },
+  "limitations": [
+    "Matched-k agreement uses the BayesBreak MAP count and is not independent tuning.",
+    "The model-derived BayesBreak MAP is not external biological ground truth.",
+    "No external-accuracy or predictive-superiority claim is supported by this stratum."
+  ]
+}
