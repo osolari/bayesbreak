@@ -23,10 +23,10 @@ from bayesbreak.baselines._types import BaselineResult
 from bayesbreak.comparators import (
     FAILURE_ID_AXIS_MISMATCH,
     ComparatorInputSchema,
+    TuningBudget,
 )
 from bayesbreak.datasets.base import DatasetCard, load_with_provenance
 from bayesbreak.metrics import boundary_metrics
-from scripts.run_comparators import build_comparator_request
 
 RESULT_ID = "RES-BB-CMP-003"
 PARENT_RESULT_ID = "RES-BB-CMP-002"
@@ -169,18 +169,20 @@ def build_raw_request(
 ) -> ComparatorInputSchema:
     matrix = np.asarray(probe_by_subject, dtype=float)
     axis = np.asarray(probe_axis, dtype=float)
-    return build_comparator_request(
-        np.ascontiguousarray(matrix.T),
-        axis,
+    return ComparatorInputSchema(
+        values=np.ascontiguousarray(matrix.T),
+        coordinate_axis=axis,
         task_type="multisequence",
-        parameter_evaluations=len(PELT_MULTIPLIERS),
-        selection_rule=(
-            "matched-k diagnostic: fixed n_bkps for Dynp/Binseg/WBS; PELT grid selected "
-            "only by absolute distance from the shared BayesBreak MAP count"
+        tuning_budget=TuningBudget(
+            parameter_evaluations=len(PELT_MULTIPLIERS),
+            selection_rule=(
+                "matched-k diagnostic: fixed n_bkps for Dynp/Binseg/WBS; PELT grid selected "
+                "only by absolute distance from the shared BayesBreak MAP count"
+            ),
+            data_access="full raw matrix for descriptive matched-k agreement",
+            tuning_stratum="matched-k-agreement-only",
         ),
-        data_access="full raw matrix for descriptive matched-k agreement",
-        tuning_stratum="matched-k-agreement-only",
-        dataset="cgh",
+        metadata={"source_kind": "raw-observations", "dataset": "cgh"},
     )
 
 
