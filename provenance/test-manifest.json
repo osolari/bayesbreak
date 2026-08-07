@@ -2,14 +2,14 @@
   "schema_version": "1.0.0",
   "captured_at": "2026-08-05",
   "branch": "phase6-adoption-gate-b",
-  "base_commit": "aba2464692b0896abba91c1a3e6b46066b47a8ff",
+  "base_commit": "cd345f0",
   "environment_lock": "provenance/environment-lock.json",
   "environment_lock_sha256": "c6ec18e35f980334b10680dcf646b90ed01dfd41144e328fb537757d4d48abd6",
   "profiles": {
     "full_package": {
       "command": "python -m pytest -q",
-      "collected": 294,
-      "passed": 289,
+      "collected": 298,
+      "passed": 293,
       "skipped": 5,
       "failed": 0,
       "unresolved": 0,

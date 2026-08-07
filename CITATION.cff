@@ -1,11 +1,13 @@
 cff-version: 1.2.0
 title: "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs"
+version: 2.0.0rc3
 authors:
   - family-names: Solari
     given-names: Omid Shams
     email: omid.solari@saimai.com
     affiliation: "sAIm Labs"
 repository-code: "https://github.com/osolari/bayesbreak"
+url: "https://pypi.org/project/bayesbreak/"
 references:
   - type: article
     authors:

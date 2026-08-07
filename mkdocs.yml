@@ -78,6 +78,7 @@ nav:
       - Diagnostics: diagnostics.md
       - Baselines: baselines.md
       - Reproducibility: reproducibility.md
+      - Version lineage: version_lineage.md
       - Results: results.md
   - Tutorials:
       - Quickstart notebook: tutorials/01_quickstart.ipynb

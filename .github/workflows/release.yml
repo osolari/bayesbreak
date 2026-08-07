@@ -12,6 +12,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: { python-version: "3.11" }
-      - run: pip install build
+      - run: pip install build twine
+      - name: Verify tag matches canonical version
+        run: |
+          VERSION=$(python -c 'exec(open("src/bayesbreak/_version.py").read()); print(__version__)')
+          test "${GITHUB_REF_NAME}" = "v${VERSION}"
       - run: python -m build
+      - run: twine check dist/*
       - uses: pypa/gh-action-pypi-publish@release/v1

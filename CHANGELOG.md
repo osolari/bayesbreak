@@ -15,7 +15,7 @@
 - Recorded the source archive's case-colliding bibliography manifests and the normalized
   macOS adoption in `report/revision_artifacts/adoption/ADOPTION_LEDGER.md`.
 
-## [2.0.0-rc3] — Unreleased
+## [2.0.0rc3] — Unreleased
 
 Aligns the implementation with the 2026-05-15 Phase Three manuscript
 (now in `docs/report/`, replacing the May 14 draft). The Phase Three
