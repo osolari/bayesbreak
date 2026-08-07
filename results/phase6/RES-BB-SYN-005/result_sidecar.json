@@ -1,0 +1,69 @@
+{
+  "artifacts": {
+    "results": "results/phase6/RES-BB-SYN-005/results.json",
+    "summary_figure": "results/phase6/RES-BB-SYN-005/stress_summary.png",
+    "summary_report": "results/phase6/RES-BB-SYN-005/SUMMARY.md",
+    "summary_table": "results/phase6/RES-BB-SYN-005/stress_summary.csv"
+  },
+  "code_hash": "01c5e5cf98139cb22495bffa7fdfb51412b6218fa80be823d7ffab51e0a0f103",
+  "config_hash": "f8f53063b889412cfd5b5b162de86fd9b6c7ced4eb0999ec64562c73fd8f0c50",
+  "coordinate_metadata": {
+    "prediction_axis": "sequence-label",
+    "reference_axis": "simulated-group-label",
+    "reference_type": "simulated-truth"
+  },
+  "data_hash": "33f9c0ba520b6631277dc2b772562b22bd36d2a359c989cbc7b2525b734e6efb",
+  "environment_hash": "c6ec18e35f980334b10680dcf646b90ed01dfd41144e328fb537757d4d48abd6",
+  "execution_status": "executed",
+  "lineage_status": "corrected",
+  "metrics": {
+    "all_final_objectives_current": true,
+    "all_objectives_monotone": true,
+    "archived_cell_ari": {
+      "ci95_lower": 0.8705246770692489,
+      "ci95_upper": 0.966174850854255,
+      "max": 1.0,
+      "mean": 0.9183497639617519,
+      "min": 0.0,
+      "standard_error": 0.02440055453699138
+    },
+    "archived_cell_hard_accuracy": {
+      "ci95_lower": 0.9535737606605251,
+      "ci95_upper": 0.9947595726728081,
+      "max": 1.0,
+      "mean": 0.9741666666666666,
+      "min": 0.5,
+      "standard_error": 0.010506584697010959
+    },
+    "archived_cell_template_distance": {
+      "ci95_lower": 0.0064040230217255745,
+      "ci95_upper": 0.4935959769782744,
+      "max": 3.875,
+      "mean": 0.25,
+      "min": 0.0,
+      "standard_error": 0.1242836617236094
+    },
+    "collapse_count": 80,
+    "elapsed_wall_seconds": 84.40502279199427,
+    "interpretation_limit": "Recovery degrades under lower separation, higher noise, shorter sequences, overspecified groups, and duplicate templates; this is finite score clustering, not normalized-mixture identifiability.",
+    "n_records": 400,
+    "peak_rss": {
+      "units": "bytes",
+      "value": 293453824
+    },
+    "protocol_id": "EPR-BB-005",
+    "valid_restart_rate": 1.0
+  },
+  "output_hashes": {
+    "results": "f607cae1a1ca82d9e19624f00a7a160f7a584a2ebba575d62b12932ea1136ae1",
+    "summary_figure": "0468c46e61807ce1e47ea5f06205479f1881efc1d7d10eed89cd68071aed3bf3",
+    "summary_report": "e7b34d1437c64e52a0ed7e7e1e59ecfda08d4a35d5e302088aab3e3152d1d113",
+    "summary_table": "5d14a558cd463f0598572ad2664a465ab253d9ed41dcdcd827975e3481e74667"
+  },
+  "parent_result_id": "RES-BB-SYN-002",
+  "result_id": "RES-BB-SYN-005",
+  "schema_version": "1.0.0",
+  "scientific_interpretation": "valid-for-stated-interpretation",
+  "split_hash": null,
+  "weights_hash": null
+}

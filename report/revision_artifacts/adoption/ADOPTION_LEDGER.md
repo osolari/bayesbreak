@@ -132,3 +132,13 @@ under Python 3.11.14. No baseline test failed.
   unresolved as recorded by Phase 6.
 - Journal venue, permanent repository, data-release locations, and independent external
   changepoint annotations remain unset.
+
+## Gate D Corrected Reruns
+
+| Result | Parent | Protocol | Execution and evidence | Interpretation | Status |
+|---|---|---|---|---|---|
+| `RES-BB-SYN-005` | `RES-BB-SYN-002` | `EPR-BB-005` | Pilot: 0.19 s, 182 MB peak RSS, projected 75 s. Full run: 400 seeded fits across eight predeclared cells in 84.4 s, 293 MB peak RSS. All 400 traces monotone; every final objective equals `trace[-1]`; all 1,200 restarts valid; 400 unique dataset hashes. Sidecar and all artifact hashes validate; 53 historical asset hashes remain unchanged; canonical registry sync passes with 18 results. | Archived-design mean hard accuracy 0.9742 (95% interval 0.9536 to 0.9948), mean ARI 0.9183. Low-separation and duplicate-template cells show expected non-identifiability/collapse. Valid for the stated finite score-clustering simulations with limitations; not normalized-mixture identifiability. | Validated |
+
+The parent result remains immutable. New artifacts are under
+`results/phase6/RES-BB-SYN-005/` and were generated from clean code commit
+`734ea3b241f0c0ae0ecbc30ad2ae144a2a2f3750`.

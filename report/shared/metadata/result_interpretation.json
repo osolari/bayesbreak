@@ -169,6 +169,17 @@
       "interpretation_status": "implementation verification result",
       "release_action": "Report this as the current bounded verification and retain RES-BB-QA-002 as the historical Phase 1 verification state.",
       "rerun_in_phase2": "no"
+    },
+    {
+      "result_id": "RES-BB-SYN-005",
+      "parent_result_id": "RES-BB-SYN-002",
+      "asset": "Corrected finite latent-group stress test",
+      "classification": "real corrected Phase 6 execution",
+      "populated_values": "400 seeded fits across eight cells; archived cell mean hard accuracy 0.9742 (95% interval 0.9536 to 0.9948); all objectives current and monotone",
+      "interpretation_limit": "Supports the stated finite score-clustering criterion in the declared simulations. Recovery degrades under low separation, high noise, short sequences, overspecified groups, and duplicate templates; no normalized-mixture identifiability claim follows.",
+      "interpretation_status": "valid for the stated interpretation, with limitations",
+      "release_action": "Use as the corrected child of RES-BB-SYN-002 while retaining the parent and its historical 96 percent value unchanged.",
+      "rerun_in_phase2": "executed 2026-08-06"
     }
   ]
 }

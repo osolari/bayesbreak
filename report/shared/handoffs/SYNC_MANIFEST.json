@@ -2,7 +2,7 @@
   "handoff_id": "HANDOFF-BB-CANONICAL-001",
   "phase": "6",
   "canonical_json": "shared/handoffs/coding_agent_handoff.json",
-  "canonical_json_sha256": "4a778128eb66cd2bce96497e2176ac8e9615d3efbf2e6faf11f97dcdb17c4f97",
+  "canonical_json_sha256": "9fee729d7a2077d39a960ad60e783102f5bc4e3f51af46d0ff26589b4b134edf",
   "generated_files": [
     "shared/handoffs/coding_agent_handoff.tex",
     "shared/handoffs/implementation_task_registry.tex",
@@ -12,7 +12,7 @@
     "tasks": 16,
     "experiments": 15,
     "claims": 14,
-    "results": 17,
+    "results": 18,
     "failure_states": 6,
     "stages": 7
   }
