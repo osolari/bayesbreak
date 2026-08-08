@@ -1,7 +1,7 @@
 ---
 name: bayesbreak-phase6-adoption
-description: 'Plan, coordinate, or execute the confirmed BayesBreak Phase 6 release adoption. Use when importing BayesBreak_Phase6_Final_Release_Package.zip, applying the chatbot change guide, sequencing report/code/rerun work, or reporting adoption status. Requires explicit user confirmation before any adoption phase changes repository content.'
-argument-hint: '[plan|status|execute <phase>]'
+description: 'Plan, coordinate, review, or release the BayesBreak Phase 6 adoption. Use for adoption status, Gate E review PRs, merge approval, v2.0.0rc3 release gating, or historical Phase 0-4 workflow. Requires explicit approval before merge, tagging, publication, or rerunning scientific experiments.'
+argument-hint: '[plan|status|review-pr|execute <phase>|release-status]'
 user-invocable: true
 disable-model-invocation: true
 ---
@@ -17,8 +17,25 @@ skill is the entry point; use the specialized phase skills for implementation de
 - `status`: compare completed evidence with the gates below. Do not infer completion.
 - `execute <phase>`: modify only the named phase after explicit user confirmation in the
   current conversation.
+- `review-pr`: prepare or open a Gate E review PR from `phase6-adoption-gate-b`; this does
+  not authorize merging, tagging, or publication.
+- `release-status`: inspect merge, tag, workflow, and PyPI state without changing them.
 - A general request to inspect, explain, or plan is not execution confirmation.
 - Confirmation for one phase does not authorize later phases or scientific reruns.
+
+## Current Verified State
+
+- Gates A-D and integrated Phase 4 validation are complete on
+  `phase6-adoption-gate-b`; use the adoption ledger and test manifest as evidence rather
+  than repeating completed scientific runs.
+- Corrected results are `RES-BB-SYN-005`, `RES-BB-CMP-003`, and
+  `RES-BB-RD-008Q`. Their historical parents remain immutable, and the two invalid parent
+  interpretations remain excluded.
+- The canonical registry contains 20 unique results. The terminal package profile records
+  324 collected and passed tests, all corrected artifact hashes, strict MkDocs, package
+  build/Twine checks, and repository-pinned all-file hooks.
+- The next gate is Gate E review and release promotion. No `v2.0.0rc3` tag or PyPI
+  publication exists unless newer evidence proves otherwise.
 
 ## Authority Order
 
@@ -95,6 +112,23 @@ Invoke [bayesbreak-phase6-validation](../bayesbreak-phase6-validation/SKILL.md).
 
 **Gate E:** release only when all blocking checks pass and every nonblocking unresolved item
 is identified with status, evidence, owner or reason, and scope of impact.
+
+### Phase 5: Gate E Review and Release Promotion
+
+1. Open a review PR from `phase6-adoption-gate-b` to the protected default branch and attach
+  the Gate D evidence; PR creation does not imply approval.
+2. Obtain explicit author/reviewer approval for the merge and release candidate.
+3. Merge only after required checks and approvals pass. Do not discard the adoption branch's
+  result or provenance history.
+4. Obtain separate explicit approval before creating or pushing `v2.0.0rc3`; pushing the tag
+  triggers the PyPI release workflow.
+5. Verify the tag matches `src/bayesbreak/_version.py`, the workflow succeeds, PyPI exposes
+  `2.0.0rc3`, and published artifacts match the validated build metadata.
+6. Record release URLs, workflow run, artifact hashes, and any failure without rewriting the
+  historical Gate D evidence.
+
+Merge approval is not tag approval. Tag approval is not permission to repair or rerun a
+scientific result. Never retry publication by moving or replacing an existing release tag.
 
 ## Required Adoption Ledger
 

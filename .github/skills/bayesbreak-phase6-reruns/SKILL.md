@@ -1,6 +1,6 @@
 ---
 name: bayesbreak-phase6-reruns
-description: 'Plan or execute the three controlled BayesBreak Phase 6 corrected experiments: latent-group, array-CGH comparator, and methylation posterior prediction. Use only after required code tasks pass and the user explicitly approves each rerun.'
+description: 'Audit or, only with fresh explicit approval, rerun the three BayesBreak Phase 6 corrected experiments: latent-group, array-CGH comparator, and methylation posterior prediction. The canonical Gate D executions are complete and read-only by default.'
 argument-hint: '[plan|latent-group|array-cgh|methylation|status]'
 user-invocable: true
 disable-model-invocation: true
@@ -10,6 +10,20 @@ disable-model-invocation: true
 
 Run only the minimum clean-submission set unless the user separately approves expanded
 experiments. Historical computations remain immutable and keep their interpretation status.
+
+## Completed Canonical Executions
+
+- `EPR-BB-005` produced `RES-BB-SYN-005` with parent `RES-BB-SYN-002`.
+- `EPR-BB-010`/`EPR-BB-013` produced `RES-BB-CMP-003` with excluded parent
+   `RES-BB-CMP-002`.
+- `EPR-BB-012` produced `RES-BB-RD-008Q` with excluded parent `RES-BB-RD-007Q`.
+- Final artifacts and sidecars live under `results/phase6/<result-id>/`; the canonical
+   registries and adoption ledger contain their interpretation and validation status.
+
+For `status` or release review, verify these immutable artifacts and hashes. Do not rerun an
+experiment merely to refresh timestamps, timings, formatting, or release evidence. A new run
+requires fresh explicit authorization, a new result ID when outputs are scientifically new,
+and a stated reason the canonical execution is insufficient.
 
 ## Authorization and Preconditions
 
@@ -124,4 +138,6 @@ For every rerun:
 
 Report new result IDs, parent IDs, commands, seeds, hashes, resource use, statistical
 summaries, schema validation, artifact paths, interpretation decisions, and any abort or
-unresolved state. Obtain explicit approval before integrated release validation.
+unresolved state. The canonical Gate D report is complete; integrated release validation is
+recorded in `provenance/test-manifest.json` and the adoption ledger. Gate E review must consume
+that evidence without silently reclassifying limitations or excluded parent results.
