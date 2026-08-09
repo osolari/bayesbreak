@@ -84,6 +84,37 @@ class TestSumProduct:
         assert float(np.sum(post_k)) == pytest.approx(1.0, abs=1e-10)
         assert np.all(post_k >= -1e-12)
 
+    def test_posterior_k_ignores_counts_with_zero_prior_support(self):
+        n = 6
+        k_max = 4
+        log_left = np.full((k_max + 1, n + 1), -np.inf)
+        log_left[1, n] = -3.0
+        log_left[2, n] = -2.0
+        log_c = np.full(k_max + 1, -np.inf)
+        log_c[1] = 0.0
+        log_c[2] = 0.0
+
+        log_posterior, posterior, evidence = dp.posterior_over_k(
+            log_left,
+            n=n,
+            k_max=k_max,
+            log_C_k=log_c,
+        )
+
+        assert np.all(np.isfinite(log_posterior[:2]))
+        assert log_posterior[2:].tolist() == [-np.inf, -np.inf]
+        assert posterior[2:].tolist() == [0.0, 0.0]
+        assert posterior.sum() == pytest.approx(1.0)
+        assert np.isfinite(evidence)
+
+    def test_posterior_k_rejects_all_zero_support(self):
+        n = 4
+        k_max = 3
+        log_left = np.full((k_max + 1, n + 1), -np.inf)
+        log_c = np.full(k_max + 1, -np.inf)
+        with pytest.raises(RuntimeError, match="No segment count"):
+            dp.posterior_over_k(log_left, n=n, k_max=k_max, log_C_k=log_c)
+
     def test_boundary_event_marginal_bounds(self, random_log_block_evidence):
         la, n = random_log_block_evidence
         k_max = 4

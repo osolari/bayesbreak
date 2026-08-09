@@ -7,12 +7,14 @@ from pathlib import Path
 import numpy as np
 
 from scripts.phase6_misspecification_rerun import (
+    cell_input_hashes,
     generate_logistic_cell,
     generate_shared_cell,
     generate_standard_cell,
     interval_summary,
     piecewise_mean,
     run_ep_bounded,
+    run_standard_cell,
     summarize,
 )
 
@@ -65,8 +67,12 @@ def test_summary_retains_failed_and_reversed_outcomes() -> None:
             "boundary_metrics": {"f1": 0.0},
             "k_error": 2,
             "posterior_k_entropy": 0.5,
+            "posterior_mass_at_k_max": 0.2,
+            "map_at_k_max": False,
             "missed_change_count": 0,
+            "complete_boundary_recovery": True,
             "false_discovery_count": 2,
+            "false_positive_dataset": True,
         },
     ]
     summary = summarize(records, ["null-gaussian"])["cells"]["null-gaussian"]
@@ -92,7 +98,12 @@ def test_ep_timeout_is_retained_as_scientific_outcome(monkeypatch) -> None:
         raise subprocess.TimeoutExpired(cmd=args[0], timeout=kwargs["timeout"])
 
     monkeypatch.setattr(subprocess, "run", timeout)
-    record = run_ep_bounded(seed=123, timeout_seconds=20)
+    record = run_ep_bounded(
+        values=np.zeros(8),
+        reference=None,  # type: ignore[arg-type]
+        truth=[4],
+        timeout_seconds=20,
+    )
     assert record["status"] == "timed-out"
     assert record["timeout_seconds"] == 20
     assert record["wall_seconds"] >= 0.0
@@ -107,11 +118,29 @@ def test_logistic_summary_reports_timeout_rate() -> None:
             "methods": {
                 "quadrature-40": {
                     "status": "executed",
-                    "diagnostics": {"extra": {"block_error_max": 1.0, "pk_tv_empirical": 0.1}},
+                    "diagnostics": {
+                        "extra": {
+                            "block_error_max": 1.0,
+                            "pk_tv_empirical": 0.1,
+                            "conditional_partition_bounds": {"tv_upper_bound": 1.0},
+                            "map_path_jaccard": 0.8,
+                            "segment_error_record": {"convergence_status": "verified"},
+                        }
+                    },
+                    "truth_metrics": {"f1": 0.9},
                 },
                 "laplace": {
                     "status": "executed",
-                    "diagnostics": {"extra": {"block_error_max": 2.0, "pk_tv_empirical": 0.2}},
+                    "diagnostics": {
+                        "extra": {
+                            "block_error_max": 2.0,
+                            "pk_tv_empirical": 0.2,
+                            "conditional_partition_bounds": {"tv_upper_bound": 1.0},
+                            "map_path_jaccard": 0.7,
+                            "segment_error_record": {"convergence_status": "verified"},
+                        }
+                    },
+                    "truth_metrics": {"f1": 0.8},
                 },
                 "ep": {"status": "timed-out", "timeout_seconds": 20},
             },
@@ -121,8 +150,42 @@ def test_logistic_summary_reports_timeout_rate() -> None:
         "logistic-approximation-failure"
     ]
     assert summary["ep_execution_rate"] == 0.0
-    assert summary["ep_timeout_rate"] == 1.0
+    assert summary["ep_timeout_rate"]["mean"] == 1.0
     assert summary["ep_max_block_error"] is None
+
+
+def test_prior_conflict_retains_feasible_counts() -> None:
+    record = run_standard_cell("prior-conflict-gaussian", seed=311501)
+    assert record["status"] == "executed"
+    assert record["k_map"] in {1, 2}
+    assert record["predicted_boundaries"][0] == 0
+    assert record["predicted_boundaries"][-1] == 120
+    assert all(
+        stop - start >= 50
+        for start, stop in zip(
+            record["predicted_boundaries"][:-1],
+            record["predicted_boundaries"][1:],
+            strict=True,
+        )
+    )
+
+
+def test_every_cell_has_complete_input_identity_hashes() -> None:
+    for index, cell_id in enumerate(
+        [
+            "null-gaussian",
+            "heavy-tail-gaussian",
+            "zero-inflated-poisson",
+            "dense-gaussian",
+            "short-segment-gaussian",
+            "prior-conflict-gaussian",
+            "shared-boundary-heterogeneity",
+            "logistic-approximation-failure",
+        ]
+    ):
+        hashes = cell_input_hashes(cell_id, 261501 + 10_000 * index)
+        for name in ("data_hash", "truth_hash", "effective_config_hash"):
+            assert isinstance(hashes[name], str) and len(hashes[name]) == 64
 
 
 def test_bounded_repilot_changes_only_ep_outcome() -> None:

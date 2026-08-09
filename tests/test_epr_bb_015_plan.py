@@ -20,6 +20,8 @@ def test_misspecification_plan_has_stable_identity_and_budget() -> None:
     assert plan["full_repetitions_per_cell"] == 50
     assert plan["seed_base"] == 261501
     assert plan["ep_timeout_seconds"] == 20
+    assert plan["full_execution_approved"] is False
+    assert plan["seed_schedule"] == "seed_base + 10000 * cell_index + repetition"
 
 
 def test_misspecification_plan_covers_every_registered_failure_regime() -> None:

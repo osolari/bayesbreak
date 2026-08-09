@@ -72,3 +72,10 @@ All non-EP scientific outputs matched the first pilot. The revised full-suite pr
 17.7 minutes, below the 30-minute resource threshold. Full execution remains a separate explicit
 approval boundary. The 400-run full suite was explicitly approved after review of the bounded
 re-pilot; execution remains pending until the approved-status revision is committed.
+
+The approved full attempt was stopped before writing `results.json` after an independent semantic
+audit identified three invalidating defects: unsupported prior counts poisoned feasible posterior
+counts through `-inf - -inf`, shared and independent methods were compared against different truth
+targets, and the EP timeout included reference fitting rather than only the EP fit. No full result
+was retained. Approval is revoked until the corrected DP, metric semantics, provenance fields, and
+EP-fit-only timeout pass a new bounded pilot.

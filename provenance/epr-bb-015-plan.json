@@ -7,6 +7,8 @@
   "seed_base": 261501,
   "pilot_repetitions_per_cell": 1,
   "full_repetitions_per_cell": 50,
+  "full_execution_approved": false,
+  "seed_schedule": "seed_base + 10000 * cell_index + repetition",
   "boundary_tolerance": 3,
   "ep_timeout_seconds": 20,
   "cells": [
@@ -82,8 +84,9 @@
     "false discoveries for the null cell",
     "missed changes for dense and short-segment cells",
     "runtime, peak RSS, warnings, exceptions, and nonfinite diagnostics",
-    "shared versus independent boundary behavior for heterogeneous sequences",
-    "reachable-block maximum error, empirical posterior TV, conditional TV bound, convergence state, and MAP overlap for logistic approximation"
+    "shared versus independent boundary behavior scored per subject against the same subject truth",
+    "reachable-block maximum error, empirical posterior TV, conditional TV bound, convergence state, MAP overlap, and simulated-truth metrics for logistic approximation",
+    "null false-positive dataset rate, dense-change posterior mass at k_max, and short-segment complete-recovery rate"
   ],
   "uncertainty": {
     "unit": "generated dataset",

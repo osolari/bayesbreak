@@ -229,11 +229,13 @@ def posterior_over_k(
 
     log_p_k_full = _resolve_log_p_k(log_p_k, k_max)
 
-    log_py_given_k = np.array(
-        [log_left[k, n] - log_C_k[k] for k in range(1, k_max + 1)],
-        dtype=float,
-    )
+    log_py_given_k = np.full(k_max, -np.inf, dtype=float)
+    for k in range(1, k_max + 1):
+        if np.isfinite(log_left[k, n]) and np.isfinite(log_C_k[k]):
+            log_py_given_k[k - 1] = log_left[k, n] - log_C_k[k]
     log_unnorm = log_py_given_k + log_p_k_full[1:]
+    if not np.any(np.isfinite(log_unnorm)):
+        raise RuntimeError("No segment count has finite posterior evidence")
     log_evidence = float(logsumexp(log_unnorm))
     log_posterior_k = log_unnorm - log_evidence
     posterior_k = np.exp(log_posterior_k)
