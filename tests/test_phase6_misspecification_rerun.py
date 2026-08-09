@@ -1,19 +1,29 @@
 from __future__ import annotations
 
+import io
 import json
+import pickle
 import subprocess
+import sys
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
+import pytest
 
+import scripts.phase6_misspecification_rerun as rerun
 from scripts.phase6_misspecification_rerun import (
     cell_input_hashes,
     generate_logistic_cell,
     generate_shared_cell,
     generate_standard_cell,
     interval_summary,
+    main,
     piecewise_mean,
+    proportion_summary,
+    run_cell,
     run_ep_bounded,
+    run_shared_cell,
     run_standard_cell,
     summarize,
 )
@@ -70,7 +80,8 @@ def test_summary_retains_failed_and_reversed_outcomes() -> None:
             "posterior_mass_at_k_max": 0.2,
             "map_at_k_max": False,
             "missed_change_count": 0,
-            "complete_boundary_recovery": True,
+            "missed_change_rate": None,
+            "complete_boundary_recovery": False,
             "false_discovery_count": 2,
             "false_positive_dataset": True,
         },
@@ -93,11 +104,31 @@ def test_interval_summary_handles_single_pilot_value() -> None:
     }
 
 
-def test_ep_timeout_is_retained_as_scientific_outcome(monkeypatch) -> None:
-    def timeout(*args, **kwargs):
-        raise subprocess.TimeoutExpired(cmd=args[0], timeout=kwargs["timeout"])
+def test_proportion_summary_uses_non_degenerate_wilson_interval() -> None:
+    summary = proportion_summary([1.0])
+    assert summary is not None
+    assert summary["mean"] == 1.0
+    assert 0.0 < summary["ci95_lower"] < summary["ci95_upper"] == 1.0
 
-    monkeypatch.setattr(subprocess, "run", timeout)
+
+def test_ep_timeout_is_retained_as_scientific_outcome(monkeypatch) -> None:
+    class TimeoutProcess:
+        def __init__(self) -> None:
+            self.stdout = io.StringIO("EP_FIT_READY\n")
+            self.returncode: int | None = None
+            self.communicate_calls = 0
+
+        def communicate(self, input=None, timeout=None):
+            self.communicate_calls += 1
+            if self.communicate_calls == 1:
+                assert input == "EP_FIT_START\n"
+                raise subprocess.TimeoutExpired(cmd="ep-worker", timeout=timeout)
+            return "", ""
+
+        def kill(self) -> None:
+            self.returncode = -9
+
+    monkeypatch.setattr(subprocess, "Popen", lambda *args, **kwargs: TimeoutProcess())
     record = run_ep_bounded(
         values=np.zeros(8),
         reference=None,  # type: ignore[arg-type]
@@ -106,7 +137,86 @@ def test_ep_timeout_is_retained_as_scientific_outcome(monkeypatch) -> None:
     )
     assert record["status"] == "timed-out"
     assert record["timeout_seconds"] == 20
+    assert record["timeout_scope"] == "ep-fit-only"
+    assert record["fit_wall_seconds"] >= 0.0
     assert record["wall_seconds"] >= 0.0
+
+
+def test_ep_worker_success_retains_hash_warnings_and_rss(monkeypatch) -> None:
+    values = np.zeros(8)
+    worker_warnings = [{"category": "RuntimeWarning", "message": "retained"}]
+
+    class SuccessfulProcess:
+        def __init__(self, command: list[str]) -> None:
+            self.stdout = io.StringIO("EP_FIT_READY\n")
+            self.returncode = 0
+            output_path = Path(command[command.index("--worker-output") + 1])
+            payload = {
+                "estimator": SimpleNamespace(k_map_=2, map_boundaries_=[0, 4, 8]),
+                "fit_wall_seconds": 0.25,
+                "data_hash": rerun.sha256_arrays(values),
+                "warnings": worker_warnings,
+                "peak_rss": {"value": 1234, "units": "bytes"},
+            }
+            output_path.write_bytes(pickle.dumps(payload))
+
+        def communicate(self, input=None, timeout=None):
+            assert input == "EP_FIT_START\n"
+            assert timeout == 20
+            return "", ""
+
+        def kill(self) -> None:
+            self.returncode = -9
+
+    monkeypatch.setattr(
+        subprocess,
+        "Popen",
+        lambda command, **kwargs: SuccessfulProcess(command),
+    )
+    monkeypatch.setattr(
+        rerun,
+        "run_non_conjugate_diagnostics",
+        lambda estimator, reference: SimpleNamespace(to_dict=lambda: {"checked": True}),
+    )
+    record = run_ep_bounded(
+        values=values,
+        reference=None,  # type: ignore[arg-type]
+        truth=[4],
+        timeout_seconds=20,
+    )
+    assert record["status"] == "executed"
+    assert record["timeout_scope"] == "ep-fit-only"
+    assert record["fit_wall_seconds"] == 0.25
+    assert record["warnings"] == worker_warnings
+    assert record["peak_rss"] == {"value": 1234, "units": "bytes"}
+
+
+def test_ep_worker_hash_mismatch_fails_closed(monkeypatch) -> None:
+    class MismatchedProcess:
+        def __init__(self, command: list[str]) -> None:
+            self.stdout = io.StringIO("EP_FIT_READY\n")
+            self.returncode = 0
+            output_path = Path(command[command.index("--worker-output") + 1])
+            output_path.write_bytes(pickle.dumps({"data_hash": "wrong"}))
+
+        def communicate(self, input=None, timeout=None):
+            return "", ""
+
+        def kill(self) -> None:
+            self.returncode = -9
+
+    monkeypatch.setattr(
+        subprocess,
+        "Popen",
+        lambda command, **kwargs: MismatchedProcess(command),
+    )
+    with pytest.raises(RuntimeError, match="input hash"):
+        run_ep_bounded(
+            values=np.zeros(8),
+            reference=None,  # type: ignore[arg-type]
+            truth=[4],
+            timeout_seconds=20,
+        )
 
 
 def test_logistic_summary_reports_timeout_rate() -> None:
@@ -170,6 +280,38 @@ def test_prior_conflict_retains_feasible_counts() -> None:
     )
 
 
+def test_standard_failure_metrics_distinguish_detection_from_exact_recovery() -> None:
+    null = run_standard_cell("null-gaussian", seed=261501)
+    dense = run_standard_cell("dense-gaussian", seed=301501)
+    short = run_standard_cell("short-segment-gaussian", seed=311501)
+    assert null["false_positive_dataset"] is True
+    assert null["complete_boundary_recovery"] is False
+    assert dense["missed_change_rate"] == 0.0
+    assert dense["complete_boundary_recovery"] is False
+    assert short["missed_change_rate"] == 0.0
+    assert short["complete_boundary_recovery"] is False
+
+
+def test_shared_and_independent_methods_use_each_subjects_same_truth() -> None:
+    record = run_shared_cell(seed=321501)
+    for shared, independent in zip(
+        record["shared_subject_metrics"], record["independent"], strict=True
+    ):
+        assert shared["subject"] == independent["subject"]
+        assert shared["truth_boundaries"] == independent["truth_boundaries"]
+
+
+def test_failed_record_retains_complete_input_hashes(monkeypatch) -> None:
+    def fail(cell_id: str, seed: int):
+        raise RuntimeError("declared test failure")
+
+    monkeypatch.setattr(rerun, "run_standard_cell", fail)
+    record = run_cell("null-gaussian", seed=123, ep_timeout_seconds=20)
+    assert record["status"] == "failed"
+    for name in ("data_hash", "truth_hash", "effective_config_hash"):
+        assert isinstance(record[name], str) and len(record[name]) == 64
+
+
 def test_every_cell_has_complete_input_identity_hashes() -> None:
     for index, cell_id in enumerate(
         [
@@ -186,6 +328,30 @@ def test_every_cell_has_complete_input_identity_hashes() -> None:
         hashes = cell_input_hashes(cell_id, 261501 + 10_000 * index)
         for name in ("data_hash", "truth_hash", "effective_config_hash"):
             assert isinstance(hashes[name], str) and len(hashes[name]) == 64
+
+
+def test_main_rejects_existing_output(monkeypatch, tmp_path: Path) -> None:
+    output = tmp_path / "existing.json"
+    output.write_text("{}", encoding="utf-8")
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["phase6_misspecification_rerun.py", "--mode", "pilot", "--output", str(output)],
+    )
+    with pytest.raises(FileExistsError, match="Refusing to overwrite"):
+        main()
+
+
+def test_main_rejects_unapproved_full_run(monkeypatch, tmp_path: Path) -> None:
+    output = tmp_path / "full.json"
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        ["phase6_misspecification_rerun.py", "--mode", "full", "--output", str(output)],
+    )
+    with pytest.raises(RuntimeError, match="not approved"):
+        main()
+    assert not output.exists()
 
 
 def test_bounded_repilot_changes_only_ep_outcome() -> None:

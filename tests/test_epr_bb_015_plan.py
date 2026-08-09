@@ -22,6 +22,8 @@ def test_misspecification_plan_has_stable_identity_and_budget() -> None:
     assert plan["ep_timeout_seconds"] == 20
     assert plan["full_execution_approved"] is False
     assert plan["seed_schedule"] == "seed_base + 10000 * cell_index + repetition"
+    assert "Wilson score intervals" in plan["uncertainty"]["summary"]
+    assert any("fit-only timeout" in rule for rule in plan["abort_rules"])
 
 
 def test_misspecification_plan_covers_every_registered_failure_regime() -> None:
@@ -52,4 +54,4 @@ def test_execution_brief_points_to_machine_readable_plan() -> None:
     normalized = " ".join(brief.lower().split())
     assert "provenance/epr-bb-015-plan.json" in brief
     assert "full execution remains unapproved" in normalized
-    assert "20-second timeout" in brief
+    assert "20-second fit-only timeout" in brief

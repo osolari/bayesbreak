@@ -36,6 +36,8 @@ from bayesbreak.priors import PartitionPriorConfig
 RESULT_ID = "RES-BB-SYN-006"
 PROTOCOL_ID = "EPR-BB-015"
 PLAN_PATH = Path("provenance/epr-bb-015-plan.json")
+EP_FIT_READY = "EP_FIT_READY"
+EP_FIT_START = "EP_FIT_START"
 
 
 def load_plan(root: Path) -> dict[str, Any]:
@@ -191,7 +193,10 @@ def run_standard_cell(cell_id: str, seed: int) -> dict[str, Any]:
         "false_discovery_count": len(predicted) if not truth else None,
         "false_positive_dataset": bool(predicted) if not truth else None,
         "missed_change_count": len(truth) - len(metrics.matches),
-        "complete_boundary_recovery": len(metrics.matches) == len(truth),
+        "missed_change_rate": ((len(truth) - len(metrics.matches)) / len(truth) if truth else None),
+        "complete_boundary_recovery": (
+            len(metrics.matches) == len(truth) and len(predicted) == len(truth)
+        ),
         "log_evidence": float(estimator.log_evidence_),
         "wall_seconds": elapsed,
         "data_hash": sha256_arrays(values),
@@ -296,6 +301,9 @@ def run_shared_cell(seed: int) -> dict[str, Any]:
 def run_ep_worker(input_path: Path, output_path: Path) -> None:
     values = np.load(input_path, allow_pickle=False)
     coordinates = np.arange(values.size, dtype=float).reshape(-1, 1)
+    print(EP_FIT_READY, flush=True)
+    if sys.stdin.readline().strip() != EP_FIT_START:
+        raise RuntimeError("EP worker did not receive the fit-start signal")
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
         started = time.perf_counter()
@@ -342,26 +350,55 @@ def run_ep_bounded(
             "--worker-output",
             str(output_path),
         ]
-        try:
-            completed = subprocess.run(
-                command,
-                check=True,
-                capture_output=True,
-                text=True,
-                timeout=timeout_seconds,
-            )
-        except subprocess.TimeoutExpired:
-            return {
-                "status": "timed-out",
-                "timeout_seconds": timeout_seconds,
-                "wall_seconds": time.perf_counter() - started,
-            }
-        except subprocess.CalledProcessError as exc:
+        process = subprocess.Popen(
+            command,
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+        )
+        if process.stdout is None:
+            process.kill()
+            raise RuntimeError("EP worker stdout pipe is unavailable")
+        ready = process.stdout.readline().strip()
+        if ready != EP_FIT_READY:
+            _, stderr = process.communicate()
             return {
                 "status": "failed",
                 "wall_seconds": time.perf_counter() - started,
-                "returncode": exc.returncode,
-                "stderr": exc.stderr,
+                "returncode": process.returncode,
+                "stderr": stderr,
+                "worker_handshake": ready,
+            }
+        fit_started = time.perf_counter()
+        try:
+            worker_stdout, worker_stderr = process.communicate(
+                input=f"{EP_FIT_START}\n",
+                timeout=timeout_seconds,
+            )
+        except subprocess.TimeoutExpired:
+            process.kill()
+            worker_stdout, worker_stderr = process.communicate()
+            record = {
+                "status": "timed-out",
+                "timeout_seconds": timeout_seconds,
+                "timeout_scope": "ep-fit-only",
+                "fit_wall_seconds": time.perf_counter() - fit_started,
+                "wall_seconds": time.perf_counter() - started,
+                "peak_rss": process_peak_rss(resource.RUSAGE_CHILDREN),
+            }
+            if worker_stdout:
+                record["stdout"] = worker_stdout
+            if worker_stderr:
+                record["stderr"] = worker_stderr
+            return record
+        if process.returncode != 0:
+            return {
+                "status": "failed",
+                "wall_seconds": time.perf_counter() - started,
+                "fit_wall_seconds": time.perf_counter() - fit_started,
+                "returncode": process.returncode,
+                "stderr": worker_stderr,
             }
         worker_payload = pickle.loads(output_path.read_bytes())
     if worker_payload["data_hash"] != sha256_arrays(values):
@@ -379,6 +416,7 @@ def run_ep_bounded(
     record = {
         "status": "executed",
         "timeout_seconds": timeout_seconds,
+        "timeout_scope": "ep-fit-only",
         "wall_seconds": time.perf_counter() - started,
         "fit_wall_seconds": worker_payload["fit_wall_seconds"],
         "k_map": int(estimator.k_map_),
@@ -388,8 +426,10 @@ def run_ep_bounded(
         "warnings": worker_payload["warnings"],
         "peak_rss": worker_payload["peak_rss"],
     }
-    if completed.stderr:
-        record["stderr"] = completed.stderr
+    if worker_stdout:
+        record["stdout"] = worker_stdout
+    if worker_stderr:
+        record["stderr"] = worker_stderr
     return record
 
 
@@ -551,7 +591,7 @@ def summarize(records: list[dict[str, Any]], cell_ids: list[str]) -> dict[str, A
             "n_executed": len(executed),
             "n_failed": len(subset) - len(executed),
             "failure_rate": (len(subset) - len(executed)) / len(subset),
-            "failure_rate_interval": interval_summary(
+            "failure_rate_interval": proportion_summary(
                 [float(record["status"] != "executed") for record in subset]
             ),
             "wall_seconds": interval_summary([float(record["wall_seconds"]) for record in subset]),
@@ -569,20 +609,27 @@ def summarize(records: list[dict[str, Any]], cell_ids: list[str]) -> dict[str, A
             cell_summary["missed_change_count"] = interval_summary(
                 [float(record["missed_change_count"]) for record in executed]
             )
+            cell_summary["missed_change_rate"] = interval_summary(
+                [
+                    float(record["missed_change_rate"])
+                    for record in executed
+                    if record["missed_change_rate"] is not None
+                ]
+            )
             cell_summary["posterior_mass_at_k_max"] = interval_summary(
                 [float(record["posterior_mass_at_k_max"]) for record in executed]
             )
-            cell_summary["map_saturation_rate"] = interval_summary(
+            cell_summary["map_saturation_rate"] = proportion_summary(
                 [float(record["map_at_k_max"]) for record in executed]
             )
-            cell_summary["complete_boundary_recovery_rate"] = interval_summary(
+            cell_summary["complete_boundary_recovery_rate"] = proportion_summary(
                 [float(record["complete_boundary_recovery"]) for record in executed]
             )
         if executed and cell_id == "null-gaussian":
             cell_summary["false_discovery_count"] = interval_summary(
                 [float(record["false_discovery_count"]) for record in executed]
             )
-            cell_summary["false_positive_dataset_rate"] = interval_summary(
+            cell_summary["false_positive_dataset_rate"] = proportion_summary(
                 [float(record["false_positive_dataset"]) for record in executed]
             )
         if executed and cell_id == "shared-boundary-heterogeneity":
@@ -595,7 +642,7 @@ def summarize(records: list[dict[str, Any]], cell_ids: list[str]) -> dict[str, A
             cell_summary["independent_mean_f1"] = interval_summary(
                 [float(record["independent_mean_f1"]) for record in executed]
             )
-            cell_summary["subject_deviation_selected_rate"] = interval_summary(
+            cell_summary["subject_deviation_selected_rate"] = proportion_summary(
                 [
                     float(record["subject_specific_boundary_60_selected_as_shared"])
                     for record in executed
@@ -609,7 +656,7 @@ def summarize(records: list[dict[str, Any]], cell_ids: list[str]) -> dict[str, A
                     if record["methods"][method]["status"] == "executed"
                 ]
                 cell_summary[f"{method}_execution_rate"] = len(method_executed) / len(executed)
-                cell_summary[f"{method}_timeout_rate"] = interval_summary(
+                cell_summary[f"{method}_timeout_rate"] = proportion_summary(
                     [
                         float(record["methods"][method]["status"] == "timed-out")
                         for record in executed
@@ -648,7 +695,7 @@ def summarize(records: list[dict[str, Any]], cell_ids: list[str]) -> dict[str, A
                 cell_summary[f"{method}_truth_f1"] = interval_summary(
                     [float(record["truth_metrics"]["f1"]) for record in method_executed]
                 )
-                cell_summary[f"{method}_verified_convergence_rate"] = interval_summary(
+                cell_summary[f"{method}_verified_convergence_rate"] = proportion_summary(
                     [
                         float(
                             record["diagnostics"]["extra"]["segment_error_record"][
@@ -679,6 +726,33 @@ def interval_summary(values: list[float]) -> dict[str, float] | None:
         "standard_error": standard_error,
         "ci95_lower": mean - critical * standard_error,
         "ci95_upper": mean + critical * standard_error,
+        "min": float(np.min(array)),
+        "max": float(np.max(array)),
+    }
+
+
+def proportion_summary(values: list[float]) -> dict[str, float] | None:
+    if not values:
+        return None
+    array = np.asarray(values, dtype=float)
+    if np.any((array != 0.0) & (array != 1.0)):
+        raise ValueError("Proportion summaries require binary observations")
+    count = float(np.sum(array))
+    sample_size = int(array.size)
+    mean = count / sample_size
+    z = 1.959963984540054
+    denominator = 1.0 + z**2 / sample_size
+    center = (mean + z**2 / (2.0 * sample_size)) / denominator
+    half_width = (
+        z
+        * math.sqrt(mean * (1.0 - mean) / sample_size + z**2 / (4.0 * sample_size**2))
+        / denominator
+    )
+    return {
+        "mean": mean,
+        "standard_error": math.sqrt(mean * (1.0 - mean) / sample_size),
+        "ci95_lower": max(0.0, center - half_width),
+        "ci95_upper": min(1.0, center + half_width),
         "min": float(np.min(array)),
         "max": float(np.max(array)),
     }

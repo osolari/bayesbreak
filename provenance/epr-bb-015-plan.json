@@ -90,7 +90,7 @@
   ],
   "uncertainty": {
     "unit": "generated dataset",
-    "summary": "cell-wise means, rates, standard errors, and 95 percent t intervals",
+    "summary": "cell-wise means with 95 percent t intervals; binary rates with 95 percent Wilson score intervals",
     "pairing": "shared seeds for paired method contrasts",
     "multiplicity": "no global superiority test; report every predeclared cell"
   },
@@ -99,7 +99,7 @@
     "abort if the code revision or configuration is not committed and hashable",
     "abort or record failed when any required score is NaN or positive infinity",
     "retain null, reversed, failed, nonconverged, and timed-out outcomes",
-    "run each EP fit in a subprocess with a 20-second timeout and retain timeout as the outcome",
+    "run each EP fit in a subprocess with a 20-second fit-only timeout after worker setup and retain timeout as the outcome",
     "require renewed resource approval if the pilot projects more than 30 minutes wall time or 4 GiB peak RSS",
     "do not interpret model-derived agreement as external truth",
     "do not execute the full suite until the pilot record is reviewed and explicitly approved"
