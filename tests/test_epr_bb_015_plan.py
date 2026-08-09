@@ -19,6 +19,7 @@ def test_misspecification_plan_has_stable_identity_and_budget() -> None:
     assert plan["pilot_repetitions_per_cell"] == 1
     assert plan["full_repetitions_per_cell"] == 50
     assert plan["seed_base"] == 261501
+    assert plan["ep_timeout_seconds"] == 20
 
 
 def test_misspecification_plan_covers_every_registered_failure_regime() -> None:
@@ -46,6 +47,7 @@ def test_execution_brief_points_to_machine_readable_plan() -> None:
     brief = (
         ROOT / "report" / "revision_artifacts" / "research" / "EPR-BB-015_EXECUTION_PLAN.md"
     ).read_text(encoding="utf-8")
+    normalized = " ".join(brief.lower().split())
     assert "provenance/epr-bb-015-plan.json" in brief
-    assert "Full execution remains unapproved" in brief
-    assert "64.2 minutes" in brief
+    assert "full execution remains unapproved" in normalized
+    assert "20-second timeout" in brief

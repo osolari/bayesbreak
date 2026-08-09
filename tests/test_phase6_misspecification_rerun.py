@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import subprocess
+
 import numpy as np
 
 from scripts.phase6_misspecification_rerun import (
@@ -8,6 +10,7 @@ from scripts.phase6_misspecification_rerun import (
     generate_standard_cell,
     interval_summary,
     piecewise_mean,
+    run_ep_bounded,
     summarize,
 )
 
@@ -78,3 +81,41 @@ def test_interval_summary_handles_single_pilot_value() -> None:
         "min": 3.0,
         "max": 3.0,
     }
+
+
+def test_ep_timeout_is_retained_as_scientific_outcome(monkeypatch) -> None:
+    def timeout(*args, **kwargs):
+        raise subprocess.TimeoutExpired(cmd=args[0], timeout=kwargs["timeout"])
+
+    monkeypatch.setattr(subprocess, "run", timeout)
+    record = run_ep_bounded(seed=123, timeout_seconds=20)
+    assert record["status"] == "timed-out"
+    assert record["timeout_seconds"] == 20
+    assert record["wall_seconds"] >= 0.0
+
+
+def test_logistic_summary_reports_timeout_rate() -> None:
+    records = [
+        {
+            "status": "executed",
+            "cell": "logistic-approximation-failure",
+            "wall_seconds": 20.2,
+            "methods": {
+                "quadrature-40": {
+                    "status": "executed",
+                    "diagnostics": {"extra": {"block_error_max": 1.0, "pk_tv_empirical": 0.1}},
+                },
+                "laplace": {
+                    "status": "executed",
+                    "diagnostics": {"extra": {"block_error_max": 2.0, "pk_tv_empirical": 0.2}},
+                },
+                "ep": {"status": "timed-out", "timeout_seconds": 20},
+            },
+        }
+    ]
+    summary = summarize(records, ["logistic-approximation-failure"])["cells"][
+        "logistic-approximation-failure"
+    ]
+    assert summary["ep_execution_rate"] == 0.0
+    assert summary["ep_timeout_rate"] == 1.0
+    assert summary["ep_max_block_error"] is None

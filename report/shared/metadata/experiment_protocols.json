@@ -201,7 +201,7 @@
       "phase1_id": "EXP-BB-011",
       "title": "Misspecification, failure-boundary, and negative-control suite",
       "claims": "CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013",
-      "status": "eight-cell pilot executed as RES-BB-SYN-006 implementation verification; full suite projects 64 minutes and awaits renewed resource approval",
+      "status": "initial pilot executed; 20-second EP timeout predeclared and bounded re-pilot approved; full suite remains unapproved",
       "hypothesis": "BayesBreak fails in predictable, detectable ways under declared boundary cases.",
       "competing": "Diagnostics remain optimistic under heavy tails, zero inflation, dense changes, unequal information, or adversarial priors.",
       "design": "Heavy tails, zero inflation, no change, dense change, short segments, unequal subject information, grid refinement, approximation failure, and prior conflict.",

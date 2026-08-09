@@ -27,7 +27,9 @@ The machine-readable source of this plan is
 
 The pilot runs one seeded dataset per cell. The full design runs 50 datasets per cell with shared
 seeds for paired contrasts. The seed base is `261501`; the boundary-matching tolerance is three
-indices. Full execution requires a reviewed pilot and explicit approval.
+indices. Each EP fit runs in a subprocess with a predeclared 20-second timeout; timeout frequency is
+a scientific failure metric and timed-out runs remain in the result. Full execution requires a
+reviewed pilot and explicit approval.
 
 The pilot must report projected wall time, peak RSS, output size, and per-cell runtime. A projection
 over 30 minutes or 4 GiB peak RSS requires renewed resource approval.
@@ -61,5 +63,5 @@ The one-dataset-per-cell pilot executed from commit
 It projects 64.2 minutes for the 50-repetition suite, exceeding the predeclared 30-minute renewed
 approval threshold. EP consumed 75.73 seconds of the pilot and returned empirical posterior TV
 0.505; the prior-conflict cell failed explicitly because no feasible segment count had finite
-evidence. Full execution remains unapproved pending resource and semantic review, including whether
-to retain the current EP budget or predeclare a bounded timeout.
+evidence. A 20-second EP timeout is now predeclared and approved for a second pilot only. Full
+execution remains unapproved pending the bounded re-pilot's resource and semantic review.

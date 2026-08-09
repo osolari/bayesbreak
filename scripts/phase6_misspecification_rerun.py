@@ -10,6 +10,7 @@ import math
 import platform
 import resource
 import subprocess
+import sys
 import time
 import traceback
 import warnings
@@ -260,7 +261,63 @@ def run_shared_cell(seed: int) -> dict[str, Any]:
     }
 
 
-def run_logistic_cell(seed: int) -> dict[str, Any]:
+def run_ep_worker(seed: int) -> dict[str, Any]:
+    generated = generate_logistic_cell(seed)
+    values = generated["values"]
+    coordinates = np.arange(values.size, dtype=float).reshape(-1, 1)
+    reference = BayesBreakLogisticNormal(
+        k_max=4,
+        approx="quadrature",
+        gh_points=120,
+    ).fit(coordinates, values)
+    started = time.perf_counter()
+    estimator = BayesBreakLogisticNormal(k_max=4, approx="ep", max_iter=20).fit(coordinates, values)
+    diagnostics = run_non_conjugate_diagnostics(estimator, reference)
+    return {
+        "status": "executed",
+        "wall_seconds": time.perf_counter() - started,
+        "k_map": int(estimator.k_map_),
+        "boundaries": estimator.map_boundaries_,
+        "diagnostics": diagnostics.to_dict(),
+    }
+
+
+def run_ep_bounded(seed: int, timeout_seconds: int) -> dict[str, Any]:
+    started = time.perf_counter()
+    command = [
+        sys.executable,
+        str(Path(__file__).resolve()),
+        "--ep-worker",
+        "--seed",
+        str(seed),
+    ]
+    try:
+        completed = subprocess.run(
+            command,
+            check=True,
+            capture_output=True,
+            text=True,
+            timeout=timeout_seconds,
+        )
+    except subprocess.TimeoutExpired:
+        return {
+            "status": "timed-out",
+            "timeout_seconds": timeout_seconds,
+            "wall_seconds": time.perf_counter() - started,
+        }
+    except subprocess.CalledProcessError as exc:
+        return {
+            "status": "failed",
+            "wall_seconds": time.perf_counter() - started,
+            "returncode": exc.returncode,
+            "stderr": exc.stderr,
+        }
+    record = json.loads(completed.stdout)
+    record["timeout_seconds"] = timeout_seconds
+    return record
+
+
+def run_logistic_cell(seed: int, ep_timeout_seconds: int) -> dict[str, Any]:
     generated = generate_logistic_cell(seed)
     values = generated["values"]
     coordinates = np.arange(values.size, dtype=float).reshape(-1, 1)
@@ -273,7 +330,6 @@ def run_logistic_cell(seed: int) -> dict[str, Any]:
     methods = {
         "quadrature-40": BayesBreakLogisticNormal(k_max=4, approx="quadrature", gh_points=40),
         "laplace": BayesBreakLogisticNormal(k_max=4, approx="laplace"),
-        "ep": BayesBreakLogisticNormal(k_max=4, approx="ep", max_iter=20),
     }
     method_records: dict[str, Any] = {}
     for name, estimator in methods.items():
@@ -281,11 +337,13 @@ def run_logistic_cell(seed: int) -> dict[str, Any]:
         estimator.fit(coordinates, values)
         diagnostics = run_non_conjugate_diagnostics(estimator, reference)
         method_records[name] = {
+            "status": "executed",
             "wall_seconds": time.perf_counter() - method_started,
             "k_map": int(estimator.k_map_),
             "boundaries": estimator.map_boundaries_,
             "diagnostics": diagnostics.to_dict(),
         }
+    method_records["ep"] = run_ep_bounded(seed, ep_timeout_seconds)
     truth = generated["true_boundaries"][1:-1]
     reference_metrics = boundary_metrics(
         reference.map_boundaries_[1:-1],
@@ -310,7 +368,7 @@ def run_logistic_cell(seed: int) -> dict[str, Any]:
     }
 
 
-def run_cell(cell_id: str, seed: int) -> dict[str, Any]:
+def run_cell(cell_id: str, seed: int, ep_timeout_seconds: int) -> dict[str, Any]:
     started = time.perf_counter()
     with warnings.catch_warnings(record=True) as caught:
         warnings.simplefilter("always")
@@ -318,7 +376,7 @@ def run_cell(cell_id: str, seed: int) -> dict[str, Any]:
             if cell_id == "shared-boundary-heterogeneity":
                 record = run_shared_cell(seed)
             elif cell_id == "logistic-approximation-failure":
-                record = run_logistic_cell(seed)
+                record = run_logistic_cell(seed, ep_timeout_seconds)
             else:
                 record = run_standard_cell(cell_id, seed)
         except Exception as exc:
@@ -389,16 +447,27 @@ def summarize(records: list[dict[str, Any]], cell_ids: list[str]) -> dict[str, A
             )
         if executed and cell_id == "logistic-approximation-failure":
             for method in ("quadrature-40", "laplace", "ep"):
+                method_executed = [
+                    record["methods"][method]
+                    for record in executed
+                    if record["methods"][method]["status"] == "executed"
+                ]
+                cell_summary[f"{method}_execution_rate"] = len(method_executed) / len(executed)
+                cell_summary[f"{method}_timeout_rate"] = float(
+                    np.mean(
+                        [record["methods"][method]["status"] == "timed-out" for record in executed]
+                    )
+                )
                 cell_summary[f"{method}_max_block_error"] = interval_summary(
                     [
-                        float(record["methods"][method]["diagnostics"]["extra"]["block_error_max"])
-                        for record in executed
+                        float(record["diagnostics"]["extra"]["block_error_max"])
+                        for record in method_executed
                     ]
                 )
                 cell_summary[f"{method}_empirical_tv"] = interval_summary(
                     [
-                        float(record["methods"][method]["diagnostics"]["extra"]["pk_tv_empirical"])
-                        for record in executed
+                        float(record["diagnostics"]["extra"]["pk_tv_empirical"])
+                        for record in method_executed
                     ]
                 )
         cells[cell_id] = cell_summary
@@ -500,9 +569,19 @@ def write_json(path: Path, payload: dict[str, Any]) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--mode", choices=("pilot", "full"), required=True)
-    parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--mode", choices=("pilot", "full"))
+    parser.add_argument("--output", type=Path)
+    parser.add_argument("--ep-worker", action="store_true")
+    parser.add_argument("--seed", type=int)
     args = parser.parse_args()
+
+    if args.ep_worker:
+        if args.seed is None:
+            parser.error("--ep-worker requires --seed")
+        print(json.dumps(run_ep_worker(args.seed), allow_nan=False))
+        return 0
+    if args.mode is None or args.output is None:
+        parser.error("--mode and --output are required for suite execution")
 
     root = Path(__file__).resolve().parents[1]
     plan = load_plan(root)
@@ -518,7 +597,7 @@ def main() -> int:
     for cell_index, cell_id in enumerate(cell_ids):
         for repetition in range(repetitions):
             seed = int(plan["seed_base"]) + 10_000 * cell_index + repetition
-            records.append(run_cell(cell_id, seed))
+            records.append(run_cell(cell_id, seed, int(plan["ep_timeout_seconds"])))
     elapsed = time.perf_counter() - started
     projected_full_runs = len(cell_ids) * int(plan["full_repetitions_per_cell"])
     payload: dict[str, Any] = {
