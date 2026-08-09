@@ -1,0 +1,24 @@
+{
+  "phase": "5",
+  "title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+  "targets": {
+    "technical_book": {"pages": 165, "page_size": "595.276 x 841.89 pts (A4)"},
+    "main_paper_two_column": {"pages": 35, "page_size": "612 x 792 pts (letter)"},
+    "main_paper_single_column": {"pages": 42, "page_size": "612 x 792 pts (letter)"},
+    "executive_summary": {"pages": 12, "page_size": "612 x 792 pts (letter)"}
+  },
+  "formal_results": {
+    "book_established": 28,
+    "book_proof_obligations": 1,
+    "paper_established": 12,
+    "paper_proof_obligations": 1
+  },
+  "bibliography_entries": 38,
+  "coding_tasks": 16,
+  "experiment_protocols": 15,
+  "claims": 14,
+  "results": 16,
+  "presentation_handoff_files": 15,
+  "executive_roadmaps": 2,
+  "slide_sources": 0
+}

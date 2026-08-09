@@ -1,5 +1,13 @@
 # Real-data loaders
 
+`bayesbreak.datasets.load_with_provenance(dataset_id, config)` returns the
+normalized `DatasetBundle` together with a versioned `DatasetCard`. The card
+hashes the post-preprocessing coordinate/response arrays and any family
+descriptor, records source kind/date/URI, stride, coordinate semantics, family,
+and sequence count, and keeps external annotations separate from model-derived
+MAP markers. See the [data cards](data_cards/index.md) for the four application
+sources and their unresolved provenance limitations.
+
 `bayesbreak.datasets` ships four loaders, one per real-data case study
 in §6 of the manuscript. Every loader returns a `DatasetBundle` with a
 common schema and falls back to a deterministic simulated analog when
@@ -72,12 +80,16 @@ check before rendering provenance badges.
 
 ## Headline numbers from the real-data fits
 
-Reproduced from `docs/report/figures/realdata_metrics.json` — see
-[Results](results.md) for the full §6 panel.
+Archived in `report/shared/figures/results/realdata_metrics.json`; see
+[Results](results.md) for interpretation and exclusions.
 
 | Case study | Fit | Outcome |
 |---|---|---|
 | Well-log NMR (stride-8, $n=507$) | `BayesBreakGaussian(k_max=40)` | $\widehat k = 23$, $\log p(y) = -4989.28$ |
 | Coriell array-CGH (43 subjects, $n_{\mathrm{probes}}=2215$) | `SharedBoundaryReplicatesSegmenter(BayesBreakGaussian(k_max=15))` | $\widehat k = 15$, pooled $\log p(y) = 76\,359.8$ |
 | S&P 500 (stride-4, $n=566$) | `BayesBreakGaussian(k_max=50)` | $\widehat k = 29$, $\log p(y) = -1296.65$ |
-| Methylation (chr21 region, $n=1904$) | `BayesBreakBetaObs(k_max=15, phi=coverage)` | $\widehat k = 15$, held-out logpred $= -387.5$ |
+| Methylation (chr21 region, $n=1904$) | `BayesBreakBetaObs(k_max=15, phi=coverage)` | $\widehat k = 15$; historical predictive score excluded |
+
+The methylation segmentation remains a real result. The historical held-out score
+`RES-BB-RD-007Q` is excluded from posterior-predictive conclusions because it used a
+Gaussian predictive calculation for Beta observations and an implicit endpoint rule.

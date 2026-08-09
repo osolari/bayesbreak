@@ -1,0 +1,136 @@
+\chapter{Statistical foundations and relation to prior work}
+\label{ch:lineage}
+\chapterpromise{The established literature on exponential families, product partitions, exact Bayesian changepoint recursion, irregular designs, multiple sequences, latent groups, and numerical approximation.}
+
+\section{Exponential families and conjugate analysis}
+For a regular exponential family, likelihood contributions can be represented through sufficient
+statistics, a natural parameter, and a log-partition function. Conjugate priors for exponential
+families preserve the natural form of the posterior and express integrated likelihoods through
+normalizing-constant ratios \citep{diaconis1979conjugate,bernardo1994bayesian}. This is established
+Bayesian theory, not a new property of \BayesBreak. Its role here is to provide exact segment
+marginal likelihoods and posterior moments for every candidate interval when the required
+normalizers are finite. Exposure in Poisson sampling and trial counts in Binomial sampling enter the
+likelihood through family-specific sufficient summaries; they are not generic likelihood weights.
+
+\section{Product-partition models and exact Bayesian changepoint inference}
+Product-partition models assign a probability to a partition through products of segment cohesion
+terms and combine this prior with segmentwise integrated likelihoods
+\citep{barry1992ppm,barry1993bayesCP}. Exact Bayesian multiple-changepoint recursions exploit the
+same factorization to sum over possible previous changepoints and compute posterior distributions
+without enumerating every partition explicitly \citep{fearnhead2006exact}. Bayesian
+piecewise-constant regression further shows how partition averaging yields posterior regression
+curves, changepoint probabilities, and marginal likelihoods \citep{hutter2006bpcr}.
+
+Accordingly, this book does not claim to introduce product partitions, conjugate segment
+integration, or dynamic programming for Bayesian changepoint models. \BayesBreak uses these
+established results as the foundation for a broader model specification covering multiple
+observation families, design-dependent priors, multiple aligned sequences, and group structure.
+The sum-product recursion for posterior marginals and the max-sum recursion for a joint MAP
+partition are stated separately because they solve different algebraic problems even when they use
+the same segment scores.
+
+\section{Frequentist segmentation and alternative Bayesian computation}
+Frequentist methods optimize additive segment costs or multiscale criteria. Segment-neighborhood
+and optimal-partitioning algorithms provide exact minimizers for fixed segment counts or penalties
+\citep{auger1989segment,jackson2005optpart}; pruned dynamic programming and PELT reduce practical
+cost under additional conditions \citep{rigaill2010pruned,killick2012pelt}. Total-variation and
+fused-lasso estimators use convex regularization, including group penalties for multiple sequences
+\citep{rudin1992rof,tibshirani2005fused,bleakley2011groupfused}. SMUCE and wild binary segmentation
+provide multiscale or recursive detection procedures with different inferential targets
+\citep{frick2014smuce,fryzlewicz2014wbs}. Circular binary segmentation is widely used for array-CGH
+analysis \citep{olshen2004cbs}. These procedures are relevant comparators but do not, without
+additional construction, return the same posterior distribution over partitions.
+
+When segment parameters cannot be marginalized or the dependence structure is not amenable to a
+finite recursion, reversible-jump Markov chain Monte Carlo and other trans-dimensional sampling
+methods provide a general Bayesian alternative \citep{green1995rjMCMC,denison1998bayesian}. Bayesian
+online changepoint detection instead filters a run-length distribution as data arrive and solves a
+different online problem \citep{adamsmackay2007bocpd}. \BayesBreak is an offline finite-partition
+method.
+
+\section{Irregular designs and design-dependent partition priors}
+Product-partition models have been generalized so that cohesion depends on covariates or other
+predictors \citep{park2010gppm,muller2011ppmx}. In changepoint problems, irregular observation
+coordinates affect the prior plausibility of segment lengths and boundary locations. This book
+therefore distinguishes a segment-cohesion factor $c_u(i,j)$ from an interior-boundary hazard
+$h_u(j)$. The distinction prevents two different prior constructions---a prior on segment length and
+a local hazard of a changepoint---from being described as the same object. It also keeps design
+spacing separate from exposure or trial information in the observation likelihood.
+
+\section{Hierarchical and multiple-sequence changepoint models}
+Hierarchical Bayesian changepoint models have a long history
+\citep{carlin1992hierBayesCP}. Methods for simultaneous changepoints in multiple data sequences use
+hierarchical priors to borrow information about the propensity for changes across sequences
+\citep{fan2017basic}. Joint random partition models provide more flexible dependence among
+partitions across several ordered processes \citep{quinlan2024jrpm}. Other work permits dependence
+between successive segments or richer within-segment regression structures
+\citep{fearnhead2011dependence,ruggieri2014bcpvs}.
+
+The exact multiple-sequence calculation developed here is deliberately narrower: aligned sequences
+share the same candidate partition, are conditionally independent given that partition, and may
+have sequence-specific segment parameters. Their segment marginal likelihoods then multiply. This
+is an exact hierarchical model under those assumptions, not a claim to encompass every form of
+partial synchrony or dependence among sequence-specific changepoints. Known groups repeat the
+calculation within each group.
+
+\section{Latent groups and optimization}
+Model-based clustering of longitudinal or ordered data with common structural changes is relevant
+prior work for clustering sequences through changepoint patterns
+\citep{corradin2026commonstructural}. Finite-mixture identifiability results concern normalized
+component distributions \citep{teicher1963identifiability}, and the EM algorithm concerns
+likelihoods or objectives for which the auxiliary-function construction is valid
+\citep{dempster1977em}.
+
+The latent-group calculation in this book is stated more narrowly. It defines a finite objective
+\[
+\mathcal F(\pi,\tau)=\sum_s\log\!\left\{\sum_g\pi_gS_s(\tau_g)\right\},
+\]
+where $S_s(\tau_g)$ is a positive sequence-template score. A Jensen minorizer yields auxiliary
+allocation weights; exact maximization of the minorizer over template partitions uses a
+responsibility-weighted max-sum recursion. The proof establishes monotone ascent of this stated
+criterion. It does not establish that $S_s(\tau_g)$ is a normalized component density, identify a
+finite mixture, or average over uncertainty in the templates.
+
+\section{Nonconjugate segment models}
+Laplace approximation, variational bounds, P\'olya--Gamma augmentation, expectation propagation,
+and numerical quadrature are established tools for nonconjugate Bayesian calculations
+\citep{tierney1986laplace,jaakkola2000logisticvb,polson2013pg,minka2001ep}. \BayesBreak uses them, when
+appropriate, to approximate individual segment marginal likelihoods. The general theorem in
+Chapter~\ref{ch:nonconj} is conditional: if every admissible segment log marginal likelihood is
+within $\varepsilon$ of a reference value, then partition marginal likelihoods and posterior odds
+obey explicit bounds. The theorem does not supply a method-specific value of $\varepsilon$.
+
+\section{Position of the present work}
+The contribution is a generalized hierarchical Bayesian segmentation formulation built from
+established components whose assumptions are kept explicit. It combines:
+\begin{enumerate}
+\item exact segment integration for a class of conjugate exponential-family observation models;
+\item sum-product posterior computation and separate max-sum MAP optimization over ordered
+partitions;
+\item priors for irregular designs that distinguish segment cohesion from boundary hazard;
+\item exact common-changepoint pooling for aligned conditionally independent sequences and known
+groups;
+\item a finite latent-group template criterion with a proved monotone alternating algorithm;
+\item conditional propagation of numerical segment-score error; and
+\item family-specific posterior prediction and clearly defined changepoint metrics.
+\end{enumerate}
+The novelty claim is attached to this combined generalized method and its derivations, not to the
+prior existence of dynamic programming, exponential-family conjugacy, product partitions, or EM.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/theory/theorem_dependency_map.tex}}
+\caption{Logical dependence of the principal results. Exact partition calculations require finite
+segment marginal likelihoods and factorized prior contributions. The nonconjugate result additionally
+requires a uniform segmentwise error bound.}
+\label{fig:theorem-dependency}
+\end{figure}
+
+\section{Recommended reading sequence}
+A reader new to the subject should begin with exponential-family conjugacy, product-partition
+models, and exact Bayesian multiple-changepoint recursion; then proceed to Bayesian
+piecewise-constant regression, design-dependent product partitions, and hierarchical
+multiple-sequence methods. The literature annotations in Appendix~\ref{app:annotated-lit} state the
+specific role of every reference retained in the book. Numerical implementation additionally
+requires stable log-sum-exp evaluation and the approximation methods used for nonconjugate segment
+models \citep{blanchard2021lse}.

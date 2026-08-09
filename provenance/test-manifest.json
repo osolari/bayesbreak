@@ -1,0 +1,113 @@
+{
+  "schema_version": "1.0.0",
+  "captured_at": "2026-08-05",
+  "branch": "phase6-adoption-gate-b",
+  "base_commit": "cd345f0",
+  "environment_lock": "provenance/environment-lock.json",
+  "environment_lock_sha256": "c6ec18e35f980334b10680dcf646b90ed01dfd41144e328fb537757d4d48abd6",
+  "profiles": {
+    "full_package": {
+      "command": "python -m pytest -q",
+      "collected": 298,
+      "passed": 293,
+      "skipped": 5,
+      "failed": 0,
+      "unresolved": 0,
+      "coverage_percent": 74,
+      "status": "passed-with-skips-and-declared-warnings",
+      "skips": [
+        {
+          "count": 5,
+          "reason": "optional ruptures dependency is not installed",
+          "impact": "PELT, optimal partitioning, binary segmentation, and WBS upstream-wrapper tests are not evaluated in this environment"
+        }
+      ],
+      "warnings": [
+        {
+          "source": "tests/test_pipeline.py::test_grid_search_over_k_max",
+          "reason": "default extrapolation='error' rejects validation-fold coordinates outside each training fold support",
+          "impact": "default sklearn GridSearchCV scores are NaN unless the workflow selects and records an extrapolation policy/model"
+        }
+      ]
+    },
+    "bounded_ep_historical_node": {
+      "node_id": "tests/test_families.py::test_ep_logistic_normal",
+      "timeout_seconds": 20,
+      "status": "unresolved-node-not-collected",
+      "reason": "the Phase 6 node ID no longer exists in the current test suite",
+      "owner": "CODE-BB-012 release-lineage review",
+      "impact": "the historical RES-BB-QA-003 timeout remains provenance and is not reclassified as a pass"
+    },
+    "bounded_ep_convergence_flags": {
+      "node_id": "tests/test_families.py::TestRealEP::test_ep_fit_exposes_convergence_flags",
+      "timeout_seconds": 20,
+      "elapsed_seconds": 6.2626340839779004,
+      "status": "passed"
+    },
+    "bounded_ep_reference_agreement": {
+      "node_id": "tests/test_families.py::TestRealEP::test_ep_log_evidence_close_to_quadrature",
+      "timeout_seconds": 20,
+      "elapsed_seconds": 5.177903417032212,
+      "status": "passed"
+    },
+    "gate_d_adoption": {
+      "command": "python -m pytest -q",
+      "captured_at": "2026-08-06",
+      "branch": "phase6-adoption-gate-b",
+      "commit": "28a04c209614911bb06dd0551d73190df97aa871",
+      "collected": 324,
+      "passed": 324,
+      "skipped": 0,
+      "failed": 0,
+      "unresolved": 0,
+      "coverage_percent": 76,
+      "status": "passed-with-declared-warnings",
+      "environment_lock_role": "preserved Gate C snapshot; corrected result sidecars carry execution-specific environment hashes",
+      "environment_addendum": [
+        "ruptures==1.1.10",
+        "rdata==1.1.0"
+      ],
+      "warnings": [
+        {
+          "count": 10,
+          "source": "tests/test_pipeline.py::test_grid_search_over_k_max",
+          "reason": "default extrapolation='error' rejects validation-fold coordinates outside each training fold support",
+          "impact": "default sklearn GridSearchCV scores are NaN unless the workflow selects and records an extrapolation policy/model"
+        }
+      ],
+      "static_checks": {
+        "pre_commit_all_files": "passed",
+        "ruff_lint": "passed",
+        "ruff_format": "passed under repository-pinned ruff 0.4.10 hook",
+        "mypy": "53 source files passed",
+        "mkdocs_strict": "passed under separate Python 3.12 profile with output under /tmp",
+        "sdist_wheel_twine": "passed; version 2.0.0rc3; output under /tmp"
+      },
+      "result_integrity": {
+        "corrected_results": [
+          "RES-BB-SYN-005",
+          "RES-BB-CMP-003",
+          "RES-BB-RD-008Q"
+        ],
+        "sidecar_and_artifact_hashes": "passed",
+        "canonical_result_count": 20,
+        "archived_asset_count": 53,
+        "archived_asset_hashes_and_semantics": "passed",
+        "excluded_parents_unchanged": [
+          "RES-BB-CMP-002",
+          "RES-BB-RD-007Q"
+        ]
+      }
+    }
+  },
+  "historical_phase6_state": {
+    "result_id": "RES-BB-QA-003",
+    "collected": 179,
+    "passed": 173,
+    "skipped": 5,
+    "unresolved": 1,
+    "failed": 0,
+    "per_test_time_cap_seconds": 20
+  },
+  "interpretation": "Current bounded successor tests pass under the locked profile. The removed historical node and its timeout remain an unresolved lineage item rather than being silently rewritten."
+}

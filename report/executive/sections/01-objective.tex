@@ -1,0 +1,32 @@
+\section{Research objective and statistical scope}
+\label{sec:exec-objective}
+
+The research problem is to infer an unknown ordered partition of observations into contiguous regimes while retaining posterior uncertainty about the number and locations of changepoints. The method must support observation models beyond the Gaussian case, accommodate nonuniform design coordinates, and represent dependence among several related sequences through common, group-specific, or latent-group segmentation structures.
+
+\begin{keyclaim}[Scientific contribution]
+BayesBreak is a generalized hierarchical Bayesian segmentation method. Its generality comes from combining observation-model-specific segment marginal likelihoods with a common posterior calculation over contiguous partitions. Its hierarchical structure covers irregular designs, multiple sequences, known groups, and finite latent-group allocations under the assumptions stated in the technical paper.
+\end{keyclaim}
+
+The method belongs to the literature on product-partition models, Bayesian multiple-changepoint analysis, conjugate exponential-family inference, dynamic programming, hierarchical Bayesian modeling, and finite latent-allocation optimization \citep{barry1992ppm,barry1993bayesCP,diaconis1979conjugate,fearnhead2006exact,hutter2006bpcr}. BayesBreak does not claim that conjugate integration or changepoint dynamic programming is new in isolation. The contribution is the generalized statistical formulation and the set of hierarchical extensions developed and evaluated within one method.
+
+\subsection{What the generality claim means}
+
+For a candidate segment $B_{ij}=\{i,\ldots,j\}$, let
+\[
+  M_{ij}=\int p(y_{i:j}\mid\theta_{ij},d_{i:j})\,p(\theta_{ij})\,d\theta_{ij}
+\]
+be its marginal likelihood, where $d_{i:j}$ denotes family-specific descriptors such as exposures or trial counts. The dynamic program needs the finite array $\{M_{ij}\}$ and the local prior factors for admissible segments and boundaries. It does not require the same sampling distribution for every application.
+
+Exact analytic segment integration is available for the supported regular exponential-family models with proper conjugate priors and finite normalizing constants. When $M_{ij}$ is supplied by quadrature, Laplace approximation, variational approximation, expectation propagation, or another deterministic calculation, the subsequent partition recursion is exact for the supplied score array, but the resulting posterior is an approximation to the intended model unless a segmentwise error bound is established.
+
+\subsection{Primary outputs}
+
+The method returns distinct inferential quantities:
+\begin{itemize}
+  \item the marginal likelihood conditional on the segment count and the posterior distribution of that count;
+  \item posterior changepoint probabilities and ordered-location marginals;
+  \item posterior moments of the piecewise-constant signal, including partition-averaged curves; and
+  \item the joint MAP partition from a separate max-sum recursion with backtracking.
+\end{itemize}
+
+Marginal changepoint modes are not substituted for the joint MAP partition. This distinction is both statistical and computational: marginalization and joint maximization solve different problems.

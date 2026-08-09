@@ -1,0 +1,354 @@
+{
+  "phase": "5",
+  "title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+  "status": "pass",
+  "checks": {
+    "required_paths_present": true,
+    "saim_template_applied_to_all_paper_form_artifacts": true,
+    "exact_title_in_shared_metadata": true,
+    "old_replacement_title_absent_from_active_source": true,
+    "rejected_branding_absent_from_active_source": true,
+    "technical_book_target_passes": true,
+    "two_column_paper_target_passes": true,
+    "single_column_paper_target_passes": true,
+    "executive_summary_target_passes": true,
+    "book_has_17_chapter_source_files": true,
+    "book_has_five_required_appendices": true,
+    "book_formal_results_have_immediate_proofs": true,
+    "book_has_one_proof_obligation": true,
+    "paper_formal_results_have_immediate_proofs": true,
+    "paper_has_one_proof_obligation": true,
+    "bibliography_annotations_complete": true,
+    "canonical_handoff_sync_check_passes": true,
+    "presentation_handoff_check_passes": true,
+    "repository_skeleton_check_passes": true,
+    "repository_is_explicitly_incomplete": true,
+    "visual_qa_complete": true,
+    "archived_result_assets_are_unchanged": true,
+    "roadmap_location_policy_passes": true,
+    "no_slide_sources_generated": true,
+    "executive_has_eight_section_sources": true,
+    "excluded_result_ids_preserved": true,
+    "implementation_test_state_preserved": true
+  },
+  "missing_required_paths": [],
+  "targets": {
+    "technical_book": {
+      "exists": true,
+      "path": "build/bayesbreak-technical-book.pdf",
+      "sha256": "e218f99a61ee3d5bcadc40d9ecc0cbb3931be4e9fd8fcdf64f42f9c599a65b71",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 165,
+      "expected_pages": 165,
+      "page_count_matches": true,
+      "page_size": "595.276 x 841.89 pts (A4)",
+      "expected_page_size": "595.276 x 841.89 pts (A4)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 389,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 65,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 206,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    },
+    "main_paper_two_column": {
+      "exists": true,
+      "path": "build/paper/bayesbreak-main-paper.pdf",
+      "sha256": "b79ccc6aee46741662362b34d9a36c15d598bd24748bf1dc524d35f92ab3626d",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 35,
+      "expected_pages": 35,
+      "page_count_matches": true,
+      "page_size": "612 x 792 pts (letter)",
+      "expected_page_size": "612 x 792 pts (letter)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 496,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 61,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 18,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    },
+    "main_paper_single_column": {
+      "exists": true,
+      "path": "build/paper-single/bayesbreak-main-paper-single.pdf",
+      "sha256": "240c96a81fdbd96b9fc53cfebef18f07b7d626e1706fbe97a89c75d7de653f2e",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 42,
+      "expected_pages": 42,
+      "page_count_matches": true,
+      "page_size": "612 x 792 pts (letter)",
+      "expected_page_size": "612 x 792 pts (letter)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 380,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 61,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 3,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    },
+    "executive_summary": {
+      "exists": true,
+      "path": "build/executive/bayesbreak-executive-summary.pdf",
+      "sha256": "c89c1d2ea924d111f18446cbde80f8396ca92f06c72a949578efafd9268a9a38",
+      "metadata_title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+      "title_exact_in_metadata": true,
+      "title_present_in_extracted_text": true,
+      "old_title_present": false,
+      "banned_language_hits": {
+        "auditable_or_auditability": 0,
+        "generic_contract": 0,
+        "evidence_architecture": 0,
+        "evidence_gate": 0,
+        "local_to_global_branding": 0,
+        "positive_score_branding": 0,
+        "quarantine_branding": 0,
+        "protected_method_identity": 0
+      },
+      "pages": 12,
+      "expected_pages": 12,
+      "page_count_matches": true,
+      "page_size": "612 x 792 pts (letter)",
+      "expected_page_size": "612 x 792 pts (letter)",
+      "page_size_matches": true,
+      "minimum_page_text_characters": 873,
+      "short_text_pages_lt_30": [],
+      "literal_double_question_marks": 0,
+      "fonts_embedded": true,
+      "font_count": 29,
+      "font_embedding_failures": [],
+      "latex": {
+        "undefined_reference_warnings": 0,
+        "undefined_citation_warnings": 0,
+        "multiply_defined_label_warnings": 0,
+        "missing_graphic_warnings": 0,
+        "missing_character_warnings": 0,
+        "overfull_hboxes": 0,
+        "largest_overfull_hbox_pt": 0.0,
+        "overfull_vboxes": 0,
+        "underfull_hboxes": 24,
+        "underfull_vboxes": 0,
+        "fatal_errors": 0
+      }
+    }
+  },
+  "source_language": {
+    "files_checked": 144,
+    "old_title_hits": [],
+    "banned_language_hits": {
+      "auditable_or_auditability": [],
+      "generic_contract": [],
+      "evidence_architecture": [],
+      "evidence_gate": [],
+      "local_to_global_branding": [],
+      "positive_score_branding": [],
+      "quarantine_branding": [],
+      "protected_method_identity": []
+    }
+  },
+  "formal_results": {
+    "book": {
+      "established_statements": 28,
+      "proofs": 28,
+      "proof_obligations": 1,
+      "immediate_proof_gaps": []
+    },
+    "paper": {
+      "established_statements": 12,
+      "proofs": 12,
+      "proof_obligations": 1,
+      "immediate_proof_gaps": []
+    }
+  },
+  "bibliography": {
+    "bibliography_key_count": 38,
+    "unique_bibliography_key_count": 38,
+    "annotation_file_count": 38,
+    "manifest_entry_count": 38,
+    "one_to_one_complete": true,
+    "duplicate_bibliography_keys": [],
+    "duplicate_manifest_keys": [],
+    "missing_annotation_files": [],
+    "annotation_hash_mismatches": [],
+    "annotations_without_project_relationship": [],
+    "annotations_without_verification_status": []
+  },
+  "readonly_result_assets": {
+    "file_count": 53,
+    "missing": [],
+    "hash_mismatches": [],
+    "all_unchanged": true
+  },
+  "roadmaps": {
+    "references": {
+      "revision_artifacts/AUTHOR_DECISIONS.md": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "executive/sections/05-implementation.tex": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex"
+      ],
+      "executive/sections/06-decisions.tex": [
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "presentation_handoffs/shared/ASSET_AND_DIAGRAM_INDEX.md": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "presentation_handoffs/executive/EXECUTIVE_DECK_BRIEF.md": [
+        "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+        "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+      ],
+      "book/appendices/reproducibility_traceability.tex": [
+        "shared/figures/tikz/roadmaps/implementation_validation_stages.tex"
+      ],
+      "book/chapters/16-reproducibility-conclusion.tex": [
+        "shared/figures/tikz/roadmaps/implementation_validation_stages.tex"
+      ]
+    },
+    "main_paper_has_no_roadmap_references": true,
+    "technical_handoff_has_no_roadmap_references": true,
+    "executive_uses_exact_approved_roadmaps": true,
+    "executive_roadmaps": [
+      "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+      "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+    ]
+  },
+  "slide_source_paths": [],
+  "implementation_status": {
+    "scientific_implementation_complete": false,
+    "task_count": 16
+  },
+  "visual_qa": {
+    "phase": "5",
+    "rendering": {
+      "technical_book": {
+        "pages": 165,
+        "dpi": 120,
+        "contact_sheets": 14
+      },
+      "main_paper_two_column": {
+        "pages": 35,
+        "dpi": 140,
+        "contact_sheets": 3
+      },
+      "main_paper_single_column": {
+        "pages": 42,
+        "dpi": 130,
+        "contact_sheets": 4
+      },
+      "executive_summary": {
+        "pages": 12,
+        "dpi": 170,
+        "contact_sheets": 1
+      }
+    },
+    "total_pages_inspected": 254,
+    "total_contact_sheets_inspected": 22,
+    "targeted_full_page_inspection": [
+      "executive page 4: shared-boundary and finite latent-group diagrams",
+      "executive page 10: release-decision diagram",
+      "technical-book page 61: finite latent-group update diagram",
+      "technical-book pages 119-143: expanded coding-agent handoff appendix"
+    ],
+    "defects_repaired_before_final_pass": [
+      "the initial executive decision diagram clipped at the page boundary; it was redesigned as a vertical decision sequence",
+      "the initial finite latent-group iteration arrow crossed diagram nodes; it was rerouted above the update sequence",
+      "two unbreakable implementation-status strings caused overfull cells in the coding handoff; the status vocabulary was rewritten in established statistical language"
+    ],
+    "final_findings": {
+      "clipped_text": false,
+      "overlap": false,
+      "blank_or_nearly_blank_pages": false,
+      "broken_glyphs": false,
+      "unresolved_figure_frames": false,
+      "unreadable_tables": false,
+      "reported_defects": []
+    }
+  },
+  "real_result_policy": {
+    "populated_archived_values_changed": false,
+    "research_experiments_rerun": false,
+    "scientific_package_code_changed": false,
+    "RES-BB-CMP-002": "executed historical result; excluded from comparator conclusions because the coordinate axes are incompatible",
+    "RES-BB-RD-007Q": "executed historical result; excluded from posterior-predictive conclusions because the observation-family routine and coordinate rule were invalid"
+  }
+}

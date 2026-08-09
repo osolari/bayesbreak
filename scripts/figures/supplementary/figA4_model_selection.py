@@ -46,8 +46,8 @@ Interpretation
 
 Outputs
 -------
-- docs/report/figures/fig9_model_selection.png
-- docs/report/figures/fig9_model_selection.pdf
+- results/figures/fig9_model_selection.png
+- results/figures/fig9_model_selection.pdf
 
 Usage
 -----
@@ -208,7 +208,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=120)
     ap.add_argument("--n-rep", type=int, default=20)

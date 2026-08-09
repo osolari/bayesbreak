@@ -1,0 +1,71 @@
+% BayesBreak executive summary paper - SAIM Professional Template v1.0.
+\documentclass[10pt,onecolumn]{paper/saim-paper}
+\input{shared/metadata.tex}
+\graphicspath{{shared/figures/results/}{shared/figures/tikz/}{shared/saim/brand/logos/}}
+
+\usepackage{amsmath,amsfonts,amssymb,mathtools,bm,bbm}
+\usepackage{float,makecell,longtable,tablefootnote,pifont,adjustbox,multicol}
+\input{shared/saim/components/table-columns.tex}
+\input{shared/components/math.tex}
+\usetikzlibrary{bayesnet,matrix,chains,shapes.multipart}
+\input{shared/components/tikz.tex}
+
+% Executive route: a compact, decision-oriented contents panel.
+\setcounter{tocdepth}{1}
+\makeatletter
+\renewcommand{\SAIMPaperTableOfContents}{%
+  \vspace{3pt}%
+  \begin{tcolorbox}[
+    blanker,
+    left=10pt,
+    right=2pt,
+    top=1pt,
+    bottom=1pt,
+    before skip=0pt,
+    after skip=7pt,
+    borderline west={2.2pt}{0pt}{Primary}
+  ]
+    {\SAIMNavigationFont\fontsize{8}{9.6}\selectfont\color{Primary}\textls[165]{CONTENTS}\par}
+    \vspace{2pt}
+    {\footnotesize
+      \setlength{\columnsep}{18pt}%
+      \setlength{\parskip}{0pt}%
+      \begin{multicols}{2}
+        \@starttoc{toc}%
+      \end{multicols}}
+  \end{tcolorbox}%
+}
+\makeatother
+
+\newcommand{\ExecutiveVersion}{Executive summary -- final verified release}
+\paperlabel{SAIM EXECUTIVE SUMMARY / BAYESIAN SEGMENTATION}
+\title{\ProjectTitle}
+\shorttitle{BayesBreak Executive Summary}
+\paperversion{\ExecutiveVersion}
+\author[1]{\ProjectLeadAuthor}
+\affiliation[1]{\ProjectAffiliation}
+\metadata[Correspondence]{\email{\ProjectCorrespondence}}
+\metadata[Updated]{August 5, 2026}
+\metadata[Version]{\ExecutiveVersion}
+\keywords{\ProjectKeywords}
+\hypersetup{
+  pdftitle={\ProjectTitle},
+  pdfauthor={\ProjectAuthors},
+  pdfsubject={Executive summary of generalized hierarchical Bayesian segmentation},
+  pdfkeywords={\ProjectKeywords}
+}
+\input{executive/sections/00-summary.tex}
+
+\begin{document}
+\maketitle
+\input{executive/sections/01-objective.tex}
+\input{executive/sections/02-method.tex}
+\input{executive/sections/03-evidence.tex}
+\input{executive/sections/04-limitations.tex}
+\input{executive/sections/05-implementation.tex}
+\input{executive/sections/06-decisions.tex}
+\input{executive/sections/07-conclusion.tex}
+
+\bibliographystyle{shared/bibliography/iclr2026_conference}
+\bibliography{shared/bibliography/references}
+\end{document}

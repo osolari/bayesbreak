@@ -21,7 +21,7 @@ combine them, e.g. `pip install bayesbreak[plots,datasets,baselines]`.
 | Extra | Pulls in | Use case |
 |---|---|---|
 | `plots` | `matplotlib`, `seaborn` | The figure-rendering scripts under `scripts/figures/` and the notebook tutorials. |
-| `datasets` | `pooch`, `pandas` | Cached real-data loaders for the well-log, array-CGH, and methylation case studies. |
+| `datasets` | `pooch`, `pandas`, `rdata`, `requests` | Cached real-data loaders for the well-log, array-CGH, and methylation case studies. |
 | `datasets-live` | `yfinance` | Live S&P 500 download path used by `load_spx()`. |
 | `baselines` | `ruptures` | External-baseline wrappers for PELT, optimal partitioning, BS, WBS. |
 | `baselines-r` | `rpy2` (plus a working R install) | R-side baselines: CBS via `DNAcopy`, SMUCE via `stepR`, RJMCMC-style MCMC via `mcp`. |

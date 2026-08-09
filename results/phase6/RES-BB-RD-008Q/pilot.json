@@ -1,0 +1,538 @@
+{
+  "schema_version": "1.0.0",
+  "record_role": "resource-pilot",
+  "result_id": "RES-BB-RD-008Q",
+  "parent_result_id": "RES-BB-RD-007Q",
+  "protocol_id": "EPR-BB-012",
+  "execution_status": "executed",
+  "scientific_interpretation": "implementation-verification",
+  "source": {
+    "uri": "https://github.com/al2na/methylKit/raw/master/inst/extdata/test1.myCpG.txt",
+    "cache_path": "$HOME/.cache/bayesbreak/methylkit_test1.myCpG.txt",
+    "sha256": "f823f0eebd6ec44994c28882c1b7d16ea21eaf32ee49c93a1a149c5096b5b54e",
+    "n_CpGs": 1904,
+    "position_hash": "8f18f0d8cc45d43288e3f7f9e3f980b297729242a7f59c49cfd53d0640fea132",
+    "response_hash": "39337da5e43c5d014045e683da7f590a3d72d1b94623955eb8832118e60650e4",
+    "phi_hash": "0237720765d5ff3b7e2364f32def43f454cc41ca3acaff3e6aa2177c310c775c",
+    "preprocessing": "freqC/100 clipped to [0.001, 0.999] by the loader"
+  },
+  "dataset_card": {
+    "schema_version": "1.0.0",
+    "dataset_id": "methylation",
+    "source_kind": "downloaded",
+    "source_uri": "https://github.com/al2na/methylKit/raw/master/inst/extdata/test1.myCpG.txt",
+    "source_date": "source-date-not-recorded",
+    "n_observations": 1904,
+    "n_sequences": 1,
+    "stride": 1,
+    "observation_family": "beta-observation",
+    "coordinate_axis": "CpG-genomic-coordinate",
+    "descriptor_role": "beta-observation-precision",
+    "descriptor_hash": "0237720765d5ff3b7e2364f32def43f454cc41ca3acaff3e6aa2177c310c775c",
+    "data_hash": "822cd6e347fa777308e9bb6b9e398a6499f1aa16cc2e7340ad0d0884119c40fb",
+    "preprocessing": "loader-normalized; stride=1",
+    "external_annotations": [],
+    "fitted_map_marker_role": "model-derived-map"
+  },
+  "coordinate_metadata": {
+    "prediction_axis": "CpG-genomic-coordinate",
+    "reference_axis": "original-CpG-index",
+    "reference_type": "model-derived-full-data-map",
+    "fitted_support": [
+      9764513.0,
+      19943695.0
+    ],
+    "all_holdouts_in_support": true,
+    "external_annotations": "none-independently-verified"
+  },
+  "config": {
+    "mode": "pilot",
+    "observation_family": "beta-observation",
+    "k_max": 15,
+    "quadrature_points": 32,
+    "training_likelihood_power_weights": "unit weights",
+    "training_phi": "per-CpG coverage",
+    "prediction_phi_new": "held-out per-CpG coverage",
+    "extrapolation_policy": "error",
+    "split_design": "ten stratified seeded contiguous interior CpG blocks",
+    "n_splits": 10,
+    "block_size": 152,
+    "seed_base": 261201,
+    "boundary_stability_tolerance_CpGs": 3,
+    "split_manifest": [
+      {
+        "split_index": 0,
+        "seed": 261201,
+        "stratum": [
+          1,
+          191
+        ],
+        "start": 28,
+        "stop": 180,
+        "test_indices_hash": "7ff16b47a5659d79de0260fcc1f9fdf5e4da4835d2424951798e35d6b0d17ba0"
+      },
+      {
+        "split_index": 1,
+        "seed": 261202,
+        "stratum": [
+          191,
+          381
+        ],
+        "start": 202,
+        "stop": 354,
+        "test_indices_hash": "3ccea0d4e93e604b79108d72e05abf2ac1b19e18fbd5a6632990f10c6296fb23"
+      },
+      {
+        "split_index": 2,
+        "seed": 261203,
+        "stratum": [
+          381,
+          571
+        ],
+        "start": 382,
+        "stop": 534,
+        "test_indices_hash": "fc896a55f0b00e669d0325f63ed70622c8867fea001846303179ce94501c5b94"
+      },
+      {
+        "split_index": 3,
+        "seed": 261204,
+        "stratum": [
+          571,
+          761
+        ],
+        "start": 586,
+        "stop": 738,
+        "test_indices_hash": "585051cdc3bf2af57351e0bd0162f737caf79e49945412b57bee5b38f9796d39"
+      },
+      {
+        "split_index": 4,
+        "seed": 261205,
+        "stratum": [
+          761,
+          952
+        ],
+        "start": 790,
+        "stop": 942,
+        "test_indices_hash": "0d27cb9a55e00e5f2cbeb33cf4c4932128240b6cd9a7fb2a716a55248e08cd10"
+      },
+      {
+        "split_index": 5,
+        "seed": 261206,
+        "stratum": [
+          952,
+          1142
+        ],
+        "start": 966,
+        "stop": 1118,
+        "test_indices_hash": "1a976e49a2b12a3e721cb4efa996d9eb60a51b1a07cd8bd9770ccadd6afaceb2"
+      },
+      {
+        "split_index": 6,
+        "seed": 261207,
+        "stratum": [
+          1142,
+          1332
+        ],
+        "start": 1171,
+        "stop": 1323,
+        "test_indices_hash": "64dba17ee1750d3fda0a37ef32d3001393f7ce6fa328b06eefcec43eb3c55e9a"
+      },
+      {
+        "split_index": 7,
+        "seed": 261208,
+        "stratum": [
+          1332,
+          1522
+        ],
+        "start": 1341,
+        "stop": 1493,
+        "test_indices_hash": "02df976a5a3742c508939ec6637a238e23ebdd5cc24143c83bfe20e0ed8a5d3e"
+      },
+      {
+        "split_index": 8,
+        "seed": 261209,
+        "stratum": [
+          1522,
+          1712
+        ],
+        "start": 1545,
+        "stop": 1697,
+        "test_indices_hash": "f2d101176a122396f0a7826037940125e7526c2609a951798a6ae06dddf78e9a"
+      },
+      {
+        "split_index": 9,
+        "seed": 261210,
+        "stratum": [
+          1712,
+          1903
+        ],
+        "start": 1743,
+        "stop": 1895,
+        "test_indices_hash": "a0a634e52d232549ac448ad159593ed235e54e1c31fa3c28a8873b52fc67989b"
+      }
+    ]
+  },
+  "config_sha256": "1689a480a50f01710bf8729e75f910ce7ca536f8516f589b5ed8b8c276c8b0f0",
+  "split_sha256": "76c7f52af33b45e9d9385fe368bfe0d621e93bdde89ae4a9cfe494918e8a1941",
+  "code": {
+    "commit": "252273bd0f8de6f95ff1630d976c2700851cbb9f",
+    "commit_sha256": "e32abcfdeabc7935c497f376d346b7fbd7afbd25711d278a3c36569b1ba8380e",
+    "relevant_paths_clean": true
+  },
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.3-arm64-arm-64bit",
+    "bayesbreak_module_version": "2.0.0rc3",
+    "packages": {
+      "bayesbreak": "2.0.0rc3",
+      "numpy": "2.4.2",
+      "scipy": "1.17.0"
+    },
+    "sha256": "b95226ebfc54f25622adeca577cc274a77d4c595aebf47782c99fadbc72217f7"
+  },
+  "full_data_reference": {
+    "k_map": 15,
+    "boundaries_original_index": [
+      55,
+      130,
+      131,
+      683,
+      930,
+      1159,
+      1187,
+      1333,
+      1410,
+      1468,
+      1480,
+      1629,
+      1658,
+      1851
+    ],
+    "log_evidence": -9518.667508691198,
+    "fit_wall_seconds": 3.0827905000187457
+  },
+  "records": [
+    {
+      "split_index": 0,
+      "seed": 261201,
+      "stratum": [
+        1,
+        191
+      ],
+      "test_start_index": 28,
+      "test_stop_index_exclusive": 180,
+      "test_coordinate_support": [
+        9906700.0,
+        10128662.0
+      ],
+      "training_coordinate_support": [
+        9764513.0,
+        19943695.0
+      ],
+      "n_train": 1752,
+      "n_test": 152,
+      "test_indices_hash": "7ff16b47a5659d79de0260fcc1f9fdf5e4da4835d2424951798e35d6b0d17ba0",
+      "phi_train_hash": "36add762bbb0a33c6195d524d40de65b798598d6ea0e2cce52f87cbbe9ea8006",
+      "phi_new_hash": "a6252ff50cf1212413d02d6142dcb0466fa189b2aebe21d30ab4b97b70e3a62d",
+      "phi_new_min": 10.0,
+      "phi_new_max": 818.0,
+      "extrapolation_policy": "error",
+      "prediction_metadata": {
+        "extrapolation": "error",
+        "coordinate_support": [
+          9764513.0,
+          19943695.0
+        ]
+      },
+      "per_sample_log_predictive": [
+        -2.206497614281922,
+        -9.445801163086564,
+        0.8612579653187886,
+        0.8227913048634794,
+        -6.717043683923961,
+        0.4129167139519321,
+        -20.246743221974807,
+        -48.48174586164657,
+        1.4864299463275534,
+        0.7625297498774097,
+        1.2195860773408018,
+        1.2195860773408018,
+        1.4864299463275534,
+        -6.11051112120455,
+        1.1607686159302286,
+        1.072638134030477,
+        1.527375331028784,
+        -7.9475178183111055,
+        -64.33404209526879,
+        -28.37363461045109,
+        -13.75913039960298,
+        -4.8683000652095725,
+        0.48740088093399336,
+        -16.222114680326275,
+        -97.89200990075948,
+        -10.39003524573187,
+        -43.558017881613466,
+        -91.67633066259431,
+        -20.988201297384308,
+        -152.63058374477933,
+        1.4315247803281395,
+        1.194572648539193,
+        -25.971787236049295,
+        -10.549339657548714,
+        -3.2805527327400057,
+        -14.685362068343483,
+        -15.457572146049102,
+        -44.2353874345317,
+        2.4389522502764365,
+        1.9619030378715294,
+        -33.714239096331454,
+        2.2417336690602525,
+        -72.8357610688671,
+        2.6312062207679503,
+        -7.157810693384022,
+        -24.506583975784416,
+        -7.157810693384022,
+        1.4012003838540465,
+        -9.66798241117391,
+        -25.994416466470867,
+        1.2440278791899173,
+        -6.449609322357025,
+        -6.449609322357025,
+        -6.449609322357025,
+        0.8612579653187886,
+        -0.22380302582138611,
+        1.6573036751274373,
+        1.926990026500345,
+        1.5175365659475517,
+        -3.579953486450215,
+        2.118597028138481,
+        -29.240816437744197,
+        -57.54538613679254,
+        -7.715736929774451,
+        -1.6221662122517806,
+        0.4801519296640677,
+        -4.88998396159349,
+        2.0744659707205884,
+        2.3066502431578186,
+        -15.823056765935704,
+        -19.383501105029296,
+        1.3612649707023081,
+        2.4427483131007364,
+        -35.627841709433355,
+        -72.0952938616477,
+        -16.580366596754814,
+        1.1979834065762125,
+        -2.9332669933055797,
+        1.1979834065762125,
+        -142.48424843438204,
+        -19.80945567060995,
+        0.7853757715146941,
+        -3.2841312114712586,
+        1.5199069363656905,
+        -11.758059417744605,
+        0.5778995944698213,
+        -15.32725950378109,
+        -14.43333438970138,
+        -14.43333438970138,
+        -19.446700686257856,
+        -27.89155939636288,
+        -100.6183276179861,
+        -41.475643747622385,
+        -14.296895155206492,
+        -36.144561973797195,
+        -18.12908207020729,
+        0.022493537837426913,
+        0.9591042885187466,
+        -54.83713374873551,
+        1.4764145936014827,
+        0.9591042885187466,
+        -1.4426881545336625,
+        -519.9567915994946,
+        -16.46195367548004,
+        -19.140808194693754,
+        -0.048969361524029864,
+        -11.959763453966374,
+        -3.4624580760164876,
+        1.334922949295927,
+        -4.1981018962514245,
+        -2.7940797427102853,
+        0.3634881933379219,
+        -17.117824714391755,
+        -4.0603602988149525,
+        -34.26152792624216,
+        -28.131953761245814,
+        -0.6359584924082786,
+        -10.055327468665178,
+        -3.035963906419144,
+        -5.51770688085677,
+        -5.3983730832262875,
+        -4.359394201490539,
+        -5.5730025529276155,
+        1.1316516798500866,
+        -10.055327468665178,
+        -0.08965638911094564,
+        -3.6811240179354967,
+        -2.206497614281922,
+        -53.41024693437095,
+        -0.9446410800970537,
+        -12.914406386180172,
+        -4.805317839007699,
+        1.5431624326635642,
+        -105.76103083321584,
+        -103.90070680440544,
+        -82.09064526831257,
+        -3.830451098740011,
+        1.2207979734927168,
+        -2.125282376496557,
+        -6.503697945450213,
+        -1.536308212524804,
+        -6.449609322357025,
+        -7.80053045329538,
+        -6.41637413846226,
+        -21.49832000942004,
+        -37.41007574158715,
+        1.602598122184503,
+        -142.75355036805763,
+        -6.388458165235598,
+        -3.207256544268507,
+        1.7993433217354209,
+        1.3795100450093543
+      ],
+      "total_log_predictive": -3022.551578961734,
+      "mean_log_predictive": -19.885207756327198,
+      "k_map": 15,
+      "boundaries_original_index": [
+        676,
+        683,
+        930,
+        1159,
+        1187,
+        1333,
+        1410,
+        1468,
+        1480,
+        1629,
+        1658,
+        1767,
+        1790,
+        1852
+      ],
+      "boundary_stability_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "original-CpG-index",
+        "reference_axis": "original-CpG-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-full-data-map",
+        "matched_pairs": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            4
+          ],
+          [
+            3,
+            5
+          ],
+          [
+            4,
+            6
+          ],
+          [
+            5,
+            7
+          ],
+          [
+            6,
+            8
+          ],
+          [
+            7,
+            9
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            9,
+            11
+          ],
+          [
+            10,
+            12
+          ],
+          [
+            13,
+            13
+          ]
+        ],
+        "precision": 0.7857142857142857,
+        "recall": 0.7857142857142857,
+        "f1": 0.7857142857142857,
+        "mae_or_na": 0.09090909090909091,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "fit_wall_seconds": 2.743471334048081,
+      "score_wall_seconds": 0.001147041970398277
+    }
+  ],
+  "summary": {
+    "n_splits": 1,
+    "total_log_predictive": -3022.551578961734,
+    "total_denominator": 152,
+    "pooled_mean_log_predictive": -19.885207756327198,
+    "split_mean_log_predictive": {
+      "mean": -19.885207756327198,
+      "standard_error": 0.0,
+      "ci95_lower": -19.885207756327198,
+      "ci95_upper": -19.885207756327198,
+      "min": -19.885207756327198,
+      "max": -19.885207756327198
+    },
+    "k_map": {
+      "mean": 15.0,
+      "standard_error": 0.0,
+      "ci95_lower": 15.0,
+      "ci95_upper": 15.0,
+      "min": 15.0,
+      "max": 15.0
+    },
+    "boundary_stability_f1_tau3": {
+      "mean": 0.7857142857142857,
+      "standard_error": 0.0,
+      "ci95_lower": 0.7857142857142857,
+      "ci95_upper": 0.7857142857142857,
+      "min": 0.7857142857142857,
+      "max": 0.7857142857142857
+    },
+    "calibration_status": "not-computed: BayesBreakBetaObs has no certified PIT CDF helper; no calibration statistic is defined for this execution"
+  },
+  "warnings": [
+    {
+      "category": "RuntimeWarning",
+      "message": "overflow encountered in exp",
+      "source": "beta_obs.py",
+      "line": 243
+    }
+  ],
+  "resources": {
+    "elapsed_wall_seconds": 5.867790874966886,
+    "peak_rss": {
+      "value": 368246784,
+      "units": "bytes"
+    },
+    "output_bytes": 14977,
+    "projected_full_wall_seconds": 32.27284981231787,
+    "projected_full_fits": 11
+  },
+  "limitations": [
+    "Repeated blocks are regions of one chromosome, not independent biological samples.",
+    "Boundary stability is agreement with the model-derived full-data MAP, not truth.",
+    "No certified Beta-observation PIT helper is available, so calibration is not reported.",
+    "This execution does not add a second region, cell type, or external atlas annotation."
+  ]
+}

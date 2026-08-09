@@ -8,12 +8,14 @@ base class. Every concrete family inherits from it.
 ### Methods
 
 - `fit(X, y, *, sample_weight=None)` — strict sklearn contract.
-- `predict(X, *, mode="map")` — piecewise-constant curve at query points.
+- `predict(X, *, mode="map", extrapolation="error")` — piecewise-constant
+  curve at query points with explicit coordinate-support handling.
   `mode="bayes"` returns the posterior-mean curve (requires
   `regression_curve != "none"` at fit time).
 - `score(X, y, sample_weight=None)` — mean posterior-predictive log-density
   (§8 of the report; use this as the sklearn CV target).
-- `transform(X)` — segment indices `(0, …, k_map - 1)` at query points
+- `transform(X, *, extrapolation="error")` — segment indices
+  `(0, …, k_map - 1)` at query points
   (BayesBreak acts as a featurizer in a Pipeline).
 - `get_map_segmentation()` — `(k_map, map_boundaries, map_segment_means)` tuple
   for consumers that want the classical change-point output.
@@ -66,8 +68,8 @@ base class. Every concrete family inherits from it.
 - Non-conjugate approximations:
   `ass:uniform-block-error` (uniform per-block log-evidence error `ε`),
   `prop:stability` (posterior-odds stability),
-  `prop:uniform-bounds` (per-routine `ε` rates — Q: `O(Q^{-2r})`,
-  Lap/JJ/PG: `O(n^{-1})` on reachable blocks, EP: not uniformly bounded),
+  `obl:routine-certification-paper` (routine-specific error control remains
+  a proof obligation),
   and `cor:probability-error-conversion` (TV bound on `P(k|y)` —
   reported as `pk_tv_upper_bound` in `run_non_conjugate_diagnostics`).
 - Shared-boundary replicates:
@@ -117,6 +119,22 @@ base class. Every concrete family inherits from it.
 - `BayesBreakMixtureClassifier(base_estimator, n_groups, max_iter, ...)` —
   latent-group EM.
 
+The latent-group estimator optimizes the finite-template objective stated in
+the report; it is not a normalized finite-mixture likelihood. Successful fits
+expose `objective_trace_`, `final_objective_`, `selected_restart_`, and one
+`RestartDiagnostic` per attempted restart. Nonfinite, stale, or nonmonotone
+traces are excluded from restart selection; objective ties select the earliest
+seeded restart before canonical template-label ordering. `objective_` remains a
+compatibility alias for `objective_trace_`.
+
+For exact shared-boundary pooling, `bayesbreak.groups.shared_fit(...)` fits a
+`SharedBoundaryReplicatesSegmenter`. Subject block log evidences are combined by
+`bayesbreak.replicates.aggregate_block_log_evidence(...)` without exponentiating
+unbounded values; `-inf` remains structural zero support and `NaN`/`+inf` are
+rejected. The fitted model exposes subject-specific MAP-segment means and a
+bounded `block_posterior_mean_` average diagnostic. It does not construct a
+single pooled first moment for distinct subject parameters.
+
 ## Factory
 
 ```python
@@ -138,12 +156,52 @@ block routines:
 - `max_sum_segmentation(log_block_evidence, k, *, log_length_prior=None)`
 - `bayes_regression_curve_fixed_k(...)`, `bayes_regression_curve_mixed_k(...)`
 
+## Partition priors
+
+`bayesbreak.priors.PartitionPriorConfig` declares segment cohesion separately
+from the interior-boundary hazard:
+
+- `log_cohesion(start, stop, x, config)` scores the complete segment. Supported
+  modes are uniform, physical-span power, and explicit per-segment factors;
+  minimum segment length/span and maximum span can assign zero support.
+- `bayesbreak.design_prior.log_boundary_hazard(boundary, x, config)` scores an
+  interior endpoint only. Supported modes are uniform, explicit factors, and
+  fixed-count Poisson interval occupancy.
+- `partition_log_prior(boundaries, x, config)` combines one cohesion per segment
+  with one hazard per nonterminal boundary.
+
+For the Poisson occupancy mode, candidate interval `j` uses local odds
+`exp(Lambda_j) - 1`, where `Lambda_j` is its integrated intensity. It does not
+use occupancy probability `1 - exp(-Lambda_j)`, and it does not reinterpret a
+physical-span cohesion as a Poisson-process prior.
+
+Every observation-family estimator accepts `partition_prior=config`. The same
+local prior table is used by the partition normalizer, sum-product posterior
+recursions, max-sum joint-MAP recursion, and Bayes curves. The legacy
+`length_prior` argument remains supported as an additional segment cohesion.
+
 ## Posterior predictive
 
 `bayesbreak.prediction`:
 
 - `posterior_predictive_logpdf(estimator, X_new, y_new, per_sample=False)`
 - `held_out_log_likelihood_trace(estimator, X_new, y_new, prefix_fractions=None)`
+
+All public prediction wrappers use `assign_to_partition(...)` and default to
+`extrapolation="error"`. Named alternatives are `"clip"` for legacy clipping
+on both sides, `"left_endpoint"` for left-only endpoint extension, and
+`"right_endpoint"` for right-only extension. Exact fitted endpoints are
+in-support, and unsorted query order is preserved. Each call records
+`prediction_metadata_` and `prediction_provenance_` with the selected policy
+and fitted coordinate support.
+
+`BayesBreakBetaObs` overrides the generic fallback with its fitted observation
+family. For each MAP block it integrates
+`Beta(y_new | phi_new * mu, phi_new * (1 - mu))` over the fitted quadrature
+posterior for `mu`. In this family, prediction `sample_weight` values are the
+known positive `phi_new` descriptors; training likelihood-power weights remain
+separate in the fitted estimator. Values outside the open interval `(0, 1)`
+receive log density `-inf`.
 
 ## Diagnostics
 
@@ -162,6 +220,12 @@ block routines:
   Each check carries a `failure_mode` tag aligned with the §4
   approximation-validation checklist and §5b limitations on the
   non-conjugate approximation regime.
+- `bayesbreak.nonconjugate.evaluate_reachable_segment_error(...)` — records a
+  hash of shared reachable block coordinates, reference discrepancy,
+  optimization residual, tail bound, quadrature error, and explicit
+  verified/unverifiable/failed status. `propagate_partition_bounds(...)`
+  returns conditional global bounds using the maximum reachable error and
+  caps total variation at one.
 - `run_prior_sensitivity(estimator, *, pk_perturbations=None,
   g_variants=("uniform", "length-proportional"))` — partition-prior
   sensitivity diagnostic from §5b limitations. Reruns the DP on the
@@ -175,6 +239,52 @@ block routines:
   per the §5b "Identifiability failures (named)" guidance, using the
   per-sequence marginal `log p(y^{(s)})` of `def:metric-loglik` as the
   scoring rule (`BayesBreakMixtureClassifier.sequence_log_likelihood`).
+
+## Result provenance
+
+`bayesbreak.provenance` provides versioned result sidecars without rewriting
+historical assets:
+
+- `ResultRecord` separates execution status, scientific interpretation, and
+  original/corrected lineage. Executed records require data, configuration,
+  code, and environment SHA-256 hashes.
+- `validate_result_record(record, release_mode=True)` rejects invalid result
+  identifiers, missing corrected-result parent links, missing corrected output
+  hashes, and non-repository-relative artifact paths.
+- `write_sidecar(path, record)` writes deterministic schema-versioned JSON.
+- `read_sidecar(path, migration_manifest=...)` reads current records or applies
+  a hash-verified, in-memory path migration to an immutable legacy sidecar.
+
+The JSON Schema 2020-12 contracts are under `schemas/`. Corrected reruns must
+use a new result ID and identify their historical parent; reading a legacy
+record does not authorize changing its archived bytes or interpretation.
+
+## Boundary metrics
+
+`bayesbreak.metrics.match_boundaries_one_to_one(predicted, reference,
+tolerance)` first maximizes the number of eligible matches and then minimizes
+their total absolute distance under deterministic input ordering. No predicted
+or reference boundary is reused. `boundary_metrics(...)` returns precision,
+recall, F1, matched MAE (`None` when no pair matches), axis names, reference
+type, matching rule, and metric version; `to_dict()` follows the versioned
+boundary-metric schema.
+
+Comparisons with BayesBreak MAP boundaries must use a reference type such as
+`bayesbreak-map-agreement`; they are not external-truth accuracy. The cached
+baseline table generator now uses this canonical metric owner.
+
+## Comparator validation
+
+`bayesbreak.comparators.ComparatorInputSchema` validates comparator values,
+coordinate axes, task type, source provenance, and an explicit `TuningBudget`
+before algorithm dispatch or metric computation. Multisequence requests require
+an unflattened sequence-by-coordinate raw observation matrix and an axis whose
+length matches the matrix observation dimension. `scripts/run_comparators.py`
+constructs this validated raw route from `.npy` inputs.
+
+Fitted curves and cached map traces cannot stand in for raw multisequence data.
+The historical CGH cached route is rejected as `FAIL-BB-002` and retained only
+as a diagnostic record; no comparator is dispatched from that artifact.
 
 ## Baselines
 

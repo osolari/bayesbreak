@@ -1,0 +1,738 @@
+{
+  "schema_version": "1.0.0",
+  "generated_from": [
+    "report/revision_artifacts/phase5/PHASE4R_READONLY_HASHES.json",
+    "report/shared/metadata/result_interpretation.json"
+  ],
+  "asset_count": 53,
+  "assets": [
+    {
+      "path": "report/shared/figures/results/baselines_metrics.json",
+      "sha256": "83180bf266c68d11461a541a9cf808ba4ca742e60ee8fa41fb6c52e5ff3fa977",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-CMP-001",
+        "RES-BB-CMP-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-CMP-001": "real diagnostic",
+        "RES-BB-CMP-002": "excluded from comparator conclusions"
+      },
+      "caption_anchor": "paper-app:comparison-tables",
+      "marker_role": "agreement-diagnostic",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/baselines_metrics.txt",
+      "sha256": "28deedb3d9757109d2364540e37f59b4f959ce87bc12bb7ab4191e84c6024a94",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-CMP-001",
+        "RES-BB-CMP-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-CMP-001": "real diagnostic",
+        "RES-BB-CMP-002": "excluded from comparator conclusions"
+      },
+      "caption_anchor": "paper-app:comparison-tables",
+      "marker_role": "agreement-diagnostic",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/example_basic_usage.png",
+      "sha256": "21e9534981f4a8008745a4de470051ea0efcc17f184dfc03fc8d7be2212a4463",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig10_missing_data.pdf",
+      "sha256": "64c6454576570e0b808d049cc12547bf52c3585920a47dc5266fde694f9e60c4",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig10_missing_data.png",
+      "sha256": "942109dd56bf98f4676d36f1b073d775170be08b7334f736ede9ac488bd0f7e1",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig1_synthetic_gaussian.pdf",
+      "sha256": "d1b98b8f35591ea5908f2c972babf5efb9df5fc0ff17bd4365220726965acba8",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-001"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-001": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:single_synth",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig1_synthetic_gaussian.png",
+      "sha256": "ff2fa58c856445f959c603bc14fd03436af42862bc448e5e5b879478f9416c4e",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-001"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-001": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:single_synth",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig2_family_showcase.pdf",
+      "sha256": "e184cca9b16b763f7003bc7f94b782017092591dfc47756780ad4e7b74b7b1e2",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:family_showcase",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig2_family_showcase.png",
+      "sha256": "c4ac3704ffe5d648cd899b665484f34067b893f42847f93cd4cfc43814930aa1",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:family_showcase",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig3_boundary_calibration.pdf",
+      "sha256": "cb8503f4a9d15e138ade7cc044cded10e0b221e64641ed72be80f4bf37b03e0c",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-001"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-001": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:calibration",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig3_boundary_calibration.png",
+      "sha256": "2d2621c957e092415022b48954ab176ebaebae2290c1ff834ca389a7e0fc1ec0",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-001"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-001": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:calibration",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig4_latent_groups.pdf",
+      "sha256": "9752f99e6f812b5070cbc78d151a9354052242c42c27dd22c3a2cc187c4e009c",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:latent_groups",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig4_latent_groups.png",
+      "sha256": "fa31e417a525d9e023b613b44dae0bcaa39e4363c6794cfe1cf7ddba775b846f",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:latent_groups",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig4_latent_groups_cropped.pdf",
+      "sha256": "fcb76d0f7ca633554a8a1835c1c7a63c95fb1c4b0a24518e7d7e4e4b62edca72",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:latent_groups",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig4_latent_groups_cropped.png",
+      "sha256": "75e5ca6e2782feed304d8c00d1c3377ba3ff4c197aecb1a5ac1d2e7d5fb44a4e",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:latent_groups",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig5_runtime_scaling.csv",
+      "sha256": "2eb95f5f0d56eecfaf2e1e553e40f8851282fdf274e46b785835bb92dba5900a",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-003"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-003": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:runtime",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig5_runtime_scaling.pdf",
+      "sha256": "6d53f1c9e724932f9537c307c72ab127881c79db864a86025fc7b9d218371b2d",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-003"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-003": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:runtime",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig5_runtime_scaling.png",
+      "sha256": "2c0ee8b75149546b034d50007490a81c148351db66d6abba5ae31dbca2576a9f",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-003"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-003": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:runtime",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig6_mixture_discovery.pdf",
+      "sha256": "6ec8849796c4ae8797de33aada2f8fd009cae65eec9bdebb9284c798c7613867",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig6_mixture_discovery.png",
+      "sha256": "4250a2a17017eff4af90237ff7d915cec1eeb0a3859b4a9b93fac3e388815669",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig6_welllog.json",
+      "sha256": "5f122e5f2a9320e324a2e7cb07beb4ec91df98d2abfdb0bfa15470258d152119",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-001",
+        "RES-BB-RD-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-001": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:welllog",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig6_welllog.pdf",
+      "sha256": "ff94a77d2e7bf1c9f4324c726ce7abc9666aff11d474b98d8cbf717f0eb567a8",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-001",
+        "RES-BB-RD-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-001": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:welllog",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig6_welllog.png",
+      "sha256": "6026a91cf3ce1fbeb7b5ea1ae08fd92f262a87bd5a3de4fe50417bd0594d44e1",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-001",
+        "RES-BB-RD-002"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-001": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-002": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:welllog",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig7_cgh.json",
+      "sha256": "65d1ebd25933c91e31c4e7ca0c6fece865e052dac2d54702f0740e58c170e886",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-003",
+        "RES-BB-RD-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-003": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:cgh",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig7_cgh.pdf",
+      "sha256": "aadd757d2f3dd9f8db197c57622bbff0aa95b1eddce3d903d029c8dab251808b",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-003",
+        "RES-BB-RD-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-003": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:cgh",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig7_cgh.png",
+      "sha256": "31d18b4d37746b68d2b4a7c1095a66ca3b4ed514ca709beddc6b4e7707391717",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-003",
+        "RES-BB-RD-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-003": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:cgh",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig7_snr_sensitivity.csv",
+      "sha256": "21e3afc7e0cdf47c3aa832ae0ac4b4ee8580b8656e0118ea20293dbba57369cb",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig7_snr_sensitivity.pdf",
+      "sha256": "9bb22153649b0bc6a30c1e7d4ff5f4fb57bde92083454bdf31dbcc17bf3e8249",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig7_snr_sensitivity.png",
+      "sha256": "4b4804bc2cba9ac02fa7ed3d8bf649f745394a0f9602d60934527354ca8bd909",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig8_multivariate_shared.pdf",
+      "sha256": "c5c9817e3371a3a82e35b7f65718ab774ac1fb5d11562db99400a85a3af86bf4",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig8_multivariate_shared.png",
+      "sha256": "bedb9e83ebf40287536259ab2df2e025ebb46c0e25a2222f39caf2a80d86ef55",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig8_spx.json",
+      "sha256": "55f670da3aed5107f2a4ce4430d5f4a187c7b88b3ff5c1e32ab8c2be394e13d5",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-005",
+        "RES-BB-RD-006"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-005": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-006": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:spx",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig8_spx.pdf",
+      "sha256": "9c0575e27f93043910ec824eb0ecd04503d753e9514c82862e07c8165cad85b5",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-005",
+        "RES-BB-RD-006"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-005": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-006": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:spx",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig8_spx.png",
+      "sha256": "e102b91b67ca289dd6b4b854bdf0b051dd007366206c72c5b7e1f51c85dd6895",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-005",
+        "RES-BB-RD-006"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-005": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-006": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:spx",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig9_methylation.json",
+      "sha256": "2c25a43dfa3b00a8eb7f712bd66581f6cb13f60a3a028358f71791328477410e",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-007"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-007": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:methylation",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig9_methylation.pdf",
+      "sha256": "92c1fbe31722a07ae53712d4e5f960e857a5baf9aa076ea0a818f89bf59e8f8f",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-007"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-007": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:methylation",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig9_methylation.png",
+      "sha256": "e0b2782a2f1b9b594f36b3a1236f959ae19a1d80a38e7e75382d9dd02f0d06e0",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-007"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-007": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "fig:methylation",
+      "marker_role": "fitted-map",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig9_model_selection.pdf",
+      "sha256": "ce0aef0d08f42e770d6b7f67170ddd6d017e3855a2574d0bb73ea9a85493e8c4",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/fig9_model_selection.png",
+      "sha256": "aac27732a9b16e49953100f2680cd8a8a139b2b7d8b8bee317e5a251b1217958",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "not-in-active-report",
+      "marker_role": "not-declared",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/realdata_metrics.json",
+      "sha256": "62b48e87c873b6996ddbf258b6e8551896d62955b76ab0a3c3b6f545011ffa21",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-001",
+        "RES-BB-RD-003",
+        "RES-BB-RD-005",
+        "RES-BB-RD-007",
+        "RES-BB-RD-007Q"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-001": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-003": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-005": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-007": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-007Q": "excluded from posterior-predictive conclusions"
+      },
+      "caption_anchor": "tab:real-summary-paper",
+      "marker_role": "mixed-diagnostic",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/figures/results/realdata_metrics.txt",
+      "sha256": "3c300ac851a1800eefbd13cbb3539cb4d22946f047816c54d607b139c6f74af4",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-RD-001",
+        "RES-BB-RD-003",
+        "RES-BB-RD-005",
+        "RES-BB-RD-007",
+        "RES-BB-RD-007Q"
+      ],
+      "interpretation_status": {
+        "RES-BB-RD-001": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-003": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-005": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-007": "valid for the stated interpretation, with limitations",
+        "RES-BB-RD-007Q": "excluded from posterior-predictive conclusions"
+      },
+      "caption_anchor": "tab:real-summary-paper",
+      "marker_role": "mixed-diagnostic",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table0_metrics_overview.tex",
+      "sha256": "d6486a128ccb7baa311bdca969e940823e80d52cbbb8f05eae470049fbf515bb",
+      "status": "archived-read-only",
+      "result_ids": [],
+      "interpretation_status": {},
+      "caption_anchor": "paper:metric-definitions",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table1_runtime_scaling.csv",
+      "sha256": "aa25e411d0dcf7c2ce07cd2473b65687adb169d54cf0793f16ba2694bfe3b7c8",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-003"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-003": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:runtime_scaling",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table1_runtime_scaling.md",
+      "sha256": "a7f3302ae7ecfc5e53d500bc8d1c52d92fb4a58adc0db0d5676a925b504e55b7",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-003"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-003": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:runtime_scaling",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table1_runtime_scaling.tex",
+      "sha256": "82ae2520d12177b6b1daeba09513aa4f8c5bbc4f551b2e39d0c63a897a866128",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-003"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-003": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:runtime_scaling",
+      "marker_role": "not-applicable",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table2_posterior_summary.md",
+      "sha256": "68083a5e5da9aae2538510aed1c0130a698d9a901eac9b100945ea14237c3443",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-001"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-001": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:posterior_summary",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table2_posterior_summary.tex",
+      "sha256": "0ae1fc25b27c9cb36c6bc62c8e17812c79e103127d685094be6955ca5739c098",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-001"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-001": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:posterior_summary",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table3_conjugate_summary.csv",
+      "sha256": "b28b913632a398b75c2138c978bbef51523499cb5e44742bf4cfe8f52e69ccef",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:single_quant",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table3_conjugate_summary.md",
+      "sha256": "d5ffd5c80e987c18176b3f1ce2e31f6f4cd0aa60fcd10458eae6ae5a43bb0a8d",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:single_quant",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table3_conjugate_summary.tex",
+      "sha256": "0473f9b12a3ea29c343c2e2d92920e3b0d4f51c9c8db65ad944b304b2110317b",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:single_quant",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table4_nonconj_tradeoff.csv",
+      "sha256": "473d1bc0a9b141bc25cc042b93795e811bf0c827c9898dc190ef81d3e2315b44",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:nonconj_tradeoff",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table4_nonconj_tradeoff.md",
+      "sha256": "1e3db2a20fcb4bd9582f003fc04b8073b4c0978ade7f3874cc0e8ba06b6d45cc",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:nonconj_tradeoff",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    },
+    {
+      "path": "report/shared/tables/results/table4_nonconj_tradeoff.tex",
+      "sha256": "66d564e4db837571eb92ac8787a49e6ca996de9a2639c74d6dce051648ee87c9",
+      "status": "archived-read-only",
+      "result_ids": [
+        "RES-BB-SYN-004"
+      ],
+      "interpretation_status": {
+        "RES-BB-SYN-004": "valid for the stated interpretation, with limitations"
+      },
+      "caption_anchor": "tab:nonconj_tradeoff",
+      "marker_role": "simulated-truth",
+      "external_annotation_source": null
+    }
+  ]
+}

@@ -33,8 +33,8 @@ This table is a quick "sanity check" for the posterior over :math:`k`:
 
 Outputs
 -------
-- docs/report/tables/table2_posterior_summary.md
-- docs/report/tables/table2_posterior_summary.tex
+- results/tables/table2_posterior_summary.md
+- results/tables/table2_posterior_summary.tex
 
 Usage
 -----
@@ -98,7 +98,7 @@ def main(outdir: Path, n: int, k_max: int, seed: int) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/tables"))
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--k-max", type=int, default=15)
     ap.add_argument("--seed", type=int, default=0)

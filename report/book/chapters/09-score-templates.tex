@@ -1,0 +1,127 @@
+\chapter{Grouped and latent-group models}
+\label{ch:templates}
+\chapterpromise{Known-group shared-changepoint analysis and a finite latent-group criterion with Jensen minorization and exact template updates over a finite partition set.}
+
+\section{Known groups}
+Suppose each sequence $s$ has an observed group label $g(s)\in\{1,\ldots,G\}$. Within a group,
+sequences may share a common partition while retaining sequence-specific segment parameters. Under
+conditional independence, the group-specific marginal likelihood for a candidate segment is the
+product of the sequence-specific segment marginal likelihoods. The sum-product and max-sum
+recursions of Chapters~\ref{ch:sumproduct} and~\ref{ch:map} then apply separately to each group.
+This is a direct hierarchical extension of the shared-changepoint model in Chapter~\ref{ch:shared}.
+
+\section{Finite latent-group criterion}
+When group labels are unknown, let $\tau_g=(k_g,t^{(g)})$ denote a deterministic candidate
+changepoint template for group $g$. The archived implementation uses the sequence--template score
+\begin{equation}
+ S_s(\tau)=\frac{p(k)}{C_k}\prod_{q=1}^{k}
+ A^{(0,s)}_{t_{q-1},t_q}\,\gamma_u(t_{q-1},t_q),
+\label{eq:template-sequence-score}
+\end{equation}
+with the convention that an impossible segment gives score zero. This subject-template score is not assumed
+to integrate to one over the sample space of sequence $s$. For weights $\pi_g\ge0$ with
+$\sum_g\pi_g=1$, define
+\begin{equation}
+ \mathcal F(\pi,\tau)=\sum_{s=1}^{S}\log\left\{\sum_{g=1}^{G}\pi_g S_s(\tau_g)\right\}.
+\label{eq:template-lik}
+\end{equation}
+Equation~\eqref{eq:template-lik} is the optimization criterion studied in this chapter. The results
+below concern this finite criterion and do not require interpreting $S_s(\tau_g)$ as a normalized
+mixture component.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/models/latent_group_templates.tex}}
+\caption{Alternating optimization of the finite latent-group criterion. Auxiliary allocation
+weights make a Jensen lower bound tight; group-template updates maximize the resulting weighted
+partition score over the finite candidate set.}
+\label{fig:latent-group}
+\end{figure}
+
+\section{Jensen minorization and alternating updates}
+\label{sec:latent-em}
+For any nonnegative weights $r_{sg}$ satisfying $\sum_g r_{sg}=1$, the log-sum inequality gives
+\begin{equation}
+\mathcal F(\pi,\tau)\ge
+\mathcal Q(r,\pi,\tau):=
+\sum_{s,g}r_{sg}\left[\log\pi_g+\log S_s(\tau_g)-\log r_{sg}\right].
+\label{eq:template-bound}
+\end{equation}
+Equality holds at
+\begin{equation}
+ r_{sg}=\frac{\pi_gS_s(\tau_g)}{\sum_h\pi_hS_s(\tau_h)}.
+\label{eq:template-resp}
+\end{equation}
+For fixed $r$, maximization over the group weights gives
+$\pi_g=S^{-1}\sum_s r_{sg}$. Let $n_g=\sum_s r_{sg}$. Substituting
+Equation~\eqref{eq:template-sequence-score} into $\mathcal Q$ shows that, for a candidate segment
+count $k$, the group-$g$ template contribution is
+\begin{equation}
+ n_g\{\log p(k)-\log C_k\}
+ +\sum_{q=1}^{k}\ell^{(g)}_{t_{q-1},t_q},
+\qquad
+ \ell^{(g)}_{ij}=\sum_{s=1}^{S}r_{sg}\log A^{(0,s)}_{ij}
+                  +n_g\log\gamma_u(i,j).
+\label{eq:template-blockscore}
+\end{equation}
+Thus the update is an exact max-sum recursion at fixed $k$, followed by comparison across $k$ using
+the displayed count offset. The convention $0\log0=0$ applies when $r_{sg}=0$, while a positive
+responsibility on a zero sequence--template score makes that candidate value $-\infty$.
+
+\begin{theorem}[Monotonicity of exact latent-group updates]
+\label{thm:em-monotone}
+Consider an iteration that (i) sets $r$ according to Equation~\eqref{eq:template-resp}, (ii)
+maximizes $\mathcal Q$ over $\pi$, and (iii) exactly maximizes each responsibility-weighted template
+criterion using the local score and segment-count offset in Equation~\eqref{eq:template-blockscore}
+over its declared finite candidate set. Then the iteration cannot decrease $\mathcal F$.
+\end{theorem}
+\begin{proof}
+At the current parameter values, Equation~\eqref{eq:template-resp} makes the Jensen bound tight:
+$\mathcal F_{\rm old}=\mathcal Q(r,\pi_{\rm old},\tau_{\rm old})$. Exact maximization of the
+minorizer gives
+\[
+\mathcal Q(r,\pi_{\rm new},\tau_{\rm new})\ge
+\mathcal Q(r,\pi_{\rm old},\tau_{\rm old}).
+\]
+The log-sum inequality gives
+$\mathcal F_{\rm new}\ge\mathcal Q(r,\pi_{\rm new},\tau_{\rm new})$.
+Combining the inequalities yields $\mathcal F_{\rm new}\ge\mathcal F_{\rm old}$.
+\end{proof}
+
+\begin{algorithm}[H]
+\caption{Alternating optimization for finite latent-group templates}
+\label{alg:multi-em}
+\KwIn{Sequence-specific segment-score arrays; number of groups $G$; admissible segment counts; number of restarts; convergence tolerance.}
+\ForEach{restart}{
+ initialize $\pi$ and templates $\tau_{1:G}$\;
+ evaluate the current value of $\mathcal F$\;
+ \Repeat{the increase in $\mathcal F$ is at most the tolerance or the iteration limit is reached}{
+  update $r_{sg}$ by Equation~\eqref{eq:template-resp}\;
+  update $\pi_g\leftarrow S^{-1}\sum_s r_{sg}$\;
+  for each group $g$, set $n_g\leftarrow\sum_s r_{sg}$, build the local scores in Equation~\eqref{eq:template-blockscore}, solve the max-sum recursion at every allowed $k$, and select the offset-adjusted maximizer using $n_g\{\log p(k)-\log C_k\}$\;
+  evaluate and append the new value of $\mathcal F$\;
+ }
+ retain the restart with the largest final value in its recorded objective sequence\;
+}
+\KwOut{Group templates, group weights, auxiliary allocation weights, complete objective sequences, and restart ranking by the final objective value.}
+\end{algorithm}
+
+\section{Non-uniqueness and implementation limitation}
+The criterion is invariant to permutation of the group labels. It may have duplicate or collapsed
+templates when $G$ is larger than the effective number of groups, and multiple restarts do not
+guarantee a global maximum. These are optimization and identifiability limitations of the stated
+criterion.
+
+The archived implementation contains an exit path that can return the objective value from the
+previous iteration rather than the last value in the objective sequence. In one of three diagnostic
+restarts, the difference was $0.003137360860080$. The archived latent-group simulation remains a
+real computation, but \taskid{CODE-BB-003} must correct the returned objective and restart ranking
+before those values are treated as release-quality optimization results.
+
+\begin{statusbox}[Established result and non-claim]
+For Equation~\eqref{eq:template-lik}, the auxiliary allocation update makes the Jensen minorizer
+tight, the group-weight update maximizes that minorizer, and the finite template step is solved
+exactly by max-sum recursion when Equation~\eqref{eq:template-blockscore} applies. The monotonicity
+theorem is complete. No theorem is claimed for identifiability of a normalized finite mixture or
+consistency of the estimated number of groups.
+\end{statusbox}

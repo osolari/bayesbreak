@@ -1,0 +1,1562 @@
+{
+  "schema_version": "1.0.0",
+  "record_role": "corrected-execution",
+  "result_id": "RES-BB-CMP-003",
+  "parent_result_id": "RES-BB-CMP-002",
+  "protocol_ids": [
+    "EPR-BB-010",
+    "EPR-BB-013"
+  ],
+  "execution_status": "executed",
+  "scientific_interpretation": "pending-independent-review",
+  "source": {
+    "uri": "https://github.com/cran/ecp/raw/master/data/ACGH.RData",
+    "cache_path": "$HOME/.cache/bayesbreak/ACGH.RData",
+    "sha256": "b82da97ffe6b5c431a60c3f811ee5c339708562126ed4a3d0b0344f2f2e09a63",
+    "matrix_sha256": "1551547d50564227ac020c196e56cae0b29c76ccf76eb4140d47628019cdb9a8",
+    "matrix_shape": [
+      2215,
+      43
+    ],
+    "subject_ids": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      21,
+      22,
+      24,
+      26,
+      28,
+      30,
+      31,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      53,
+      54,
+      57
+    ]
+  },
+  "dataset_card": {
+    "schema_version": "1.0.0",
+    "dataset_id": "cgh",
+    "source_kind": "downloaded",
+    "source_uri": "https://github.com/cran/ecp/raw/master/data/ACGH.RData",
+    "source_date": "source-date-not-recorded",
+    "n_observations": 2215,
+    "n_sequences": 43,
+    "stride": 1,
+    "observation_family": "gaussian-shared-boundary",
+    "coordinate_axis": "probe-index",
+    "descriptor_role": "gaussian-precision",
+    "descriptor_hash": "b47230bd390a41413b0e57ae4742aa247a9a85594884d2fa877ca6c6b6fbbc90",
+    "data_hash": "9c368d425ad3a2246f7a7ea10e976894c840b232c3c51ff29153da1b67024787",
+    "preprocessing": "loader-normalized; stride=1",
+    "external_annotations": [],
+    "fitted_map_marker_role": "model-derived-map"
+  },
+  "coordinate_metadata": {
+    "raw_storage_orientation": "probe-by-subject",
+    "validated_request_orientation": "subject-by-probe",
+    "algorithm_orientation": "probe-by-subject",
+    "prediction_axis": "probe-index",
+    "reference_axis": "probe-index",
+    "reference_type": "model-derived-map",
+    "external_annotations": "none-independently-verified"
+  },
+  "config": {
+    "mode": "full",
+    "n_probes": 2215,
+    "n_subjects": 43,
+    "subject_ids": [
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      21,
+      22,
+      24,
+      26,
+      28,
+      30,
+      31,
+      33,
+      34,
+      35,
+      36,
+      37,
+      38,
+      39,
+      40,
+      41,
+      42,
+      43,
+      44,
+      45,
+      46,
+      47,
+      48,
+      49,
+      50,
+      51,
+      53,
+      54,
+      57
+    ],
+    "k_max": 15,
+    "metric_tolerance": 3,
+    "metric_reference_type": "model-derived-map",
+    "cost_model": "l2",
+    "min_size": 2,
+    "jump": 1,
+    "pelt_multipliers": [
+      0.125,
+      0.25,
+      0.5,
+      1.0,
+      2.0,
+      4.0,
+      8.0,
+      16.0
+    ],
+    "wbs_random_windows": 100,
+    "random_seed": 261003,
+    "stratum": "matched-k-agreement-only"
+  },
+  "config_sha256": "f151d53e098adb29f2ddf98ea8f1300f5b04678a790f81e621af305665ad8252",
+  "code": {
+    "commit": "4a5a53a5a5ec6ad829d394e213cbe0f3a63402b2",
+    "commit_sha256": "b6c5ac5c8a22c3366aeea84fff3468c34f7e764f46188dbbbca33888c0e3815c",
+    "relevant_paths_clean": true
+  },
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.3-arm64-arm-64bit",
+    "bayesbreak_module_version": "2.0.0rc3",
+    "packages": {
+      "bayesbreak": "2.0.0rc3",
+      "numpy": "2.4.2",
+      "rdata": "1.1.0",
+      "ruptures": "1.1.10",
+      "scipy": "1.17.0"
+    },
+    "sha256": "a2e9d7c71807f0e971e8d252ccce386d08819a32eccb2d27033ddb151d75687b"
+  },
+  "bayesbreak": {
+    "shared": {
+      "estimator": "SharedBoundaryReplicatesSegmenter[BayesBreakGaussian]",
+      "k_max": 15,
+      "k_map": 15,
+      "boundaries": [
+        177,
+        263,
+        343,
+        1051,
+        1141,
+        1225,
+        1375,
+        1534,
+        1559,
+        1723,
+        1907,
+        1965,
+        2041,
+        2143
+      ],
+      "log_evidence": 76359.79958695151,
+      "wall_seconds": 295.7010661670356
+    },
+    "independent": [
+      {
+        "subject_index": 0,
+        "k_map": 15,
+        "boundaries": [
+          263,
+          281,
+          282,
+          359,
+          388,
+          428,
+          450,
+          469,
+          1724,
+          1906,
+          1991,
+          1992,
+          2041,
+          2143
+        ],
+        "log_evidence": 3372.456394237927
+      },
+      {
+        "subject_index": 1,
+        "k_map": 15,
+        "boundaries": [
+          155,
+          281,
+          282,
+          567,
+          657,
+          788,
+          891,
+          1140,
+          1268,
+          1722,
+          1778,
+          1779,
+          1906,
+          1965
+        ],
+        "log_evidence": 1237.8524677664973
+      },
+      {
+        "subject_index": 2,
+        "k_map": 15,
+        "boundaries": [
+          540,
+          577,
+          956,
+          961,
+          1346,
+          1472,
+          1474,
+          1930,
+          1991,
+          1992,
+          2048,
+          2067,
+          2143,
+          2200
+        ],
+        "log_evidence": 1617.021446787944
+      },
+      {
+        "subject_index": 3,
+        "k_map": 15,
+        "boundaries": [
+          663,
+          664,
+          681,
+          683,
+          745,
+          746,
+          879,
+          1276,
+          1277,
+          1320,
+          1321,
+          1545,
+          2041,
+          2143
+        ],
+        "log_evidence": 8394.174823183786
+      },
+      {
+        "subject_index": 4,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          174,
+          263,
+          561,
+          657,
+          811,
+          879,
+          933,
+          959,
+          1141,
+          1259,
+          1641,
+          1965,
+          2009
+        ],
+        "log_evidence": 577.1952661445438
+      },
+      {
+        "subject_index": 5,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          134,
+          685,
+          1303,
+          1319,
+          1516,
+          1541,
+          1685,
+          1686,
+          1708,
+          1991,
+          1992,
+          2136,
+          2179
+        ],
+        "log_evidence": 5035.595642371178
+      },
+      {
+        "subject_index": 6,
+        "k_map": 15,
+        "boundaries": [
+          43,
+          74,
+          134,
+          543,
+          577,
+          687,
+          1619,
+          1641,
+          1707,
+          1886,
+          1952,
+          1991,
+          2000,
+          2135
+        ],
+        "log_evidence": 3366.3445143936674
+      },
+      {
+        "subject_index": 7,
+        "k_map": 15,
+        "boundaries": [
+          177,
+          393,
+          960,
+          1051,
+          1141,
+          1286,
+          1319,
+          1378,
+          1656,
+          1659,
+          1724,
+          1906,
+          1972,
+          2041
+        ],
+        "log_evidence": 2425.707861350336
+      },
+      {
+        "subject_index": 8,
+        "k_map": 15,
+        "boundaries": [
+          233,
+          979,
+          1054,
+          1141,
+          1225,
+          1621,
+          1683,
+          1724,
+          1906,
+          1930,
+          2007,
+          2041,
+          2141,
+          2201
+        ],
+        "log_evidence": 1864.8028405910165
+      },
+      {
+        "subject_index": 9,
+        "k_map": 15,
+        "boundaries": [
+          72,
+          134,
+          775,
+          811,
+          1455,
+          1534,
+          1560,
+          1642,
+          1685,
+          1726,
+          1816,
+          1991,
+          1992,
+          2143
+        ],
+        "log_evidence": 669.813441571931
+      },
+      {
+        "subject_index": 10,
+        "k_map": 15,
+        "boundaries": [
+          185,
+          428,
+          657,
+          741,
+          891,
+          923,
+          1051,
+          1141,
+          1664,
+          1721,
+          1991,
+          1992,
+          2041,
+          2072
+        ],
+        "log_evidence": 662.0965288803762
+      },
+      {
+        "subject_index": 11,
+        "k_map": 15,
+        "boundaries": [
+          135,
+          214,
+          264,
+          544,
+          579,
+          735,
+          1143,
+          1225,
+          1378,
+          1535,
+          1809,
+          1965,
+          2143,
+          2200
+        ],
+        "log_evidence": 2214.5646569680766
+      },
+      {
+        "subject_index": 12,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          262,
+          522,
+          581,
+          657,
+          726,
+          788,
+          1222,
+          1277,
+          1367,
+          1641,
+          1723,
+          1906,
+          2147
+        ],
+        "log_evidence": 1930.8182800546276
+      },
+      {
+        "subject_index": 13,
+        "k_map": 15,
+        "boundaries": [
+          213,
+          342,
+          363,
+          366,
+          745,
+          788,
+          1321,
+          1352,
+          1907,
+          2028,
+          2084,
+          2145,
+          2198,
+          2200
+        ],
+        "log_evidence": 1857.410478918571
+      },
+      {
+        "subject_index": 14,
+        "k_map": 15,
+        "boundaries": [
+          212,
+          263,
+          342,
+          363,
+          366,
+          745,
+          788,
+          1277,
+          1319,
+          1367,
+          2005,
+          2009,
+          2028,
+          2143
+        ],
+        "log_evidence": 2856.765901084468
+      },
+      {
+        "subject_index": 15,
+        "k_map": 15,
+        "boundaries": [
+          205,
+          297,
+          430,
+          581,
+          657,
+          788,
+          922,
+          1072,
+          1321,
+          1367,
+          1437,
+          1907,
+          1964,
+          2041
+        ],
+        "log_evidence": 1685.6796109782297
+      },
+      {
+        "subject_index": 16,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          134,
+          256,
+          341,
+          523,
+          581,
+          814,
+          871,
+          922,
+          959,
+          1141,
+          1259,
+          1290,
+          1367
+        ],
+        "log_evidence": 2599.080551158293
+      },
+      {
+        "subject_index": 17,
+        "k_map": 15,
+        "boundaries": [
+          215,
+          242,
+          263,
+          342,
+          729,
+          788,
+          832,
+          869,
+          1181,
+          1225,
+          2009,
+          2010,
+          2044,
+          2143
+        ],
+        "log_evidence": 3813.0591845959366
+      },
+      {
+        "subject_index": 18,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          134,
+          325,
+          521,
+          670,
+          744,
+          871,
+          890,
+          1141,
+          1225,
+          1839,
+          1880,
+          2044,
+          2119
+        ],
+        "log_evidence": 1032.0645175155375
+      },
+      {
+        "subject_index": 19,
+        "k_map": 15,
+        "boundaries": [
+          107,
+          174,
+          281,
+          282,
+          347,
+          450,
+          728,
+          1134,
+          1259,
+          1438,
+          1523,
+          1724,
+          1906,
+          1958
+        ],
+        "log_evidence": 1274.432984820593
+      },
+      {
+        "subject_index": 20,
+        "k_map": 15,
+        "boundaries": [
+          174,
+          264,
+          428,
+          789,
+          959,
+          1051,
+          1141,
+          1186,
+          1225,
+          1367,
+          1515,
+          1560,
+          1722,
+          1904
+        ],
+        "log_evidence": 1587.210649717769
+      },
+      {
+        "subject_index": 21,
+        "k_map": 15,
+        "boundaries": [
+          135,
+          189,
+          263,
+          428,
+          1076,
+          1534,
+          1629,
+          1749,
+          1795,
+          1907,
+          1951,
+          2037,
+          2038,
+          2202
+        ],
+        "log_evidence": 3747.6685113360973
+      },
+      {
+        "subject_index": 22,
+        "k_map": 15,
+        "boundaries": [
+          541,
+          577,
+          1179,
+          1209,
+          1341,
+          1529,
+          1559,
+          1629,
+          1679,
+          1724,
+          1725,
+          1930,
+          1959,
+          2037
+        ],
+        "log_evidence": 2460.7110212147686
+      },
+      {
+        "subject_index": 23,
+        "k_map": 15,
+        "boundaries": [
+          216,
+          245,
+          263,
+          342,
+          656,
+          727,
+          788,
+          811,
+          1177,
+          1268,
+          1472,
+          1473,
+          2041,
+          2143
+        ],
+        "log_evidence": 1934.3261315754369
+      },
+      {
+        "subject_index": 24,
+        "k_map": 15,
+        "boundaries": [
+          34,
+          61,
+          429,
+          430,
+          532,
+          579,
+          1000,
+          1178,
+          1209,
+          1601,
+          1991,
+          1992,
+          2141,
+          2200
+        ],
+        "log_evidence": 945.0504703098793
+      },
+      {
+        "subject_index": 25,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          149,
+          727,
+          754,
+          788,
+          869,
+          1065,
+          1136,
+          1225,
+          1259,
+          1341,
+          1534,
+          1560,
+          2200
+        ],
+        "log_evidence": 2193.659750547968
+      },
+      {
+        "subject_index": 26,
+        "k_map": 15,
+        "boundaries": [
+          263,
+          342,
+          618,
+          636,
+          871,
+          923,
+          1125,
+          1177,
+          1534,
+          1559,
+          1906,
+          1965,
+          2044,
+          2143
+        ],
+        "log_evidence": 927.1432207104648
+      },
+      {
+        "subject_index": 27,
+        "k_map": 15,
+        "boundaries": [
+          175,
+          264,
+          363,
+          366,
+          1141,
+          1225,
+          1367,
+          1534,
+          1560,
+          1641,
+          1906,
+          1956,
+          2041,
+          2143
+        ],
+        "log_evidence": 2155.075836975965
+      },
+      {
+        "subject_index": 28,
+        "k_map": 15,
+        "boundaries": [
+          216,
+          246,
+          663,
+          664,
+          1142,
+          1225,
+          1909,
+          1910,
+          1927,
+          1991,
+          1992,
+          2041,
+          2143,
+          2200
+        ],
+        "log_evidence": 5963.502447619149
+      },
+      {
+        "subject_index": 29,
+        "k_map": 15,
+        "boundaries": [
+          263,
+          279,
+          280,
+          329,
+          1225,
+          1247,
+          1320,
+          1482,
+          1913,
+          1915,
+          1991,
+          1992,
+          2143,
+          2200
+        ],
+        "log_evidence": 2355.6881640761994
+      },
+      {
+        "subject_index": 30,
+        "k_map": 15,
+        "boundaries": [
+          72,
+          263,
+          523,
+          581,
+          719,
+          1138,
+          1225,
+          1534,
+          1559,
+          1726,
+          1878,
+          1965,
+          2041,
+          2206
+        ],
+        "log_evidence": 1017.904612909286
+      },
+      {
+        "subject_index": 31,
+        "k_map": 15,
+        "boundaries": [
+          543,
+          577,
+          846,
+          854,
+          887,
+          888,
+          1177,
+          1211,
+          1472,
+          1474,
+          1575,
+          1601,
+          2037,
+          2208
+        ],
+        "log_evidence": 2904.3636265453656
+      },
+      {
+        "subject_index": 32,
+        "k_map": 15,
+        "boundaries": [
+          26,
+          28,
+          246,
+          248,
+          335,
+          401,
+          402,
+          1279,
+          1282,
+          1907,
+          1957,
+          2041,
+          2102,
+          2142
+        ],
+        "log_evidence": 2577.8333800167593
+      },
+      {
+        "subject_index": 33,
+        "k_map": 15,
+        "boundaries": [
+          174,
+          263,
+          528,
+          656,
+          900,
+          923,
+          1050,
+          1141,
+          1346,
+          1534,
+          1560,
+          1641,
+          1686,
+          1726
+        ],
+        "log_evidence": 2803.57480037645
+      },
+      {
+        "subject_index": 34,
+        "k_map": 15,
+        "boundaries": [
+          33,
+          39,
+          185,
+          436,
+          477,
+          478,
+          717,
+          788,
+          1534,
+          1560,
+          1912,
+          1913,
+          1965,
+          2041
+        ],
+        "log_evidence": 3325.0530651917743
+      },
+      {
+        "subject_index": 35,
+        "k_map": 15,
+        "boundaries": [
+          487,
+          488,
+          580,
+          625,
+          657,
+          1128,
+          1129,
+          1320,
+          1553,
+          1554,
+          1906,
+          1963,
+          1997,
+          2041
+        ],
+        "log_evidence": 6614.177805250466
+      },
+      {
+        "subject_index": 36,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          124,
+          263,
+          342,
+          518,
+          583,
+          657,
+          727,
+          1320,
+          1723,
+          1906,
+          1965,
+          2044,
+          2143
+        ],
+        "log_evidence": 1081.9232077464906
+      },
+      {
+        "subject_index": 37,
+        "k_map": 15,
+        "boundaries": [
+          74,
+          263,
+          342,
+          601,
+          788,
+          811,
+          891,
+          923,
+          1143,
+          1225,
+          1629,
+          2044,
+          2143,
+          2213
+        ],
+        "log_evidence": 3491.6596744036674
+      },
+      {
+        "subject_index": 38,
+        "k_map": 15,
+        "boundaries": [
+          262,
+          405,
+          429,
+          579,
+          581,
+          614,
+          948,
+          1417,
+          1475,
+          1676,
+          1723,
+          1725,
+          1915,
+          1993
+        ],
+        "log_evidence": 2186.135319816851
+      },
+      {
+        "subject_index": 39,
+        "k_map": 15,
+        "boundaries": [
+          73,
+          134,
+          263,
+          342,
+          788,
+          811,
+          959,
+          960,
+          1141,
+          1225,
+          1534,
+          1642,
+          2041,
+          2143
+        ],
+        "log_evidence": 2457.441525078478
+      },
+      {
+        "subject_index": 40,
+        "k_map": 15,
+        "boundaries": [
+          131,
+          263,
+          428,
+          465,
+          515,
+          788,
+          923,
+          1223,
+          1722,
+          1906,
+          1991,
+          1992,
+          2041,
+          2145
+        ],
+        "log_evidence": 765.3563661241946
+      },
+      {
+        "subject_index": 41,
+        "k_map": 15,
+        "boundaries": [
+          388,
+          401,
+          787,
+          871,
+          913,
+          1378,
+          1545,
+          1559,
+          1724,
+          1725,
+          1749,
+          1768,
+          2079,
+          2147
+        ],
+        "log_evidence": 5745.68003064264
+      },
+      {
+        "subject_index": 42,
+        "k_map": 15,
+        "boundaries": [
+          134,
+          239,
+          263,
+          342,
+          580,
+          710,
+          959,
+          1141,
+          1367,
+          1724,
+          1907,
+          1964,
+          2041,
+          2141
+        ],
+        "log_evidence": 1889.618433481698
+      }
+    ],
+    "independent_wall_seconds": 123.11155945900828
+  },
+  "comparators": [
+    {
+      "algorithm": "pelt",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 2215,
+      "k_hat": 12,
+      "boundaries": [
+        177,
+        263,
+        342,
+        1141,
+        1225,
+        1724,
+        1906,
+        1965,
+        2041,
+        2143,
+        2202
+      ],
+      "runtime_seconds": 18.742506332986522,
+      "tuning": {
+        "selection_rule": "minimum absolute boundary-count distance; no F1 access",
+        "target_n_bkps": 14,
+        "scale": 16.29962165705245,
+        "candidates": [
+          {
+            "multiplier": 0.125,
+            "penalty": 2.0374527071315565,
+            "n_bkps": 202,
+            "runtime_seconds": 0.5136638749972917
+          },
+          {
+            "multiplier": 0.25,
+            "penalty": 4.074905414263113,
+            "n_bkps": 118,
+            "runtime_seconds": 0.628514375013765
+          },
+          {
+            "multiplier": 0.5,
+            "penalty": 8.149810828526226,
+            "n_bkps": 70,
+            "runtime_seconds": 0.7795191670302302
+          },
+          {
+            "multiplier": 1.0,
+            "penalty": 16.29962165705245,
+            "n_bkps": 50,
+            "runtime_seconds": 1.3183927920181304
+          },
+          {
+            "multiplier": 2.0,
+            "penalty": 32.5992433141049,
+            "n_bkps": 31,
+            "runtime_seconds": 3.5468901669955812
+          },
+          {
+            "multiplier": 4.0,
+            "penalty": 65.1984866282098,
+            "n_bkps": 11,
+            "runtime_seconds": 18.742506332986522
+          },
+          {
+            "multiplier": 8.0,
+            "penalty": 130.3969732564196,
+            "n_bkps": 5,
+            "runtime_seconds": 78.26709720800864
+          },
+          {
+            "multiplier": 16.0,
+            "penalty": 260.7939465128392,
+            "n_bkps": 1,
+            "runtime_seconds": 101.06692895799642
+          }
+        ],
+        "selected_index": 5,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1
+      },
+      "extra": {},
+      "exact_boundary_jaccard": 0.3888888888888889,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            9
+          ],
+          [
+            6,
+            10
+          ],
+          [
+            7,
+            11
+          ],
+          [
+            8,
+            12
+          ],
+          [
+            9,
+            13
+          ]
+        ],
+        "precision": 0.9090909090909091,
+        "recall": 0.7142857142857143,
+        "f1": 0.8,
+        "mae_or_na": 0.3,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    },
+    {
+      "algorithm": "optimal_partitioning",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 2215,
+      "k_hat": 15,
+      "boundaries": [
+        177,
+        263,
+        342,
+        1141,
+        1225,
+        1378,
+        1534,
+        1560,
+        1724,
+        1906,
+        1965,
+        2041,
+        2143,
+        2202
+      ],
+      "runtime_seconds": 152.00696566700935,
+      "tuning": {
+        "selection_rule": "fixed to shared BayesBreak MAP boundary count",
+        "target_n_bkps": 14,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1
+      },
+      "extra": {},
+      "exact_boundary_jaccard": 0.4,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            4,
+            5
+          ],
+          [
+            5,
+            6
+          ],
+          [
+            6,
+            7
+          ],
+          [
+            7,
+            8
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            11
+          ],
+          [
+            11,
+            12
+          ],
+          [
+            12,
+            13
+          ]
+        ],
+        "precision": 0.9285714285714286,
+        "recall": 0.9285714285714286,
+        "f1": 0.9285714285714286,
+        "mae_or_na": 0.5384615384615384,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    },
+    {
+      "algorithm": "binary_segmentation",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 2215,
+      "k_hat": 15,
+      "boundaries": [
+        180,
+        263,
+        342,
+        428,
+        960,
+        1051,
+        1141,
+        1268,
+        1724,
+        1906,
+        1965,
+        2044,
+        2143,
+        2202
+      ],
+      "runtime_seconds": 1.2547008749679662,
+      "tuning": {
+        "selection_rule": "fixed to shared BayesBreak MAP boundary count",
+        "target_n_bkps": 14,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1
+      },
+      "extra": {},
+      "exact_boundary_jaccard": 0.21739130434782608,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            5,
+            3
+          ],
+          [
+            6,
+            4
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            11
+          ],
+          [
+            11,
+            12
+          ],
+          [
+            12,
+            13
+          ]
+        ],
+        "precision": 0.7142857142857143,
+        "recall": 0.7142857142857143,
+        "f1": 0.7142857142857143,
+        "mae_or_na": 0.9,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    },
+    {
+      "algorithm": "wild_binary_segmentation",
+      "package": "ruptures",
+      "package_version": "v1.1.10",
+      "n": 2215,
+      "k_hat": 15,
+      "boundaries": [
+        175,
+        263,
+        342,
+        960,
+        1051,
+        1141,
+        1225,
+        1534,
+        1724,
+        1906,
+        1965,
+        2041,
+        2119,
+        2202
+      ],
+      "runtime_seconds": 6.8949357910314575,
+      "tuning": {
+        "selection_rule": "fixed to shared BayesBreak MAP boundary count",
+        "target_n_bkps": 14,
+        "cost_model": "l2",
+        "min_size": 2,
+        "jump": 1,
+        "n_random_windows": 100,
+        "random_state": 261003
+      },
+      "extra": {
+        "n_candidate_breakpoints": 40,
+        "candidate_selection": "candidate-constrained-dynamic-programming"
+      },
+      "exact_boundary_jaccard": 0.3333333333333333,
+      "boundary_metrics_tau3": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "probe-index",
+        "reference_axis": "probe-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "model-derived-map",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            4,
+            3
+          ],
+          [
+            5,
+            4
+          ],
+          [
+            6,
+            5
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            8,
+            9
+          ],
+          [
+            9,
+            10
+          ],
+          [
+            10,
+            11
+          ],
+          [
+            11,
+            12
+          ]
+        ],
+        "precision": 0.7857142857142857,
+        "recall": 0.7857142857142857,
+        "f1": 0.7857142857142857,
+        "mae_or_na": 0.45454545454545453,
+        "metric_version": "boundary-metrics-1.0.0"
+      }
+    }
+  ],
+  "warnings": [
+    {
+      "category": "RuntimeWarning",
+      "message": "overflow encountered in exp",
+      "source": "gaussian.py",
+      "line": 165
+    }
+  ],
+  "resources": {
+    "elapsed_wall_seconds": 785.0984583340469,
+    "peak_rss": {
+      "value": 2273460224,
+      "units": "bytes"
+    },
+    "output_bytes": 29679,
+    "full_work_projection_formula": "pilot_wall*(2215/n)^2*(43/S)*(15/k_max)",
+    "full_work_ratio": 1.0,
+    "projected_full_wall_seconds": 785.0984583340469,
+    "estimated_full_subject_table_bytes": 3378531328
+  },
+  "limitations": [
+    "Matched-k agreement uses the BayesBreak MAP count and is not independent tuning.",
+    "The model-derived BayesBreak MAP is not external biological ground truth.",
+    "No external-accuracy or predictive-superiority claim is supported by this stratum."
+  ]
+}

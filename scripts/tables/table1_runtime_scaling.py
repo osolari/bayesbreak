@@ -23,9 +23,9 @@ Because the core DP algorithm is :math:`O(k_{\max} \cdot n^2)`:
 
 Outputs
 -------
-- docs/report/tables/table1_runtime_scaling.csv
-- docs/report/tables/table1_runtime_scaling.md
-- docs/report/tables/table1_runtime_scaling.tex
+- results/tables/table1_runtime_scaling.csv
+- results/tables/table1_runtime_scaling.md
+- results/tables/table1_runtime_scaling.tex
 
 Usage
 -----
@@ -101,7 +101,7 @@ def main(outdir: Path, k_max: int, repeats: int, seed: int) -> None:
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
+    parser.add_argument("--outdir", type=Path, default=Path("results/tables"))
     parser.add_argument("--k-max", type=int, default=20)
     parser.add_argument("--repeats", type=int, default=5)
     parser.add_argument("--seed", type=int, default=0)

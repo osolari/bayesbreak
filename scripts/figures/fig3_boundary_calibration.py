@@ -37,8 +37,8 @@ proportion in each bin.
 
 Outputs
 -------
-- docs/report/figures/fig3_boundary_calibration.png
-- docs/report/figures/fig3_boundary_calibration.pdf
+- results/figures/fig3_boundary_calibration.png
+- results/figures/fig3_boundary_calibration.pdf
 
 Usage
 -----
@@ -250,7 +250,7 @@ def main(
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=120)
     ap.add_argument("--n-seq", type=int, default=80)

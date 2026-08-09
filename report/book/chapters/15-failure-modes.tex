@@ -1,0 +1,139 @@
+\chapter[Limitations and failure modes]{Limitations and failure modes}
+\label{ch:failures}
+\chapterpromise{Conditions under which the factorized partition model, segment distribution, numerical approximation, hierarchical assumptions, prediction rule, or empirical comparison is not valid.}
+
+\label{sec:limitations}
+
+The exact results in this volume concern offline Bayesian segmentation on a finite ordered
+candidate set. They require finite segment marginal likelihoods and a prior whose contribution can
+be represented by segment or transition factors. Nonconjugate calculations require additional
+numerical assumptions. This chapter states the corresponding limitations.
+
+\section{Computational and model support}
+\paragraph{Sequence length and segment count.}
+The dynamic program has worst-case time complexity $\Theta(k_{\max}n^2)$ and working memory at
+least $\Theta(k_{\max}n)$ for the principal posterior quantities
+(Proposition~\ref{prop:bb-complexity}). It is an offline method. Large sequences may require a
+restricted changepoint set, pruning, or an approximate decomposition. Such modifications change the
+set of partitions or the summation unless their exactness is established separately; they do not
+automatically inherit Theorem~\ref{thm:dp-correctness}.
+
+\paragraph{Candidate changepoints.}
+A changepoint outside the candidate set cannot receive posterior probability. This is a support
+restriction of the model, not a numerical error. Scientific locations that must remain possible
+should be included before fitting.
+
+\paragraph{Nonlocal dependence among segments.}
+The recursions assume that, after any necessary state variable is included, the probability of a
+partition can be written as products of local contributions. A prior depending on a global pattern
+of segment lengths, unrestricted interactions among nonadjacent segments, or labels with
+non-Markov dependence may violate this assumption. Some dependence structures can be handled by an
+enlarged state space, but the recurrence and complexity must then be derived for that model.
+
+\section{Observation-model misspecification and prior sensitivity}
+\paragraph{Misspecified segment distribution.}
+Posterior probabilities are conditional on the chosen within-segment distribution, its descriptors,
+and its hyperparameters. Heavy-tailed observations under a Gaussian segment model, zero inflation
+under a Poisson model, overdispersion under a Binomial model, or unmodeled serial dependence can
+distort segment marginal likelihoods and therefore the posterior over partitions. Posterior
+predictive diagnostics can reveal discrepancies, but the method does not automatically select the
+correct observation family.
+
+\paragraph{Prior sensitivity.}
+The posterior for $k$ and the changepoint probabilities can depend materially on the segment-count
+prior, segment cohesion $c_u(i,j)$, and boundary hazard $h_u(j)$. This dependence can be stronger on
+an irregular grid because different priors assign different probabilities to long physical gaps.
+An analysis should report sensitivity to scientifically plausible prior choices rather than treat a
+single prior as neutral.
+
+\section{Numerical approximation}
+\paragraph{Nonconjugate segment marginal likelihoods.}
+Proposition~\ref{prop:stability} assumes a verified bound on the largest log marginal-likelihood
+error over every admissible segment. The bound increases with the number of segments, so a
+fixed segmentwise error can have a larger effect for large $k$. If the numerical method does not
+establish this condition, the dynamic program returns the exact posterior for the approximate score
+array but no error bound relative to the intended posterior.
+
+In the archived comparison, the maximum absolute discrepancy for expectation propagation was
+approximately $14.5$ relative to the quadrature reference on the examined segment set. This is not
+a small-error setting. The associated boundary score is descriptive and does not verify the
+stability theorem. A scientifically interpretable nonconjugate analysis should compare numerical
+methods on the same admissible segments, examine convergence and tail behavior, and use a more
+accurate calculation when the discrepancy is too large for the desired posterior comparison.
+
+\section{Hierarchical assumptions}
+\paragraph{Common changepoints across sequences.}
+The shared-changepoint model assumes aligned candidate coordinates and conditional independence
+across sequences given a common partition and sequence-specific segment parameters. Unmodeled
+cross-sequence dependence or genuine sequence-specific changepoints can make the common partition
+misleading. The finite-candidate consistency theorem also requires a positive average expected
+log-score gap between the true partition and every alternative; one informative sequence does not
+satisfy that condition as the number of sequences increases.
+
+\paragraph{Latent-group non-uniqueness.}
+The finite latent-group criterion is invariant under permutation of the group labels and may have
+duplicate or collapsed templates. Multiple restarts do not prove that a global maximum has been
+found. Because the sequence-template scores are not assumed to be normalized component densities,
+finite-mixture identifiability theorems do not apply. The archived implementation must also be
+corrected so that restart ranking uses the final value in each objective sequence.
+
+\paragraph{Posterior summaries versus joint optimization.}
+Marginal changepoint probabilities and the joint MAP partition are different summaries. Selecting
+the marginal mode for each ordered changepoint coordinate need not yield a valid or jointly most
+probable partition. Applications should report the posterior quantities relevant to the decision
+rather than interpreting all returned summaries as interchangeable.
+
+\section{Prediction and evaluation}
+\paragraph{Coordinate support and extrapolation.}
+Posterior prediction must use the fitted observation family. A coordinate outside the fitted range
+requires a pre-specified extrapolation model or rejection. Silent endpoint assignment changes the
+predictive model and can yield a finite but invalid score, as demonstrated by the archived
+methylation calculation excluded from predictive conclusions.
+
+\paragraph{Changepoint metrics.}
+Tolerance-based boundary $F_1$ depends on the tolerance and matching rule. When \BayesBreak MAP
+boundaries are used as the reference, a comparator score measures agreement with \BayesBreak, not
+accuracy against independent truth. A location error is undefined when no pair is matched and is
+reported as \NA. The four real-data analyses do not contain independent changepoint annotations,
+so their fitted red lines cannot be interpreted as verified geological, genomic, or financial
+events.
+
+\paragraph{Incompatible comparator coordinates.}
+The array-CGH comparator flattened a $43\times2215$ fitted matrix to 95,245 values while the
+reference changepoints remained on the 2,215-probe axis. Those objects do not define a common
+matching problem. The executed values remain recorded, but they are excluded from comparator
+conclusions.
+
+\section{Choice of analysis}
+\begin{enumerate}[label=(\arabic*),leftmargin=2.3em]
+\item For a single sequence with a conjugate segment model, use the exact segment integration and
+sum-product or max-sum recursions of Chapters~\ref{ch:block}--\ref{ch:map}.
+\item For a nonconjugate segment model, use a stated numerical method and assess its error on the
+admissible segment set. Use Proposition~\ref{prop:stability} only when
+Assumption~\ref{ass:uniform-block-error} has been established.
+\item For aligned sequences expected to share changepoints, use the common-partition model of
+Chapter~\ref{ch:shared}; examine sensitivity to sequence dependence and violations of common
+structure.
+\item For observed groups, fit the shared-changepoint model within each group. For unobserved
+groups, use the finite latent-group criterion of Chapter~\ref{ch:templates} and interpret its
+allocations and templates according to that criterion, without importing normalized-mixture
+claims.
+\item For prediction, use the posterior predictive distribution of the fitted observation family
+and state whether conditioning is on a selected partition or averaged over partition uncertainty.
+\end{enumerate}
+
+\section{Empirical coverage}
+The synthetic studies and four real-data fits demonstrate the calculations under their archived
+settings. They do not provide a complete fairness-controlled comparison with all relevant
+frequentist and Bayesian methods, broad repeated uncertainty intervals, comprehensive
+misspecification studies, or large-$n$ scaling. Those studies remain necessary before making broad
+comparative or robustness claims.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/workflows/scope_and_failure_map.tex}}
+\caption[Scope and failure modes]{Scope of the exact partition calculation. Unsupported candidate
+sets, nonlocal dependence, misspecified segment distributions, uncontrolled numerical scores,
+undefined extrapolation, and incompatible comparator axes require a revised model or analysis.}
+\label{fig:scope-failure-map}
+\end{figure}

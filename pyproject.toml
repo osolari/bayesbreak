@@ -1,11 +1,11 @@
 [build-system]
-requires = ["setuptools>=68", "setuptools-scm>=8", "wheel"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "bayesbreak"
 dynamic = ["version"]
-description = "Exact Bayesian segmentation: block evidence + dynamic programming, scikit-learn compatible"
+description = "Generalized hierarchical Bayesian segmentation with exact conjugate and approximate nonconjugate inference"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.10"
@@ -49,6 +49,8 @@ plots = [
 datasets = [
     "pooch>=1.7",
     "pandas>=2.0",
+    "rdata>=0.11",
+    "requests>=2.31",
 ]
 datasets-live = [
     "yfinance>=0.2",
@@ -90,7 +92,7 @@ Homepage = "https://github.com/osolari/bayesbreak"
 Documentation = "https://osolari.github.io/bayesbreak"
 Repository = "https://github.com/osolari/bayesbreak"
 Issues = "https://github.com/osolari/bayesbreak/issues"
-Report = "https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf"
+Report = "https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf"
 
 [project.scripts]
 bayesbreak = "bayesbreak.cli:main"
@@ -106,9 +108,8 @@ include = ["bayesbreak*"]
 [tool.setuptools.package-data]
 bayesbreak = ["py.typed"]
 
-[tool.setuptools_scm]
-write_to = "src/bayesbreak/_version.py"
-fallback_version = "1.0.0.dev0"
+[tool.setuptools.dynamic]
+version = { attr = "bayesbreak._version.__version__" }
 
 [tool.pytest.ini_options]
 minversion = "7.4"
@@ -158,7 +159,7 @@ line-length = 100
 target-version = "py310"
 extend-exclude = [
     "src/bayesbreak/_version.py",
-    "docs/report/**",
+    "report/**",
 ]
 
 [tool.ruff.lint]
@@ -181,6 +182,6 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.codespell]
-skip = "*.bib,*.bst,*.cls,*.sty,*.tex,*.ipynb,*.pdf,*.png,*.zip,docs/report/*,scripts/**/results/*"
+skip = "*.bib,*.bst,*.cls,*.sty,*.tex,*.ipynb,*.pdf,*.png,*.zip,report/**,scripts/**/results/*"
 # CNA = Copy Number Array (DNAcopy::CNA class); not a typo.
 ignore-words-list = "cna"

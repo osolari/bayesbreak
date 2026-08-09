@@ -1,0 +1,13 @@
+
+\begin{tikzpicture}[node distance=8mm and 10mm]
+\node[successbox,text width=28mm] (block) {Block integration\\established};
+\node[successbox,right=of block,text width=28mm] (dp) {Sum-product identities\\established};
+\node[successbox,right=of dp,text width=28mm] (map) {Max-sum correctness\\established};
+\node[secondarybox,below=of dp,text width=28mm] (prior) {Cohesion + hazard\\repaired};
+\node[successbox,below=of map,text width=28mm] (shared) {Finite-candidate consistency\\established under conditions};
+\node[secondarybox,below=of block,text width=28mm] (score) {Score-template monotonicity\\repaired};
+\node[primarybox,below=of prior,text width=28mm] (approx) {Segment-score error propagation\\conditional};
+\draw[arrPrimary] (block)--(dp);\draw[arrPrimary] (dp)--(map);
+\draw[arrPrimary] (prior)--(dp);\draw[arrPrimary] (block)--(shared);\draw[arrPrimary] (dp)--(shared);
+\draw[arrPrimary] (block)--(score);\draw[arrPrimary] (block)--(approx);\draw[arrPrimary] (dp)--(approx);
+\end{tikzpicture}

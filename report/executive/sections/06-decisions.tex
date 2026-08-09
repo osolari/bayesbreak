@@ -1,0 +1,41 @@
+\section{Decision points and release criteria}
+\label{sec:exec-decisions}
+
+\begin{figure}[H]
+  \centering
+  \resizebox{0.95\textwidth}{!}{\input{shared/figures/tikz/roadmaps/executive_release_decisions.tex}}
+  \caption{Decision logic for a research release. Failure of a criterion leads to correction, a narrower claim, or an explicitly incomplete release; it does not permit substitution of an unrelated method or reinterpretation of an invalid calculation.}
+  \label{fig:exec-release-decisions}
+\end{figure}
+
+\subsection{Minimum conditions for a defensible release}
+
+A release suitable for external technical review should satisfy the following conditions.
+\begin{enumerate}
+  \item The author-approved title and generalized hierarchical Bayesian segmentation narrative remain unchanged.
+  \item All theorem-like statements used as established results have complete proofs; the routine-specific nonconjugate rate remains labeled as a proof obligation unless proved.
+  \item The implementation corrections in Stages S1--S4 are complete or any incomplete item is explicitly removed from the affected claim.
+  \item The invalid CGH comparator and methylation predictive calculation are not used unless corrected runs with new result IDs pass their statistical and schema checks.
+  \item Every reported comparison states the reference set, tuning budget, coordinate axis, matching rule, repetitions, and uncertainty treatment.
+  \item The book, main paper, executive summary, coding handoff, and presentation handoffs agree on terminology, notation, result status, and limitations.
+\end{enumerate}
+
+\subsection{Decisions required from the research lead}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.96\textwidth}{@{}p{0.24\textwidth}p{0.36\textwidth}X@{}}
+\toprule
+\textbf{Decision} & \textbf{Options} & \textbf{Consequence} \\
+\midrule
+Scope of the next implementation cycle & Minimum correction set S1--S5; or S1--S7 including expanded validation & The minimum route repairs invalid calculations and unresolved software states. The expanded route supports stronger empirical assessment but requires more compute and review time. \\
+Comparator study & Agreement-only analysis; or a fairness-controlled external benchmark with independent reference changepoints where available & Agreement-only results cannot support external accuracy. A benchmark requires task-specific baselines, matched tuning budgets, and independent references. \\
+Nonconjugate claims & Retain the conditional propagation theorem only; or prove method-specific rates under explicit assumptions & The first option is already mathematically defensible. The second is a separate theoretical project and should not delay release unless essential to the target venue. \\
+Latent-group extension & Retain the present finite criterion; or develop a normalized probabilistic mixture as future work & A normalized mixture changes the model and requires new theory, implementation, and experiments. It is not a silent revision of the current method. \\
+Release destination & Select journal venue, permanent repository, and data/artifact location & These choices determine formatting, anonymity, archival metadata, and reproducibility links but do not alter the scientific method. \\
+\bottomrule
+\end{tabularx}
+\caption{Research and release decisions that remain open.}
+\label{tab:exec-decisions}
+\end{table}

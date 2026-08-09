@@ -22,6 +22,7 @@ from sklearn.base import BaseEstimator, RegressorMixin, clone
 
 from . import dp as _dp
 from .base import BayesBreakSegmenter
+from .prediction import ExtrapolationPolicy, _record_prediction_policy, assign_to_partition
 from .validation import check_sample_weight, check_segmentation_input, require_fitted
 
 FloatArray = NDArray[np.floating]
@@ -162,29 +163,31 @@ class SharedBoundaryMultivariateSegmenter(BaseEstimator, RegressorMixin):
         self.channel_estimators_ = [st.est for st in channel_states]
         return self
 
-    def predict(self, X: ArrayLike) -> FloatArray:
+    def predict(
+        self,
+        X: ArrayLike,
+        *,
+        extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
+    ) -> FloatArray:
         """Piecewise-constant multivariate fit at query points ``X``."""
 
         require_fitted(self, ["map_curve_", "x_design_"])
         X_arr = np.asarray(X, dtype=float)
         x_new = X_arr[:, 0] if X_arr.ndim == 2 else X_arr.ravel()
-        idx = self._nearest_training_index(x_new)
-        seg = np.searchsorted(self.boundaries_internal_, idx, side="right") - 1
-        seg = np.clip(seg, 0, self.map_segment_means_.shape[0] - 1)
-        return self.map_segment_means_[seg]
+        segments = assign_to_partition(
+            x_new,
+            self.x_design_,
+            self.map_boundaries_,
+            extrapolation,
+        )
+        _record_prediction_policy(self, extrapolation)
+        return self.map_segment_means_[segments]
 
     def score(self, X: ArrayLike, y: ArrayLike) -> float:
         """Mean log marginal-likelihood evaluation on training data (scalar)."""
 
         require_fitted(self, ["log_evidence_"])
         return float(self.log_evidence_) / max(1, int(self.n_))
-
-    def _nearest_training_index(self, x_new: FloatArray) -> NDArray[np.intp]:
-        order = np.argsort(self.x_design_)
-        sorted_x = self.x_design_[order]
-        pos = np.searchsorted(sorted_x, x_new, side="right") - 1
-        pos = np.clip(pos, 0, len(sorted_x) - 1)
-        return order[pos]
 
     @staticmethod
     def _make_channel_A1_joint(st: _ChannelState, lA0_joint: FloatArray) -> FloatArray:
@@ -252,12 +255,18 @@ class IndependentMultivariateSegmenter(BaseEstimator, RegressorMixin):
         self.log_evidence_ = float(loge)
         return self
 
-    def predict(self, X: ArrayLike) -> FloatArray:
+    def predict(
+        self,
+        X: ArrayLike,
+        *,
+        extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
+    ) -> FloatArray:
         require_fitted(self, ["channel_estimators_"])
         X_arr = np.asarray(X, dtype=float)
         x_new = X_arr[:, 0] if X_arr.ndim == 2 else X_arr.ravel()
         X_col = x_new.reshape(-1, 1)
-        cols = [est.predict(X_col) for est in self.channel_estimators_]
+        cols = [est.predict(X_col, extrapolation=extrapolation) for est in self.channel_estimators_]
+        _record_prediction_policy(self, extrapolation)
         return np.column_stack(cols)
 
     def score(self, X: ArrayLike, y: ArrayLike) -> float:

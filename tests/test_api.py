@@ -14,6 +14,7 @@ from bayesbreak import (
     BayesBreakGaussian,
     BayesBreakLogisticNormal,
     BayesBreakPoisson,
+    PartitionPriorConfig,
     make_bayesbreak,
 )
 
@@ -176,6 +177,33 @@ class TestFactory:
     def test_factory_passes_kwargs(self):
         est = make_bayesbreak("gaussian", k_max=25)
         assert est.k_max == 25
+
+    @pytest.mark.parametrize(
+        "name",
+        [
+            "gaussian",
+            "poisson",
+            "binomial",
+            "beta",
+            "beta-obs",
+            "bernoulli",
+            "logistic-normal",
+            "negbin",
+        ],
+    )
+    def test_all_families_clone_partition_prior(self, name):
+        config = PartitionPriorConfig(
+            segment_cohesion="uniform",
+            boundary_hazard="poisson-occupancy",
+            parameters={"intensity": 0.5},
+        )
+        estimator = make_bayesbreak(name, partition_prior=config)
+        assert estimator.partition_prior == config
+        assert estimator.get_params(deep=False)["partition_prior"] is config
+        if name != "logistic-normal":
+            cloned = clone(estimator)
+            assert cloned.partition_prior == config
+            assert cloned.partition_prior is not estimator.partition_prior
 
     def test_factory_unknown_raises(self):
         with pytest.raises(ValueError, match="Unknown family"):

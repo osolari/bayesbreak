@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://osolari.github.io/bayesbreak/schemas/result_sidecar-1.0.0.schema.json",
+  "title": "BayesBreak result record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "result_id",
+    "lineage_status",
+    "parent_result_id",
+    "execution_status",
+    "scientific_interpretation",
+    "data_hash",
+    "weights_hash",
+    "split_hash",
+    "config_hash",
+    "code_hash",
+    "environment_hash",
+    "coordinate_metadata",
+    "metrics",
+    "artifacts",
+    "output_hashes"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "result_id": { "$ref": "#/$defs/resultId" },
+    "lineage_status": { "enum": ["original", "corrected"] },
+    "parent_result_id": {
+      "oneOf": [{ "$ref": "#/$defs/resultId" }, { "type": "null" }]
+    },
+    "execution_status": {
+      "enum": ["planned", "executed", "failed", "blocked"]
+    },
+    "scientific_interpretation": {
+      "enum": [
+        "pending",
+        "valid-for-stated-interpretation",
+        "excluded-from-intended-conclusion",
+        "real-diagnostic",
+        "implementation-verification"
+      ]
+    },
+    "data_hash": { "$ref": "#/$defs/optionalSha256" },
+    "weights_hash": { "$ref": "#/$defs/optionalSha256" },
+    "split_hash": { "$ref": "#/$defs/optionalSha256" },
+    "config_hash": { "$ref": "#/$defs/optionalSha256" },
+    "code_hash": { "$ref": "#/$defs/optionalSha256" },
+    "environment_hash": { "$ref": "#/$defs/optionalSha256" },
+    "coordinate_metadata": {
+      "type": "object",
+      "required": ["prediction_axis", "reference_axis", "reference_type"],
+      "properties": {
+        "prediction_axis": { "type": ["string", "null"] },
+        "reference_axis": { "type": ["string", "null"] },
+        "reference_type": { "type": ["string", "null"] }
+      },
+      "additionalProperties": true
+    },
+    "metrics": { "type": "object" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/relativePath" }
+    },
+    "output_hashes": {
+      "type": "object",
+      "additionalProperties": { "$ref": "#/$defs/sha256" }
+    }
+  },
+  "allOf": [
+    {
+      "if": { "properties": { "execution_status": { "const": "executed" } } },
+      "then": {
+        "properties": {
+          "data_hash": { "$ref": "#/$defs/sha256" },
+          "config_hash": { "$ref": "#/$defs/sha256" },
+          "code_hash": { "$ref": "#/$defs/sha256" },
+          "environment_hash": { "$ref": "#/$defs/sha256" }
+        }
+      }
+    },
+    {
+      "if": { "properties": { "lineage_status": { "const": "corrected" } } },
+      "then": {
+        "properties": {
+          "parent_result_id": { "$ref": "#/$defs/resultId" },
+          "execution_status": { "const": "executed" },
+          "output_hashes": { "minProperties": 1 }
+        }
+      },
+      "else": { "properties": { "parent_result_id": { "type": "null" } } }
+    }
+  ],
+  "$defs": {
+    "resultId": { "type": "string", "pattern": "^RES-BB-[A-Z0-9]+(?:-[A-Z0-9]+)*$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "optionalSha256": {
+      "oneOf": [{ "$ref": "#/$defs/sha256" }, { "type": "null" }]
+    },
+    "relativePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?![A-Za-z]:[\\\\/])(?!.*(?:^|/)\\.\\.(?:/|$)).+$"
+    }
+  }
+}

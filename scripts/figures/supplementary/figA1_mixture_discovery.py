@@ -54,8 +54,8 @@ Interpretation
 
 Outputs
 -------
-- docs/report/figures/fig6_mixture_discovery.png
-- docs/report/figures/fig6_mixture_discovery.pdf
+- results/figures/fig6_mixture_discovery.png
+- results/figures/fig6_mixture_discovery.pdf
 
 Usage
 -----
@@ -375,7 +375,7 @@ if __name__ == "__main__":
 
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     p = argparse.ArgumentParser()
-    p.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    p.add_argument("--outdir", type=Path, default=Path("results/figures"))
     args = p.parse_args()
     args.outdir.mkdir(parents=True, exist_ok=True)
     make_figure(args.outdir)

@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from ..base import BayesBreakSegmenter
+from ..priors import PartitionPriorConfig
 from ..utils import gammaln
 
 
@@ -32,6 +33,7 @@ class BayesBreakBeta(BayesBreakSegmenter):
         concentration: float = 50.0,
         alpha: float | None = None,
         beta: float | None = None,
+        partition_prior: PartitionPriorConfig | None = None,
     ) -> None:
         super().__init__(
             k_max=k_max,
@@ -40,6 +42,7 @@ class BayesBreakBeta(BayesBreakSegmenter):
             length_prior=length_prior,
             boundary_coordinates=boundary_coordinates,
             prior_k=prior_k,
+            partition_prior=partition_prior,
         )
         self.concentration = concentration
         self.alpha = alpha

@@ -49,6 +49,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from ..base import BayesBreakSegmenter
+from ..priors import PartitionPriorConfig
 from ..utils import logsumexp
 
 Approx = Literal["laplace", "jj", "pg_vb", "pg-vb", "ep", "gh", "quadrature"]
@@ -472,6 +473,7 @@ class BayesBreakLogisticNormal(BayesBreakSegmenter):
         rho2: float | None = None,
         gh_points: int = 25,
         max_iter: int = 50,
+        partition_prior: PartitionPriorConfig | None = None,
     ):
         super().__init__(
             k_max=k_max,
@@ -480,6 +482,7 @@ class BayesBreakLogisticNormal(BayesBreakSegmenter):
             length_prior=length_prior,
             boundary_coordinates=boundary_coordinates,
             prior_k=prior_k,
+            partition_prior=partition_prior,
         )
         # Accept both "pg_vb" and "pg-vb" (paper notation).
         self.approx = str(approx).lower().replace("-", "_")

@@ -1,0 +1,134 @@
+{
+  "phase": "6",
+  "verification_id": "VERIFY-BB-PHASE6-SCIENCE-001",
+  "date": "2026-08-05",
+  "title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+  "status": "pass_with_explicit_incomplete_items",
+  "protected_scientific_direction": {
+    "preserved": true,
+    "description": "BayesBreak remains a generalized hierarchical Bayesian multiple-changepoint method based on segment marginal likelihoods, with irregular designs, multiple related sequences, known groups, and finite latent groups as central components.",
+    "template": "SAIM Unified Professional Template v1.0, Computer Modern Sans"
+  },
+  "scientific_corrections": [
+    {
+      "id": "CORR-BB-P6-001",
+      "topic": "partition support and evidence",
+      "change": "Separated admissible-partition support from observed segment marginal likelihoods; zero likelihood no longer changes the prior normalizing set.",
+      "effect": "Clarifies the probability model without changing the estimator or any archived result."
+    },
+    {
+      "id": "CORR-BB-P6-002",
+      "topic": "reported segment functional",
+      "change": "Defined the reported quantity as m_star(theta)=m(theta;d_star) when the conditional mean depends on exposure or trial structure.",
+      "effect": "Distinguishes a scientific reporting scale from observation-specific exposure."
+    },
+    {
+      "id": "CORR-BB-P6-003",
+      "topic": "Beta-observation segment integration",
+      "change": "Retained the one-dimensional integral and removed unsupported universal monotonicity and routine-wide convergence-rate language.",
+      "effect": "Exactness and approximation statements now match the available derivation and numerical checks."
+    },
+    {
+      "id": "CORR-BB-P6-004",
+      "topic": "sum-product and MAP inference",
+      "change": "Separated the sum-product result from the max-sum/backtracking result and corrected storage/output complexity statements.",
+      "effect": "Prevents marginal posterior summaries from being conflated with the joint MAP partition."
+    },
+    {
+      "id": "CORR-BB-P6-005",
+      "topic": "decision rules",
+      "change": "Stated the conditions under which coordinatewise posterior decisions minimize additive or Hamming loss.",
+      "effect": "Makes the loss-function assumptions explicit."
+    },
+    {
+      "id": "CORR-BB-P6-006",
+      "topic": "irregular-design prior",
+      "change": "Corrected the fixed-count Poisson interval-occupancy factor to local odds exp(Lambda_j)-1.",
+      "effect": "Aligns the prior formula with conditioning on the number of occupied intervals."
+    },
+    {
+      "id": "CORR-BB-P6-007",
+      "topic": "latent-group optimization",
+      "change": "Aligned the Jensen-minorized criterion with the implementation-scale group weight, including n_g log gamma_u(i,j).",
+      "effect": "Matches the stated coordinate-ascent objective to the implemented scoring convention."
+    },
+    {
+      "id": "CORR-BB-P6-008",
+      "topic": "nonconjugate approximation",
+      "change": "Tightened assumptions, removed unsupported method-specific rates, and bounded normalized-distribution error by min(1, exp(2 eta)-1).",
+      "effect": "Limits the theorem to consequences implied by a verified uniform segment log-score bound."
+    },
+    {
+      "id": "CORR-BB-P6-009",
+      "topic": "changepoint matching",
+      "change": "Specified maximum-cardinality, minimum-total-distance one-to-one matching and NA when no match exists.",
+      "effect": "Defines the evaluation metric unambiguously."
+    }
+  ],
+  "formal_and_numerical_checks": {
+    "passed": true,
+    "count": 13,
+    "verification_id": "VERIFY-BB-PHASE6-MATH-001"
+  },
+  "bibliography": {
+    "passed": true,
+    "keys": 38,
+    "annotations": 38
+  },
+  "documents": {
+    "technical_book_pages": 168,
+    "main_paper_two_column_pages": 35,
+    "main_paper_single_column_pages": 42,
+    "executive_summary_pages": 12,
+    "total_pages": 257
+  },
+  "formal_status": {
+    "book_established_statements": 28,
+    "book_immediate_proofs": 28,
+    "book_proof_obligations": 1,
+    "paper_established_statements": 12,
+    "paper_immediate_proofs": 12,
+    "paper_proof_obligations": 1
+  },
+  "implementation_tests": {
+    "historical": {
+      "result_id": "RES-BB-QA-002",
+      "collected": 179,
+      "passed": 157,
+      "skipped": 5,
+      "unresolved": 17,
+      "failed_reported": 0
+    },
+    "phase6_bounded_rerun": {
+      "result_id": "RES-BB-QA-003",
+      "collected": 179,
+      "passed": 173,
+      "skipped": 5,
+      "unresolved": 1,
+      "failed": 0,
+      "per_test_cap_seconds": 20,
+      "unresolved_test": "tests/test_families.py::TestNonConjugateApproximations::test_logistic_normal_approximations_agree_approximately[ep]"
+    }
+  },
+  "archived_results": {
+    "expected_files": 53,
+    "missing": [],
+    "hash_mismatches": [],
+    "all_unchanged": true,
+    "research_experiments_rerun": false
+  },
+  "scientific_package_code_changed": false,
+  "visual_qa": {
+    "passed": true,
+    "pages": 257,
+    "contact_sheets": 22
+  },
+  "incomplete_items": [
+    "One routine-specific nonconjugate approximation-rate statement remains a proof obligation and is not used as an established rate result.",
+    "The EP logistic-normal comparison did not complete under the 20-second per-test cap; it is unresolved rather than failed.",
+    "The previously identified latent-group returned-objective/restart-selection defect was not repaired because package-code changes were outside this manuscript phase.",
+    "Corrected array-CGH comparator and methylation posterior-predictive computations were not run.",
+    "Independent external changepoint annotations are not available for the applied studies.",
+    "The final journal venue, permanent software repository, and data-release locations remain unset."
+  ]
+}

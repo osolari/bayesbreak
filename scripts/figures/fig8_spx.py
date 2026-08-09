@@ -6,7 +6,7 @@ download, otherwise falls back to a deterministic GARCH-like regime analog).
 
 Outputs
 -------
-- docs/report/figures/fig8_spx.{png,pdf}
+- results/figures/fig8_spx.{png,pdf}
 """
 
 from __future__ import annotations
@@ -48,7 +48,7 @@ def main(outdir: Path, simulated: bool, subsample: int) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--simulated", action="store_true")
     ap.add_argument("--subsample", type=int, default=4)
     args = ap.parse_args()

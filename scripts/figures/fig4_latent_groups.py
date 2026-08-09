@@ -36,9 +36,9 @@ group-averaged signal closely tracks ground truth.
 
 Outputs
 -------
-- docs/report/figures/fig4_latent_groups.png
-- docs/report/figures/fig4_latent_groups.pdf
-- docs/report/figures/fig4_latent_groups_cropped.png  (2-panel version
+- results/figures/fig4_latent_groups.png
+- results/figures/fig4_latent_groups.pdf
+- results/figures/fig4_latent_groups_cropped.png  (2-panel version
   used in the running text of section 6)
 
 Usage
@@ -319,7 +319,7 @@ def main(
     axE.text(
         0.98,
         0.04,
-        f"acc = {acc*100:.0f}%",
+        f"acc = {acc * 100:.0f}%",
         transform=axE.transAxes,
         ha="right",
         va="bottom",
@@ -429,7 +429,7 @@ def main(
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO, format="%(message)s")
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--seed", type=int, default=0)
     # Larger n_seq makes the heatmap and confidence histogram more informative.
     ap.add_argument("--n", type=int, default=80)

@@ -114,6 +114,35 @@ class TestRuptures:
         assert res.k >= 1
         assert "n_candidate_breakpoints" in res.extra
 
+    def test_wbs_fixed_count_recovers_obvious_step(self):
+        pytest.importorskip("ruptures")
+        rng = np.random.default_rng(4)
+        y = np.r_[np.zeros(100), np.full(100, 5.0)] + rng.normal(0.0, 0.2, 200)
+        res = segment_with(
+            "wild_binary_segmentation",
+            y,
+            n_bkps=1,
+            n_random_windows=100,
+            random_state=1,
+        )
+        assert res.boundaries.size == 1
+        assert abs(int(res.boundaries[0]) - 100) <= 5
+        assert res.extra["candidate_selection"] == "candidate-constrained-dynamic-programming"
+
+    def test_wbs_penalty_recovers_obvious_step(self):
+        pytest.importorskip("ruptures")
+        rng = np.random.default_rng(4)
+        y = np.r_[np.zeros(100), np.full(100, 5.0)] + rng.normal(0.0, 0.2, 200)
+        res = segment_with(
+            "wild_binary_segmentation",
+            y,
+            penalty=10.0,
+            n_random_windows=100,
+            random_state=1,
+        )
+        assert res.boundaries.size == 1
+        assert abs(int(res.boundaries[0]) - 100) <= 5
+
 
 class TestCBSImportSafety:
     """The CBS wrapper raises a readable ImportError when rpy2/DNAcopy are

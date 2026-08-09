@@ -10,6 +10,7 @@ import numpy as np
 from numpy.typing import ArrayLike
 
 from ..base import BayesBreakSegmenter
+from ..priors import PartitionPriorConfig
 from ..utils import gammaln
 
 
@@ -33,6 +34,7 @@ class BayesBreakBinomial(BayesBreakSegmenter):
         n_trials: int | float | ArrayLike = 1,
         alpha: float | None = None,
         beta: float | None = None,
+        partition_prior: PartitionPriorConfig | None = None,
     ) -> None:
         super().__init__(
             k_max=k_max,
@@ -41,6 +43,7 @@ class BayesBreakBinomial(BayesBreakSegmenter):
             length_prior=length_prior,
             boundary_coordinates=boundary_coordinates,
             prior_k=prior_k,
+            partition_prior=partition_prior,
         )
         self.n_trials = n_trials
         self.alpha = alpha

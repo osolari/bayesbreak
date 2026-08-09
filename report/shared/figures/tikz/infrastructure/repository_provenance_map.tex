@@ -1,0 +1,13 @@
+
+\begin{tikzpicture}[node distance=7mm and 8mm]
+\node[primarybox,text width=23mm,double] (raw) {Raw data + hashes};
+\node[secondarybox,right=of raw,text width=24mm] (load) {Loaders + schemas};
+\node[primarybox,right=of load,text width=24mm] (model) {Block and DP modules};
+\node[primarybox,right=of model,text width=23mm] (exp) {Experiment registry};
+\node[successbox,right=of exp,text width=23mm,double] (side) {Result sidecars};
+\draw[arrPrimary] (raw)--(load);\draw[arrPrimary] (load)--(model);\draw[arrPrimary] (model)--(exp);\draw[arrPrimary] (exp)--(side);
+\node[secondarybox,below=10mm of side,text width=25mm] (assets) {Figures and tables};
+\node[successbox,left=of assets,text width=25mm] (book) {Book and papers};
+\draw[arrPrimary] (side)--(assets);\draw[arrPrimary] (assets)--(book);
+\draw[arrSecondary,dashed,bend right=25] (book.west) to node[below,font=\scriptsize]{manifest verifies lineage}(raw.south);
+\end{tikzpicture}

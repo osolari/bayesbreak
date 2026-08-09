@@ -99,27 +99,37 @@ $$y_i \mid \eta_q \sim \text{Bernoulli}(\sigma(\eta_q)),\qquad
 The segment-evidence integral is not closed-form. Choose one
 approximation via `approx=`:
 
-| `approx=` | Block routine | Uniform-$\varepsilon$ rate (`prop:uniform-bounds`) |
+| `approx=` | Block routine | Certification status |
 |---|---|---|
-| `"laplace"` | 1-D Newton + Laplace expansion | $O(n^{-1})$ on reachable blocks |
-| `"jj"` | Jaakkola–Jordan variational lower bound | $O(n^{-1})$ on reachable blocks |
-| `"pg_vb"` | Pólya–Gamma mean-field | $O(n^{-1})$ on reachable blocks |
-| `"ep"` | True Minka EP with accumulated site normalizers | not uniformly bounded; convergence-conditional |
-| `"gh"` / `"quadrature"` | 1-D Gauss–Hermite (low / high node count) | $O(Q^{-2r})$ for $C^{2r}$ integrands |
+| `"laplace"` | 1-D Newton + Laplace expansion | routine-specific uniform rate unresolved |
+| `"jj"` | Jaakkola–Jordan variational lower bound | routine-specific uniform rate unresolved |
+| `"pg_vb"` | Pólya–Gamma mean-field | routine-specific uniform rate unresolved |
+| `"ep"` | True Minka EP with accumulated site normalizers | convergence and uniform rate unresolved |
+| `"gh"` / `"quadrature"` | 1-D Gauss–Hermite (low / high node count) | tail and quadrature error must be established |
 
 Use `run_non_conjugate_diagnostics(est, ref)` to measure the empirical
-$\varepsilon$ against a high-Q reference; the report emits a
-`theoretical_rate_violated` flag when the empirical $\varepsilon$ exceeds
-the routine's expected rate by an order of magnitude, or when EP fails
-to converge on at least one block (`prop:uniform-bounds (v)`).
+$\varepsilon$ against a declared reference. The report emits a support hash,
+separate numerical-error fields, and explicit unverifiable/failure states;
+it does not infer a rate from the approximation name.
 
 The stability theorem (`prop:stability`) bounds the propagated effect on
 the segmentation posterior: $\bigl|\Delta \log\frac{P(k\mid y)}{P(k'\mid y)}\bigr|
 \le (k+k')\,\varepsilon$ for the segment-count odds and
 $\bigl|\Delta \log\frac{P(b_i\mid y, k)}{P(b_{i'}\mid y, k)}\bigr|
 \le 2k\,\varepsilon$ for the fixed-$k$ boundary-event odds. The total-
-variation bound on $P(k\mid y)$ is $\exp(2 k_{\max} \varepsilon) - 1$
+variation bound on $P(k\mid y)$ is
+$\min\{1, \exp(2 k_{\max} \varepsilon) - 1\}$
 (Corollary `cor:probability-error-conversion`).
+
+### Beta-observation posterior prediction
+
+For `BayesBreakBetaObs`, posterior prediction remains in the Beta observation
+family. The implementation integrates the new-observation Beta density over
+the segment posterior for `mu`; it does not substitute a Gaussian density.
+New observations require known positive precision `phi_new` values, passed as
+the family descriptor in prediction `sample_weight`. Exact endpoints are
+outside support. The excluded historical methylation held-out score remains
+excluded until a separately approved in-support rerun creates a new result ID.
 
 ## Multi-subject and grouped wrappers
 

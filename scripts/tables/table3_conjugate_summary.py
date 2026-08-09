@@ -44,9 +44,9 @@ Interpretation
 
 Outputs
 -------
-- docs/report/tables/table3_conjugate_summary.csv
-- docs/report/tables/table3_conjugate_summary.md
-- docs/report/tables/table3_conjugate_summary.tex
+- results/tables/table3_conjugate_summary.csv
+- results/tables/table3_conjugate_summary.md
+- results/tables/table3_conjugate_summary.tex
 
 Usage
 -----
@@ -300,7 +300,7 @@ def main(outdir: Path, seed: int, n_rep: int, tau: int) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/tables"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n-rep", type=int, default=25)
     ap.add_argument("--tau", type=int, default=2)

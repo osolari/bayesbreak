@@ -1,0 +1,74 @@
+{
+  "phase": "6",
+  "status": "pass",
+  "renderer": "PDFium through /home/oai/skills/pdfs/scripts/render_pdf.py",
+  "dpi": 150,
+  "documents": {
+    "technical_book": {
+      "pages_inspected": 168,
+      "contact_sheets": 14,
+      "render_dir": "qa/renders/book_all",
+      "contact_sheet_pattern": "qa/contact_sheets/book_*.jpg"
+    },
+    "main_paper_two_column": {
+      "pages_inspected": 35,
+      "contact_sheets": 3,
+      "render_dir": "qa/renders/paper",
+      "contact_sheet_pattern": "qa/contact_sheets/paper_*.jpg"
+    },
+    "main_paper_single_column": {
+      "pages_inspected": 42,
+      "contact_sheets": 4,
+      "render_dir": "qa/renders/paper_single_all",
+      "contact_sheet_pattern": "qa/contact_sheets/paper_single_*.jpg"
+    },
+    "executive_summary": {
+      "pages_inspected": 12,
+      "contact_sheets": 1,
+      "render_dir": "qa/renders/executive",
+      "contact_sheet_pattern": "qa/contact_sheets/executive_*.jpg"
+    }
+  },
+  "total_pages_inspected": 257,
+  "total_contact_sheets_inspected": 22,
+  "targeted_full_page_checks": [
+    {
+      "document": "technical_book",
+      "page": 31,
+      "focus": "factorized product-partition prior and formal setup"
+    },
+    {
+      "document": "technical_book",
+      "page": 43,
+      "focus": "sum-product theorem and immediate proof"
+    },
+    {
+      "document": "technical_book",
+      "page": 56,
+      "focus": "Poisson interval-occupancy local odds"
+    },
+    {
+      "document": "technical_book",
+      "page": 62,
+      "focus": "latent-group Jensen minorization and objective"
+    },
+    {
+      "document": "technical_book",
+      "page": 71,
+      "focus": "nonconjugate score perturbation and total-variation bound"
+    }
+  ],
+  "checks": {
+    "blank_or_nearly_blank_pages": 0,
+    "clipped_text_or_equations": 0,
+    "overlapping_elements": 0,
+    "broken_or_missing_glyphs": 0,
+    "missing_figure_frames": 0,
+    "unreadable_tables": 0,
+    "unresolved_reference_markers": 0
+  },
+  "final_findings": {
+    "reported_defects": [],
+    "disposition": "All 257 pages were inspected in 22 contact sheets; targeted pages containing the principal Phase 6 mathematical corrections were also inspected at full-page scale. No release-blocking visual defect was observed."
+  }
+}

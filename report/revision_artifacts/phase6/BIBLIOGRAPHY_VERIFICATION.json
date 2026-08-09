@@ -1,0 +1,74 @@
+{
+  "phase": "6",
+  "status": "pass",
+  "passed": true,
+  "scope": {
+    "structural": "All book bibliography keys, annotation files, manifest entries, annotation hashes, project-relationship declarations, and verification-status fields were checked.",
+    "metadata": "Phase 6 independently checked and corrected the records listed below against publisher, institutional, or archival records. The remaining entries retain the prior primary-source verification and were rechecked for structural consistency and explicit project relevance.",
+    "full_text_limit": "This is a metadata-and-use audit, not a claim that every cited work was reread in full during Phase 6."
+  },
+  "counts": {
+    "bibliography_keys": 38,
+    "unique_keys": 38,
+    "annotation_files": 38,
+    "manifest_entries": 38
+  },
+  "one_to_one_mapping": true,
+  "missing_annotation_files": [],
+  "annotation_hash_mismatches": [],
+  "annotations_without_explicit_project_relationship": [],
+  "annotations_without_verification_status": [],
+  "phase6_metadata_corrections": [
+    {
+      "bib_key": "auger1989segment",
+      "correction": "Corrected title, venue, volume, issue, pages, and DOI for Auger and Lawrence (1989).",
+      "verification_scope": "publisher or institutional bibliographic record"
+    },
+    {
+      "bib_key": "denison1998bayesian",
+      "correction": "Corrected title, authors, JRSS B volume/issue/pages, and DOI for Denison, Mallick, and Smith (1998).",
+      "verification_scope": "publisher bibliographic record"
+    },
+    {
+      "bib_key": "bleakley2011groupfused",
+      "correction": "Classified the cited record as arXiv:1106.4199 and removed unsupported journal metadata.",
+      "verification_scope": "arXiv record"
+    },
+    {
+      "bib_key": "yao1988biometrika",
+      "correction": "Corrected the author to Yi-Ching Yao and added the Statistics & Probability Letters DOI.",
+      "verification_scope": "publisher bibliographic record"
+    },
+    {
+      "bib_key": "frick2014smuce",
+      "correction": "Retained the corrected JRSS B 76(3), 495-580 record and DOI 10.1111/rssb.12047.",
+      "verification_scope": "publisher bibliographic record"
+    },
+    {
+      "bib_key": "rudin1992rof",
+      "correction": "Standardized the Rudin-Osher-Fatemi metadata and DOI.",
+      "verification_scope": "publisher bibliographic record"
+    },
+    {
+      "bib_key": "tibshirani2005fused",
+      "correction": "Standardized fused-lasso journal metadata and DOI.",
+      "verification_scope": "publisher bibliographic record"
+    },
+    {
+      "bib_key": "jaakkola2000logisticvb",
+      "correction": "Standardized the Jaakkola-Jordan variational-logistic citation metadata.",
+      "verification_scope": "proceedings or institutional record"
+    },
+    {
+      "bib_key": "dempster1977em",
+      "correction": "Standardized the EM paper metadata and DOI.",
+      "verification_scope": "publisher bibliographic record"
+    },
+    {
+      "bib_key": "teicher1963identifiability",
+      "correction": "Standardized the finite-mixture identifiability metadata and DOI.",
+      "verification_scope": "publisher bibliographic record"
+    }
+  ],
+  "interpretive_rule": "Annotations state how each source is used in BayesBreak and do not transfer results beyond the assumptions of the cited source."
+}

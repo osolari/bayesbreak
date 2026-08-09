@@ -1,0 +1,57 @@
+\chapter{Reproducibility, remaining validation, and conclusion}
+\label{ch:conclusion}\label{sec:conclusion}
+\chapterpromise{A final account of the established statistical results, the executed empirical results, the unresolved implementation work, and the scope of the generalized method.}
+
+\section{Established statistical results}
+\BayesBreak is a finite Bayesian calculation over ordered partitions. For regular
+exponential-family segment models with proper conjugate priors, exact segment marginal likelihoods
+and posterior moments are obtained from sufficient statistics. Under a factorized partition prior,
+sum-product dynamic programming yields fixed-count marginal likelihoods, $p(k\mid y)$,
+changepoint marginals, changepoint-event probabilities, and Bayes curves. A separate max-sum
+recursion yields the joint MAP partition. For aligned conditionally independent sequences with a
+common partition, sequence-specific segment marginal likelihoods multiply. The finite latent-group
+criterion has monotone alternating updates under exact maximization of its Jensen minorizer. For
+nonconjugate segment models, the posterior-odds bounds are conditional on a uniform error bound for
+every admissible segment score.
+
+\section{Interpretation of the executed results}
+The archive contains executed synthetic recovery, boundary-calibration, observation-model,
+latent-group, nonconjugate-approximation, and finite-range timing studies, together with four
+real-data fits. The real-data analyses are descriptive because independent changepoint labels are
+not archived. Comparator scores that use the \BayesBreak joint-MAP changepoints as the reference
+measure agreement rather than external accuracy. The two incompatible computations remain in the
+result history but are excluded from comparator or predictive conclusions.
+
+\section{Implementation and validation still required}
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/roadmaps/implementation_validation_stages.tex}}
+\caption{Remaining implementation and validation stages. Corrections to source code and controlled
+recomputations are distinct from the mathematical and editorial revision of this volume.}
+\label{fig:implementation-gates}
+\end{figure}
+
+The highest-priority implementation tasks are: explicit representation of segment cohesion and
+boundary hazard; correction of the final objective returned by the latent-group optimizer;
+family-correct posterior prediction for Beta-valued observations; rejection or explicit modeling of
+out-of-range prediction coordinates; the one-to-one changepoint matching rule; validation of
+comparator coordinate axes; complete result metadata; and resolution of the 17 bounded-run tests
+that neither passed nor failed within the previous time limit. Corrected comparator or predictive
+calculations must receive new result identifiers and must not overwrite the archived outputs.
+
+\section{Conclusion}
+The main contribution of \BayesBreak is a generalized hierarchical Bayesian segmentation method
+that combines exponential-family segment integration with exact posterior computation over
+ordered partitions and extends that construction to irregular designs, multiple aligned sequences,
+known groups, and finite latent groups. The generality lies in the observation-model independence of
+the partition recursion once mathematically valid segment marginal likelihoods are supplied. The
+hierarchical structure lies in explicit probability models for shared or group-specific
+changepoints and in the separately stated latent-group optimization criterion.
+
+This formulation is grounded in conjugate analysis, product-partition models, Bayesian
+multiple-changepoint recursions, hierarchical modeling, and dynamic programming. Its limitations
+are equally mathematical: exactness depends on finite segment integrals and local factorization;
+shared-changepoint pooling depends on alignment and conditional independence; nonconjugate results
+depend on numerical error control; and empirical conclusions are limited by the available
+references, replications, and comparator definitions. Stating those conditions precisely preserves
+the breadth of the generalized method without replacing statistical claims by branding language.

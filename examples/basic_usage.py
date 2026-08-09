@@ -32,7 +32,7 @@ def main() -> int:
         print("matplotlib not installed; skipping plot.")
         return 0
 
-    outdir = Path("docs/report/figures")
+    outdir = Path("results/figures")
     outdir.mkdir(parents=True, exist_ok=True)
     plt.figure(figsize=(10, 3))
     plt.plot(y, label="y")

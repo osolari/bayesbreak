@@ -66,6 +66,7 @@ class DatasetBundle:
         )
 
 
+from .base import DatasetCard, load_with_provenance  # noqa: E402
 from .cgh import load_cgh  # noqa: E402
 from .methylation import load_methylation  # noqa: E402
 from .spx import load_spx  # noqa: E402
@@ -73,10 +74,12 @@ from .welllog import load_welllog  # noqa: E402
 
 __all__ = [
     "DatasetBundle",
+    "DatasetCard",
     "banner",
     "cache_dir",
     "describe_fallback",
     "load_cgh",
+    "load_with_provenance",
     "load_methylation",
     "load_spx",
     "load_welllog",

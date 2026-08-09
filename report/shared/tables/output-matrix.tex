@@ -1,0 +1,14 @@
+% Reusable table macro. Argument is the desired table width.
+\newcommand{\CSOutputMatrix}[1]{%
+\renewcommand{\arraystretch}{1.22}%
+\begin{tabularx}{#1}{@{}L{0.18\linewidth}Y Y Y@{}}
+\toprule
+\CSTableHead{Layer} & \CSTableHead{Paper} & \CSTableHead{Slides} & \CSTableHead{Book} \\
+\midrule
+Opening & Editorial rail & Solid-orange cover & Solid-orange cover \\
+Narrative unit & Section and claim & One claim per frame & Chapter and learning objective \\
+Evidence & Captioned figure/table & Visual plus takeaway & Evidence plus explanation \\
+Reusable assets & \multicolumn{3}{l}{Metadata, figures, tables, code, references, notation, and status labels} \\
+\bottomrule
+\end{tabularx}%
+}

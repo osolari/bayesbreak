@@ -30,6 +30,7 @@ from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass, field
+from enum import Enum
 from typing import TYPE_CHECKING, Any
 
 import numpy as np
@@ -43,6 +44,13 @@ if TYPE_CHECKING:
 
 
 FloatArray = NDArray[np.floating]
+
+
+class ExtrapolationPolicy(str, Enum):
+    ERROR = "error"
+    CLIP = "clip"
+    LEFT_ENDPOINT = "left_endpoint"
+    RIGHT_ENDPOINT = "right_endpoint"
 
 
 # -----------------------------------------------------------------------------
@@ -89,8 +97,50 @@ class Unit:
 # -----------------------------------------------------------------------------
 
 
-def _assign_to_map_blocks(x_design: FloatArray, x_new: FloatArray) -> NDArray[np.intp]:
-    """Map each new ``x`` to the index of its nearest training design point.
+def _assign_training_positions(
+    fitted_coordinates: ArrayLike,
+    coordinates: ArrayLike,
+    extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
+) -> NDArray[np.intp]:
+    """Assign queries to preceding fitted coordinates under a named policy."""
+
+    fitted = np.asarray(fitted_coordinates, dtype=float).ravel()
+    query = np.asarray(coordinates, dtype=float).ravel()
+    if fitted.size == 0 or np.any(~np.isfinite(fitted)) or np.any(np.diff(fitted) <= 0):
+        raise ValueError("fitted_coordinates must be finite and strictly increasing")
+    if np.any(~np.isfinite(query)):
+        raise ValueError("prediction coordinates must be finite")
+    try:
+        policy = ExtrapolationPolicy(extrapolation)
+    except ValueError as exc:
+        choices = ", ".join(item.value for item in ExtrapolationPolicy)
+        raise ValueError(
+            f"Unknown extrapolation policy {extrapolation!r}; expected {choices}"
+        ) from exc
+
+    left = query < fitted[0]
+    right = query > fitted[-1]
+    if policy is ExtrapolationPolicy.ERROR and np.any(left | right):
+        raise ValueError(
+            f"prediction coordinates must lie in [{fitted[0]}, {fitted[-1]}] "
+            "when extrapolation='error'"
+        )
+    if policy is ExtrapolationPolicy.LEFT_ENDPOINT and np.any(right):
+        raise ValueError("right-of-support coordinates require right_endpoint or clip")
+    if policy is ExtrapolationPolicy.RIGHT_ENDPOINT and np.any(left):
+        raise ValueError("left-of-support coordinates require left_endpoint or clip")
+
+    positions = np.searchsorted(fitted, query, side="right") - 1
+    return np.clip(positions, 0, fitted.size - 1).astype(np.intp, copy=False)
+
+
+def assign_to_partition(
+    coordinates: ArrayLike,
+    fitted_coordinates: ArrayLike,
+    boundaries: Sequence[int],
+    extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
+) -> NDArray[np.intp]:
+    """Assign query coordinates to fitted MAP segments under a named policy.
 
     Implements the exported segment-assignment map of
     Definition ``def:segment-assignment-map``: under the exported MAP
@@ -98,11 +148,35 @@ def _assign_to_map_blocks(x_design: FloatArray, x_new: FloatArray) -> NDArray[np
     training index of the segment that contains it.
     """
 
-    order = np.argsort(x_design)
-    sorted_x = x_design[order]
-    positions = np.searchsorted(sorted_x, x_new, side="right") - 1
-    positions = np.clip(positions, 0, len(sorted_x) - 1)
-    return order[positions]
+    fitted = np.asarray(fitted_coordinates, dtype=float).ravel()
+    partition = np.asarray(boundaries, dtype=int)
+    if (
+        partition.ndim != 1
+        or partition.size < 2
+        or partition[0] != 0
+        or partition[-1] != fitted.size
+        or np.any(np.diff(partition) <= 0)
+    ):
+        raise ValueError("boundaries must be a strict partition from 0 to n")
+    positions = _assign_training_positions(fitted, coordinates, extrapolation)
+    segments = np.searchsorted(partition, positions, side="right") - 1
+    return np.clip(segments, 0, partition.size - 2).astype(np.intp, copy=False)
+
+
+def _record_prediction_policy(
+    estimator: BayesBreakSegmenter,
+    extrapolation: str | ExtrapolationPolicy,
+) -> None:
+    policy = ExtrapolationPolicy(extrapolation)
+    metadata = {
+        "extrapolation": policy.value,
+        "coordinate_support": [
+            float(estimator.x_design_[0]),
+            float(estimator.x_design_[-1]),
+        ],
+    }
+    estimator.prediction_metadata_ = metadata
+    estimator.prediction_provenance_ = dict(metadata)
 
 
 def posterior_predictive_logpdf(
@@ -112,6 +186,7 @@ def posterior_predictive_logpdf(
     *,
     sample_weight: ArrayLike | None = None,
     per_sample: bool = False,
+    extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
 ) -> float | FloatArray:
     """Pointwise posterior-predictive log-density under the fitted MAP segmentation.
 
@@ -137,10 +212,9 @@ def posterior_predictive_logpdf(
     if estimator.map_boundaries_ is None or estimator.x_design_ is None:
         raise RuntimeError("Estimator must be fitted before scoring.")
 
-    training_pos = _assign_to_map_blocks(estimator.x_design_, x_new)
     boundaries = np.asarray(estimator.map_boundaries_, dtype=int)
-    seg_index = np.searchsorted(boundaries, training_pos, side="right") - 1
-    seg_index = np.clip(seg_index, 0, len(boundaries) - 2)
+    seg_index = assign_to_partition(x_new, estimator.x_design_, boundaries, extrapolation)
+    _record_prediction_policy(estimator, extrapolation)
 
     per = np.zeros(m, dtype=float)
     for s in range(len(boundaries) - 1):
@@ -164,6 +238,7 @@ def held_out_log_likelihood_trace(
     y_new: ArrayLike,
     *,
     prefix_fractions: ArrayLike | None = None,
+    extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
 ) -> FloatArray:
     """Cumulative held-out log-predictive — eq. §``prediction-diagnostics``."""
 
@@ -175,7 +250,13 @@ def held_out_log_likelihood_trace(
     y_sorted = y_arr[order]
     m = x_sorted.size
 
-    per = posterior_predictive_logpdf(estimator, x_sorted, y_sorted, per_sample=True)
+    per = posterior_predictive_logpdf(
+        estimator,
+        x_sorted,
+        y_sorted,
+        per_sample=True,
+        extrapolation=extrapolation,
+    )
     assert isinstance(per, np.ndarray)
     cumulative = np.cumsum(per)
 
@@ -298,14 +379,15 @@ def predict_map_signal(
     X_star: ArrayLike,
     *,
     mode: str = "MAP",
+    extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
 ) -> FloatArray:
     """Algorithm ``predict-map`` — return MAP / Bayes signal at query points."""
 
     mode = mode.lower()
     if mode == "map":
-        return estimator.predict(X_star, mode="map")
+        return estimator.predict(X_star, mode="map", extrapolation=extrapolation)
     if mode == "bayes":
-        return estimator.predict(X_star, mode="bayes")
+        return estimator.predict(X_star, mode="bayes", extrapolation=extrapolation)
     raise ValueError("mode must be 'MAP' or 'Bayes'.")
 
 
@@ -320,6 +402,7 @@ def pit_residuals(
     y_new: ArrayLike,
     *,
     sample_weight: ArrayLike | None = None,
+    extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
 ) -> FloatArray:
     """Probability-integral transform residuals for closed-CDF families.
 
@@ -347,10 +430,9 @@ def pit_residuals(
     m = int(x_new.size)
     w_arr = check_sample_weight(sample_weight, m)
 
-    training_pos = _assign_to_map_blocks(estimator.x_design_, x_new)
     boundaries = np.asarray(estimator.map_boundaries_, dtype=int)
-    seg_index = np.searchsorted(boundaries, training_pos, side="right") - 1
-    seg_index = np.clip(seg_index, 0, len(boundaries) - 2)
+    seg_index = assign_to_partition(x_new, estimator.x_design_, boundaries, extrapolation)
+    _record_prediction_policy(estimator, extrapolation)
 
     pits = np.zeros(m, dtype=float)
     for s in range(len(boundaries) - 1):

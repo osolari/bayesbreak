@@ -7,8 +7,8 @@ Equivalent to::
 Internally invokes the per-figure / per-table scripts shipped under
 ``scripts/figures/`` and ``scripts/tables/``. Outputs land in
 ``OUTDIR/figures`` and ``OUTDIR/tables`` (defaulting to
-``docs/report/figures`` and ``docs/report/tables`` so the report build
-picks them up directly).
+``results/figures`` and ``results/tables``). Archived Phase 6 report
+assets are read-only.
 """
 
 from __future__ import annotations
@@ -74,7 +74,7 @@ def main(argv: list[str] | None = None) -> int:
     root = _project_root()
     fig_dir = root / "scripts" / "figures"
     tab_dir = root / "scripts" / "tables"
-    out_root = args.out or (root / "docs" / "report")
+    out_root = args.out or (root / "results")
     out_figs = out_root / "figures"
     out_tabs = out_root / "tables"
     os.makedirs(out_figs, exist_ok=True)

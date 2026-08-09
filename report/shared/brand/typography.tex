@@ -1,0 +1,43 @@
+% Cerebras Computer Modern Sans typography system - single source of truth.
+% The attached reference deck is a pdfLaTeX/Beamer document whose embedded
+% fonts are CMSS (regular), CMSSBX (bold), CMSSI (slanted), CMTT (mono), and
+% the standard Computer Modern mathematics family (CMR/CMMI/CMSY/CMEX).
+% To prevent silent font drift, this project intentionally targets pdfLaTeX.
+\RequirePackage{iftex}
+\ifPDFTeX\else
+  \PackageError{cerebras-typography}
+    {The reference typography requires pdfLaTeX}
+    {Select pdfLaTeX so the project uses the exact Computer Modern Sans and Computer Modern Math fonts.}
+\fi
+
+% Keep the reference deck's native OT1 Computer Modern encoding. pdfLaTeX
+% embeds the Type 1 Computer Modern fonts supplied by the TeX distribution;
+% no uploaded font files are required.
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{fix-cm}
+\RequirePackage[protrusion=true,expansion=true]{microtype}
+\RequirePackage{setspace}
+
+% CMSS is the dominant voice everywhere. Existing \rmfamily calls are mapped
+% to CMSS as well, so paper, lecture notes, book, slides, captions, tables,
+% diagrams, and running furniture remain typographically unified.
+\renewcommand{\rmdefault}{cmss}
+\renewcommand{\sfdefault}{cmss}
+\renewcommand{\ttdefault}{cmtt}
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\itdefault}{sl}
+
+% Semantic font roles.
+\providecommand{\CSBodyFont}{\sffamily}
+\providecommand{\CSHeadingFont}{\sffamily\bfseries}
+\providecommand{\CSCoverTitleFont}{\sffamily\bfseries}
+\providecommand{\CSCoverSubtitleFont}{\sffamily}
+\providecommand{\CSNavigationFont}{\sffamily\bfseries}
+\providecommand{\CSMetaFont}{\sffamily}
+\providecommand{\CSCodeFont}{\ttfamily}
+
+% Compatibility aliases used by the front-matter implementations.
+\providecommand{\CSFrontFont}{\sffamily}
+\providecommand{\CSFrontTitleFont}{\CSCoverTitleFont}
+\providecommand{\CSFrontMetaFont}{\CSMetaFont}
+\providecommand{\CSFrontRagged}{\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000}

@@ -1,0 +1,15 @@
+% Reusable QA status table macro. Argument is the desired table width.
+\newcommand{\CSBuildStatusTable}[1]{%
+\renewcommand{\arraystretch}{1.25}%
+\begin{tabularx}{#1}{@{}L{0.21\linewidth}Y C{0.30\linewidth}@{}}
+\toprule
+\CSTableHead{Output} & \CSTableHead{Primary quality gate} & \CSTableHead{Status} \\
+\midrule
+Paper & Title hierarchy, column flow, captions, theorem/proof pairing & \ReproducedTag \\
+Slides & Legibility, frame density, divider rhythm, source notes & \ReproducedTag \\
+Speaker notes & Slide-note pairing and page order & \ReproducedTag \\
+Technical book & Cover, chapter openings, boxes, code, exercises & \ReproducedTag \\
+Component gallery & Cross-medium visual consistency & \ReproducedTag \\
+\bottomrule
+\end{tabularx}%
+}
