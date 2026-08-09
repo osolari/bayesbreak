@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
@@ -581,6 +581,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -690,6 +694,203 @@
   
   
   
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../diagnostics/" class="md-nav__link">
         
@@ -755,6 +956,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1315,6 +1544,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#partition-priors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Partition priors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#posterior-predictive" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1330,6 +1570,39 @@
     <span class="md-ellipsis">
       
         Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundary-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundary metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparator-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparator validation
       
     </span>
   </a>
@@ -1579,6 +1852,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#partition-priors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Partition priors
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#posterior-predictive" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1594,6 +1878,39 @@
     <span class="md-ellipsis">
       
         Diagnostics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#result-provenance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Result provenance
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#boundary-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Boundary metrics
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comparator-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparator validation
       
     </span>
   </a>
@@ -1638,12 +1955,14 @@ base class. Every concrete family inherits from it.</p>
 <h3 id="methods">Methods<a class="headerlink" href="#methods" title="Permanent link">&para;</a></h3>
 <ul>
 <li><code>fit(X, y, *, sample_weight=None)</code> — strict sklearn contract.</li>
-<li><code>predict(X, *, mode="map")</code> — piecewise-constant curve at query points.
+<li><code>predict(X, *, mode="map", extrapolation="error")</code> — piecewise-constant
+  curve at query points with explicit coordinate-support handling.
   <code>mode="bayes"</code> returns the posterior-mean curve (requires
   <code>regression_curve != "none"</code> at fit time).</li>
 <li><code>score(X, y, sample_weight=None)</code> — mean posterior-predictive log-density
   (§8 of the report; use this as the sklearn CV target).</li>
-<li><code>transform(X)</code> — segment indices <code>(0, …, k_map - 1)</code> at query points
+<li><code>transform(X, *, extrapolation="error")</code> — segment indices
+  <code>(0, …, k_map - 1)</code> at query points
   (BayesBreak acts as a featurizer in a Pipeline).</li>
 <li><code>get_map_segmentation()</code> — <code>(k_map, map_boundaries, map_segment_means)</code> tuple
   for consumers that want the classical change-point output.</li>
@@ -1753,8 +2072,8 @@ base class. Every concrete family inherits from it.</p>
 <li>Non-conjugate approximations:
   <code>ass:uniform-block-error</code> (uniform per-block log-evidence error <code>ε</code>),
   <code>prop:stability</code> (posterior-odds stability),
-  <code>prop:uniform-bounds</code> (per-routine <code>ε</code> rates — Q: <code>O(Q^{-2r})</code>,
-  Lap/JJ/PG: <code>O(n^{-1})</code> on reachable blocks, EP: not uniformly bounded),
+  <code>obl:routine-certification-paper</code> (routine-specific error control remains
+  a proof obligation),
   and <code>cor:probability-error-conversion</code> (TV bound on <code>P(k|y)</code> —
   reported as <code>pk_tv_upper_bound</code> in <code>run_non_conjugate_diagnostics</code>).</li>
 <li>Shared-boundary replicates:
@@ -1804,6 +2123,20 @@ base class. Every concrete family inherits from it.</p>
 <li><code>BayesBreakMixtureClassifier(base_estimator, n_groups, max_iter, ...)</code> —
   latent-group EM.</li>
 </ul>
+<p>The latent-group estimator optimizes the finite-template objective stated in
+the report; it is not a normalized finite-mixture likelihood. Successful fits
+expose <code>objective_trace_</code>, <code>final_objective_</code>, <code>selected_restart_</code>, and one
+<code>RestartDiagnostic</code> per attempted restart. Nonfinite, stale, or nonmonotone
+traces are excluded from restart selection; objective ties select the earliest
+seeded restart before canonical template-label ordering. <code>objective_</code> remains a
+compatibility alias for <code>objective_trace_</code>.</p>
+<p>For exact shared-boundary pooling, <code>bayesbreak.groups.shared_fit(...)</code> fits a
+<code>SharedBoundaryReplicatesSegmenter</code>. Subject block log evidences are combined by
+<code>bayesbreak.replicates.aggregate_block_log_evidence(...)</code> without exponentiating
+unbounded values; <code>-inf</code> remains structural zero support and <code>NaN</code>/<code>+inf</code> are
+rejected. The fitted model exposes subject-specific MAP-segment means and a
+bounded <code>block_posterior_mean_</code> average diagnostic. It does not construct a
+single pooled first moment for distinct subject parameters.</p>
 <h2 id="factory">Factory<a class="headerlink" href="#factory" title="Permanent link">&para;</a></h2>
 <div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="n">bayesbreak</span><span class="o">.</span><span class="n">make_bayesbreak</span><span class="p">(</span><span class="n">family</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </span></code></pre></div>
@@ -1820,12 +2153,47 @@ block routines:</p>
 <li><code>max_sum_segmentation(log_block_evidence, k, *, log_length_prior=None)</code></li>
 <li><code>bayes_regression_curve_fixed_k(...)</code>, <code>bayes_regression_curve_mixed_k(...)</code></li>
 </ul>
+<h2 id="partition-priors">Partition priors<a class="headerlink" href="#partition-priors" title="Permanent link">&para;</a></h2>
+<p><code>bayesbreak.priors.PartitionPriorConfig</code> declares segment cohesion separately
+from the interior-boundary hazard:</p>
+<ul>
+<li><code>log_cohesion(start, stop, x, config)</code> scores the complete segment. Supported
+  modes are uniform, physical-span power, and explicit per-segment factors;
+  minimum segment length/span and maximum span can assign zero support.</li>
+<li><code>bayesbreak.design_prior.log_boundary_hazard(boundary, x, config)</code> scores an
+  interior endpoint only. Supported modes are uniform, explicit factors, and
+  fixed-count Poisson interval occupancy.</li>
+<li><code>partition_log_prior(boundaries, x, config)</code> combines one cohesion per segment
+  with one hazard per nonterminal boundary.</li>
+</ul>
+<p>For the Poisson occupancy mode, candidate interval <code>j</code> uses local odds
+<code>exp(Lambda_j) - 1</code>, where <code>Lambda_j</code> is its integrated intensity. It does not
+use occupancy probability <code>1 - exp(-Lambda_j)</code>, and it does not reinterpret a
+physical-span cohesion as a Poisson-process prior.</p>
+<p>Every observation-family estimator accepts <code>partition_prior=config</code>. The same
+local prior table is used by the partition normalizer, sum-product posterior
+recursions, max-sum joint-MAP recursion, and Bayes curves. The legacy
+<code>length_prior</code> argument remains supported as an additional segment cohesion.</p>
 <h2 id="posterior-predictive">Posterior predictive<a class="headerlink" href="#posterior-predictive" title="Permanent link">&para;</a></h2>
 <p><code>bayesbreak.prediction</code>:</p>
 <ul>
 <li><code>posterior_predictive_logpdf(estimator, X_new, y_new, per_sample=False)</code></li>
 <li><code>held_out_log_likelihood_trace(estimator, X_new, y_new, prefix_fractions=None)</code></li>
 </ul>
+<p>All public prediction wrappers use <code>assign_to_partition(...)</code> and default to
+<code>extrapolation="error"</code>. Named alternatives are <code>"clip"</code> for legacy clipping
+on both sides, <code>"left_endpoint"</code> for left-only endpoint extension, and
+<code>"right_endpoint"</code> for right-only extension. Exact fitted endpoints are
+in-support, and unsorted query order is preserved. Each call records
+<code>prediction_metadata_</code> and <code>prediction_provenance_</code> with the selected policy
+and fitted coordinate support.</p>
+<p><code>BayesBreakBetaObs</code> overrides the generic fallback with its fitted observation
+family. For each MAP block it integrates
+<code>Beta(y_new | phi_new * mu, phi_new * (1 - mu))</code> over the fitted quadrature
+posterior for <code>mu</code>. In this family, prediction <code>sample_weight</code> values are the
+known positive <code>phi_new</code> descriptors; training likelihood-power weights remain
+separate in the fitted estimator. Values outside the open interval <code>(0, 1)</code>
+receive log density <code>-inf</code>.</p>
 <h2 id="diagnostics">Diagnostics<a class="headerlink" href="#diagnostics" title="Permanent link">&para;</a></h2>
 <p><code>bayesbreak.diagnostics</code>:</p>
 <ul>
@@ -1842,6 +2210,12 @@ block routines:</p>
   Each check carries a <code>failure_mode</code> tag aligned with the §4
   approximation-validation checklist and §5b limitations on the
   non-conjugate approximation regime.</li>
+<li><code>bayesbreak.nonconjugate.evaluate_reachable_segment_error(...)</code> — records a
+  hash of shared reachable block coordinates, reference discrepancy,
+  optimization residual, tail bound, quadrature error, and explicit
+  verified/unverifiable/failed status. <code>propagate_partition_bounds(...)</code>
+  returns conditional global bounds using the maximum reachable error and
+  caps total variation at one.</li>
 <li><code>run_prior_sensitivity(estimator, *, pk_perturbations=None,
   g_variants=("uniform", "length-proportional"))</code> — partition-prior
   sensitivity diagnostic from §5b limitations. Reruns the DP on the
@@ -1856,6 +2230,44 @@ block routines:</p>
   per-sequence marginal <code>log p(y^{(s)})</code> of <code>def:metric-loglik</code> as the
   scoring rule (<code>BayesBreakMixtureClassifier.sequence_log_likelihood</code>).</li>
 </ul>
+<h2 id="result-provenance">Result provenance<a class="headerlink" href="#result-provenance" title="Permanent link">&para;</a></h2>
+<p><code>bayesbreak.provenance</code> provides versioned result sidecars without rewriting
+historical assets:</p>
+<ul>
+<li><code>ResultRecord</code> separates execution status, scientific interpretation, and
+  original/corrected lineage. Executed records require data, configuration,
+  code, and environment SHA-256 hashes.</li>
+<li><code>validate_result_record(record, release_mode=True)</code> rejects invalid result
+  identifiers, missing corrected-result parent links, missing corrected output
+  hashes, and non-repository-relative artifact paths.</li>
+<li><code>write_sidecar(path, record)</code> writes deterministic schema-versioned JSON.</li>
+<li><code>read_sidecar(path, migration_manifest=...)</code> reads current records or applies
+  a hash-verified, in-memory path migration to an immutable legacy sidecar.</li>
+</ul>
+<p>The JSON Schema 2020-12 contracts are under <code>schemas/</code>. Corrected reruns must
+use a new result ID and identify their historical parent; reading a legacy
+record does not authorize changing its archived bytes or interpretation.</p>
+<h2 id="boundary-metrics">Boundary metrics<a class="headerlink" href="#boundary-metrics" title="Permanent link">&para;</a></h2>
+<p><code>bayesbreak.metrics.match_boundaries_one_to_one(predicted, reference,
+tolerance)</code> first maximizes the number of eligible matches and then minimizes
+their total absolute distance under deterministic input ordering. No predicted
+or reference boundary is reused. <code>boundary_metrics(...)</code> returns precision,
+recall, F1, matched MAE (<code>None</code> when no pair matches), axis names, reference
+type, matching rule, and metric version; <code>to_dict()</code> follows the versioned
+boundary-metric schema.</p>
+<p>Comparisons with BayesBreak MAP boundaries must use a reference type such as
+<code>bayesbreak-map-agreement</code>; they are not external-truth accuracy. The cached
+baseline table generator now uses this canonical metric owner.</p>
+<h2 id="comparator-validation">Comparator validation<a class="headerlink" href="#comparator-validation" title="Permanent link">&para;</a></h2>
+<p><code>bayesbreak.comparators.ComparatorInputSchema</code> validates comparator values,
+coordinate axes, task type, source provenance, and an explicit <code>TuningBudget</code>
+before algorithm dispatch or metric computation. Multisequence requests require
+an unflattened sequence-by-coordinate raw observation matrix and an axis whose
+length matches the matrix observation dimension. <code>scripts/run_comparators.py</code>
+constructs this validated raw route from <code>.npy</code> inputs.</p>
+<p>Fitted curves and cached map traces cannot stand in for raw multisequence data.
+The historical CGH cached route is rejected as <code>FAIL-BB-002</code> and retained only
+as a diagnostic record; no comparator is dispatched from that artifact.</p>
 <h2 id="baselines">Baselines<a class="headerlink" href="#baselines" title="Permanent link">&para;</a></h2>
 <p><code>bayesbreak.baselines</code> exposes wrappers around upstream baseline
 libraries (no re-implementation). Algorithms are dispatched through</p>

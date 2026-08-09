@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
@@ -583,6 +583,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -814,6 +818,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#beta-observation-posterior-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beta-observation posterior prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -862,6 +877,206 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -938,6 +1153,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1585,6 +1828,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#beta-observation-posterior-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Beta-observation posterior prediction
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1694,49 +1948,57 @@ approximation via <code>approx=</code>:</p>
 <tr>
 <th><code>approx=</code></th>
 <th>Block routine</th>
-<th>Uniform-<span class="arithmatex">\(\varepsilon\)</span> rate (<code>prop:uniform-bounds</code>)</th>
+<th>Certification status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>"laplace"</code></td>
 <td>1-D Newton + Laplace expansion</td>
-<td><span class="arithmatex">\(O(n^{-1})\)</span> on reachable blocks</td>
+<td>routine-specific uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"jj"</code></td>
 <td>Jaakkola–Jordan variational lower bound</td>
-<td><span class="arithmatex">\(O(n^{-1})\)</span> on reachable blocks</td>
+<td>routine-specific uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"pg_vb"</code></td>
 <td>Pólya–Gamma mean-field</td>
-<td><span class="arithmatex">\(O(n^{-1})\)</span> on reachable blocks</td>
+<td>routine-specific uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"ep"</code></td>
 <td>True Minka EP with accumulated site normalizers</td>
-<td>not uniformly bounded; convergence-conditional</td>
+<td>convergence and uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"gh"</code> / <code>"quadrature"</code></td>
 <td>1-D Gauss–Hermite (low / high node count)</td>
-<td><span class="arithmatex">\(O(Q^{-2r})\)</span> for <span class="arithmatex">\(C^{2r}\)</span> integrands</td>
+<td>tail and quadrature error must be established</td>
 </tr>
 </tbody>
 </table>
 <p>Use <code>run_non_conjugate_diagnostics(est, ref)</code> to measure the empirical
-<span class="arithmatex">\(\varepsilon\)</span> against a high-Q reference; the report emits a
-<code>theoretical_rate_violated</code> flag when the empirical <span class="arithmatex">\(\varepsilon\)</span> exceeds
-the routine's expected rate by an order of magnitude, or when EP fails
-to converge on at least one block (<code>prop:uniform-bounds (v)</code>).</p>
+<span class="arithmatex">\(\varepsilon\)</span> against a declared reference. The report emits a support hash,
+separate numerical-error fields, and explicit unverifiable/failure states;
+it does not infer a rate from the approximation name.</p>
 <p>The stability theorem (<code>prop:stability</code>) bounds the propagated effect on
 the segmentation posterior: <span class="arithmatex">\(\bigl|\Delta \log\frac{P(k\mid y)}{P(k'\mid y)}\bigr|
 \le (k+k')\,\varepsilon\)</span> for the segment-count odds and
 <span class="arithmatex">\(\bigl|\Delta \log\frac{P(b_i\mid y, k)}{P(b_{i'}\mid y, k)}\bigr|
 \le 2k\,\varepsilon\)</span> for the fixed-<span class="arithmatex">\(k\)</span> boundary-event odds. The total-
-variation bound on <span class="arithmatex">\(P(k\mid y)\)</span> is <span class="arithmatex">\(\exp(2 k_{\max} \varepsilon) - 1\)</span>
+variation bound on <span class="arithmatex">\(P(k\mid y)\)</span> is
+<span class="arithmatex">\(\min\{1, \exp(2 k_{\max} \varepsilon) - 1\}\)</span>
 (Corollary <code>cor:probability-error-conversion</code>).</p>
+<h3 id="beta-observation-posterior-prediction">Beta-observation posterior prediction<a class="headerlink" href="#beta-observation-posterior-prediction" title="Permanent link">&para;</a></h3>
+<p>For <code>BayesBreakBetaObs</code>, posterior prediction remains in the Beta observation
+family. The implementation integrates the new-observation Beta density over
+the segment posterior for <code>mu</code>; it does not substitute a Gaussian density.
+New observations require known positive precision <code>phi_new</code> values, passed as
+the family descriptor in prediction <code>sample_weight</code>. Exact endpoints are
+outside support. The excluded historical methylation held-out score remains
+excluded until a separately approved in-support rerun creates a new result ID.</p>
 <h2 id="multi-subject-and-grouped-wrappers">Multi-subject and grouped wrappers<a class="headerlink" href="#multi-subject-and-grouped-wrappers" title="Permanent link">&para;</a></h2>
 <table>
 <thead>

@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
@@ -16,7 +16,7 @@
         <link rel="prev" href="../models/">
       
       
-        <link rel="next" href="../diagnostics/">
+        <link rel="next" href="../data_cards/">
       
       
         
@@ -583,6 +583,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -784,6 +788,206 @@
   
   
   
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../diagnostics/" class="md-nav__link">
         
@@ -849,6 +1053,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1444,6 +1676,13 @@
 
 
 <h1 id="real-data-loaders">Real-data loaders<a class="headerlink" href="#real-data-loaders" title="Permanent link">&para;</a></h1>
+<p><code>bayesbreak.datasets.load_with_provenance(dataset_id, config)</code> returns the
+normalized <code>DatasetBundle</code> together with a versioned <code>DatasetCard</code>. The card
+hashes the post-preprocessing coordinate/response arrays and any family
+descriptor, records source kind/date/URI, stride, coordinate semantics, family,
+and sequence count, and keeps external annotations separate from model-derived
+MAP markers. See the <a href="../data_cards/">data cards</a> for the four application
+sources and their unresolved provenance limitations.</p>
 <p><code>bayesbreak.datasets</code> ships four loaders, one per real-data case study
 in §6 of the manuscript. Every loader returns a <code>DatasetBundle</code> with a
 common schema and falls back to a deterministic simulated analog when
@@ -1537,8 +1776,8 @@ check before rendering provenance badges.</p>
   CI to keep figure regressions hermetic).</li>
 </ul>
 <h2 id="headline-numbers-from-the-real-data-fits">Headline numbers from the real-data fits<a class="headerlink" href="#headline-numbers-from-the-real-data-fits" title="Permanent link">&para;</a></h2>
-<p>Reproduced from <code>docs/report/figures/realdata_metrics.json</code> — see
-<a href="../results/">Results</a> for the full §6 panel.</p>
+<p>Archived in <code>report/shared/figures/results/realdata_metrics.json</code>; see
+<a href="../results/">Results</a> for interpretation and exclusions.</p>
 <table>
 <thead>
 <tr>
@@ -1566,10 +1805,13 @@ check before rendering provenance badges.</p>
 <tr>
 <td>Methylation (chr21 region, <span class="arithmatex">\(n=1904\)</span>)</td>
 <td><code>BayesBreakBetaObs(k_max=15, phi=coverage)</code></td>
-<td><span class="arithmatex">\(\widehat k = 15\)</span>, held-out logpred <span class="arithmatex">\(= -387.5\)</span></td>
+<td><span class="arithmatex">\(\widehat k = 15\)</span>; historical predictive score excluded</td>
 </tr>
 </tbody>
 </table>
+<p>The methylation segmentation remains a real result. The historical held-out score
+<code>RES-BB-RD-007Q</code> is excluded from posterior-predictive conclusions because it used a
+Gaussian predictive calculation for Beta observations and an implicit endpoint rule.</p>
 
 
 

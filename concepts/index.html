@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
@@ -675,6 +675,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -784,6 +788,203 @@
   
   
   
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../diagnostics/" class="md-nav__link">
         
@@ -849,6 +1050,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1445,9 +1674,8 @@
 
 <h1 id="concepts">Concepts<a class="headerlink" href="#concepts" title="Permanent link">&para;</a></h1>
 <p>This page introduces the mental model that makes BayesBreak's API natural.
-The reference treatment is the manuscript at
-<a href="../report/"><code>docs/report/bayesbreak.pdf</code></a>; here we summarise the four
-ideas that recur throughout.</p>
+The reference treatment is the <a href="../report/">Phase 6 report package</a>; here we
+summarise the four ideas that recur throughout.</p>
 <h2 id="1-block-evidence-and-dynamic-programming-are-separate">1. Block evidence and dynamic programming are separate<a class="headerlink" href="#1-block-evidence-and-dynamic-programming-are-separate" title="Permanent link">&para;</a></h2>
 <p>BayesBreak deliberately factors the work in two:</p>
 <div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>data y  →  block-evidence array log A^(0)_{ij}  →  dynamic-programming engine  →  posteriors
@@ -1500,46 +1728,46 @@ locally — pick one of:</p>
 <tr>
 <th><code>approx=</code></th>
 <th>Block routine</th>
-<th>Uniform-<code>ε</code> rate (<code>prop:uniform-bounds</code>)</th>
+<th>Certification status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
 <td><code>"laplace"</code></td>
 <td>1-D Newton + Laplace expansion</td>
-<td><code>O(n^{-1})</code> on reachable blocks</td>
+<td>routine-specific uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"jj"</code></td>
 <td>Jaakkola–Jordan variational lower bound</td>
-<td><code>O(n^{-1})</code> on reachable blocks</td>
+<td>routine-specific uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"pg_vb"</code></td>
 <td>Pólya–Gamma mean-field</td>
-<td><code>O(n^{-1})</code> on reachable blocks</td>
+<td>routine-specific uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"ep"</code></td>
 <td>Real Minka EP with site normalizers</td>
-<td>not uniformly bounded; convergence-conditional</td>
+<td>convergence and uniform rate unresolved</td>
 </tr>
 <tr>
 <td><code>"gh"</code> / <code>"quadrature"</code></td>
 <td>1-D Gauss–Hermite (low / high node count)</td>
-<td><code>O(Q^{-2r})</code> for <code>C^{2r}</code> integrands</td>
+<td>tail and quadrature error must be established</td>
 </tr>
 </tbody>
 </table>
 <p>The DP layer is unchanged: it consumes whatever score matrix the block
 routine produced, and posterior odds are perturbed by a controlled amount
-under Proposition <code>prop:stability</code>. The total-variation bound
-<code>exp(2 k_max ε) − 1</code> on <code>P(k | y)</code> (Corollary
+under the stability theorem. The conditional total-variation bound
+<code>min(1, exp(2 k_max ε) − 1)</code> on <code>P(k | y)</code> (Corollary
 <code>cor:probability-error-conversion</code>) gives the absolute-probability
 counterpart to the odds-level guarantee.</p>
 <p><code>bayesbreak.run_non_conjugate_diagnostics</code> measures the empirical uniform
-ε against a reference fit and emits the theoretical-rate annotation so
-that violations of <code>prop:uniform-bounds</code> get surfaced.</p>
+ε against a reference fit and emits a structured support/error record. It
+does not infer a routine-wide convergence rate from the approximation name.</p>
 <h2 id="4-limitations-are-first-class">4. Limitations are first-class<a class="headerlink" href="#4-limitations-are-first-class" title="Permanent link">&para;</a></h2>
 <p>§5b of the manuscript names eight failure modes — computational regime,
 block-model misspecification, non-conjugate-approximation regime,
@@ -1564,7 +1792,7 @@ implementation surfaces each as a diagnostic:</p>
 </tr>
 <tr>
 <td>Non-conjugate approximation regime</td>
-<td><code>run_non_conjugate_diagnostics</code> + <code>theoretical_rate_violated</code></td>
+<td><code>run_non_conjugate_diagnostics</code> + <code>segment_error_record</code></td>
 </tr>
 <tr>
 <td>Latent-group identifiability (label switching)</td>

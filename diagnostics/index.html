@@ -6,14 +6,14 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
       
       
       
-        <link rel="prev" href="../datasets/">
+        <link rel="prev" href="../data_cards/methylation/">
       
       
         <link rel="next" href="../baselines/">
@@ -583,6 +583,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -682,6 +686,206 @@
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+          
+          
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -871,6 +1075,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1553,15 +1785,14 @@ high-node Gauss–Hermite quadrature fit on the same data) and reports:</p>
   reachable-block mask (the empirical uniform <code>ε</code> named in
   Assumption <code>ass:uniform-block-error</code>);</li>
 <li><code>k_posterior_l1</code> and <code>boundary_marginal_l1</code> between the two posteriors;</li>
-<li><code>pk_tv_upper_bound = exp(2 k_max ε_max) − 1</code>, the worst-case TV bound
+<li><code>pk_tv_upper_bound = min(1, exp(2 k_max ε_max) − 1)</code>, the conditional TV bound
   from Corollary <code>cor:probability-error-conversion</code>;</li>
 <li><code>pk_tv_empirical = 0.5 · |P̂(k|y) − P_ref(k|y)|_1</code>;</li>
-<li>per-routine <code>theoretical_rate</code> (e.g. <code>"O(n^{-1}) on reachable blocks"</code>
-  for Laplace / JJ / PG; <code>"O(Q^{-2r})"</code> for Gauss–Hermite;
-  <code>"EP: not uniformly bounded"</code> for true EP);</li>
-<li><code>theoretical_rate_violated</code> — <code>True</code> when the empirical ε exceeds the
-  routine's expected rate by an order of magnitude, or when EP failed to
-  converge on at least one block.</li>
+<li><code>segment_error_record</code> with the reachable-support hash, separate numerical
+  error components, and an explicit convergence/certification status;</li>
+<li><code>conditional_partition_bounds</code>, populated only when the reachable block
+  comparison supports propagation. Routine-wide convergence rates remain a
+  proof obligation and are not inferred from <code>approx</code>.</li>
 </ul>
 <div class="highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">bayesbreak</span><span class="w"> </span><span class="kn">import</span> <span class="n">BayesBreakLogisticNormal</span><span class="p">,</span> <span class="n">run_non_conjugate_diagnostics</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
@@ -1571,8 +1802,8 @@ high-node Gauss–Hermite quadrature fit on the same data) and reports:</p>
 </span><span id="__span-1-6"><a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a><span class="n">report</span> <span class="o">=</span> <span class="n">run_non_conjugate_diagnostics</span><span class="p">(</span><span class="n">fit</span><span class="p">,</span> <span class="n">ref</span><span class="p">)</span>
 </span><span id="__span-1-7"><a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;block_error_max&quot;</span><span class="p">])</span>
 </span><span id="__span-1-8"><a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;pk_tv_upper_bound&quot;</span><span class="p">])</span>
-</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;theoretical_rate&quot;</span><span class="p">])</span>
-</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;theoretical_rate_violated&quot;</span><span class="p">])</span>
+</span><span id="__span-1-9"><a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;segment_error_record&quot;</span><span class="p">])</span>
+</span><span id="__span-1-10"><a id="__codelineno-1-10" name="__codelineno-1-10" href="#__codelineno-1-10"></a><span class="nb">print</span><span class="p">(</span><span class="n">report</span><span class="o">.</span><span class="n">extra</span><span class="p">[</span><span class="s2">&quot;conditional_partition_bounds&quot;</span><span class="p">])</span>
 </span></code></pre></div>
 <h2 id="run_prior_sensitivity"><code>run_prior_sensitivity</code><a class="headerlink" href="#run_prior_sensitivity" title="Permanent link">&para;</a></h2>
 <p>Reruns the DP under perturbations of <code>p(k)</code> (uniform, geometric <code>0.8^k</code>,

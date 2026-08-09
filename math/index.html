@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
@@ -581,6 +581,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -690,6 +694,203 @@
   
   
   
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../diagnostics/" class="md-nav__link">
         
@@ -755,6 +956,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1533,8 +1762,8 @@
 
 <h1 id="math-notes">Math notes<a class="headerlink" href="#math-notes" title="Permanent link">&para;</a></h1>
 <p>Glossary mapping the manuscript's notation to the implementation. The
-full derivations are in <a href="../report/"><code>docs/report/bayesbreak.pdf</code></a>; this
-page is the cheat-sheet that lives next to the code.</p>
+full derivations are in the <a href="../report/">Phase 6 report package</a>; this page
+is the cheat-sheet that lives next to the code.</p>
 <h2 id="block-evidence-and-moments">Block evidence and moments<a class="headerlink" href="#block-evidence-and-moments" title="Permanent link">&para;</a></h2>
 <p>For every admissible candidate block <span class="arithmatex">\((i, j]\)</span>:</p>
 <div class="arithmatex">\[
@@ -1653,14 +1882,12 @@ Proposition <code>prop:stability</code> then bounds</p>
 <p>Corollary <code>cor:probability-error-conversion</code> converts the odds bound on
 <span class="arithmatex">\(P(k\mid y)\)</span> into an absolute-probability total-variation bound:</p>
 <div class="arithmatex">\[
-\operatorname{TV}\bigl(\widehat P(\cdot \mid y),\, P(\cdot \mid y)\bigr) \;\le\; \exp(2 k_{\max} \varepsilon) - 1.
+\operatorname{TV}\bigl(\widehat P(\cdot \mid y),\, P(\cdot \mid y)\bigr) \;\le\; \min\{1, \exp(2 k_{\max} \varepsilon) - 1\}.
 \]</div>
-<p>Per-routine <span class="arithmatex">\(\varepsilon\)</span> rates (<code>prop:uniform-bounds</code>):
-Laplace / JJ / PG mean-field <span class="arithmatex">\(= O(n^{-1})\)</span> on reachable blocks;
-Gauss–Hermite <span class="arithmatex">\(= O(Q^{-2r})\)</span> for <span class="arithmatex">\(C^{2r}\)</span> integrands; true EP is
-<strong>not</strong> uniformly bounded — convergence-conditional. <code>run_non_conjugate_diagnostics</code>
-records both the empirical <span class="arithmatex">\(\varepsilon\)</span> and the routine's expected rate
-in the <code>theoretical_rate_violated</code> flag.</p>
+<p>The current report does not establish routine-wide uniform rates for Laplace,
+JJ, PG mean-field, EP, or adaptive quadrature. Applying this bound requires a
+support-aligned segment-error record with the relevant convergence, tail, and
+quadrature conditions established for the specific calculation.</p>
 <h2 id="posterior-predictive-scoring">Posterior-predictive scoring<a class="headerlink" href="#posterior-predictive-scoring" title="Permanent link">&para;</a></h2>
 <p>For a MAP block <span class="arithmatex">\(B\)</span> with posterior hyperparameters <span class="arithmatex">\((\alpha_B, \beta_B)\)</span>
 under EF–conjugacy:</p>

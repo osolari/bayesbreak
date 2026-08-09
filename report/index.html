@@ -6,7 +6,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
       
-        <meta name="description" content="Exact Bayesian segmentation with a scikit-learn compatible API: weighted exponential-family block evidence + global dynamic programming, plus non-conjugate approximations with stability theory, latent-template EM, prediction, and a planned external-comparator suite.">
+        <meta name="description" content="Generalized hierarchical Bayesian segmentation with irregular designs, multi-sequence hierarchies, grouped and latent-group designs, exact conjugate inference, and explicitly approximate numerical segment integration.">
       
       
         <meta name="author" content="Omid Shams Solari">
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#manuscript" class="md-skip">
+        <a href="#phase-6-report" class="md-skip">
           Skip to content
         </a>
       
@@ -581,6 +581,10 @@
       
         
       
+        
+      
+        
+      
     
     
     
@@ -690,6 +694,203 @@
   
   
   
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3_3" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../data_cards/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data cards
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3_3" id="__nav_3_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_3_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Data cards
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/welllog/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Well log
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/cgh/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Array CGH
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/spx/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    SPX
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../data_cards/methylation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Methylation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     <li class="md-nav__item">
       <a href="../diagnostics/" class="md-nav__link">
         
@@ -755,6 +956,34 @@
     
   
     Reproducibility
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../version_lineage/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Version lineage
   
 
     
@@ -1266,10 +1495,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sections" class="md-nav__link">
+  <a href="#scientific-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sections
+        Scientific Status
       
     </span>
   </a>
@@ -1277,10 +1506,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#code-to-manuscript-cross-reference" class="md-nav__link">
+  <a href="#result-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Code-to-manuscript cross-reference
+        Result Status
       
     </span>
   </a>
@@ -1288,10 +1517,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reproducing-manuscript-figures-and-tables" class="md-nav__link">
+  <a href="#build-and-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reproducing manuscript figures and tables
+        Build and Validation
       
     </span>
   </a>
@@ -1369,10 +1598,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#sections" class="md-nav__link">
+  <a href="#scientific-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Sections
+        Scientific Status
       
     </span>
   </a>
@@ -1380,10 +1609,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#code-to-manuscript-cross-reference" class="md-nav__link">
+  <a href="#result-status" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Code-to-manuscript cross-reference
+        Result Status
       
     </span>
   </a>
@@ -1391,10 +1620,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#reproducing-manuscript-figures-and-tables" class="md-nav__link">
+  <a href="#build-and-validation" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Reproducing manuscript figures and tables
+        Build and Validation
       
     </span>
   </a>
@@ -1421,69 +1650,62 @@
   
 
 
-<h1 id="manuscript">Manuscript<a class="headerlink" href="#manuscript" title="Permanent link">&para;</a></h1>
+<h1 id="phase-6-report">Phase 6 Report<a class="headerlink" href="#phase-6-report" title="Permanent link">&para;</a></h1>
 <div class="saim-cite">
 <blockquote>
 <p><strong>Solari, O. S.</strong> (2026). <em>Generalized Hierarchical Bayesian
 Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 Grouped/Latent-Group Designs.</em> sAIm Labs.
 <a href="https://arxiv.org/abs/2603.14681" target="_blank">arXiv:2603.14681</a> ·
-<a href="https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf" target="_blank">PDF</a></p>
+<a href="https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf" target="_blank">Journal paper</a></p>
 </blockquote>
 </div>
-<p>The technical report (PDF) and source LaTeX are bundled in
-<code>docs/report/</code> and reproduced verbatim in <code>docs/report.zip</code>.</p>
+<p>The repository adopts the complete verified Phase 6 report under <code>report/</code>. The
+editable source includes the technical book, two journal layouts, executive summary,
+canonical implementation handoff, claim and result registries, experiment protocols,
+presentation handoffs, and release validators.</p>
 <ul>
-<li><a href="https://github.com/osolari/bayesbreak/blob/master/docs/report/bayesbreak.pdf"><code>docs/report/bayesbreak.pdf</code></a> — the rendered manuscript.</li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/master/docs/report.zip"><code>docs/report.zip</code></a> — Overleaf-ready source tree (sections, figures, tables, bibliography, class files).</li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/master/docs/report/CHANGELOG.md"><code>docs/report/CHANGELOG.md</code></a> — manuscript change log (separate from the repo CHANGELOG).</li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/master/docs/report/CODING_AGENT_HANDOFF.md"><code>docs/report/CODING_AGENT_HANDOFF.md</code></a> — author-verification checklist mirrored in the repo.</li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Technical_Book.pdf">Technical book</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf">Main journal paper, two-column</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf">Main journal paper, single-column</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf">Executive summary</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/tree/master/report">Canonical editable source</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md">Phase 6 manifest</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/master/report/coding/CODING_AGENT_HANDOFF.md">Canonical coding handoff</a></li>
 </ul>
-<h2 id="sections">Sections<a class="headerlink" href="#sections" title="Permanent link">&para;</a></h2>
-<p>The manuscript is organised into:</p>
-<ol>
-<li><strong>§1 Introduction</strong> — contributions, related work, paper organisation.</li>
-<li><strong>§2 Problem formulation</strong> — inferential targets, the standing assumption
-   <code>ass:standing-offline</code>, the segmentation-space and posterior-summary
-   definitions.</li>
-<li><strong>§3 Setup and notation</strong> — the Bayesian segmentation model, partition
-   priors, weighted exponential-family blocks.</li>
-<li><strong>§4 Method</strong> — block evidence, DP, irregular designs, pooling, latent
-   groups, families, non-conjugate blocks, prediction.</li>
-<li><strong>§5 Algorithms</strong> — implementation-centric pseudocode, complexity
-   (<code>prop:bb-complexity</code>), max-sum correctness (<code>thm:map-correctness</code>).</li>
-<li><strong>§5b Limitations</strong> — named failure modes, the assumption-to-failure-mode
-   map, the decision flowchart, identifiability failures.</li>
-<li><strong>§6 Experiments and results</strong> — synthetic suite, four real-data case
-   studies, planned external-comparator agenda.</li>
-<li><strong>§7 Conclusion</strong> — recap and planned next iteration.</li>
-<li><strong>§8 Appendix</strong> — proofs, annotated literature review, real-data
-   reproduction pipelines, code-and-reproduction notes.</li>
-</ol>
-<h2 id="code-to-manuscript-cross-reference">Code-to-manuscript cross-reference<a class="headerlink" href="#code-to-manuscript-cross-reference" title="Permanent link">&para;</a></h2>
-<p>Every public surface in <code>bayesbreak</code> cites the manuscript label it
-implements. The <code>docs/api.md</code> page lists the canonical map. Highlights:</p>
+<h2 id="scientific-status">Scientific Status<a class="headerlink" href="#scientific-status" title="Permanent link">&para;</a></h2>
+<p>The methodology and research direction are unchanged. BayesBreak remains a generalized
+hierarchical Bayesian segmentation method built from family-specific segment marginal
+likelihoods, sum-product posterior recursions, and a separate max-sum recursion with
+backtracking for the joint MAP partition. Irregular designs, multiple related sequences,
+known groups, and latent-group structures are central components.</p>
+<p>Analytic segment integration is exact for supported regular exponential-family models
+with proper conjugate priors and finite normalizing constants. Posterior quantities based
+on numerical segment integration are approximate and retain their stated assumptions and
+error conditions.</p>
+<h2 id="result-status">Result Status<a class="headerlink" href="#result-status" title="Permanent link">&para;</a></h2>
+<p>The release contains 14 scientific result records. Twelve are usable subject to their
+recorded limitations. Two remain real historical computations but are excluded from their
+intended conclusions:</p>
 <ul>
-<li><code>bayesbreak.dp.forward_backward</code> ↔ <code>prop:fb-duality</code>, <code>eq:LR</code>.</li>
-<li><code>bayesbreak.dp.max_sum_segmentation</code> ↔ <code>thm:map-correctness</code>.</li>
-<li>Each family's <code>_compute_block_evidence</code> ↔ <code>prop:gaussian-block</code> etc.</li>
-<li><code>bayesbreak.run_non_conjugate_diagnostics</code> ↔ <code>ass:uniform-block-error</code>,
-  <code>prop:stability</code>, <code>prop:uniform-bounds</code>,
-  <code>cor:probability-error-conversion</code>.</li>
-<li><code>bayesbreak.SharedBoundaryReplicatesSegmenter</code> ↔ <code>thm:multisubject</code>,
-  <code>prop:shared-boundary-identifiability</code>.</li>
-<li><code>bayesbreak.BayesBreakMixtureClassifier</code> ↔ <code>thm:em-monotone</code>,
-  <code>prop:latent-identifiability</code>, <code>rem:teicher-overspec</code>,
-  <code>ex:label-switch-counterexample</code>.</li>
-<li><code>bayesbreak.SlidingWindowSegmenter</code> ↔ §5b <em>Computational regime</em>.</li>
+<li><code>RES-BB-CMP-002</code>: excluded from comparator conclusions because the compared
+  objects use incompatible coordinate axes.</li>
+<li><code>RES-BB-RD-007Q</code>: excluded from posterior-predictive conclusions because a
+  Gaussian predictive calculation was used for Beta observations with an implicit
+  endpoint rule.</li>
 </ul>
-<h2 id="reproducing-manuscript-figures-and-tables">Reproducing manuscript figures and tables<a class="headerlink" href="#reproducing-manuscript-figures-and-tables" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>bayesbreak.reproduce<span class="w"> </span>all
+<p>No archived numerical value changed during the manuscript revision. Corrected reruns must
+receive new result identifiers, parent-result links, and data, configuration, code, and
+environment hashes.</p>
+<h2 id="build-and-validation">Build and Validation<a class="headerlink" href="#build-and-validation" title="Permanent link">&para;</a></h2>
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>report
+</span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>make<span class="w"> </span>validate-phase6
 </span></code></pre></div>
-<p>This regenerates every figure and table under <code>scripts/figures/</code> and
-<code>scripts/tables/</code> into <code>results/</code> (the figure scripts also write into
-<code>docs/report/figures/</code> for the manuscript). See
-<a href="../reproducibility/">Reproducibility</a> for full details.</p>
+<p>This builds the 168-page technical book, 35-page two-column paper, 42-page
+single-column paper, and 12-page executive summary, then runs the synchronization,
+skeleton, presentation, mathematical, bibliography, source, and result-integrity checks.
+The committed PDFs under <code>report/releases/phase6/</code> are the checksum-verified release
+artifacts.</p>
 
 
 
