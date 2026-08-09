@@ -1,14 +1,24 @@
-# Explicitly incomplete scientific and software items
+# Explicitly incomplete scientific items
 
-- **CODE-BB-001/002:** separate segment-cohesion and interior-boundary-hazard factors are specified but not implemented.
-- **CODE-BB-003:** the finite latent-group final-objective and restart-selection defect is not repaired here.
-- **CODE-BB-004:** adversarial log-domain aggregation tests remain to be implemented.
-- **CODE-BB-005:** nonconjugate segment-error records and certified propagation utilities are interfaces only.
-- **CODE-BB-006/007:** Beta-observation posterior prediction and explicit extrapolation policies are not implemented.
-- **CODE-BB-008/009:** one-to-one boundary matching, comparator-axis validation, and tuning-budget enforcement are not implemented.
-- **CODE-BB-010/011:** production result records, data loaders, data cards, and release hashes are not implemented.
-- **CODE-BB-012:** the historical Phase 1 state had 17 unresolved bounded runs; the independent Phase 6 rerun resolved 16 of them, while one EP logistic-normal test remains unresolved under the declared 20-second per-test cap.
-- **CODE-BB-013:** package version, continuous-integration workflow, changelog, and preprint lineage remain unresolved.
-- **CODE-BB-015:** figure and table regeneration with semantic checks is not implemented.
-- Corrected array-CGH comparator and methylation posterior-predictive runs have not been performed.
-- The routine-specific nonconjugate approximation rate remains a proof obligation.
+This directory is an interface skeleton, not the current package implementation. The production
+repository has completed `CODE-BB-001` through `CODE-BB-014` and `CODE-BB-016`; historical-asset
+validation and corrected-result generation under `CODE-BB-015` are complete for the three
+authorized Gate D reruns.
+
+The remaining research gaps are:
+
+- routine-specific nonconjugate approximation rates remain proof obligations;
+- the removed historical EP test node remains unresolved lineage, although its current successor
+	convergence and reference-agreement tests pass;
+- family-wide and model-averaged posterior-prediction certification remains incomplete beyond the
+	executed Beta-observation and coordinate-support cases;
+- equal-budget predictive and independently annotated external-truth comparator strata remain
+	planned;
+- a second methylation region or cell type and verified external changepoint annotations remain
+	unsourced;
+- the broad misspecification, failure-boundary, and negative-control protocol `EPR-BB-015` remains
+	planned;
+- journal venue and permanent data-release locations remain unset.
+
+Completed corrected results are `RES-BB-SYN-005`, `RES-BB-CMP-003`, and `RES-BB-RD-008Q`.
+Their excluded historical parents remain immutable.

@@ -2,7 +2,7 @@
 
 Canonical handoff: `HANDOFF-BB-CANONICAL-001`
 Phase: `6`
-Canonical JSON SHA-256: `80e3dfa55518002babd26d001b20b798522e38b2d807a839199d63c41c43ba93`
+Canonical JSON SHA-256: `557de254e298fd6f27fcd2d8e746e4fb4092b005eb9443a9bd68d2d628d52c0b`
 
 ## Author-fixed scientific scope
 
@@ -478,7 +478,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-008;CLM-BB-009;CLM-BB-013
 
-**Status:** archived 96 percent value real; rerun required after semantic/code repair
+**Status:** corrected stress rerun executed as RES-BB-SYN-005; archived 96 percent parent retained
 
 **Hypothesis:** Coordinate updates monotonically improve the stated score and recover shared templates in identifiable finite simulations.
 
@@ -578,7 +578,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-006;CLM-BB-014
 
-**Status:** 43 by 2215 executed fits retained; invalid comparator excluded from comparator conclusions
+**Status:** 43 by 2215 fits retained; corrected raw-matrix comparator executed as RES-BB-CMP-003; invalid parent excluded
 
 **Hypothesis:** The shared model provides a coherent common-boundary summary across the multisequence matrix.
 
@@ -618,7 +618,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-002;CLM-BB-012;CLM-BB-014
 
-**Status:** segmentation real; archived held-out value excluded from predictive conclusions; rerun planned
+**Status:** segmentation retained; corrected in-support Beta predictive rerun executed as RES-BB-RD-008Q; invalid parent excluded
 
 **Hypothesis:** A family-correct Beta-observation predictive distribution yields a valid held-out score on a scientifically justified in-support split.
 
@@ -638,7 +638,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-014
 
-**Status:** non-CGH archived agreement values real; fair comparison planned
+**Status:** matched-k CGH agreement executed as RES-BB-CMP-003; non-CGH agreement retained; predictive and external-truth strata planned
 
 **Hypothesis:** Conclusions remain stable when matched-k agreement, independently tuned prediction, and external-truth accuracy are reported as separate tasks.
 
@@ -658,7 +658,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-012
 
-**Status:** partial tests; expansion required
+**Status:** Beta-observation predictive and coordinate-support certification executed; other family and model-averaged cases remain planned
 
 **Hypothesis:** Every family produces finite, normalized or correctly generalized predictive scores on supported inputs and rejects unsupported extrapolation by default.
 

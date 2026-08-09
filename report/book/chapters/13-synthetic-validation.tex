@@ -121,6 +121,22 @@ mis-assigned sequences circled. Even when overall accuracy is high, this view ex
 sequences sit close to the decision boundary and is informative regardless of whether any
 hard mistakes are made.
 
+The corrected child \resultid{RES-BB-SYN-005} extends this single archived setting to 400 seeded
+datasets over eight predeclared stress cells. The archived-design cell achieved mean hard accuracy
+$0.9742$ (95\% interval $0.9536$--$0.9948$) and mean adjusted Rand index $0.9183$. Every returned
+objective equaled the final trace value, all traces were monotone, and all 1,200 restarts were valid.
+Figure~\ref{fig:latent-stress-corrected} also exposes the expected failure boundary: low separation
+and duplicate templates produce weak recovery or collapse, while higher noise and shorter sequences
+degrade accuracy. This supports the declared finite score-clustering criterion, not normalized-mixture
+identifiability or a global-optimum guarantee.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.88\textwidth]{shared/figures/results/fig_phase6_latent_stress.png}
+    \caption{Corrected latent-group stress execution \resultid{RES-BB-SYN-005}. Top: label-invariant hard accuracy with dataset-level 95\% intervals. Bottom: collapse or duplicate-template rate across the eight declared cells.}
+    \label{fig:latent-stress-corrected}
+\end{figure}
+
 \subsection{Non-conjugate approximation trade-offs}
 
 For non-conjugate likelihoods, BayesBreak relies on approximate block evidences while reusing the
@@ -180,10 +196,13 @@ Remark~\ref{rem:mem-time}.
 
 
 \section{Evidence interpretation}
-All populated values and panels in this chapter are real archived computations. Their role is
-method validation on the bundled synthetic settings, not a comprehensive state-of-the-art claim.
+All populated values and panels in this chapter are real executions. Archived computations remain
+unchanged, while \resultid{RES-BB-SYN-005} is a versioned corrected child with independent hashes.
+Their role is method validation on the declared synthetic settings, not a comprehensive
+state-of-the-art claim.
 Boundary calibration reports ECE approximately $0.010$ and Brier approximately $0.011$. The
-latent-group template experiment reports 96\% hard recovery at $\sigma=1.0$ for 24 sequences.
+archived latent-group template experiment reports 96\% hard recovery at $\sigma=1.0$ for 24
+sequences; the corrected stress grid reports uncertainty and failure regimes separately.
 The runtime fits report log--log slopes about $1.07$ at $k_{\max}=10$ and $1.14$ at
 $k_{\max}=20$ for $n=50,\ldots,800$; these are local empirical summaries, not an asymptotic
 complexity result.
@@ -196,7 +215,7 @@ complexity result.
 \end{figure}
 
 \section{Coverage still required}
-The archive does not yet provide full repeated uncertainty intervals, fairness-controlled external
-comparators across every family, large-$n$ scaling, or complete misspecification grids. These are
-specified as protocols in Appendix~\ref{app:experiments}; no planned cell is populated in this
-chapter.
+The archive does not yet provide fairness-controlled external comparators across every family,
+large-$n$ scaling, or complete misspecification grids. These remain specified as protocols in
+Appendix~\ref{app:experiments}. The corrected latent stress cells are populated here; other planned
+cells remain explicitly unpopulated.

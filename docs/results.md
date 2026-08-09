@@ -1,17 +1,16 @@
 # Results
 
-The figures and numbers below are reproduced verbatim from §6 of the
-manuscript. They split cleanly into:
+The figures and numbers below combine immutable archived outputs with three
+versioned corrected Phase 6 executions. They split cleanly into:
 
 1. **Completed synthetic suite** (fig1–fig5, table1–table4): bundled archived
    runs that validate the framework's correctness and scaling.
 2. **Completed real-data fits** (fig6–fig9): BayesBreak segmentations on
    four public datasets — well-log NMR geology, Coriell array-CGH, S&P 500
    volatility regimes, and CpG-atlas methylation.
-3. **Quantitative result tables** (`tab:real_*`): partially populated from
-   the same archived fits as the figures, with cells reserved for the
-   planned external-comparator runs (PELT, WBS, SMUCE, RJMCMC, Fearnhead's
-   exact DP).
+3. **Corrected executions**: latent-group stress testing, raw-matrix array-CGH
+   agreement, and family-correct methylation posterior prediction. Each has a
+   new result ID, parent link, sidecar, and artifact hashes.
 
 ## Synthetic suite
 
@@ -57,6 +56,18 @@ correctly clustered modulo the label-permutation indeterminacy
 (`prop:latent-identifiability` + `ex:label-switch-counterexample`); the
 canonical anchor (`canonical_permutation_`) makes label-level reporting
 reproducible across restarts.
+
+#### Corrected latent-group stress grid
+
+![Corrected latent-group stress grid](assets/figures/fig_phase6_latent_stress.png)
+
+`RES-BB-SYN-005` ran 400 seeded datasets across eight predeclared cells. In the
+archived-design cell, mean hard accuracy was **0.9742** (95% interval
+**0.9536–0.9948**) and mean adjusted Rand index was **0.9183**. Every returned
+objective equaled the final trace value, all traces were monotone, and all 1,200
+restarts were valid. Low separation and duplicate templates expose the expected
+non-identifiability/collapse boundary; this is not evidence for normalized-mixture
+identifiability.
 
 ### Runtime scaling
 
@@ -108,6 +119,18 @@ The independent sum is naturally larger because each subject's
 segmentation is integrated independently. The shared-boundary pooled fit
 recovers $\widehat k=15$ shared changepoints.
 
+#### Corrected raw-matrix comparator
+
+![Corrected array-CGH agreement](assets/figures/fig_phase6_cgh_agreement.png)
+
+`RES-BB-CMP-003` uses the exact hashed raw 2,215-probe × 43-subject matrix and
+scores every method on the common probe-index axis. Agreement F1@3 with the
+model-derived BayesBreak MAP is **0.8000** for PELT, **0.9286** for optimal
+partitioning, **0.7143** for binary segmentation, and **0.7857** for wild binary
+segmentation. The latter three use the 14-boundary target. The predeclared PELT
+grid did not attain 14 boundaries; its closest 11-boundary candidate is reported
+without post-hoc retuning. These are agreement diagnostics, not external truth.
+
 ### 3. S&P 500 volatility regimes — Gaussian on log $r_t^2$
 
 ![SPX](assets/figures/fig8_spx.png)
@@ -143,6 +166,20 @@ it is excluded from posterior-predictive conclusions because it used a Gaussian
 predictive calculation for Beta observations and an implicit endpoint rule. It is shown
 only as historical provenance and must not be interpreted as a valid predictive score.
 
+#### Corrected Beta-observation posterior prediction
+
+![Corrected methylation prediction](assets/figures/fig_phase6_methyl_predictive.png)
+
+`RES-BB-RD-008Q` uses observed held-out coverage as positive `phi_new`, the
+Beta-observation predictive distribution, and `extrapolation="error"`. Ten
+disjoint in-support chromosome blocks contain 1,520 held-out CpGs. Total log
+predictive score is **−23605.6749**, pooled mean is **−15.5300**, and the
+split-mean 95% t interval is **[−23.1445, −7.9156]**. Mean boundary-stability
+F1@3 is **0.8786**. The blocks are regions of one chromosome, not independent
+biological samples; no certified PIT calibration or external atlas accuracy is
+claimed. This score is not comparable with the excluded parent because both the
+family and split changed.
+
 ## Reproducing these numbers
 
 The values above are stored in
@@ -170,17 +207,13 @@ is not independent ground-truth accuracy. Numbers are archived in
 | Dataset | PELT | OP@$\widehat k$ | BS@$\widehat k$ | WBS@$\widehat k$ | Fearnhead-2006 ref |
 |---|---:|---:|---:|---:|---:|
 | Well-log NMR ($n=507$, BB $\widehat k=23$) | F1@3 $=0.18$ | $\mathbf{0.91}$ | $0.86$ | $0.05$ | $\mathbf{0.93}$ |
+| Array-CGH ($2215\times43$, BB $\widehat k=15$) | $0.80$* | $\mathbf{0.93}$ | $0.71$ | $0.79$ | n/a |
 | S&P 500 ($n=566$, BB $\widehat k=29$) | $0.53$ | $\mathbf{0.82}$ | $0.43$ | $0.07$ | $0.55$ |
 | Methylation ($n=1904$, BB $\widehat k=15$) | $0.44$ | $\mathbf{0.79}$ | $0.57$ | $0.14$ | n/a* |
 
-\* The Fearnhead-2006 reference DP is omitted at $n>1200$ for the local
-memory budget; runs on the smaller datasets.
-
-CGH is not in the table: the cached fit stores the
-`SharedBoundaryReplicatesSegmenter` pooled output but not the raw
-$2215\times 43$ log$_2$-ratio matrix, and the single-trace ruptures
-baselines on a pooled-mean curve are not informative. The CGH baseline
-sweep is the next benchmarking pass.
+\* CGH PELT reports the closest candidate in the predeclared eight-penalty grid
+(11 rather than 14 boundaries). The Fearnhead-2006 reference DP is omitted at
+$n>1200$ for the local memory budget.
 
 R-backed baselines (CBS via `DNAcopy`, SMUCE via `stepR`, RJMCMC via
 `mcp`) are skipped here because their upstream R packages are not
@@ -198,7 +231,6 @@ that require external annotations:
 - **Atlas F1 for methylation** — pending Loyfer-2023 atlas pipeline (GEO
   `GSE186458` + `nloyfer/wgbs_tools` / `nloyfer/UXM_deconv`).
 
-External-baseline runs (PELT, WBS, SMUCE, RJMCMC, Fearnhead's exact DP)
-are now available via [`bayesbreak.baselines`](baselines.md) — populating
-the comparator columns of these tables is the next iteration's
-benchmarking pass.
+Pure-Python matched-count agreement is now populated for the corrected CGH
+route. Equal-budget predictive tuning, independently annotated external truth,
+and optional R-backed comparators remain future protocol strata.

@@ -62,6 +62,20 @@ scientific comparison tables. A corrected run must consume the raw subject-by-pr
 validated probe coordinate axis under a new result identifier.
 \end{exclusionbox}
 
+That correction is \resultid{RES-BB-CMP-003}. It uses the exact hashed raw
+$2{,}215\times43$ probe-by-subject matrix and a common probe-index axis. Agreement $F_1@3$ with
+the model-derived BayesBreak MAP was $0.8000$ for PELT, $0.9286$ for dynamic programming,
+$0.7143$ for binary segmentation, and $0.7857$ for wild binary segmentation. The latter three
+used the 14-boundary target; the predeclared PELT grid did not attain that count and its closest
+11-boundary candidate was retained without post-hoc tuning. Figure~\ref{fig:cgh-agreement-corrected}
+is therefore a corrected agreement diagnostic, not external copy-number accuracy.
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.94\textwidth]{shared/figures/results/fig_phase6_cgh_agreement.png}
+\caption{Corrected raw-matrix array-CGH comparison \resultid{RES-BB-CMP-003}. Top: boundaries on the common probe axis. Bottom: agreement with the model-derived BayesBreak MAP.}
+\label{fig:cgh-agreement-corrected}
+\end{figure}
+
 \subsection{S\&P 500 volatility regimes}
 \label{sec:realdata-spx}
 The source covers January 1, 2015 through December 31, 2023, with approximately 2,263 raw daily
@@ -125,9 +139,27 @@ Beta-observation estimator and silently clipped out-of-range coordinates to the 
 The segmentation fit and its log evidence remain admissible descriptive real results.
 \end{exclusionbox}
 
+The corrected child \resultid{RES-BB-RD-008Q} uses the Beta-observation predictive distribution,
+positive held-out coverage as $\phi_{\mathrm{new}}$, and \texttt{extrapolation=error}. Ten disjoint
+stratified interior blocks held out 1,520 CpGs while retaining both fitted-support endpoints. Total
+log predictive score was $-23605.6749$, pooled mean score was $-15.5300$, and the split-mean 95\%
+$t$ interval was $[-23.1445,-7.9156]$. Mean boundary-stability $F_1@3$ against the model-derived
+full-data MAP was $0.8786$. Figure~\ref{fig:methyl-predictive-corrected} shows substantial regional
+variation. These chromosome blocks are not independent biological samples; no certified
+Beta-observation PIT or external atlas accuracy is claimed, and the score is not comparable with
+the excluded parent because both family and split changed.
+
+\begin{figure}[H]
+\centering\includegraphics[width=0.88\textwidth]{shared/figures/results/fig_phase6_methyl_predictive.png}
+\caption{Corrected methylation posterior prediction \resultid{RES-BB-RD-008Q}. Top: mean log predictive score over ten in-support blocks. Bottom: boundary-stability $F_1@3$ against the model-derived full-data MAP.}
+\label{fig:methyl-predictive-corrected}
+\end{figure}
+
 \section{What these case studies establish}
-Together, the fits demonstrate that the implemented interface executed on Gaussian single-series,
+Together, the fits and corrected children demonstrate that the implemented interface executed on Gaussian single-series,
 Gaussian shared-boundary, Gaussian volatility, Bernoulli threshold, and Beta-observation settings,
-and that their archived DP invariants passed. They do not establish external boundary accuracy,
-causal correspondence to domain events, or superiority to comparators. Those claims require the
-predeclared protocols in Appendix~\ref{app:experiments}.
+and that their archived DP invariants passed. The CGH child establishes common-axis agreement and
+the methylation child establishes family-correct in-support prediction for the declared blocks.
+They do not establish external boundary accuracy, causal correspondence to domain events, or
+superiority under independently tuned predictive comparisons. Those claims require the remaining
+predeclared protocol strata in Appendix~\ref{app:experiments}.

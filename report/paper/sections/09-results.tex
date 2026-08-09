@@ -1,7 +1,7 @@
 \section{Executed results}
 \label{sec:results}
 
-All numerical values in this section are populated archived outputs. No experiment was rerun for this revision. The figures and tables retain their source sidecars; interpretation follows Section~\ref{sec:experimental-design}.
+This section distinguishes populated archived outputs from three corrected Phase~6 executions. Each corrected output has a new result identifier, parent link, versioned sidecar, and artifact hashes. Historical values remain unchanged; interpretation follows Section~\ref{sec:experimental-design}.
 
 \subsection{Single-sequence posterior summaries}
 Figure~\ref{fig:gaussian-result-paper} shows a Gaussian sequence with two true changepoints. The boundary-event posterior concentrates near the generating changes while retaining a smaller shoulder of ambiguity before the first jump. The joint-MAP signal reflects this local uncertainty by inserting a short intermediate segment. Table~\ref{tab:gaussian-summary-paper} shows that the selected and modal segment count is four while the posterior mean is $4.742$, illustrating why an exported partition and posterior uncertainty over $k$ should not be collapsed into one object.
@@ -58,6 +58,15 @@ The latent-group experiment used 24 sequences of length 80 from two known synthe
 \end{subfigure}
 \caption{Executed uncertainty and template diagnostics. Panel (a) reports ECE $\approx0.010$ and Brier $\approx0.011$ in the archived Gaussian calibration experiment. Panel (b) reports 96\% hard recovery for the declared two-template synthetic setting.}
 \label{fig:calibration-template-paper}
+\end{figure*}
+
+The corrected stress execution \resultid{RES-BB-SYN-005} evaluated 400 seeded datasets across eight predeclared cells. In the archived-design cell, mean label-invariant hard accuracy was $0.9742$ (95\% interval $0.9536$--$0.9948$) and mean adjusted Rand index was $0.9183$. All 400 objective traces were monotone, every returned final objective equaled the final trace value, and all 1,200 restarts were valid. Recovery degraded under low separation, duplicate templates, higher noise, and shorter sequences, as summarized in Figure~\ref{fig:latent-stress-corrected-paper}. These results support the finite score-clustering criterion in the declared simulations, not normalized-mixture identifiability.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.88\textwidth]{shared/figures/results/fig_phase6_latent_stress.png}
+  \caption{Corrected latent-group stress execution \resultid{RES-BB-SYN-005}. Top: label-invariant hard accuracy with dataset-level 95\% intervals. Bottom: collapsed or duplicate-template rate. The dashed $0.5$ line is a descriptive reference, not a universal recovery threshold.}
+  \label{fig:latent-stress-corrected-paper}
 \end{figure*}
 
 \subsection{Nonconjugate block approximations}
@@ -132,8 +141,17 @@ The shared-boundary model used 43 subjects on 2,215 probes, selected the maximum
 \end{figure*}
 
 \begin{exclusionbox}[\resultid{RES-BB-CMP-002}: incompatible comparator axis]
-The comparator cache flattened a $43\times2215$ fitted matrix to 95,245 values while retaining reference boundaries on the 2,215-probe axis. Its zero agreement scores are real executions of an incompatible comparison and are excluded from scientific comparison. A correction requires the raw subject-by-probe matrix, validated probe coordinates, and a new result identifier.
+The comparator cache flattened a $43\times2215$ fitted matrix to 95,245 values while retaining reference boundaries on the 2,215-probe axis. Its zero agreement scores are real executions of an incompatible comparison and are excluded from scientific comparison. The corrected child below uses the raw subject-by-probe matrix, validated probe coordinates, and a new result identifier.
 \end{exclusionbox}
+
+The corrected child \resultid{RES-BB-CMP-003} used the exact hashed raw $2{,}215\times43$ probe-by-subject matrix and scored every method on the common probe-index axis (Figure~\ref{fig:cgh-agreement-corrected-paper}). Agreement $F_1@3$ with the model-derived BayesBreak MAP was $0.8000$ for PELT, $0.9286$ for dynamic programming, $0.7143$ for binary segmentation, and $0.7857$ for wild binary segmentation. Dynamic programming, binary segmentation, and wild binary segmentation used the 14-boundary target. The predeclared eight-value PELT grid did not attain 14 boundaries; its closest candidate returned 11 and was not retuned post hoc. These are agreement diagnostics, not external biological accuracy or predictive superiority.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.94\textwidth]{shared/figures/results/fig_phase6_cgh_agreement.png}
+  \caption{Corrected common-axis array-CGH comparison \resultid{RES-BB-CMP-003}. Top: boundary locations on the shared probe axis. Bottom: $F_1@3$ and exact Jaccard agreement with the model-derived BayesBreak MAP.}
+  \label{fig:cgh-agreement-corrected-paper}
+\end{figure*}
 
 \paragraph{S\&P 500 volatility.}
 The source covers January 1, 2015 through December 31, 2023, with approximately 2,263 raw observations and an executed stride-four series of $n=566$. The Gaussian log-squared-return model selected 29 segments with log evidence $-1296.6537252802884$ (Figure~\ref{fig:spx-paper}). A secondary Bernoulli threshold-incidence signal selected 50 segments with log evidence $-114.41004640965144$. It is a different response model, not a Poisson count, and its evidence is not directly comparable with the Gaussian total.
@@ -155,5 +173,18 @@ The executed data are the \texttt{methylKit} \texttt{test1.myCpG} chromosome-21 
   \label{fig:methylation-paper}
 \end{figure*}
 
+\begin{exclusionbox}[\resultid{RES-BB-RD-007Q}: invalid family/support predictive path]
+The archived held-out value $-387.50040013308154$ for $m=381$ remains historical provenance. It used a Gaussian predictive fallback for a Beta-observation estimator and assigned coordinates beyond fitted support to the endpoint block, so it remains excluded from posterior-predictive conclusions.
+\end{exclusionbox}
+
+The corrected child \resultid{RES-BB-RD-008Q} used the Beta-observation predictive distribution, observed held-out coverage as positive $\phi_{\mathrm{new}}$, and \texttt{extrapolation=error}. Ten disjoint stratified interior blocks held out 1,520 CpGs while retaining both fitted-support endpoints. Total log predictive score was $-23605.6749$ and pooled mean score was $-15.5300$; the mean split score had a 95\% $t$ interval $[-23.1445,-7.9156]$. Mean boundary-stability $F_1@3$ against the model-derived full-data MAP was $0.8786$ (Figure~\ref{fig:methyl-predictive-corrected-paper}). The blocks are regions of one chromosome rather than independent biological samples, and no certified Beta-observation PIT or external atlas accuracy is reported. Because both family and split changed, this score is not numerically comparable with the excluded parent.
+
+\begin{figure*}[t]
+  \centering
+  \includegraphics[width=0.88\textwidth]{shared/figures/results/fig_phase6_methyl_predictive.png}
+  \caption{Corrected methylation posterior prediction \resultid{RES-BB-RD-008Q}. Top: mean Beta-observation log predictive score across ten in-support chromosome blocks. Bottom: boundary-stability $F_1@3$ against the model-derived full-data MAP. Shaded bands are split-level 95\% $t$ intervals.}
+  \label{fig:methyl-predictive-corrected-paper}
+\end{figure*}
+
 \subsection{What the executed record establishes}
-The archive demonstrates that common partition recursions can use closed-form conjugate segment marginal likelihoods, one-dimensional quadrature, other numerical segment calculations, shared-changepoint pooling, and finite latent-group templates. It provides calibrated boundary probabilities in one Gaussian simulation design, finite-range runtime measurements, and four traceable real-data fits. It does not yet establish external boundary accuracy, dominance over tuned comparators, robustness across broad misspecification regimes, routine-wide approximation guarantees, or asymptotic speed better than the quadratic dynamic-programming bound.
+The executed record demonstrates that common partition recursions can use closed-form conjugate segment marginal likelihoods, one-dimensional quadrature, other numerical segment calculations, shared-changepoint pooling, and finite latent-group templates. It provides calibrated boundary probabilities in one Gaussian simulation design, a corrected finite latent-group stress grid, finite-range runtime measurements, four traceable real-data fits, a corrected common-axis CGH agreement diagnostic, and a corrected family-specific methylation predictive evaluation. It does not yet establish external boundary accuracy, dominance under independently tuned predictive comparisons, robustness across broad misspecification regimes, routine-wide approximation guarantees, or asymptotic speed better than the quadratic dynamic-programming bound.
