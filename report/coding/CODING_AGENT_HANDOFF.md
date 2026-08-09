@@ -2,7 +2,7 @@
 
 Canonical handoff: `HANDOFF-BB-CANONICAL-001`
 Phase: `6`
-Canonical JSON SHA-256: `4d3688a0bfb9930cc392b43d2769576e79fec3910804b8f92e49ffc95004e3e8`
+Canonical JSON SHA-256: `dd8186922bb7ef3fce15f3392f84460062f95b8e43522d670cd90a8253bea02b`
 
 ## Author-fixed scientific scope
 
@@ -678,7 +678,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013
 
-**Status:** planned
+**Status:** execution plan frozen; one-dataset-per-cell pilot pending explicit approval
 
 **Hypothesis:** BayesBreak fails in predictable, detectable ways under declared boundary cases.
 

@@ -1,0 +1,61 @@
+# EPR-BB-015 Misspecification and Negative-Control Execution Plan
+
+## Purpose
+
+`EPR-BB-015` is the next bounded research extension after the corrected Gate D results and
+family-specific MAP predictive certification. It is a failure-map experiment, not a search for a
+single favorable headline. The planned result ID is `RES-BB-SYN-006`; it is an original result and
+has no parent.
+
+The machine-readable source of this plan is
+`provenance/epr-bb-015-plan.json`.
+
+## Predeclared Cells
+
+| Cell | Model fitted | Failure boundary |
+|---|---|---|
+| `null-gaussian` | Gaussian | False boundaries under no change |
+| `heavy-tail-gaussian` | Gaussian | Outlier-driven oversegmentation under scaled Student-t noise |
+| `zero-inflated-poisson` | Poisson | Count-likelihood misspecification with 35% structural zeros |
+| `dense-gaussian` | Gaussian | Undersegmentation and count saturation with changes every 10 observations |
+| `short-segment-gaussian` | Gaussian | Recovery of a four-observation high-amplitude segment |
+| `prior-conflict-gaussian` | Gaussian | Truth excluded by a minimum segment length of 50 |
+| `shared-boundary-heterogeneity` | Shared-boundary Gaussian | Forced-sharing bias with unequal information and subject-specific deviations |
+| `logistic-approximation-failure` | Logistic-normal | Reachable-block error and convergence under near separation |
+
+## Execution Budget
+
+The pilot runs one seeded dataset per cell. The full design runs 50 datasets per cell with shared
+seeds for paired contrasts. The seed base is `261501`; the boundary-matching tolerance is three
+indices. Full execution requires a reviewed pilot and explicit approval.
+
+The pilot must report projected wall time, peak RSS, output size, and per-cell runtime. A projection
+over 30 minutes or 4 GiB peak RSS requires renewed resource approval.
+
+## Metrics and Interpretation
+
+Every truth-bearing cell reports canonical one-to-one boundary precision, recall, F1, and matched
+MAE, plus segment-count error and posterior entropy. The null cell reports false-discovery rate.
+Dense and short-segment cells report missed changes. The shared-boundary cell reports pooled and
+independent behavior without treating either fitted result as truth. The logistic cell compares
+reachable block support against a high-accuracy reference and reports maximum block error, empirical
+posterior TV, its conditional bound, convergence state, and MAP overlap.
+
+Cell-wise summaries use generated datasets as the uncertainty unit and report means or rates,
+standard errors, and 95% t intervals. No global superiority test is planned. Reversed, null,
+failed, nonconverged, and timed-out outcomes remain in the result.
+
+## Abort Rules
+
+- Do not overwrite any populated result directory.
+- Execute only from a committed, hashable code/configuration revision.
+- Reject NaN or positive-infinite required scores; record the cell as failed rather than filtering it.
+- Preserve every warning, exception, nonconvergence state, and timeout.
+- Do not call agreement with a fitted partition external truth.
+- Do not run the full suite until the pilot record is reviewed and explicitly approved.
+
+## Remaining Approval Boundary
+
+This document authorizes no compute by itself. The next decision is explicit approval for the
+one-dataset-per-cell pilot only. Full execution is a separate approval after resource and semantic
+review.
