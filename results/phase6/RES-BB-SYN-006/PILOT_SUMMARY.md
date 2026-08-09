@@ -22,3 +22,20 @@ The authorized one-dataset-per-cell pilot executed from code commit
 
 The full suite has not been executed. It requires renewed approval of the projected resource cost
 and review of whether to retain the current EP budget or predeclare a bounded timeout.
+
+## Bounded EP re-pilot
+
+The approved re-pilot executed from commit
+`236ec8c509224688cc6e29d855a2df182a869ca7` with a predeclared 20-second EP
+subprocess timeout.
+
+- All eight cells completed in 21.28 seconds with 154 MB peak RSS.
+- The projected 50-repetition full suite is 1,064 seconds (17.7 minutes), below the
+  predeclared 30-minute renewed-approval threshold.
+- The seven non-EP scientific outcomes and the quadrature/Laplace logistic diagnostics are
+  byte-for-byte or field-for-field unchanged from the first pilot.
+- EP timed out at 20.01 seconds and is retained as a timed-out scientific outcome; no EP error
+  or posterior TV value is imputed for that run.
+- The prior-conflict cell remains an explicit failed outcome.
+
+The full suite remains unexecuted and requires separate explicit approval.

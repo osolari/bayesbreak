@@ -65,3 +65,9 @@ approval threshold. EP consumed 75.73 seconds of the pilot and returned empirica
 0.505; the prior-conflict cell failed explicitly because no feasible segment count had finite
 evidence. A 20-second EP timeout is now predeclared and approved for a second pilot only. Full
 execution remains unapproved pending the bounded re-pilot's resource and semantic review.
+
+The bounded re-pilot executed from commit `236ec8c509224688cc6e29d855a2df182a869ca7`
+in 21.28 seconds at 154 MB peak RSS. EP timed out at 20.01 seconds and the timeout is retained.
+All non-EP scientific outputs matched the first pilot. The revised full-suite projection is
+17.7 minutes, below the 30-minute resource threshold. Full execution remains a separate explicit
+approval boundary.

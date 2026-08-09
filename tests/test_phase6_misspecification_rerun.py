@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import json
 import subprocess
+from pathlib import Path
 
 import numpy as np
 
@@ -13,6 +15,8 @@ from scripts.phase6_misspecification_rerun import (
     run_ep_bounded,
     summarize,
 )
+
+ROOT = Path(__file__).parents[1]
 
 
 def test_piecewise_mean_returns_strict_partition() -> None:
@@ -119,3 +123,53 @@ def test_logistic_summary_reports_timeout_rate() -> None:
     assert summary["ep_execution_rate"] == 0.0
     assert summary["ep_timeout_rate"] == 1.0
     assert summary["ep_max_block_error"] is None
+
+
+def test_bounded_repilot_changes_only_ep_outcome() -> None:
+    result_dir = ROOT / "results" / "phase6" / "RES-BB-SYN-006"
+    original = json.loads((result_dir / "pilot.json").read_text(encoding="utf-8"))
+    bounded = json.loads((result_dir / "pilot-ep-timeout.json").read_text(encoding="utf-8"))
+    standard_keys = (
+        "true_boundaries",
+        "predicted_boundaries",
+        "k_map",
+        "k_error",
+        "posterior_k_entropy",
+        "boundary_metrics",
+        "false_discovery_count",
+        "missed_change_count",
+        "log_evidence",
+        "data_hash",
+    )
+    shared_keys = (
+        "common_boundaries",
+        "shared_boundaries",
+        "shared_k_map",
+        "shared_metrics",
+        "subject_specific_boundary_60_selected_as_shared",
+        "independent",
+        "independent_mean_f1",
+        "data_hash",
+    )
+    for before, after in zip(original["records"][:7], bounded["records"][:7], strict=True):
+        assert before["cell"] == after["cell"]
+        assert before["status"] == after["status"]
+        if before["status"] == "failed":
+            assert (before["exception_type"], before["exception_message"]) == (
+                after["exception_type"],
+                after["exception_message"],
+            )
+        elif before["cell"] == "shared-boundary-heterogeneity":
+            assert all(before[key] == after[key] for key in shared_keys)
+        else:
+            assert all(before[key] == after[key] for key in standard_keys)
+
+    old_logistic, new_logistic = original["records"][7], bounded["records"][7]
+    assert old_logistic["data_hash"] == new_logistic["data_hash"]
+    assert old_logistic["reference_boundaries"] == new_logistic["reference_boundaries"]
+    for method in ("quadrature-40", "laplace"):
+        assert (
+            old_logistic["methods"][method]["diagnostics"]["extra"]
+            == new_logistic["methods"][method]["diagnostics"]["extra"]
+        )
+    assert new_logistic["methods"]["ep"]["status"] == "timed-out"
