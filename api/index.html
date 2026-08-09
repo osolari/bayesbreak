@@ -2187,8 +2187,18 @@ on both sides, <code>"left_endpoint"</code> for left-only endpoint extension, an
 in-support, and unsorted query order is preserved. Each call records
 <code>prediction_metadata_</code> and <code>prediction_provenance_</code> with the selected policy
 and fitted coordinate support.</p>
-<p><code>BayesBreakBetaObs</code> overrides the generic fallback with its fitted observation
-family. For each MAP block it integrates
+<p>Every concrete family used for MAP predictive scoring implements its own
+observation-family distribution; the abstract base raises <code>NotImplementedError</code>
+instead of silently substituting a Gaussian model. Direct numerical or analytic
+reference tests cover Gaussian, Poisson, negative-binomial, Bernoulli,
+Beta-Binomial, fractional-Beta, and Beta-observation scoring. Unsupported
+logistic-normal prediction fails explicitly. Model-averaged prediction over
+partitions remains a separate planned API.</p>
+<p>For <code>BayesBreakBinomial</code>, prediction <code>sample_weight</code> supplies the positive
+integer new-observation trial count; omission gives the one-trial Bernoulli
+special case. Bernoulli and fractional-Beta prediction reject values outside
+their declared support rather than clipping them.</p>
+<p>For <code>BayesBreakBetaObs</code>, each MAP block integrates
 <code>Beta(y_new | phi_new * mu, phi_new * (1 - mu))</code> over the fitted quadrature
 posterior for <code>mu</code>. In this family, prediction <code>sample_weight</code> values are the
 known positive <code>phi_new</code> descriptors; training likelihood-power weights remain
