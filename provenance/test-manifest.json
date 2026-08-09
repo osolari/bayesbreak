@@ -98,6 +98,40 @@
           "RES-BB-RD-007Q"
         ]
       }
+    },
+    "research_completion_map_prediction": {
+      "command": "python -m pytest -q",
+      "captured_at": "2026-08-09",
+      "branch": "main",
+      "commit": "d378b866942fde1124811534327da48ac4dbcdc9",
+      "collected": 341,
+      "passed": 341,
+      "skipped": 0,
+      "failed": 0,
+      "unresolved": 0,
+      "coverage_percent": 77,
+      "status": "passed-with-declared-warnings",
+      "scope": [
+        "reader-facing integration of RES-BB-SYN-005, RES-BB-CMP-003, and RES-BB-RD-008Q",
+        "family-specific MAP predictive certification",
+        "explicit failure for unsupported logistic-normal prediction",
+        "Beta-Binomial new-observation trial descriptors",
+        "Bernoulli and fractional-Beta support enforcement"
+      ],
+      "warnings": [
+        {
+          "count": 10,
+          "source": "tests/test_pipeline.py::test_grid_search_over_k_max",
+          "reason": "default extrapolation='error' rejects validation-fold coordinates outside each training fold support",
+          "impact": "default sklearn GridSearchCV scores are NaN unless the workflow selects and records an extrapolation policy/model"
+        }
+      ],
+      "remaining_research": [
+        "model-averaged prediction over partitions",
+        "routine-specific logistic-normal prediction",
+        "EPR-BB-015 misspecification and negative-control suite",
+        "independently annotated external-truth comparator strata"
+      ]
     }
   },
   "historical_phase6_state": {

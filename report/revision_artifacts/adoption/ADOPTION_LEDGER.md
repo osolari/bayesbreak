@@ -171,3 +171,23 @@ The parent result remains immutable. New artifacts are under
 - The Gate C environment lock remains a preserved historical snapshot. Gate D added
   `ruptures==1.1.10` and `rdata==1.1.0` for the authorized executions; each corrected
   sidecar records its execution-specific environment hash.
+
+### Post-Gate D Research Completion
+
+- Commit `56a8105a1ec58b2c18a77b7a4ea50b406a35d62f` integrates the three corrected
+  figures and scoped result narratives into the journal paper, technical book, and MkDocs
+  results page. Reader-facing copies are byte-checked against their hashed result artifacts.
+- Commit `d378b866942fde1124811534327da48ac4dbcdc9` completes family-specific MAP
+  predictive certification for Gaussian, Poisson, negative-binomial, Bernoulli,
+  Beta-Binomial, fractional-Beta, and Beta-observation families. Unsupported logistic-normal
+  prediction now fails explicitly rather than using an implicit Gaussian model.
+- The post-integration package suite collected and passed 341 tests with 77 percent package
+  coverage. The ten warnings remain the declared sklearn support-policy behavior. All-file
+  hooks, mypy, strict MkDocs, canonical synchronization, skeleton checks, and historical asset
+  checks passed.
+- Local PDF compilation remains not run: `latexmk`/pdfLaTeX is absent, while Tectonic is
+  intentionally rejected by the project typography package because it requires pdfLaTeX.
+  Integrated TeX labels and image paths passed structural checks.
+- Remaining research priorities are model-averaged prediction, a routine-specific
+  logistic-normal predictive target, the `EPR-BB-015` misspecification/negative-control suite,
+  and independently annotated external-truth comparator strata.
