@@ -47,4 +47,5 @@ def test_execution_brief_points_to_machine_readable_plan() -> None:
         ROOT / "report" / "revision_artifacts" / "research" / "EPR-BB-015_EXECUTION_PLAN.md"
     ).read_text(encoding="utf-8")
     assert "provenance/epr-bb-015-plan.json" in brief
-    assert "one-dataset-per-cell pilot only" in brief
+    assert "Full execution remains unapproved" in brief
+    assert "64.2 minutes" in brief

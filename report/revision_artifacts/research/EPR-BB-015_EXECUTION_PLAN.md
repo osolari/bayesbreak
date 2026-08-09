@@ -56,6 +56,10 @@ failed, nonconverged, and timed-out outcomes remain in the result.
 
 ## Remaining Approval Boundary
 
-This document authorizes no compute by itself. The next decision is explicit approval for the
-one-dataset-per-cell pilot only. Full execution is a separate approval after resource and semantic
-review.
+The one-dataset-per-cell pilot executed from commit
+`88eb9daddc81249379635f031327fc2e39fb22d6` in 77.02 seconds at 157 MB peak RSS.
+It projects 64.2 minutes for the 50-repetition suite, exceeding the predeclared 30-minute renewed
+approval threshold. EP consumed 75.73 seconds of the pilot and returned empirical posterior TV
+0.505; the prior-conflict cell failed explicitly because no feasible segment count had finite
+evidence. Full execution remains unapproved pending resource and semantic review, including whether
+to retain the current EP budget or predeclare a bounded timeout.
