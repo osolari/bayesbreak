@@ -12,8 +12,8 @@ analog when the download is unavailable.
 
 Outputs
 -------
-- docs/report/figures/fig7_cgh.{png,pdf}
-- docs/report/figures/fig7_cgh.json (run record + DP diagnostics)
+- results/figures/fig7_cgh.{png,pdf}
+- results/figures/fig7_cgh.json (run record + DP diagnostics)
 """
 
 from __future__ import annotations
@@ -209,7 +209,7 @@ def main(outdir: Path, simulated: bool) -> None:
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--simulated", action="store_true")
     args = ap.parse_args()
     main(outdir=args.outdir, simulated=args.simulated)

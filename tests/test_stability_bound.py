@@ -5,7 +5,8 @@ Verify that perturbing every block log-evidence by a uniform amount ``ε``:
 
 - shifts the segment-count log-odds by at most ``(k + k') ε``,
 - shifts the boundary-event log-odds by at most ``2 k ε``, and
-- shifts ``P(k | y)`` in total variation by at most ``exp(2 k_max ε) − 1``,
+- shifts ``P(k | y)`` in total variation by at most
+    ``min(1, exp(2 k_max ε) − 1)``,
   the conservative worst-case bound derivable directly from
   Proposition ``prop:stability``.
 """
@@ -54,7 +55,7 @@ def test_k_odds_within_bound():
 def test_pk_tv_worst_case_bound():
     """Under a uniform ε perturbation of every block log-evidence, the
     segment-count posterior shifts in total variation by at most
-    ``exp(2 k_max ε) − 1`` — the worst-case bound derivable from
+    ``min(1, exp(2 k_max ε) − 1)`` — the worst-case bound derivable from
     Proposition ``prop:stability``.
     """
     rng = np.random.default_rng(2)
@@ -74,7 +75,7 @@ def test_pk_tv_worst_case_bound():
     _, post_k1, _ = posterior_over_k(L1, n=n, k_max=k_max)
 
     tv_empirical = 0.5 * float(np.sum(np.abs(post_k1 - post_k0)))
-    tv_bound = math.expm1(2.0 * k_max * eps)
+    tv_bound = min(1.0, math.expm1(2.0 * k_max * eps))
     assert tv_empirical <= tv_bound + 1e-9
 
 

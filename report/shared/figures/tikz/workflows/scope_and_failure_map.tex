@@ -1,0 +1,14 @@
+\begin{tikzpicture}[node distance=9mm and 12mm]
+\node[primarybox,text width=32mm] (factor) {Contiguous partition with locally factorized segment contributions};
+\node[primarybox,text width=32mm,right=of factor] (segment) {Finite segment marginal likelihood or stated numerical approximation};
+\node[successbox,text width=32mm,right=of segment] (exact) {Exact partition recursion or conditional approximation bound};
+\node[neutralbox,text width=34mm,below=14mm of factor] (nonlocal) {Nonlocal dependence among segments or unrestricted labels};
+\node[neutralbox,text width=34mm,below=14mm of segment] (uncert) {Uncontrolled segment scores or observation-support mismatch};
+\node[secondarybox,text width=34mm,below=14mm of exact] (outside) {Requires a different model, state space, or numerical analysis};
+\draw[arrPrimary] (factor) -- (segment);
+\draw[arrPrimary] (segment) -- (exact);
+\draw[arr,dashed] (nonlocal) -- node[below,font=\scriptsize]{local factorization fails} (outside);
+\draw[arr,dashed] (uncert) -- node[below,font=\scriptsize]{posterior interpretation not established} (outside);
+\draw[arr,dashed] (factor) -- (nonlocal);
+\draw[arr,dashed] (segment) -- (uncert);
+\end{tikzpicture}

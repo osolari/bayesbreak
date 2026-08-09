@@ -1,9 +1,8 @@
 # Concepts
 
 This page introduces the mental model that makes BayesBreak's API natural.
-The reference treatment is the manuscript at
-[`docs/report/bayesbreak.pdf`](report.md); here we summarise the four
-ideas that recur throughout.
+The reference treatment is the [Phase 6 report package](report.md); here we
+summarise the four ideas that recur throughout.
 
 ## 1. Block evidence and dynamic programming are separate
 
@@ -62,24 +61,24 @@ on log-odds, in `BayesBreakLogisticNormal`), the closed-form block
 integral does not exist. BayesBreak then approximates the block evidence
 locally — pick one of:
 
-| `approx=` | Block routine | Uniform-`ε` rate (`prop:uniform-bounds`) |
+| `approx=` | Block routine | Certification status |
 |---|---|---|
-| `"laplace"` | 1-D Newton + Laplace expansion | `O(n^{-1})` on reachable blocks |
-| `"jj"` | Jaakkola–Jordan variational lower bound | `O(n^{-1})` on reachable blocks |
-| `"pg_vb"` | Pólya–Gamma mean-field | `O(n^{-1})` on reachable blocks |
-| `"ep"` | Real Minka EP with site normalizers | not uniformly bounded; convergence-conditional |
-| `"gh"` / `"quadrature"` | 1-D Gauss–Hermite (low / high node count) | `O(Q^{-2r})` for `C^{2r}` integrands |
+| `"laplace"` | 1-D Newton + Laplace expansion | routine-specific uniform rate unresolved |
+| `"jj"` | Jaakkola–Jordan variational lower bound | routine-specific uniform rate unresolved |
+| `"pg_vb"` | Pólya–Gamma mean-field | routine-specific uniform rate unresolved |
+| `"ep"` | Real Minka EP with site normalizers | convergence and uniform rate unresolved |
+| `"gh"` / `"quadrature"` | 1-D Gauss–Hermite (low / high node count) | tail and quadrature error must be established |
 
 The DP layer is unchanged: it consumes whatever score matrix the block
 routine produced, and posterior odds are perturbed by a controlled amount
-under Proposition `prop:stability`. The total-variation bound
-`exp(2 k_max ε) − 1` on `P(k | y)` (Corollary
+under the stability theorem. The conditional total-variation bound
+`min(1, exp(2 k_max ε) − 1)` on `P(k | y)` (Corollary
 `cor:probability-error-conversion`) gives the absolute-probability
 counterpart to the odds-level guarantee.
 
 `bayesbreak.run_non_conjugate_diagnostics` measures the empirical uniform
-ε against a reference fit and emits the theoretical-rate annotation so
-that violations of `prop:uniform-bounds` get surfaced.
+ε against a reference fit and emits a structured support/error record. It
+does not infer a routine-wide convergence rate from the approximation name.
 
 ## 4. Limitations are first-class
 
@@ -93,7 +92,7 @@ implementation surfaces each as a diagnostic:
 |---|---|
 | Computational regime (large `n`) | `bayesbreak.SlidingWindowSegmenter` (approximation) |
 | Block-model misspecification | `bayesbreak.prediction.pit_residuals`, `held_out_log_likelihood_trace` |
-| Non-conjugate approximation regime | `run_non_conjugate_diagnostics` + `theoretical_rate_violated` |
+| Non-conjugate approximation regime | `run_non_conjugate_diagnostics` + `segment_error_record` |
 | Latent-group identifiability (label switching) | `BayesBreakMixtureClassifier.canonical_permutation_` |
 | Latent-group identifiability (overspec G) | `select_n_groups_by_holdout` |
 | Boundary semantics | `est.boundary_marginals_` + `est.map_boundaries_` exposed separately |

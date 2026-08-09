@@ -1,0 +1,117 @@
+
+\chapter{Complete annotated literature review}
+\label{app:annotated-literature}\label{app:annotated-lit}
+\chapterpromise{Every bibliography entry receives one substantive project-specific annotation, with closest-work deltas, transfer limits, and verification status.}
+
+\begin{statusbox}[Bibliography--annotation completeness]
+The final book bibliography contains 38 keys and this appendix contains exactly 38 annotation
+sources. The machine-readable manifest at
+\path{shared/bibliography/annotation_manifest.json} records a one-to-one key/path/hash mapping.
+An annotation explains how a source is used; it does not upgrade an unverified claim or transfer a
+theorem beyond its assumptions.
+\end{statusbox}
+
+\section{Recommended reading sequence}
+A reader focused on the BayesBreak statistical formulation should begin with product partitions and exact
+Bayesian recursion (Barry--Hartigan, Fearnhead, Hutter), then read design-aware partitioning
+(Scargle, PPMx, generalized PPM), multiple-sequence work (BASIC and JRPM), and finally the
+block-local approximation sources. The clustering extension should be read beside Corradin et al.;
+the finite latent-group criterion in BayesBreak is intentionally narrower than a normalized latent-mixture model.
+\section{Bayesian segmentation and exact-recursion lineage}
+\input{shared/bibliography/annotated_entries/adamsmackay2007bocpd.tex}
+\input{shared/bibliography/annotated_entries/auger1989segment.tex}
+\input{shared/bibliography/annotated_entries/barry1992ppm.tex}
+\input{shared/bibliography/annotated_entries/barry1993bayesCP.tex}
+\input{shared/bibliography/annotated_entries/carlin1992hierBayesCP.tex}
+\input{shared/bibliography/annotated_entries/denison1998bayesian.tex}
+\input{shared/bibliography/annotated_entries/fearnhead2006exact.tex}
+\input{shared/bibliography/annotated_entries/green1995rjMCMC.tex}
+\input{shared/bibliography/annotated_entries/hutter2006bpcr.tex}
+\input{shared/bibliography/annotated_entries/punskaya2002bayesian.tex}
+\input{shared/bibliography/annotated_entries/yao1988biometrika.tex}
+\section{Conjugacy, approximate inference, and numerical computation}
+\input{shared/bibliography/annotated_entries/bernardo1994bayesian.tex}
+\input{shared/bibliography/annotated_entries/diaconis1979conjugate.tex}
+\input{shared/bibliography/annotated_entries/tierney1986laplace.tex}
+\input{shared/bibliography/annotated_entries/jaakkola2000logisticvb.tex}
+\input{shared/bibliography/annotated_entries/minka2001ep.tex}
+\input{shared/bibliography/annotated_entries/polson2013pg.tex}
+\input{shared/bibliography/annotated_entries/dempster1977em.tex}
+\input{shared/bibliography/annotated_entries/blanchard2021lse.tex}
+\input{shared/bibliography/annotated_entries/teicher1963identifiability.tex}
+\section{Optimization and frequentist comparator lineage}
+\input{shared/bibliography/annotated_entries/frick2014smuce.tex}
+\input{shared/bibliography/annotated_entries/fryzlewicz2014wbs.tex}
+\input{shared/bibliography/annotated_entries/jackson2005optpart.tex}
+\input{shared/bibliography/annotated_entries/killick2012pelt.tex}
+\input{shared/bibliography/annotated_entries/olshen2004cbs.tex}
+\input{shared/bibliography/annotated_entries/rigaill2010pruned.tex}
+\input{shared/bibliography/annotated_entries/rudin1992rof.tex}
+\input{shared/bibliography/annotated_entries/tibshirani2005fused.tex}
+\input{shared/bibliography/annotated_entries/truong2020review.tex}
+\section{Design-aware and generalized partition priors}
+\input{shared/bibliography/annotated_entries/scargle2013bayesianblocks.tex}
+\input{shared/bibliography/annotated_entries/muller2011ppmx.tex}
+\input{shared/bibliography/annotated_entries/park2010gppm.tex}
+\section{Multiple sequences, dependence, and shared boundaries}
+\input{shared/bibliography/annotated_entries/bleakley2011groupfused.tex}
+\input{shared/bibliography/annotated_entries/fearnhead2011dependence.tex}
+\input{shared/bibliography/annotated_entries/ruggieri2014bcpvs.tex}
+\input{shared/bibliography/annotated_entries/fan2017basic.tex}
+\input{shared/bibliography/annotated_entries/quinlan2024jrpm.tex}
+\section{Clustering by structural changes}
+\input{shared/bibliography/annotated_entries/corradin2026commonstructural.tex}
+
+\section{Bibliography-key completeness table}
+\small
+\begin{longtable}{@{}p{0.14\linewidth}p{0.32\linewidth}p{0.38\linewidth}@{}}
+\caption{One-to-one correspondence between bibliography entries and annotations.}\label{tab:annotation-completeness}\\
+\toprule
+\textbf{Annotation} & \textbf{Bibliography key} & \textbf{Canonical annotation source}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{Annotation} & \textbf{Bibliography key} & \textbf{Canonical annotation source}\\
+\midrule
+\endhead
+\texttt{ANN-BB-001} & \texttt{adamsmackay2007bocpd} & \path{shared/bibliography/annotated_entries/adamsmackay2007bocpd.tex} \\
+\texttt{ANN-BB-002} & \texttt{auger1989segment} & \path{shared/bibliography/annotated_entries/auger1989segment.tex} \\
+\texttt{ANN-BB-003} & \texttt{barry1992ppm} & \path{shared/bibliography/annotated_entries/barry1992ppm.tex} \\
+\texttt{ANN-BB-004} & \texttt{barry1993bayesCP} & \path{shared/bibliography/annotated_entries/barry1993bayesCP.tex} \\
+\texttt{ANN-BB-005} & \texttt{bernardo1994bayesian} & \path{shared/bibliography/annotated_entries/bernardo1994bayesian.tex} \\
+\texttt{ANN-BB-006} & \texttt{bleakley2011groupfused} & \path{shared/bibliography/annotated_entries/bleakley2011groupfused.tex} \\
+\texttt{ANN-BB-007} & \texttt{carlin1992hierBayesCP} & \path{shared/bibliography/annotated_entries/carlin1992hierBayesCP.tex} \\
+\texttt{ANN-BB-008} & \texttt{denison1998bayesian} & \path{shared/bibliography/annotated_entries/denison1998bayesian.tex} \\
+\texttt{ANN-BB-009} & \texttt{diaconis1979conjugate} & \path{shared/bibliography/annotated_entries/diaconis1979conjugate.tex} \\
+\texttt{ANN-BB-010} & \texttt{fearnhead2006exact} & \path{shared/bibliography/annotated_entries/fearnhead2006exact.tex} \\
+\texttt{ANN-BB-011} & \texttt{frick2014smuce} & \path{shared/bibliography/annotated_entries/frick2014smuce.tex} \\
+\texttt{ANN-BB-012} & \texttt{fryzlewicz2014wbs} & \path{shared/bibliography/annotated_entries/fryzlewicz2014wbs.tex} \\
+\texttt{ANN-BB-013} & \texttt{green1995rjMCMC} & \path{shared/bibliography/annotated_entries/green1995rjMCMC.tex} \\
+\texttt{ANN-BB-014} & \texttt{hutter2006bpcr} & \path{shared/bibliography/annotated_entries/hutter2006bpcr.tex} \\
+\texttt{ANN-BB-015} & \texttt{jaakkola2000logisticvb} & \path{shared/bibliography/annotated_entries/jaakkola2000logisticvb.tex} \\
+\texttt{ANN-BB-016} & \texttt{jackson2005optpart} & \path{shared/bibliography/annotated_entries/jackson2005optpart.tex} \\
+\texttt{ANN-BB-017} & \texttt{killick2012pelt} & \path{shared/bibliography/annotated_entries/killick2012pelt.tex} \\
+\texttt{ANN-BB-018} & \texttt{minka2001ep} & \path{shared/bibliography/annotated_entries/minka2001ep.tex} \\
+\texttt{ANN-BB-019} & \texttt{olshen2004cbs} & \path{shared/bibliography/annotated_entries/olshen2004cbs.tex} \\
+\texttt{ANN-BB-020} & \texttt{polson2013pg} & \path{shared/bibliography/annotated_entries/polson2013pg.tex} \\
+\texttt{ANN-BB-021} & \texttt{punskaya2002bayesian} & \path{shared/bibliography/annotated_entries/punskaya2002bayesian.tex} \\
+\texttt{ANN-BB-022} & \texttt{rigaill2010pruned} & \path{shared/bibliography/annotated_entries/rigaill2010pruned.tex} \\
+\texttt{ANN-BB-023} & \texttt{rudin1992rof} & \path{shared/bibliography/annotated_entries/rudin1992rof.tex} \\
+\texttt{ANN-BB-024} & \texttt{tibshirani2005fused} & \path{shared/bibliography/annotated_entries/tibshirani2005fused.tex} \\
+\texttt{ANN-BB-025} & \texttt{yao1988biometrika} & \path{shared/bibliography/annotated_entries/yao1988biometrika.tex} \\
+\texttt{ANN-BB-026} & \texttt{truong2020review} & \path{shared/bibliography/annotated_entries/truong2020review.tex} \\
+\texttt{ANN-BB-027} & \texttt{scargle2013bayesianblocks} & \path{shared/bibliography/annotated_entries/scargle2013bayesianblocks.tex} \\
+\texttt{ANN-BB-028} & \texttt{fearnhead2011dependence} & \path{shared/bibliography/annotated_entries/fearnhead2011dependence.tex} \\
+\texttt{ANN-BB-029} & \texttt{ruggieri2014bcpvs} & \path{shared/bibliography/annotated_entries/ruggieri2014bcpvs.tex} \\
+\texttt{ANN-BB-030} & \texttt{fan2017basic} & \path{shared/bibliography/annotated_entries/fan2017basic.tex} \\
+\texttt{ANN-BB-031} & \texttt{quinlan2024jrpm} & \path{shared/bibliography/annotated_entries/quinlan2024jrpm.tex} \\
+\texttt{ANN-BB-032} & \texttt{muller2011ppmx} & \path{shared/bibliography/annotated_entries/muller2011ppmx.tex} \\
+\texttt{ANN-BB-033} & \texttt{park2010gppm} & \path{shared/bibliography/annotated_entries/park2010gppm.tex} \\
+\texttt{ANN-BB-034} & \texttt{dempster1977em} & \path{shared/bibliography/annotated_entries/dempster1977em.tex} \\
+\texttt{ANN-BB-035} & \texttt{blanchard2021lse} & \path{shared/bibliography/annotated_entries/blanchard2021lse.tex} \\
+\texttt{ANN-BB-036} & \texttt{teicher1963\allowbreak identifiability} & \path{shared/bibliography/annotated_entries/teicher1963identifiability.tex} \\
+\texttt{ANN-BB-037} & \texttt{corradin2026\allowbreak commonstructural} & \path{shared/bibliography/annotated_entries/corradin2026commonstructural.tex} \\
+\texttt{ANN-BB-038} & \texttt{tierney1986laplace} & \path{shared/bibliography/annotated_entries/tierney1986laplace.tex} \\
+\bottomrule
+\end{longtable}
+\normalsize

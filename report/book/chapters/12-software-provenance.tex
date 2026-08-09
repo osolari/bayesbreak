@@ -1,0 +1,88 @@
+\chapter{Software organization, data schemas, and reproducibility records}
+\label{ch:software}
+\chapterpromise{How the implementation separates observation-model calculations from partition recursions, what the test runs established, and which implementation corrections remain incomplete.}
+
+\section{Implemented organization}
+The inspected package contains 44 modules and 9,143 source lines. Its principal components are
+observation-family classes, partition dynamic programming, shared-changepoint and grouped-model
+wrappers, nonconjugate numerical methods, posterior prediction, changepoint metrics, dataset
+loaders, experiment scripts, and plotting functions. Observation-family modules populate arrays of
+segment marginal likelihoods and posterior moments. The partition modules combine those arrays
+with prior factors. Analysis modules return posterior summaries, a joint MAP partition, predictive
+quantities, and result metadata.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/infrastructure/repository_provenance_map.tex}}
+\caption{Relation among input data, model configuration, numerical calculation, returned results,
+and generated figures or tables. A portable release should replace absolute author paths with data
+identifiers and record data, configuration, environment, and output hashes.}
+\label{fig:repository-provenance}
+\end{figure}
+
+\section{Observed test outcomes}
+A clean Phase~0 run reported 174 passing tests and five skips caused by optional dependencies. The
+historical Phase~1 bounded verification collected 179 tests: 157 passed, five were skipped because
+of optional dependencies, and 17 nonconjugate or grouped-model cases did not complete. An
+independent Phase~6 rerun collected the same 179 tests: 173 passed, five were skipped, one EP
+logistic-normal test exceeded a 20-second per-test cap, and none failed. The remaining timeout is
+neither a pass nor a failure, and no package code was modified for this verification.
+\taskid{CODE-BB-012} specifies termination analysis and profiling for that remaining case. A source comparison found 110 scoped scientific files byte-identical to the fresh
+extraction.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Verification context & Collected & Passed & Skipped & Unresolved & Failed\\ \midrule
+Phase 0 package baseline & 179 & 174 & 5 & 0 & 0\\
+Phase 1 bounded profile & 179 & 157 & 5 & 17 & 0\\
+Phase 6 bounded rerun & 179 & 173 & 5 & 1 & 0\\
+\bottomrule
+\end{tabular}
+\caption{Observed test outcomes. The rows use different execution limits and are reported
+separately.}
+\label{tab:test-status}
+\end{table}
+
+\section{Mathematical invariants checked in software}
+\begin{enumerate}
+\item Sum-product and max-sum recursions use the same observation-model and prior contributions but
+different algebraic operations.
+\item A boundary hazard is applied only at interior endpoints; for small $n$, the partition
+normalizer is compared with exhaustive enumeration.
+\item A latent-group optimization result should return the final value in its recorded objective
+sequence, and restart ranking should use that value.
+\item Comparisons among nonconjugate numerical methods must use the same admissible segments and the
+same coordinate indexing.
+\item Posterior prediction dispatches according to the fitted observation family and rejects
+unsupported coordinates unless an extrapolation model is specified.
+\item Boundary matching first maximizes the number of matches and then minimizes total distance;
+matched-boundary MAE is \NA\ when no pair is matched.
+\item Result metadata distinguish executed results, results valid for a stated analysis, results
+excluded from a stated analysis, and planned calculations.
+\end{enumerate}
+
+\section{Reproduction commands and portable metadata}
+The archived report includes editable-installation commands and synthetic or real-data entry
+points. They identify intended calculations but do not establish that every external data source
+is currently available. A reproducible run should record the package version, environment, random
+seeds, model configuration, input hashes, cache history, and output metadata. Absolute paths in
+archived result files are historical information and should be replaced by portable identifiers in
+a release.
+
+\begin{itemize}[leftmargin=1.7em,itemsep=2pt]
+\item \path{python -m venv .venv}
+\item \path{source .venv/bin/activate}
+\item \path{pip install -e ".[all]"}
+\item \path{pytest -q --durations=25}
+\item \path{python -m bayesbreak.experiments.synthetic --all --out artifacts/synthetic}
+\item \path{python -m bayesbreak.experiments.realdata --dataset <name> --out artifacts/realdata}
+\end{itemize}
+
+\section{Additional executed diagnostic outputs}
+The archive also contains mixture-discovery, signal-to-noise sensitivity, multivariate
+shared-changepoint, segment-count selection, and missing-data diagnostics. These outputs were
+executed, but they are not required to establish the main results in this volume. Chapter~\ref{ch:synthetic}
+uses the subset needed to describe boundary calibration, generality across observation models,
+latent-group behavior, and finite-range timing.

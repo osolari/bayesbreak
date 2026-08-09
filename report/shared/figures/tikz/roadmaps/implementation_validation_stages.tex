@@ -1,0 +1,16 @@
+\begin{tikzpicture}[node distance=7mm and 8mm]
+\node[successbox,text width=25mm] (sem) {Statistical statements and notation corrected};
+\node[neutralbox,right=of sem,text width=24mm] (code) {Planned implementation corrections};
+\node[neutralbox,right=of code,text width=25mm] (tests) {Unit, numerical, and statistical tests};
+\node[neutralbox,right=of tests,text width=24mm] (rerun) {Controlled recomputation with new result identifiers};
+\node[primarybox,right=of rerun,text width=24mm] (criteria) {Pre-specified acceptance criteria};
+\draw[arrPrimary] (sem)--(code);
+\draw[arrPrimary] (code)--(tests);
+\draw[arrPrimary] (tests)--(rerun);
+\draw[arrPrimary] (rerun)--(criteria);
+\node[successbox,below=10mm of criteria,text width=25mm] (release) {Release after scientific and numerical review};
+\node[draw=Warning,fill=WarningPale,diamond,aspect=1.8,left=15mm of release,align=center,font=\scriptsize] (pivot) {Criteria satisfied?};
+\draw[arrPrimary] (criteria)--(pivot);
+\draw[arrPrimary] (pivot)--node[above,font=\scriptsize]{yes}(release);
+\draw[arr,draw=Warning,bend right=24] (pivot.west) to node[below,font=\scriptsize]{no: stop, correct, or narrow the claim}(tests.south);
+\end{tikzpicture}

@@ -41,9 +41,9 @@ Interpretation
 
 Outputs
 -------
-- docs/report/tables/table4_nonconj_tradeoff.csv
-- docs/report/tables/table4_nonconj_tradeoff.md
-- docs/report/tables/table4_nonconj_tradeoff.tex
+- results/tables/table4_nonconj_tradeoff.csv
+- results/tables/table4_nonconj_tradeoff.md
+- results/tables/table4_nonconj_tradeoff.tex
 
 Usage
 -----
@@ -215,7 +215,7 @@ def main(outdir: Path, seed: int, n: int, k_max: int, tau: int, gh_points: int) 
 
 if __name__ == "__main__":
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/tables"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=80)
     ap.add_argument("--k-max", type=int, default=10)

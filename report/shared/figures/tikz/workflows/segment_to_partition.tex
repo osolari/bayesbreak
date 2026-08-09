@@ -1,0 +1,14 @@
+\begin{tikzpicture}[node distance=8mm and 10mm]
+\node[primarybox,text width=31mm] (data) {Ordered observations\\$u,y,d,a$};
+\node[secondarybox,right=of data,text width=35mm] (segment) {Observation-model calculation\\$\log A^{(r)}_{ij}$};
+\node[primarybox,above right=7mm and 13mm of segment,text width=32mm] (sum) {Sum-product recursion\\marginal likelihoods and posterior marginals};
+\node[primarybox,below right=7mm and 13mm of segment,text width=32mm] (max) {Max-sum recursion\\joint MAP partition};
+\node[successbox,right=13mm of sum,text width=31mm] (post) {$p(k\mid y)$, changepoint probabilities, Bayes curves};
+\node[successbox,right=13mm of max,text width=31mm] (map) {Joint MAP changepoints and fitted segments};
+\draw[arrPrimary] (data)--(segment);
+\draw[arrPrimary] (segment)--(sum);
+\draw[arrPrimary] (segment)--(max);
+\draw[arrPrimary] (sum)--(post);
+\draw[arrPrimary] (max)--(map);
+\node[draw=Rule,dashed,rounded corners,fit=(sum)(max),inner sep=4mm,label=above:{\small dynamic programming over ordered partitions}] {};
+\end{tikzpicture}

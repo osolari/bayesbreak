@@ -29,6 +29,7 @@ with a single message instead of an opaque attribute error.
 from __future__ import annotations
 
 import importlib
+import math
 from typing import Any
 
 import numpy as np
@@ -218,12 +219,7 @@ def run_wbs(
             continue
         try:
             bs = rpt.Binseg(model=cost_model, min_size=int(min_size), jump=int(jump)).fit(window)
-            kw: dict[str, Any] = {}
-            if n_bkps is not None:
-                kw["n_bkps"] = max(1, int(n_bkps))
-            else:
-                kw["pen"] = float(penalty)
-            local_breaks = bs.predict(**kw)
+            local_breaks = bs.predict(n_bkps=1)
         except Exception:
             continue
         for b in local_breaks:
@@ -241,13 +237,15 @@ def run_wbs(
             jump=jump,
         )
 
-    # Score each candidate using BS on the original signal, keep the top
-    # ``n_bkps`` by reduction in residual sum-of-squares.
-    full = rpt.Binseg(model=cost_model, min_size=int(min_size), jump=int(jump)).fit(sig)
-    if n_bkps is not None:
-        breaks = sorted(candidates)[: int(n_bkps)] + [n]
-    else:
-        breaks = full.predict(pen=float(penalty))
+    breaks = _select_wbs_candidates(
+        rpt,
+        sig,
+        candidates,
+        n_bkps=n_bkps,
+        penalty=penalty,
+        cost_model=cost_model,
+        min_size=int(min_size),
+    )
 
     return BaselineResult(
         algorithm="wild_binary_segmentation",
@@ -264,5 +262,83 @@ def run_wbs(
             "jump": int(jump),
             "random_state": random_state,
         },
-        extra={"n_candidate_breakpoints": len(candidates)},
+        extra={
+            "n_candidate_breakpoints": len(candidates),
+            "candidate_selection": "candidate-constrained-dynamic-programming",
+        },
     )
+
+
+def _select_wbs_candidates(
+    rpt: Any,
+    signal: np.ndarray,
+    candidates: set[int],
+    *,
+    n_bkps: int | None,
+    penalty: float | None,
+    cost_model: str,
+    min_size: int,
+) -> list[int]:
+    """Minimize the upstream cost over partitions supported by WBS candidates."""
+
+    n = int(signal.shape[0])
+    cost = rpt.costs.cost_factory(model=cost_model).fit(signal)
+    required_length = max(int(min_size), int(getattr(cost, "min_size", 1)))
+    positions = np.asarray([0, *sorted(candidates), n], dtype=np.intp)
+    max_segments = min(len(positions) - 1, n // required_length)
+    if n_bkps is not None:
+        target_segments = int(n_bkps) + 1
+        if target_segments < 1:
+            raise ValueError("n_bkps must be nonnegative")
+        if target_segments > max_segments:
+            raise ValueError(
+                f"WBS candidates support at most {max_segments - 1} breakpoints; requested {n_bkps}"
+            )
+        segment_limit = target_segments
+    else:
+        penalty_value = float(penalty)
+        if not math.isfinite(penalty_value) or penalty_value < 0:
+            raise ValueError("penalty must be finite and nonnegative")
+        segment_limit = max_segments
+
+    costs = np.full((segment_limit + 1, positions.size), np.inf, dtype=float)
+    predecessors = np.full((segment_limit + 1, positions.size), -1, dtype=np.intp)
+    costs[0, 0] = 0.0
+    for segment_count in range(1, segment_limit + 1):
+        for stop_index in range(1, positions.size):
+            stop = int(positions[stop_index])
+            for start_index in range(stop_index):
+                if not math.isfinite(float(costs[segment_count - 1, start_index])):
+                    continue
+                start = int(positions[start_index])
+                if stop - start < required_length:
+                    continue
+                try:
+                    segment_cost = float(cost.error(start, stop))
+                except Exception:
+                    continue
+                candidate_cost = float(costs[segment_count - 1, start_index]) + segment_cost
+                if candidate_cost < costs[segment_count, stop_index]:
+                    costs[segment_count, stop_index] = candidate_cost
+                    predecessors[segment_count, stop_index] = start_index
+
+    if n_bkps is not None:
+        selected_segments = target_segments
+    else:
+        objectives = costs[1:, -1] + float(penalty) * np.arange(segment_limit)
+        if not np.any(np.isfinite(objectives)):
+            raise ValueError("No feasible WBS candidate partition")
+        selected_segments = int(np.argmin(objectives)) + 1
+    if not math.isfinite(float(costs[selected_segments, -1])):
+        raise ValueError("No feasible WBS candidate partition")
+
+    selected: list[int] = []
+    stop_index = positions.size - 1
+    for segment_count in range(selected_segments, 0, -1):
+        start_index = int(predecessors[segment_count, stop_index])
+        if start_index < 0:
+            raise RuntimeError("WBS candidate backtracking failed")
+        if start_index > 0:
+            selected.append(int(positions[start_index]))
+        stop_index = start_index
+    return [*sorted(selected), n]

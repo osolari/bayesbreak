@@ -92,7 +92,7 @@ def _parse_methylkit_table(text: str) -> tuple[np.ndarray, np.ndarray, np.ndarra
 
 def _load_methylkit_real() -> DatasetBundle | None:
     try:
-        import requests  # type: ignore[import-not-found]
+        import requests  # type: ignore[import-untyped]
     except ImportError:
         return None
     cache = cache_dir() / "methylkit_test1.myCpG.txt"

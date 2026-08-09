@@ -1,4 +1,4 @@
-"""BayesBreak — exact Bayesian segmentation via block evidence + DP.
+"""Generalized hierarchical Bayesian segmentation via segment evidence and DP.
 
 The public API follows strict scikit-learn conventions:
 
@@ -10,8 +10,8 @@ The public API follows strict scikit-learn conventions:
 - All constructor arguments are stored untouched; validation happens in
   ``fit``.
 
-See the accompanying report (``docs/report/bayesbreak.pdf``) for the
-mathematical background; this module is the reference implementation.
+See the accompanying Phase 6 report under ``report/`` for the mathematical
+background; this module is the reference implementation.
 """
 
 from __future__ import annotations
@@ -44,6 +44,7 @@ from .multivariate import (
     IndependentMultivariateSegmenter,
     SharedBoundaryMultivariateSegmenter,
 )
+from .priors import PartitionPriorConfig
 from .replicates import SharedBoundaryReplicatesSegmenter
 from .sliding_window import SlidingWindowSegmenter
 
@@ -107,6 +108,7 @@ __all__ = [
     "BayesBreakMixtureClassifier",
     "DiagnosticCheck",
     "DiagnosticReport",
+    "PartitionPriorConfig",
     "run_dp_diagnostics",
     "run_non_conjugate_diagnostics",
     "run_prior_sensitivity",

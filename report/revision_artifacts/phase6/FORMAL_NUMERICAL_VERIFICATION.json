@@ -1,0 +1,177 @@
+{
+  "verification_id": "VERIFY-BB-PHASE6-MATH-001",
+  "date": "2026-08-05",
+  "purpose": "Independent finite-case and numerical verification of central formulas and recursions; not a substitute for formal proofs.",
+  "seed": 20260805,
+  "passed": true,
+  "checks": [
+    {
+      "check_id": "MATH-BB-001",
+      "description": "Gaussian-known-variance segment marginal likelihood versus direct integration",
+      "passed": true,
+      "metrics": {
+        "formula": 0.0032767495902880734,
+        "quadrature": 0.003276749590288074,
+        "quad_abs_error": 4.6040722964667666e-14,
+        "relative_error": 4.336808689942018e-19
+      },
+      "tolerance": "relative error < 2e-11"
+    },
+    {
+      "check_id": "MATH-BB-002",
+      "description": "Gamma-Poisson segment marginal likelihood versus direct integration",
+      "passed": true,
+      "metrics": {
+        "formula": 0.0001329113758617592,
+        "quadrature": 0.00013291137586175913,
+        "quad_abs_error": 9.415824914591544e-15,
+        "relative_error": 8.131516293641283e-20
+      },
+      "tolerance": "relative error < 2e-11"
+    },
+    {
+      "check_id": "MATH-BB-003",
+      "description": "Beta-Binomial segment marginal likelihood versus direct integration",
+      "passed": true,
+      "metrics": {
+        "formula": 0.0139162307255416,
+        "quadrature": 0.013916230725541585,
+        "quad_abs_error": 2.096410594218364e-15,
+        "relative_error": 1.5612511283791264e-17
+      },
+      "tolerance": "relative error < 2e-11"
+    },
+    {
+      "check_id": "MATH-BB-004",
+      "description": "Beta-negative-binomial segment marginal likelihood versus direct integration",
+      "passed": true,
+      "metrics": {
+        "formula": 0.00012029487042101353,
+        "quadrature": 0.00012029487042101373,
+        "quad_abs_error": 1.3355413488570916e-18,
+        "relative_error": 2.0328790734103208e-19
+      },
+      "tolerance": "relative error < 2e-11"
+    },
+    {
+      "check_id": "MATH-BB-005",
+      "description": "Beta-observation one-dimensional Gauss-Legendre segment integration versus adaptive quadrature",
+      "passed": true,
+      "metrics": {
+        "reference": 1.3022547944210567,
+        "quad_scaled_abs_error": 2.2681157267340995e-15,
+        "node_counts": [
+          8,
+          16,
+          32,
+          64,
+          128
+        ],
+        "approximations": [
+          1.283688662844132,
+          1.3022566977372931,
+          1.3022547944210539,
+          1.3022547944210594,
+          1.3022547944210496
+        ],
+        "relative_errors": [
+          0.01425691167079075,
+          1.4615522728374437e-06,
+          2.2166014488037984e-15,
+          2.046093645049656e-15,
+          5.456249720132427e-15
+        ]
+      },
+      "tolerance": "128-node relative error < 2e-9; no monotonicity assertion"
+    },
+    {
+      "check_id": "MATH-BB-006",
+      "description": "Sum-product fixed-count partition evidence versus exhaustive enumeration",
+      "passed": true,
+      "metrics": {
+        "max_absolute_log_evidence_error": 4.440892098500626e-16,
+        "n": 7,
+        "kmax": 4
+      },
+      "tolerance": "absolute log-evidence error < 2e-12"
+    },
+    {
+      "check_id": "MATH-BB-007",
+      "description": "Max-sum recursion and backtracking versus exhaustive joint MAP search",
+      "passed": true,
+      "metrics": {
+        "max_objective_gap": 0.0,
+        "all_partitions_identical": "True"
+      },
+      "tolerance": "objective gap < 2e-12 and identical partition"
+    },
+    {
+      "check_id": "MATH-BB-008",
+      "description": "Ordered-boundary and boundary-event marginals versus exhaustive posterior enumeration",
+      "passed": true,
+      "metrics": {
+        "ordered_boundary_max_abs_error": 1.1102230246251565e-16,
+        "boundary_event_max_abs_error": 1.1102230246251565e-16
+      },
+      "tolerance": "maximum absolute error < 2e-12"
+    },
+    {
+      "check_id": "MATH-BB-009",
+      "description": "Posterior mean and second-moment curves from block-cover decomposition versus exhaustive averaging",
+      "passed": true,
+      "metrics": {
+        "mean_curve_max_abs_error": 2.220446049250313e-16,
+        "second_moment_curve_max_abs_error": 4.440892098500626e-16
+      },
+      "tolerance": "maximum absolute error < 3e-12"
+    },
+    {
+      "check_id": "MATH-BB-010",
+      "description": "Shared-boundary pooling by products of sequence-specific segment marginal likelihoods",
+      "passed": true,
+      "metrics": {
+        "sequences": 4,
+        "max_absolute_log_evidence_error": 2.220446049250313e-16
+      },
+      "tolerance": "absolute log-evidence error < 2e-12"
+    },
+    {
+      "check_id": "MATH-BB-011",
+      "description": "Conditional propagation of uniform segment log-score error through dynamic-programming evidences and normalized finite distributions",
+      "passed": true,
+      "metrics": {
+        "epsilon": 0.018,
+        "maximum_state_error_as_fraction_of_k_epsilon": 0.8737401983190273,
+        "eta_generic": 0.20683838098157126,
+        "minimum_probability_ratio": 0.8022823519856507,
+        "maximum_probability_ratio": 1.196351352406565,
+        "total_variation": 0.05541730626442494,
+        "total_variation_bound": 0.5123681929419355
+      },
+      "tolerance": "state error <= k epsilon; probability ratios within exp(+-2 eta); TV <= min(1, exp(2 eta)-1)"
+    },
+    {
+      "check_id": "MATH-BB-012",
+      "description": "Fixed-count Poisson interval occupancy gives local odds exp(Lambda_j)-1 after conditioning",
+      "passed": true,
+      "metrics": {
+        "max_abs_error_odds_formula": 1.1102230246251565e-16,
+        "max_abs_gap_if_occupancy_probabilities_used_instead": 0.1882129075646054,
+        "candidate_intervals": 5,
+        "occupied_intervals": 2
+      },
+      "tolerance": "odds formula error < 2e-15 and occupancy-probability alternative demonstrably differs"
+    },
+    {
+      "check_id": "MATH-BB-013",
+      "description": "Jensen minorizer tightness and responsibility-weighted latent-template score decomposition",
+      "passed": true,
+      "metrics": {
+        "jensen_tightness_gap": 0.0,
+        "template_decomposition_gap": 0.0,
+        "effective_group_weight_n_g": 2.396787252382345
+      },
+      "tolerance": "both absolute gaps < 2e-13"
+    }
+  ]
+}

@@ -1,0 +1,3 @@
+
+\paragraph{\texttt{blanchard2021lse}: \citet{blanchard2021lse}.}
+Blanchard, Higham, and Higham analyze stable computation of log-sum-exp and softmax functions. BayesBreak uses these numerical primitives throughout log-domain forward/backward recursions, pooled evidence aggregation, template responsibilities, and normalization checks. The source informs implementation and numerical QA rather than the statistical model. It is particularly relevant where underflow would otherwise turn very small but nonzero partition mass into an apparent hard exclusion. \textit{Verification status: metadata retained; numerical role linked to the software chapter.}

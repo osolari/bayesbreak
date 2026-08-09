@@ -1,0 +1,148 @@
+\section{Irregular designs and hierarchical extensions}
+\label{sec:extensions}
+
+The ordered-partition recursions remain valid when prior factors or multiple-sequence likelihoods can be expressed segment by segment. This section gives the corresponding models for irregular coordinates, shared changepoints, observed groups, and latent groups.
+
+\subsection{Irregular designs: segment cohesion and boundary hazard}
+Irregular coordinates can enter the partition prior in two statistically distinct ways. A complete-segment cohesion $c_u(i,j)$ assigns prior mass according to the physical span of $(i,j]$; an interior-boundary hazard $h_u(j)$ assigns prior mass to a candidate split at $u_j$. They can appear together in Equation~\eqref{eq:partition-prior}, but one does not imply the other.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{0.96\columnwidth}{!}{\input{shared/figures/tikz/models/cohesion_boundary_hazard.tex}}
+  \caption{Design-dependent partition prior. Segment cohesion and interior-boundary hazard represent different prior assumptions. The terminal endpoint receives no boundary-hazard factor.}
+  \label{fig:cohesion-hazard-paper}
+\end{figure}
+
+\begin{theorem}[Local prior factors preserve exact inference]
+\label{thm:local-prior-paper}
+Replacing $A^{(r)}_{ij}$ by
+$\widetilde A^{(r)}_{ij}=A^{(r)}_{ij}c_u(i,j)h_u(j)^{\1\{j<n\}}$
+causes the sum-product recursion to enumerate exactly the unnormalized joint weights in Equation~\eqref{eq:partition-prior}. Dividing the terminal partition sum by $C_k(u)$ yields the proper fixed-$k$ marginal likelihood.
+\end{theorem}
+\begin{proof}
+For any partition $t$, the product of modified segment quantities is
+\[
+\prod_{q=1}^{k}A^{(r_q)}_{t_{q-1},t_q}
+\prod_{q=1}^{k}c_u(t_{q-1},t_q)
+\prod_{q=1}^{k-1}h_u(t_q),
+\]
+because the terminal indicator removes $h_u(n)$. This is the likelihood or moment product multiplied by the unnormalized partition prior. The recursion visits each ordered boundary vector once; normalization by $C_k(u)$ completes the proof.
+\end{proof}
+
+A boundary-process interpretation applies only to the hazard factor. Let
+$\Lambda_j=\int_{u_{j-1}}^{u_j}\lambda(v)\dd v$ for an inhomogeneous Poisson process. Interval
+occupancies are independent Bernoulli variables with probability $1-e^{-\Lambda_j}$. Conditional
+on exactly $m$ occupied candidate intervals, the subset probability is proportional to the product
+of Bernoulli odds, so the compatible local factor is
+\begin{equation}
+ h_u(j)\propto \frac{1-e^{-\Lambda_j}}{e^{-\Lambda_j}}=e^{\Lambda_j}-1.
+\label{eq:poisson-hazard}
+\end{equation}
+Constant intensity and equal-width intervals recover an index-uniform fixed-count boundary prior when $c_u\equiv1$. Without conditioning on the number of occupied intervals, both occupied and unoccupied Bernoulli factors are part of the prior. Equation~\eqref{eq:poisson-hazard} does not justify multiplying a segment likelihood by its physical length; a duration-dependent cohesion is a separate prior choice.
+
+\subsection{Shared changepoints across multiple sequences}
+Suppose $S$ aligned sequences share a boundary vector while retaining sequence-specific segment parameters and priors. Conditional independence gives a pooled segment marginal likelihood.
+
+\begin{figure}[t]
+  \centering
+  \resizebox{0.96\columnwidth}{!}{\input{shared/figures/tikz/models/shared_boundary_plate.tex}}
+  \caption{Hierarchical common-changepoint model with sequence-specific segment parameters. Conditional independence makes the sequence-specific segment marginal likelihoods multiply.}
+  \label{fig:shared-boundary-paper}
+\end{figure}
+
+\begin{assumption}[Common candidate set]
+\label{ass:shared-support}
+The sequences are aligned to a common ordered candidate set. Every candidate partition considered by the common-changepoint model is admissible for every sequence after the declared missing-data or exposure convention. Conditional on the common partition, sequences and their segment parameters are independent, and all sequence-specific segment marginal likelihoods are finite and positive on the common support.
+\end{assumption}
+
+\begin{theorem}[Exact pooling under a common partition]
+\label{thm:pooling-paper}
+Under Assumption~\ref{ass:shared-support}, the pooled segment marginal likelihood is
+\begin{equation}
+ A^{(0),\mathrm{pool}}_{ij}=\prod_{s=1}^{S}A^{(0,s)}_{ij},
+ \qquad
+ \ell^{\mathrm{pool}}_{ij}=\sum_{s=1}^{S}\ell^{(s)}_{ij}.
+\label{eq:pooling}
+\end{equation}
+Using this array in Section~\ref{sec:exact-inference} gives the exact posterior distribution over the common partition. Conditional sequence-specific parameter posteriors are recovered from the original sequence-specific conjugate updates.
+\end{theorem}
+\begin{proof}
+For a fixed candidate segment, sequence-specific parameters integrate independently, producing $A^{(0,s)}_{ij}$ for sequence $s$. Conditional independence makes the joint integrated segment contribution their product. The partition recursion depends only on the resulting triangular array, so its path sum is the exact posterior normalizer for the common-partition model. The sequence-specific posterior states remain available conditional on any selected or averaged partition.
+\end{proof}
+
+Known groups are handled by applying Equation~\eqref{eq:pooling} separately within each observed group. The following asymptotic statement is restricted to a finite candidate set and requires information to accumulate across sequences.
+
+\begin{theorem}[Finite-candidate consistency for a common partition]
+\label{thm:shared-consistency-paper}
+Let $\mathcal T$ be finite and contain a data-generating candidate $t^\star$. For sequence $s$, let $M_s(t)>0$ be the integrated score used by the common-partition model. Assume independent sequences, $p(t^\star)>0$, and for each $t\ne t^\star$:
+\begin{enumerate}
+\item $\mathbb E|\log M_s(t^\star)-\log M_s(t)|<\infty$;
+\item a strong law holds for the centered log-score differences; and
+\item $\liminf_{S\to\infty}S^{-1}\sum_{s=1}^{S}\mathbb E[\log M_s(t^\star)-\log M_s(t)]=\delta_t>0$.
+\end{enumerate}
+Then $p(t^\star\mid y^{(1:S)})\to1$ almost surely, and every joint MAP segmentation is eventually $t^\star$ almost surely.
+\end{theorem}
+\begin{proof}
+For $t\ne t^\star$, define
+$D_s(t)=\log M_s(t^\star)-\log M_s(t)$. The posterior ratio is
+\[
+\frac{p(t\mid y^{(1:S)})}{p(t^\star\mid y^{(1:S)})}
+=\frac{p(t)}{p(t^\star)}\exp\!\left\{-\sum_{s=1}^{S}D_s(t)\right\}.
+\]
+The strong law and positive limiting average gap make the normalized sum have positive liminf $\delta_t$ almost surely, so the ratio converges to zero exponentially on the $S$ scale. Finiteness of $\mathcal T$ permits summing over all incorrect candidates. Posterior normalization then gives concentration at $t^\star$, and every incorrect posterior ratio is eventually below one, proving the MAP statement.
+\end{proof}
+
+One fixed informative sequence is insufficient for this theorem because its contribution vanishes in the average as $S$ increases. The assumption requires an accumulating average expected log-score gap.
+
+\subsection{Finite latent-group template model}
+For sequence $s$ and deterministic segmentation template $\tau=(k,t)$, the archived implementation uses
+\begin{equation}
+ S_s(\tau)=\frac{p(k)}{C_k}\prod_{q=1}^{k}
+ A^{(0,s)}_{t_{q-1},t_q}\gamma_u(t_{q-1},t_q).
+\label{eq:sequence-template-score-paper}
+\end{equation}
+These subject-template scores are not required to integrate to one over the data space. We therefore define the finite criterion
+\begin{align}
+\mathcal F(\pi,\tau)
+&=\sum_{s=1}^{S}\log\!\left\{\sum_{g=1}^{G}\pi_gS_s(\tau_g)\right\},\nonumber\\
+&\hspace{8mm}\pi_g\ge0,\qquad \sum_g\pi_g=1.
+\label{eq:latent-group-objective}
+\end{align}
+This is a latent-group clustering criterion. It is not interpreted as a finite-mixture likelihood unless each $S_s(\tau_g)$ is a normalized sampling density.
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{0.84\textwidth}{!}{\input{shared/figures/tikz/models/latent_group_templates.tex}}
+  \caption{Minorization--maximization for the finite latent-group criterion. The auxiliary weights are normalized across templates, and the template step is solved by responsibility-weighted max-sum dynamic programming.}
+  \label{fig:latent-group-paper}
+\end{figure*}
+
+For row-stochastic auxiliary weights $r_{sg}$, Jensen's inequality gives
+\begin{align}
+\mathcal F(\pi,\tau)&\ge\mathcal Q(r,\pi,\tau),\nonumber\\
+\mathcal Q(r,\pi,\tau)
+&=\sum_{s,g}r_{sg}\bigl[\log\pi_g+\log S_s(\tau_g)-\log r_{sg}\bigr],
+\label{eq:latent-group-bound}
+\end{align}
+with equality at
+\begin{equation}
+ r_{sg}=\frac{\pi_gS_s(\tau_g)}{\sum_h\pi_hS_s(\tau_h)}.
+\label{eq:auxiliary-weights}
+\end{equation}
+The mixing-weight update is $\pi_g=S^{-1}\sum_s r_{sg}$. Let $n_g=\sum_s r_{sg}$. For a candidate segment count $k$, substitution of Equation~\eqref{eq:sequence-template-score-paper} into the minorizer gives the count offset $n_g\{\log p(k)-\log C_k\}$ and the max-sum local score
+\begin{equation}
+\ell^{(g)}_{ij}=\sum_{s=1}^{S}r_{sg}\log A^{(0,s)}_{ij}
+                  +n_g\log\gamma_u(i,j).
+\label{eq:template-local-score}
+\end{equation}
+The template update solves the fixed-$k$ max-sum problem and then compares the offset-adjusted terminal values across the allowed segment counts.
+
+\begin{theorem}[Monotonicity of exact latent-group updates]
+\label{thm:template-monotonicity-paper}
+An iteration that sets $r$ by Equation~\eqref{eq:auxiliary-weights}, maximizes $\mathcal Q$ over $\pi$, and exactly maximizes every responsibility-weighted template criterion using Equation~\eqref{eq:template-local-score} and its segment-count offset over the declared finite candidate set cannot decrease $\mathcal F$.
+\end{theorem}
+\begin{proof}
+At the old parameters, Equation~\eqref{eq:auxiliary-weights} makes the lower bound tight. Exact coordinate maximization cannot decrease $\mathcal Q$. Jensen's inequality guarantees that the new value of $\mathcal F$ is at least the new value of $\mathcal Q$. Chaining these inequalities gives $\mathcal F_{\rm new}\ge\mathcal F_{\rm old}$.
+\end{proof}
+
+Template-label permutations, coincident templates, and an oversized $G$ can make the optimum non-unique. No finite-mixture identifiability or generative-model consistency claim is made. Review of the archived implementation also found an exit path that could return the previous rather than the final objective; one of three diagnostic restarts differed by $0.003137360860080$. The archived simulation remains an executed computation, but reliable restart selection requires the final objective value from every run.

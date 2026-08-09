@@ -1,0 +1,197 @@
+
+\chapter{Detailed experiment protocols}
+\label{app:experiments}
+\chapterpromise{Claim-mapped protocols that distinguish executed evidence, planned recertification, uncertainty, fairness, failure modes, and falsifying outcomes.}
+
+\begin{statusbox}[Interpretation rule]
+A protocol may contain both immutable executed outputs and planned expansion. Existing populated
+values remain real computations; planned cells are never populated synthetically. Positive,
+mixed, null, reversed, and falsifying outcomes must all be retained in the run registry.
+\end{statusbox}
+
+\section{Cross-protocol controls}
+All simulations use deterministic seed registries and preserve ground truth separately from fitted
+objects. Repetitions and intervals are predeclared. Comparator budgets, axes, penalties, and search
+ranges are recorded before scoring. Data transforms are fitted on training data only. Runtime
+studies separate block construction, DP, backtracking, prediction, and I/O. Every output is linked
+to data/config/code hashes and a result ID.
+\section[\texttt{EPR-BB-001}]{\texttt{EPR-BB-001}: Randomized exact-DP and semiring invariants}
+\textbf{Evidence status.} executed plus expansion planned\par
+\textbf{Claims.} CLM-BB-001;CLM-BB-003;CLM-BB-004\par
+\textbf{Hypothesis.} Sum-product and max-sum implementations match exhaustive enumeration on all sampled admissible finite cases.\par
+\textbf{Competing explanation.} Agreement is limited to hand-picked priors or benign support.\par
+\textbf{Design and provenance.} Property-based generation over n, k\_max, local scores, zero-support blocks, priors, and ties; compare evidence, P(k), marginals, and joint MAP.\par
+\textbf{Metrics.} absolute/relative error, normalization error, exact partition equality, failure count with seed.\par
+\textbf{Repetitions, uncertainty, and statistics.} At least 1,000 deterministic seeded cases per configuration family; report zero-failure upper bound.\par
+\textbf{Dependencies and stopping.} CODE-BB-002;CODE-BB-012. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} tests and a machine-readable invariant report.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-002}]{\texttt{EPR-BB-002}: Conjugate-family recovery and null/misspecification grid}
+\textbf{Evidence status.} executed real values plus expanded protocol planned\par
+\textbf{Claims.} CLM-BB-002;CLM-BB-013\par
+\textbf{Hypothesis.} The common partition recursions produce calibrated segmentation behavior across supported families when their data model is correct.\par
+\textbf{Competing explanation.} Apparent portability is driven by a narrow SNR or tuned prior.\par
+\textbf{Design and provenance.} Factorial grid over family, n, segment count, spacing, SNR, weight/exposure patterns, null data, and selected misspecification.\par
+\textbf{Metrics.} boundary precision/recall/F1 under external truth, k error, posterior coverage, log evidence, runtime.\par
+\textbf{Repetitions, uncertainty, and statistics.} Predeclared repetitions with bootstrap or t-intervals by cell and family-level multiplicity control for headline contrasts.\par
+\textbf{Dependencies and stopping.} CODE-BB-001;CODE-BB-002;CODE-BB-010. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} family performance table, calibration plots, and null-control table.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-003}]{\texttt{EPR-BB-003}: Boundary posterior calibration}
+\textbf{Evidence status.} executed ECE/Brier retained; recertification planned\par
+\textbf{Claims.} CLM-BB-003;CLM-BB-013\par
+\textbf{Hypothesis.} Bayes curve probabilities are calibrated for the declared model after marginalizing over k.\par
+\textbf{Competing explanation.} Low aggregate ECE is caused by severe class imbalance or bin choices.\par
+\textbf{Design and provenance.} Repeated simulated datasets with fixed-k and k-marginalized posterior variants; preregistered equal-width and equal-mass bins.\par
+\textbf{Metrics.} Brier, log score, ECE, reliability slope/intercept, prevalence, calibration curves.\par
+\textbf{Repetitions, uncertainty, and statistics.} Dataset-level intervals and paired comparison of fixed-k versus marginalized variants.\par
+\textbf{Dependencies and stopping.} CODE-BB-002;CODE-BB-010. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} calibration figure with intervals and protocol sidecar.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-004}]{\texttt{EPR-BB-004}: Segment-count and SNR behavior}
+\textbf{Evidence status.} executed plus interpretation expansion planned\par
+\textbf{Claims.} CLM-BB-003;CLM-BB-013\par
+\textbf{Hypothesis.} Posterior uncertainty over k changes predictably with signal strength and prior concentration.\par
+\textbf{Competing explanation.} Observed k behavior is a prior artifact or oversegmentation bias.\par
+\textbf{Design and provenance.} Cross SNR, n, true k, minimum segment length, and prior settings; include no-change and dense-change controls.\par
+\textbf{Metrics.} P(k\_true), posterior entropy, k bias, boundary loss, false discoveries.\par
+\textbf{Repetitions, uncertainty, and statistics.} Repeated-seed intervals and decomposition by prior regime.\par
+\textbf{Dependencies and stopping.} CODE-BB-001;CODE-BB-002. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} k-posterior panels and falsification table.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-005}]{\texttt{EPR-BB-005}: Finite latent-group template stress test}
+\textbf{Evidence status.} archived 96 percent value real; rerun required after semantic/code repair\par
+\textbf{Claims.} CLM-BB-008;CLM-BB-009;CLM-BB-013\par
+\textbf{Hypothesis.} Coordinate updates monotonically improve the stated score and recover shared templates in identifiable finite simulations.\par
+\textbf{Competing explanation.} Recovery is restart luck, label coding, or collapse under overspecified G.\par
+\textbf{Design and provenance.} Vary S, G\_true/G\_fit, n, noise, template separation, imbalance, initialization, and collapsed/duplicate templates.\par
+\textbf{Metrics.} objective monotonicity, final objective, label-invariant ARI, template distance, collapse rate, restart selection stability.\par
+\textbf{Repetitions, uncertainty, and statistics.} At least 50 datasets per cell and multiple restarts; paired pre/post repair diagnostic.\par
+\textbf{Dependencies and stopping.} CODE-BB-003;CODE-BB-012. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} stress-test table, objective traces, and regression report.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-006}]{\texttt{EPR-BB-006}: Shared-boundary weak-signal pooling}
+\textbf{Evidence status.} executed supplementary outputs plus fair comparison planned\par
+\textbf{Claims.} CLM-BB-006;CLM-BB-007\par
+\textbf{Hypothesis.} Exact shared-boundary pooling improves boundary recovery when multiple subjects share changes and individual signals are weak.\par
+\textbf{Competing explanation.} Gains are caused by forced-sharing bias or tuned k.\par
+\textbf{Design and provenance.} Vary subject count, information heterogeneity, shared fraction, subject-specific deviations, noise, and prior; compare shared, independent, and suitable multisequence methods.\par
+\textbf{Metrics.} external-truth boundary loss, k error, calibration, predictive score under a common joint target, runtime.\par
+\textbf{Repetitions, uncertainty, and statistics.} Repeated datasets with paired contrasts and heterogeneity-stratified intervals.\par
+\textbf{Dependencies and stopping.} CODE-BB-004;CODE-BB-009;CODE-BB-010. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} pooling benefit/failure surface and model-assumption table.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-007}]{\texttt{EPR-BB-007}: Nonconjugate local certificate and global sensitivity}
+\textbf{Evidence status.} real benchmark values retained; certification expansion planned\par
+\textbf{Claims.} CLM-BB-010;CLM-BB-011\par
+\textbf{Hypothesis.} Measured reachable-block log-score tolerances predict the observed perturbation of evidence and posterior summaries.\par
+\textbf{Competing explanation.} Average block error hides rare reachable blocks that dominate the posterior.\par
+\textbf{Design and provenance.} Construct high-accuracy references, census or sample all reachable blocks, separate truncation from numerical error, and rerun DP at nested tolerances.\par
+\textbf{Metrics.} max/quantile block error, evidence ratio, posterior-odds distortion, TV distance, boundary/k changes, time/memory.\par
+\textbf{Repetitions, uncertainty, and statistics.} Multiple datasets and tolerance ladders; deterministic reference checks where possible.\par
+\textbf{Dependencies and stopping.} CODE-BB-005;CODE-BB-012. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} segment-error records and posterior-bound table based on segmentwise error measurements.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-008}]{\texttt{EPR-BB-008}: Runtime and memory decomposition}
+\textbf{Evidence status.} real local slopes retained; extended scaling planned\par
+\textbf{Claims.} CLM-BB-003;CLM-BB-013\par
+\textbf{Hypothesis.} Measured cost decomposes into block construction and O(k\_max n\textasciicircum{}2) DP transitions with predictable memory scaling.\par
+\textbf{Competing explanation.} Near-linear local slopes reflect cache/warmup or a narrow n range, not algorithmic structure.\par
+\textbf{Design and provenance.} Extend n and k\_max until resource limits; separate cold/warm cache, block construction, DP, backtracking, and I/O; use fixed hardware and repeated runs.\par
+\textbf{Metrics.} wall time, CPU time, peak RSS, transition count, slope by range, residuals against n\textasciicircum{}2 k model.\par
+\textbf{Repetitions, uncertainty, and statistics.} Median and dispersion across repetitions, machines reported separately.\par
+\textbf{Dependencies and stopping.} CODE-BB-012. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} scaling curves, resource table, and profiler artifacts.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-009}]{\texttt{EPR-BB-009}: Well-log prior sensitivity case study}
+\textbf{Evidence status.} two executed real fits retained\par
+\textbf{Claims.} CLM-BB-005;CLM-BB-014\par
+\textbf{Hypothesis.} Cohesion and boundary-hazard choices change segmentation in interpretable ways without being mislabeled as external accuracy.\par
+\textbf{Competing explanation.} Differences are arbitrary prior sensitivity with no physical interpretation.\par
+\textbf{Design and provenance.} Reproduce archived index-uniform and length-aware fits, then vary repaired c/h choices on the same 507-point stride-8 series.\par
+\textbf{Metrics.} k\_hat, log evidence within a common model family, boundary stability, posterior uncertainty, runtime.\par
+\textbf{Repetitions, uncertainty, and statistics.} Sensitivity grid rather than sampling uncertainty; external annotations only if independently verified.\par
+\textbf{Dependencies and stopping.} CODE-BB-001;CODE-BB-011;CODE-BB-015. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} case-study figure, prior sensitivity table, provenance card.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-010}]{\texttt{EPR-BB-010}: Array-CGH shared-boundary case study}
+\textbf{Evidence status.} 43 by 2215 executed fits retained; incompatible comparator excluded from comparison\par
+\textbf{Claims.} CLM-BB-006;CLM-BB-014\par
+\textbf{Hypothesis.} The shared model provides a coherent common-boundary summary across the multisequence matrix.\par
+\textbf{Competing explanation.} Forced sharing obscures subject-specific changes or comparator conclusions arise from axis mismatch.\par
+\textbf{Design and provenance.} Reproduce shared and independent fits; validate axis before every comparator; use raw matrix for multisequence baselines and common joint targets for model comparison.\par
+\textbf{Metrics.} boundary summaries, subject fit diagnostics, predictive/common-target scores, external annotations when verified, runtime.\par
+\textbf{Repetitions, uncertainty, and statistics.} Subject bootstrap or simulation-based uncertainty where scientifically justified; no pseudo-replication across probes.\par
+\textbf{Dependencies and stopping.} CODE-BB-004;CODE-BB-009;CODE-BB-011;CODE-BB-015. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} valid multiple-sequence comparison table and a link to the excluded archived calculation and failure analysis.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-011}]{\texttt{EPR-BB-011}: SPX regime case study}
+\textbf{Evidence status.} Gaussian and Bernoulli fits are executed real results\par
+\textbf{Claims.} CLM-BB-014\par
+\textbf{Hypothesis.} The two declared observation models expose different posterior regime summaries over 2015-2023.\par
+\textbf{Competing explanation.} Event alignment is post hoc and family evidence values are incommensurate.\par
+\textbf{Design and provenance.} Reproduce stride-4 n=566 fits, define response transformations, and predeclare any out-of-sample or contextual-event analysis.\par
+\textbf{Metrics.} k\_hat, within-model evidence, posterior uncertainty, predictive score under declared target, qualitative event overlay.\par
+\textbf{Repetitions, uncertainty, and statistics.} Block-aware time split or rolling evaluation for predictive claims; event overlay remains descriptive.\par
+\textbf{Dependencies and stopping.} CODE-BB-007;CODE-BB-011;CODE-BB-015. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} synchronized case-study figure/caption/data card.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-012}]{\texttt{EPR-BB-012}: MethylKit chr21 segmentation and predictive repair}
+\textbf{Evidence status.} segmentation result real; archived held-out value excluded from predictive conclusions; corrected run planned\par
+\textbf{Claims.} CLM-BB-002;CLM-BB-012;CLM-BB-014\par
+\textbf{Hypothesis.} A family-correct Beta-observation predictive distribution yields a valid held-out score on a scientifically justified in-support split.\par
+\textbf{Competing explanation.} The apparent score was an artifact of Gaussian fallback and endpoint clipping.\par
+\textbf{Design and provenance.} Use exact executed methylKit test1.myCpG chr21 source, hash weights/split, implement Beta predictive, keep test coordinates in declared support or use named extrapolation, repeat block-aware splits.\par
+\textbf{Metrics.} total and mean log predictive score with denominator m, calibration where defined, k\_hat, boundary stability, runtime.\par
+\textbf{Repetitions, uncertainty, and statistics.} Repeated splits with intervals; second region/cell type remains planned until sourced.\par
+\textbf{Dependencies and stopping.} CODE-BB-006;CODE-BB-007;CODE-BB-010;CODE-BB-011. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} new result record linked to the excluded archived value, with a corrected figure and table.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-013}]{\texttt{EPR-BB-013}: Comparator agreement, tuning fairness, and external accuracy}
+\textbf{Evidence status.} non-CGH archived agreement values real; fair comparison planned\par
+\textbf{Claims.} CLM-BB-014\par
+\textbf{Hypothesis.} Conclusions remain stable when matched-k agreement, independently tuned prediction, and external-truth accuracy are reported as separate tasks.\par
+\textbf{Competing explanation.} Reported superiority is induced by BayesBreak-referenced labels or asymmetric tuning.\par
+\textbf{Design and provenance.} Three strata: matched-k diagnostic, equal-budget prediction tuning, and external annotation/simulation truth; canonical one-to-one matcher.\par
+\textbf{Metrics.} agreement F1/Jaccard/matched MAE, predictive proper score, external precision/recall/F1, runtime and tuning cost.\par
+\textbf{Repetitions, uncertainty, and statistics.} Repeated splits/datasets and paired intervals; NA when no matched boundaries.\par
+\textbf{Dependencies and stopping.} CODE-BB-008;CODE-BB-009;CODE-BB-010. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} task-separated comparator table and tuning ledger.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[\texttt{EPR-BB-014}]{\texttt{EPR-BB-014}: Family-specific posterior-prediction tests}
+\textbf{Evidence status.} partial tests; expansion required\par
+\textbf{Claims.} CLM-BB-012\par
+\textbf{Hypothesis.} Every family produces finite, normalized or correctly generalized predictive scores on supported inputs and rejects unsupported extrapolation by default.\par
+\textbf{Competing explanation.} Base-class fallbacks hide family-specific errors.\par
+\textbf{Design and provenance.} Unit and integration cases for each family, MAP versus model-averaged prediction, left/right out-of-range coordinates, zero weights, edge parameters, and invalid inputs.\par
+\textbf{Metrics.} analytic/reference agreement, finite checks, normalization where applicable, expected exceptions, reproducibility.\par
+\textbf{Repetitions, uncertainty, and statistics.} Deterministic tests plus randomized property cases.\par
+\textbf{Dependencies and stopping.} CODE-BB-006;CODE-BB-007;CODE-BB-012. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} posterior-prediction verification report.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.
+
+\section[Misspecification and negative controls]{Misspecification, boundary cases, and negative controls}
+\textbf{Protocol ID.} \texttt{EPR-BB-015}\par
+\textbf{Evidence status.} planned\par
+\textbf{Claims.} CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013\par
+\textbf{Hypothesis.} BayesBreak fails in predictable, detectable ways under declared boundary cases.\par
+\textbf{Competing explanation.} Diagnostics remain optimistic under heavy tails, zero inflation, dense changes, unequal information, or adversarial priors.\par
+\textbf{Design and provenance.} Heavy tails, zero inflation, no change, dense change, short segments, unequal subject information, grid refinement, approximation failure, and prior conflict.\par
+\textbf{Metrics.} false discoveries, missed changes, posterior entropy/calibration, failure to establish the segmentwise error bound, runtime, warning/error behavior.\par
+\textbf{Repetitions, uncertainty, and statistics.} Predeclared repetitions and regime-wise intervals; report reversed and null outcomes.\par
+\textbf{Dependencies and stopping.} CODE-BB-001;CODE-BB-005;CODE-BB-010;CODE-BB-012. Stop only after the predeclared cells complete or are reported as failed/unresolved.\par
+\textbf{Outputs.} failure map and decision thresholds.\par
+\textbf{Outcome interpretation.} A positive result supports only the mapped claim at the tested regime. A mixed or null result narrows scope. A reversed result favors the competing explanation. A failed control or axis/schema violation invalidates the affected comparison rather than supplying negative evidence.

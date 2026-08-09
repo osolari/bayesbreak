@@ -1,0 +1,547 @@
+\chapter{Nonconjugate block integration and numerical certification}
+\label{ch:nonconj}
+\label{app:pg-mf-derivation}
+\label{app:variational-bounds}
+\chapterpromise{Laplace, variational, expectation-propagation, Pólya--Gamma, and quadrature calculations for segment marginal likelihoods, with conditional propagation of segmentwise log-score error through the partition recursions.}
+
+\begin{statusbox}[Exact global algebra, approximate local target]
+Once an approximate block array is supplied, the partition recursions are evaluated exactly for
+that array. This is not the same as exact inference under the reference nonconjugate model. The gap
+is controlled only when a local certificate verifies Assumption~\ref{ass:uniform-block-error} on
+all blocks reachable by the declared partition support.
+\end{statusbox}
+\label{sec:nonconj}
+
+\paragraph{Plate model (non-conjugate single segment with PG augmentation).}
+The generative graph for a non-conjugate block $(i,j]$ is identical to Figure~\ref{fig:plate-ef}
+with $\theta\sim\pi(\theta)$ replaced by a non-conjugate prior (e.g., Gaussian on a log or logit
+scale). For Pólya--Gamma-augmented binomial logistic blocks (Theorem~\ref{thm:pg}), introducing
+the latent scale-mixture variables $\omega_t\sim\mathrm{PG}(m_t,0)$ restores conditional
+conjugacy and is reflected in the plate as a second observed-indexed latent:
+\begin{equation}
+\theta\sim\mathcal{N}(\nu,\rho^2),\quad
+\omega_t\stackrel{\mathrm{ind}}{\sim}\mathrm{PG}(m_t,0),\quad
+y_t\mid\theta,\omega_t,m_t\stackrel{\mathrm{ind}}{\sim}\mathrm{Binom}(m_t,\sigma(\theta))\text{ with \eqref{eq:pg-identity}},
+\label{eq:plate-nonconj}
+\end{equation}
+where $\sigma$ is the logistic function.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \node[obs] (y) {$y_t$};
+  \node[latent, above=0.9cm of y] (om) {$\omega_t$};
+  \node[latent, left=1.2cm of om] (th) {$\theta$};
+  \node[const, left=0.9cm of th] (nr) {$\nu,\rho^2$};
+  \node[const, right=0.9cm of y] (m) {$m_t$};
+  \edge {nr} {th}
+  \edge {th,om,m} {y}
+  \edge {m} {om}
+  \plate {p1} {(y)(om)} {$t\in(i,j]$}
+\end{tikzpicture}
+\caption{Plate model for a non-conjugate block with Pólya--Gamma augmentation. Conditional on $\omega_t$, the block is quadratic in $\theta$ with a Gaussian posterior (Proposition~\ref{prop:pg-mf}); the same template applies to Laplace and variational routines with the $\omega_t$ node omitted.}
+\label{fig:plate-nonconj}
+\end{figure}
+
+In many applications the single-segment parameterization is not conjugate to the observation
+model---for example, log-normal priors for positive means, heavy-tailed shrinkage priors, or
+logistic/negative-binomial links with structural offsets. This section develops a plug-in
+toolkit for computing approximate block evidences $A^{(0)}_{ij}$ and moments $A^{(r)}_{ij}$
+when conjugacy is unavailable, while keeping the dynamic-programming layer of
+Section~\ref{sec:dp} unchanged. When approximate block evidences are used, the DP is exact for
+the approximate block-score model; additional error statements require explicit blockwise
+approximation control.
+
+We focus on one-dimensional (or low-dimensional) canonical GLMs, where for a block $(i,j]$ we
+must approximate integrals of the form
+\[
+A^{(0)}_{ij}
+ = \int \Big[\prod_{t=i+1}^j p(y_t\mid\theta)\Big] p(\theta)\,d\theta,\qquad
+A^{(r)}_{ij}
+ = \int \Big[\prod_{t=i+1}^j p(y_t\mid\theta)\Big] p(\theta)\,m_\star(\theta)^r\,d\theta,
+\]
+where $m_\star(\theta)=m(\theta;d_\star)$ is the declared reporting functional at a fixed reference descriptor. We describe four complementary approaches:
+(i) first-order Laplace approximation; (ii) variational lower bounds (Jaakkola--Jordan \citep{jaakkola2000logisticvb} type
+for logistic regression and mean-field for more general GLMs); (iii) expectation propagation
+(EP); and (iv) P\'olya--Gamma augmentation for logistic and negative-binomial blocks. Throughout
+we use the family-specific descriptor $d_t$ and any separately declared power weight $a_t$ and cumulative statistics $(S_{ij},W_{ij},H_{ij})$.
+
+\subsection{Model and notation for GLM blocks}
+
+Consider a one-parameter canonical GLM on a block $(i,j]$:
+\[
+\log p(y_t\mid\theta)
+ = w_t\big\{ y_t\theta - b(\theta)\big\} + \log h(y_t,w_t),
+\]
+where $b$ is the cumulant function and $h$ collects base measures (including any $w_t$-dependent
+terms). The block log-likelihood is
+\[
+\ell_{ij}(\theta)
+ := \sum_{t=i+1}^j w_t\{y_t\theta - b(\theta)\} + H_{ij},
+\qquad
+H_{ij}:=\sum_{t=i+1}^j \log h(y_t,w_t).
+\]
+Let $\pi(\theta)=p(\theta)$ be an arbitrary prior (not necessarily conjugate), and write
+$\Psi_{ij}(\theta):=\ell_{ij}(\theta)+\log\pi(\theta)$ for the block log-posterior.
+
+Derivatives are
+\[
+\ell_{ij}'(\theta) = S_{ij} - W_{ij} b'(\theta),\qquad
+\ell_{ij}''(\theta) = -W_{ij} b''(\theta),
+\]
+and
+\[
+\Psi_{ij}'(\theta) = \ell_{ij}'(\theta) + (\log\pi)'(\theta),\qquad
+\Psi_{ij}''(\theta) = \ell_{ij}''(\theta) + (\log\pi)''(\theta).
+\]
+
+\subsection{Existence and uniqueness of block modes}
+
+\begin{lemma}[Strict log-concavity and uniqueness]
+\label{lem:concave-unique}
+Suppose $b$ and $\log\pi$ are twice differentiable on a convex parameter domain,
+$b''(\theta)>0$ for all $\theta$ (canonical GLM), the prior is log-concave
+$((\log\pi)''(\theta)\le 0)$, and $W_{ij}>0$. Then $\Psi_{ij}$ is strictly concave. If, in
+addition, $\Psi_{ij}$ is proper and attains its supremum on the parameter domain (for example by
+coercive tails or compact-domain truncation), the maximizer $\hat\theta_{ij}$ exists and is unique.
+\end{lemma}
+
+\begin{proof}
+Since $W_{ij}>0$ and $b''(\theta)>0$, we have $-W_{ij}b''(\theta)<0$. Adding
+$(\log\pi)''(\theta)\le 0$ yields $\Psi_{ij}''(\theta)<0$ wherever the derivatives exist, so
+$\Psi_{ij}$ is strictly concave. Strict concavity gives uniqueness of any maximizer; existence is
+provided by the stated attainment assumption.
+\end{proof}
+
+\subsection{Laplace approximation for single-block evidence}
+
+
+\begin{theorem}[First-order Laplace approximation with a uniform remainder]
+\label{thm:laplace}
+Index a sequence of blocks by an effective information size $N=W_{ij}\to\infty$. Let
+$\widehat\theta_N$ be the unique interior maximizer of $\Psi_N$ and
+$H_N=-\Psi_N''(\widehat\theta_N)$. Assume there are constants $c,C,\delta>0$, independent of the
+block, such that: (i) $cN\le-\Psi_N''(\theta)\le CN$ throughout
+$|\theta-\widehat\theta_N|\le\delta$; (ii) $\Psi_N$ is four times continuously differentiable on
+that neighborhood and $|\Psi_N^{(r)}(\theta)|\le CN$ for $r=3,4$; and (iii) the integral outside
+the neighborhood is at most the local Gaussian leading term times $O(N^{-1})$. Then
+\begin{equation}
+ A^{(0)}_{ij}=e^{\Psi_N(\widehat\theta_N)}
+ \left(\frac{2\pi}{H_N}\right)^{1/2}\{1+O(N^{-1})\},
+\label{eq:laplace-A0-mult}
+\end{equation}
+and hence
+\begin{equation}
+ \log A^{(0)}_{ij}=\Psi_N(\widehat\theta_N)+\tfrac12\log(2\pi)-\tfrac12\log H_N+O(N^{-1}).
+\label{eq:laplace-A0}
+\end{equation}
+For a bounded twice continuously differentiable test function $g$ whose first two derivatives are uniformly bounded in the same neighborhood,
+\begin{equation}
+ \frac{M^{[g]}_{ij}}{A^{(0)}_{ij}}=g(\widehat\theta_N)+O(N^{-1}),
+\qquad M^{[g]}_{ij}=\int g(\theta)e^{\Psi_N(\theta)}\,d\theta.
+\label{eq:laplace-moment}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Set $u=\sqrt{H_N}(\theta-\widehat\theta_N)$. Taylor's theorem through fourth order gives, on the
+local neighborhood,
+\[
+ \Psi_N(\theta)-\Psi_N(\widehat\theta_N)
+ =-\tfrac12u^2+a_Nu^3N^{-1/2}+b_N(u)u^4N^{-1},
+\]
+where $a_N$ and $b_N(u)$ are uniformly bounded by assumptions (i)--(ii). On a growing central
+region $|u|\le N^{1/12}$, expand the exponential. The term linear in $u^3$ integrates to zero
+against the symmetric Gaussian kernel; the remaining terms are bounded by an integrable Gaussian
+polynomial times $N^{-1}$. The part of the local neighborhood outside this central region is
+exponentially smaller by the quadratic term, and assumption (iii) controls the nonlocal tail.
+After the Jacobian $H_N^{-1/2}$, this proves the relative $1+O(N^{-1})$ expansion. Applying the
+same argument to the numerator after the second-order Taylor expansion
+$g(\widehat\theta_N+u/\sqrt{H_N})=g(\widehat\theta_N)+g'(\widehat\theta_N)u/\sqrt{H_N}+O(u^2/N)$
+and again using Gaussian symmetry yields the ratio statement.
+\end{proof}
+
+
+\paragraph{Efficient Newton updates using block summaries.}
+For canonical GLMs,
+\[
+\Psi_{ij}'(\theta) = S_{ij} - W_{ij} b'(\theta) + (\log\pi)'(\theta),\quad
+\Psi_{ij}''(\theta) = -W_{ij} b''(\theta) + (\log\pi)''(\theta),
+\]
+so Newton iteration is
+\[
+\theta^{(m+1)} \leftarrow \theta^{(m)}
+ - \frac{S_{ij} - W_{ij} b'(\theta^{(m)}) + (\log\pi)'(\theta^{(m)})}
+        {-\,W_{ij} b''(\theta^{(m)}) + (\log\pi)''(\theta^{(m)})},
+\]
+with cost independent of block length once $S_{ij},W_{ij}$ are available.
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:laplace} implements the Laplace block-evidence approximation using a Newton
+or quasi-Newton solver for the block mode and the corresponding Hessian correction. The
+approximation is local but often highly accurate in moderate-to-large blocks. The remaining
+non-conjugate routines (Algorithms~\ref{alg:jj}--\ref{alg:precompute-nonconj}) follow the same
+template: a block-local optimizer feeds an approximate log-evidence into the DP.
+
+\begin{algorithm}[H]
+\caption{GLMBlock\_Laplace$(y,w,i,j,\texttt{b},\texttt{prior})$}
+\label{alg:laplace}
+\KwIn{$y_{i+1:j}$, weights $w_{i+1:j}$; cumulant $b(\theta)$; prior $\pi(\theta)$}
+Compute $S\leftarrow \sum_{t=i+1}^j w_t y_t$;\quad $W\leftarrow \sum_{t=i+1}^j w_t$;\quad $H\leftarrow \sum_{t=i+1}^j \log h(y_t,w_t)$\;
+Define $\Psi(\theta)=H + S\theta - W b(\theta) + \log \pi(\theta)$ and its derivatives\;
+Initialize $\theta^{(0)}$ (e.g., solve $b'(\theta)=S/W$ or use prior mean)\;
+\For{$m=0,1,\dots$ until convergence}{
+  $g\leftarrow S - W b'(\theta^{(m)}) + (\log\pi)'(\theta^{(m)})$\;
+  $h\leftarrow - W b''(\theta^{(m)}) + (\log\pi)''(\theta^{(m)})$\;
+  \uIf{$|g|/|h|<\varepsilon_{\text{newton}}$}{break}
+  $\theta^{(m+1)} \leftarrow \theta^{(m)} - g/h$\;
+}
+$\hat\theta\leftarrow \theta^{(m)}$;\quad $H^\star\leftarrow -\,\Psi''(\hat\theta)$\;
+$\log \widehat{A}^{(0)}_{ij}\leftarrow \Psi(\hat\theta) + \tfrac{1}{2}\log(2\pi) - \tfrac{1}{2}\log H^\star$\;
+\KwOut{$\widehat{A}^{(0)}_{ij}$ and (optional) moments via \eqref{eq:laplace-moment}}
+\end{algorithm}
+
+\subsection{Variational lower bounds for GLM blocks}
+
+When a deterministic lower bound is desirable, introduce a variational distribution $q(\theta)$
+and apply Jensen:
+\[
+\log A^{(0)}_{ij}
+=\log \int q(\theta)\,\frac{e^{\Psi_{ij}(\theta)}}{q(\theta)}\,d\theta
+\ \ge\
+\int q(\theta)\,\Psi_{ij}(\theta)\,d\theta + \mathcal{H}[q]
+ \;:=\; \mathcal{L}_{ij}(q).
+\]
+
+\emph{Jaakkola--Jordan bound for logistic blocks.}
+For Bernoulli/logistic likelihoods, a standard quadratic bound yields a tractable Gaussian
+variational posterior. One convenient form (for sigmoid $\sigma$) is:
+\[
+\log\sigma(z)\ \ge\ \log\sigma(\xi)+\frac{z-\xi}{2}-\lambda(\xi)(z^2-\xi^2),
+\qquad
+\lambda(\xi)=\frac{\tanh(\xi/2)}{4\xi},
+\]
+with variational parameter $\xi>0$. Applying this bound to the appropriate signed linear
+predictors yields a quadratic surrogate in $\theta$, so the optimal Gaussian $q(\theta)$ and
+$\xi$ admit closed-form coordinate updates.
+
+\begin{proposition}[Monotone improvement of variational block bounds]
+\label{prop:var-monotone}
+Every exact coordinate-ascent update of the local variational parameters (for example $\xi$ in a
+logistic block) or of a Gaussian $q(\theta)$ leaves the block evidence lower bound
+$\mathcal L_{ij}(q)$ non-decreasing. If the iterates converge to an interior fixed point and the
+objective is differentiable there, that fixed point is coordinatewise stationary. At every
+iteration, $\underline{A}^{(0)}_{ij}:=\exp\{\mathcal{L}_{ij}(q)\}$ is a certified lower bound on
+$A^{(0)}_{ij}$.
+\end{proposition}
+
+\begin{proof}
+Each coordinate update is an exact maximization of $\mathcal{L}_{ij}(q)$ with respect to a subset
+of variables holding the others fixed, so the ELBO is non-decreasing. At a converged interior fixed
+point, the first-order derivative along each updated coordinate block vanishes under the stated
+regularity, which is coordinatewise stationarity. Because $\mathcal{L}_{ij}$ is a Jensen lower
+bound on $\log A^{(0)}_{ij}$ at every iterate, exponentiating yields a valid evidence lower bound.
+\end{proof}
+
+\begin{algorithm}[H]
+\caption{LogisticBlock\_JJ$(y,m,w,i,j,\texttt{prior})$ \quad (variational lower bound)}
+\label{alg:jj}
+\KwIn{Binomial counts $y_t\sim\mathrm{Binom}(m_t,p)$, logit link; prior $\pi(\theta)$}
+Initialize $\xi$ and a Gaussian $q(\theta)=\mathcal{N}(\mu_q,\sigma_q^2)$\;
+\Repeat{converged}{
+  Update the quadratic bound parameter $\xi\leftarrow \sqrt{\mathbb{E}_q[\theta^2]}$\;
+  Update Gaussian $q(\theta)$ by maximizing the block ELBO $\mathcal{L}_{ij}(q)$ (closed-form for quadratic surrogate)\;
+}
+Return $\underline{A}^{(0)}_{ij}=\exp\{\mathcal{L}_{ij}(q)\}$ and moments from $q$.
+\end{algorithm}
+
+\subsection{Expectation propagation (EP) for GLM blocks}
+Expectation propagation (EP) \citep{minka2001ep} provides a deterministic approximation to the
+block posterior and block evidence by iteratively refining local site approximations and matching
+moments. In the formulation used here the prior is Gaussian, and each likelihood term
+$p(y_t\mid\theta)$ is approximated by a Gaussian site
+$\tilde t_t(\theta)=c_t\exp\{-\tfrac{1}{2}a_t\theta^2+b_t\theta\}$. After convergence, the product
+of the Gaussian prior and sites is Gaussian and the approximate evidence is
+$\widehat A^{(0,\mathrm{EP})}_{ij}=\int \pi(\theta)\prod_{t=i+1}^j \tilde t_t(\theta)\,d\theta$.
+The constants $c_t$ are part of the returned log evidence; dropping them changes the DP score.
+A non-Gaussian prior requires an additional site approximation or numerical integral and is not
+covered by this Gaussian-posterior description. EP is neither a bound nor guaranteed to converge.
+
+\begin{algorithm}[H]
+\caption{GLMBlock\_EP$(y,w,i,j,\texttt{prior})$}
+\label{alg:ep}
+\KwIn{Canonical GLM; Gaussian prior $\pi(\theta)$; tolerance and maximum iterations}
+Initialize site parameters $\{a_t,b_t,c_t\}_{t=i+1}^j$; set $\tilde p(\theta)\propto\pi(\theta)\prod_t \tilde t_t(\theta)$\;
+\Repeat{moments stable or maximum iterations reached}{
+  \For{$t=i+1$ \KwTo $j$}{
+    Form cavity $\tilde p^{\setminus t}(\theta)\propto \tilde p(\theta)/\tilde t_t(\theta)$ and verify positive cavity precision\;
+    Form tilted $p^{\text{tilt}}(\theta)\propto \tilde p^{\setminus t}(\theta)\,p(y_t\mid\theta)$\;
+    Moment-match $p^{\text{tilt}}$ and update the site parameters $(a_t,b_t,c_t)$, damping if needed\;
+  }
+}
+Return a convergence/failure flag, the approximate log evidence
+$\log\widehat A^{(0,\mathrm{EP})}_{ij}=\log\int \pi(\theta)\prod_{t=i+1}^j c_t\exp\{-a_t\theta^2/2+b_t\theta\}\,d\theta$, and moments from $\tilde p$.
+\end{algorithm}
+
+An implementation should export the convergence flag and the maximum site residual together with the
+block score. Downstream DP routines may then exclude failed EP blocks, retry them with stronger
+damping, or mark the whole EP approximation as uncertified for the stability analysis.
+
+\subsection{Pólya--Gamma augmentation for binomial-logistic blocks}
+\begin{theorem}[P\'olya--Gamma identity and conditional conjugacy]
+\label{thm:pg}
+For binomial logistic blocks with counts $m_t$ and successes $y_t$, let $w_t\ge 0$ denote either
+one or a declared likelihood-power/replication weight, define
+$b_t=w_t m_t$ and $\kappa_t=w_t(y_t-\tfrac{m_t}{2})$, and introduce latent
+$\omega_t\sim\mathrm{PG}(b_t,0)$. Then the weighted logistic likelihood term admits the Gaussian
+scale-mixture representation
+\begin{equation}
+\left\{\frac{(e^\theta)^{y_t}}{(1+e^\theta)^{m_t}}\right\}^{w_t}
+ = 2^{-b_t} e^{\kappa_t\theta}
+   \int_0^\infty e^{-\omega_t\theta^2/2}\,p(\omega_t)\,d\omega_t.
+\label{eq:pg-identity}
+\end{equation}
+The binomial coefficient, when present, is independent of $\theta$ and must be retained in the base-measure contribution to the block evidence. Conditionally on $\omega_{i+1:j}$, the remaining block likelihood is quadratic in $\theta$:
+\begin{equation}
+\log p(y_{i+1:j}\mid \theta,\omega)
+ =
+ -\tfrac{1}{2}\theta^2 \sum_{t=i+1}^j \omega_t
+ + \theta \sum_{t=i+1}^j \kappa_t
+ + \mathrm{const}.
+\label{eq:pg-cond-quad}
+\end{equation}
+With a Gaussian prior $\pi(\theta)=\mathcal{N}(\nu,\rho^2)$, the conditional posterior
+$p(\theta\mid y,\omega)$ is Gaussian.
+\end{theorem}
+
+\begin{proof}
+\ProofStep{Step 1: the identity.}
+Equation \eqref{eq:pg-identity} is the defining P\'olya--Gamma augmentation of
+\citet{polson2013pg}: it expresses the binomial-logistic term as a Gaussian scale mixture in
+$\theta$.
+
+\ProofStep{Step 2: condition on $\omega$ and collect quadratic terms.}
+Given $\omega_t$, each weighted term contributes $\kappa_t\theta-\tfrac12\omega_t\theta^2$ up to
+constants, where the weight has already been absorbed into $b_t$ and $\kappa_t$. Summing over $t$
+yields \eqref{eq:pg-cond-quad}.
+
+\ProofStep{Step 3: combine with a Gaussian prior.}
+Multiplying the quadratic-in-$\theta$ conditional likelihood by a Gaussian prior produces a
+Gaussian conditional posterior, because Gaussian priors are conjugate to Gaussian likelihoods.
+\end{proof}
+
+\begin{proposition}[Mean-field variational approximation under P\'olya--Gamma]
+\label{prop:pg-mf}
+Under the same setup as Theorem~\ref{thm:pg} and a Gaussian prior $\pi(\theta)=\mathcal{N}(\nu,\rho^2)$,
+the mean-field factorization $q(\theta,\omega)=q(\theta)\prod_{t=i+1}^j q(\omega_t)$ admits the
+following closed-form coordinate-ascent updates:
+(i) $q(\theta)=\mathcal{N}(\mu_q,\sigma_q^2)$ with
+$\sigma_q^{-2}=\rho^{-2}+\sum_t \mathbb{E}_q[\omega_t]$ and
+$\mu_q=\sigma_q^2(\rho^{-2}\nu+\sum_t \kappa_t)$;
+(ii) $q(\omega_t)=\mathrm{PG}(b_t, c_t)$ with $c_t^2=\mathbb{E}_q[\theta^2]=\mu_q^2+\sigma_q^2$,
+giving $\mathbb{E}_q[\omega_t]=\tfrac{b_t}{2 c_t}\tanh(c_t/2)$. These updates are monotone in the
+block ELBO.
+\end{proposition}
+
+\begin{proof}
+For a mean-field factor, the coordinate optimum satisfies
+\[
+\log q^*(\theta)
+=\mathbb E_{q(\omega)}\!\left[\log p(y,\theta,\omega)\right]+\mathrm{const}.
+\]
+Combining Equation~\eqref{eq:pg-cond-quad} with the Gaussian prior gives a quadratic log density
+whose precision and precision-weighted mean are
+$\rho^{-2}+\sum_t\mathbb E_q[\omega_t]$ and
+$\rho^{-2}\nu+\sum_t\kappa_t$, respectively. This proves the stated Gaussian update. Similarly,
+$\log q^*(\omega_t)=\mathbb E_{q(\theta)}[\log p(y_t,\omega_t\mid\theta)]+\mathrm{const}$
+is the log density of an exponentially tilted $\mathrm{PG}(b_t,0)$ variable with tilt
+$c_t=\sqrt{\mathbb E_q[\theta^2]}$, so $q^*(\omega_t)=\mathrm{PG}(b_t,c_t)$. Its standard mean
+is $b_t\tanh(c_t/2)/(2c_t)$, with the continuous limit $b_t/4$ at $c_t=0$. Each update is the
+exact maximizer of the same block ELBO with the other factors fixed; therefore the ELBO is
+nondecreasing after every coordinate update.
+\end{proof}
+
+\begin{algorithm}[H]
+\caption{GLMBlock\_PG\_VB$(y,m,i,j,\nu,\rho^2)$ \quad (Gaussian prior, PG mean-field)}
+\label{alg:pg-vb}
+\KwIn{Binomial/logistic block with trial counts $m_t$; Gaussian prior $\mathcal{N}(\nu,\rho^2)$}
+Initialize $q(\omega_t)$ and $q(\theta)=\mathcal{N}(\mu,\sigma^2)$\;
+\Repeat{ELBO converged}{
+  Set $b_t\leftarrow w_t m_t$ and $\kappa_t\leftarrow w_t(y_t-m_t/2)$ if likelihood-power weights are used; otherwise $w_t=1$\;
+  $\sigma^{-2}\leftarrow \rho^{-2} + \sum_{t=i+1}^j \mathbb{E}_q[\omega_t]$\;
+  $\mu \leftarrow \sigma^2 \left(\rho^{-2}\nu + \sum_{t=i+1}^j \kappa_t\right)$\;
+  \ForEach{$t$}{
+    Update $q(\omega_t)=\mathrm{PG}(w_t m_t,c_t)$ using current $\mathbb{E}_q[\theta^2]$\;
+  }
+}
+Return a lower bound $\underline{A}^{(0)}_{ij}$ and approximate moments from $q(\theta)$.
+\end{algorithm}
+
+\paragraph{Using approximate block evidences in BayesBreak.}
+Once any block-evidence approximation is available (Laplace, JJ, EP, PG-VB, or another surrogate), BayesBreak uses it exactly as an input score array: build a triangular array of approximate block log-evidences and run the same DP recursions. The resulting posterior summaries are exact for that approximate score array, not automatically exact for the original non-conjugate model.
+Algorithm~\ref{alg:precompute-nonconj} provides a generic recipe for constructing this array in a model-agnostic way, emphasizing reuse of block-local optimizers and cached sufficient-statistic summaries.
+
+\begin{algorithm}[H]
+\caption{Precompute block evidences for non-conjugate GLMs}
+\label{alg:precompute-nonconj}
+\KwIn{$\{(x_t,y_t,w_t)\}_{t=1}^n$, method $\in\{$Laplace, JJ, PG--VB, EP$\}$}
+\For{$i=0$ \KwTo $n-1$}{
+  Initialize running summaries (as needed)\;
+  \For{$j=i+1$ \KwTo $n$}{
+    Update block summaries for $(i,j]$\;
+    Call chosen block routine to compute $\widehat{A}^{(0)}_{ij}$ (and optional moments)\;
+  }
+}
+Run DP (Algorithm~\ref{alg:dp-core}) with resulting block evidences.
+\end{algorithm}
+
+\subsection{Propagation of block approximation error through the DP}
+
+\begin{assumption}[Uniform per-block log-evidence error]
+\label{ass:uniform-block-error}
+Let $\widehat A^{(0)}_{ij}$ denote the approximate block evidence produced by the chosen
+non-conjugate block routine (one of Laplace, JJ, EP, PG mean field, or 1-D quadrature) on
+candidate block $(i,j]$, and set $\delta_{ij}:=\log\widehat A^{(0)}_{ij}-\log A^{(0)}_{ij}$.
+There exists $\varepsilon>0$ such that, for every candidate block $(i,j]$ with
+$0\le i<j\le n$ reachable by some $k$-segmentation with $k\le k_{\max}$,
+\[
+|\delta_{ij}|\le \varepsilon.
+\]
+\end{assumption}
+
+Assumption~\ref{ass:uniform-block-error} is an additional numerical-analysis requirement, not a
+consequence of naming an approximation routine. It must be established independently for the
+chosen family, parameter domain, candidate-block support, transformation, initialization,
+convergence event, and tail treatment. Nested quadrature, a high-accuracy reference calculation,
+or a method-specific remainder theorem can provide such a certificate in a particular analysis.
+Convergence of an optimizer, monotonicity of an ELBO, or an EP moment match alone does not provide
+the required two-sided uniform log-evidence bound.
+
+\begin{proposition}[Log-evidence and posterior-odds stability]
+\label{prop:stability}
+Under Assumption~\ref{ass:uniform-block-error}, for every DP state $(k,j)$ with $k\le k_{\max}$,
+\[
+e^{-k\varepsilon}L_{k j}\le \widehat{L}_{k j}\le e^{k\varepsilon}L_{k j},
+\qquad
+e^{-k\varepsilon}R_{k j}\le \widehat{R}_{k j}\le e^{k\varepsilon}R_{k j}.
+\]
+Consequently:
+\begin{enumerate}
+\item For any $k,k'\le k_{\max}$, the posterior odds for the segment count satisfy
+\begin{equation}
+\left|
+\log\frac{\widehat{P}(k\mid y)}{\widehat{P}(k'\mid y)}
+-\log\frac{P(k\mid y)}{P(k'\mid y)}
+\right|
+\le (k+k')\varepsilon.
+\label{eq:stability-k-odds}
+\end{equation}
+\item For any fixed $k\le k_{\max}$ and any two candidate locations $h,h'$ of boundary $t_p$,
+\begin{equation}
+\left|
+\log\frac{\widehat{P}(t_p=h\mid y,k)}{\widehat{P}(t_p=h'\mid y,k)}
+-\log\frac{P(t_p=h\mid y,k)}{P(t_p=h'\mid y,k)}
+\right|
+\le 2k\varepsilon.
+\label{eq:stability-b-odds}
+\end{equation}
+\end{enumerate}
+Thus uniform blockwise log-evidence control yields uniform control of global posterior \emph{odds}. Coarse absolute probability bounds follow by normalizing finite weights, as in Corollary~\ref{cor:probability-error-conversion}; a margin condition is needed instead for preservation of a modal ranking.
+\end{proposition}
+
+\begin{proof}
+Any term contributing to $L_{k j}$ is a product of exactly $k$ block evidences. Hence the corresponding
+approximate term differs by a multiplicative factor in $[e^{-k\varepsilon},e^{k\varepsilon}]$. Summing over all
+paths yields the same sandwich bound for $\widehat{L}_{k j}$, and the suffix bound is identical. Equation
+\eqref{eq:stability-k-odds} follows immediately because $P(k\mid y)$ is proportional to $p(k)L_{k n}/C_k$ and the
+prior and normalization constants are unchanged. For boundary odds, note that
+$P(t_p=h\mid y,k)\propto L_{p,h}R_{k-p,h}$. The numerator for each candidate location involves $k$ block factors in
+total, so each candidate-specific weight is perturbed by at most $e^{\pm k\varepsilon}$; comparing two candidates
+therefore yields the factor $e^{\pm 2k\varepsilon}$ and hence \eqref{eq:stability-b-odds}.
+\end{proof}
+
+\begin{corollary}[Probability-error conversion for normalized finite weights]
+\label{cor:probability-error-conversion}
+Let $p_a=w_a/\sum_b w_b$ and $\widehat p_a=\widehat w_a/\sum_b\widehat w_b$ be two
+finite normalized distributions with $|\log\widehat w_a-\log w_a|\le\eta$ for every state $a$. Then
+$e^{-2\eta}\le \widehat p_a/p_a\le e^{2\eta}$ for every $a$, and
+$\|\widehat p-p\|_{\mathrm{TV}}\le \min\{1,e^{2\eta}-1\}$. Consequently, Assumption~\ref{ass:uniform-block-error}
+implies a fixed-$k$ boundary-distribution total-variation bound with $\eta=k\varepsilon$, and a
+segment-count posterior bound with $\eta=k_{\max}\varepsilon$. These absolute probability bounds are
+coarser than the odds bounds but require no additional margin condition.
+\end{corollary}
+
+\begin{proof}
+The normalizing denominator $\sum_b p_b\exp(\delta_b)$ lies in $[e^{-\eta},e^{\eta}]$ when
+$\delta_a=\log\widehat w_a-\log w_a$. Hence each probability ratio lies in
+$[e^{-2\eta},e^{2\eta}]$. Summing the positive parts of $\widehat p_a-p_a$ gives the exponential bound, and total variation is always at most one.
+\end{proof}
+
+\begin{corollary}[Preservation of boundary rankings under a margin condition]
+\label{cor:ranking}
+Under the hypotheses of Proposition~\ref{prop:stability}, if there is a \emph{log-odds margin}
+$\Delta>0$ separating the best candidate $h^\star$ from every alternative,
+\[
+\log\frac{P(t_p=h^\star\mid y,k)}{P(t_p=h\mid y,k)}\ge \Delta
+\quad\text{for all }h\ne h^\star,
+\]
+then for every $\varepsilon<\Delta/(2k)$ the approximate posterior preserves the exact modal
+boundary location: $\arg\max_h \widehat P(t_p=h\mid y,k)=h^\star$.
+\end{corollary}
+
+\begin{proof}
+By \eqref{eq:stability-b-odds}, the log-odds between $h^\star$ and any alternative $h$ is
+perturbed by at most $2k\varepsilon<\Delta$, so the exact log-odds positivity is preserved.
+\end{proof}
+
+
+\begin{proofobligation}[Routine-specific block-error certification]
+\label{prop:uniform-bounds}
+No routine-wide uniform rate is asserted for Laplace, Jaakkola--Jordan, expectation propagation,
+P\'olya--Gamma mean field, or adaptive quadrature without assumptions tailored to the family,
+parameter domain, block support, initialization, convergence event, and tails. A valid run must
+instead provide a reachable-block certificate that separates optimization residual, truncation or
+tail error, quadrature error, and comparison-to-reference error. The conditional global theorem
+below consumes the maximum certified log-score error; it does not manufacture that certificate.
+\end{proofobligation}
+
+
+
+\begin{remark}[A small numerical illustration of the stability bound]
+\label{rem:stability-numerical}
+Consider $n=500$, $k_{\max}=10$, and a non-conjugate block routine whose verified uniform
+per-block log-evidence error over all reachable blocks is $\varepsilon=0.02$. Proposition~\ref{prop:stability}
+then guarantees segment-count log-odds error at most $(5+10)\times0.02=0.30$ when comparing
+$k=5$ to $k=10$, and boundary log-odds error at most $2\cdot10\cdot0.02=0.40$ under any fixed
+$k\le10$. In terms of probability ratios, these correspond to factors of about $e^{0.30}$ and
+$e^{0.40}$. The numbers in this illustration are conditional on having already verified the
+uniform block-error bound; they are not a generic guarantee for any chosen approximation routine.
+\end{remark}
+
+\begin{remark}[When each non-conjugate routine struggles]
+\label{rem:failure-modes}
+The stability bound in Proposition~\ref{prop:stability} is tight only when the uniform blockwise
+error $\varepsilon$ is actually small. Each non-conjugate routine has its own failure mode:
+Laplace (Theorem~\ref{thm:laplace}) requires posterior concentration near $\hat\theta_{ij}$, so
+it can be inaccurate on very short segments ($W_{ij}$ small) or for heavy-tailed priors;
+mean-field variational Bayes (Proposition~\ref{prop:pg-mf}) can be overconfident and
+underestimate posterior variance, biasing moment numerators; EP can fail to converge for
+non-log-concave likelihoods; 1D quadrature is accurate for smooth 1D integrands but expensive
+in higher dimensions. For these reasons, monitor $\varepsilon$ empirically per
+dataset rather than assuming it. A practical validation checklist is to compare a subset of blocks against
+quadrature or another trusted reference, report both maximum and high-quantile block errors, inspect
+errors along the exported MAP path, and assess sensitivity of $P(k\mid y)$ and boundary marginals.
+\end{remark}
+
+\paragraph{Approximation-validation checklist.}
+Before interpreting non-conjugate posterior summaries, compare a subset of block evidences against
+higher-accuracy quadrature or another trusted reference; report maximum and high-quantile block
+errors over reachable blocks; inspect errors on the MAP path; and assess sensitivity of $p(k\mid y)$,
+boundary marginals, and exported segmentations to the approximation method. The ranking corollary
+is meaningful only when the exact posterior margin is larger than the propagated approximation error.
+
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/theory/segment_error_propagation.tex}}
+\caption{Conditional propagation from a reachable-block log-score tolerance to global evidence and posterior-odds bounds. The local numerical routine remains responsible for establishing the tolerance.}
+\label{fig:local-global-stability}
+\end{figure}

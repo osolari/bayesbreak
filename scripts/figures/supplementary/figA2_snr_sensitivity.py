@@ -38,9 +38,9 @@ log scale):
 
 Outputs
 -------
-- docs/report/figures/fig7_snr_sensitivity.png
-- docs/report/figures/fig7_snr_sensitivity.pdf
-- docs/report/figures/fig7_snr_sensitivity.csv
+- results/figures/fig7_snr_sensitivity.png
+- results/figures/fig7_snr_sensitivity.pdf
+- results/figures/fig7_snr_sensitivity.csv
 
 Usage
 -----
@@ -270,7 +270,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--n", type=int, default=150)
     ap.add_argument("--n-rep", type=int, default=40)

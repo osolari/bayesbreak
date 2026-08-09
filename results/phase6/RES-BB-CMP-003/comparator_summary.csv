@@ -1,0 +1,5 @@
+algorithm,package_version,target_n_bkps,n_bkps,count_status,parameter_evaluations,selected_runtime_seconds,tuning_runtime_seconds,exact_boundary_jaccard,f1_tau3,matched_mae_tau3,matched_count_tau3
+pelt,v1.1.10,14,11,closest-grid-count-mismatch,8,18.742506332986522,204.86351287504658,0.3888888888888889,0.8,0.3,10
+optimal_partitioning,v1.1.10,14,14,exact-matched-k,1,152.00696566700935,152.00696566700935,0.4,0.9285714285714286,0.5384615384615384,13
+binary_segmentation,v1.1.10,14,14,exact-matched-k,1,1.2547008749679662,1.2547008749679662,0.21739130434782608,0.7142857142857143,0.9,10
+wild_binary_segmentation,v1.1.10,14,14,exact-matched-k,1,6.8949357910314575,6.8949357910314575,0.3333333333333333,0.7857142857142857,0.45454545454545453,11

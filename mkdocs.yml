@@ -1,9 +1,8 @@
 site_name: BayesBreak
 site_description: >-
-  Exact Bayesian segmentation with a scikit-learn compatible API: weighted
-  exponential-family block evidence + global dynamic programming, plus
-  non-conjugate approximations with stability theory, latent-template EM,
-  prediction, and a planned external-comparator suite.
+  Generalized hierarchical Bayesian segmentation with irregular designs,
+  multi-sequence hierarchies, grouped and latent-group designs, exact conjugate
+  inference, and explicitly approximate numerical segment integration.
 site_author: Omid Shams Solari
 repo_url: https://github.com/osolari/bayesbreak
 repo_name: osolari/bayesbreak
@@ -12,11 +11,7 @@ edit_uri: edit/master/docs/
 docs_dir: docs
 site_dir: site
 
-# Files in docs/report/ are the manuscript source tree (sections, tables,
-# bibliography, changelogs), not site content. Exclude them from nav
-# warnings but keep them in the docs build so cross-links resolve.
 not_in_nav: |
-  report/**
   CHANGELOG.prior.md
   CODING_AGENT_HANDOFF.prior.md
 
@@ -31,7 +26,7 @@ theme:
   palette:
     - media: "(prefers-color-scheme: light)"
       scheme: default
-      # saim indigo per docs/report/saim.cls
+      # SAIM indigo from the Phase 6 report template.
       primary: custom
       accent: custom
       toggle:
@@ -74,9 +69,16 @@ nav:
   - User guide:
       - Model families: models.md
       - Real-data loaders: datasets.md
+      - Data cards:
+          - Overview: data_cards/index.md
+          - Well log: data_cards/welllog.md
+          - Array CGH: data_cards/cgh.md
+          - SPX: data_cards/spx.md
+          - Methylation: data_cards/methylation.md
       - Diagnostics: diagnostics.md
       - Baselines: baselines.md
       - Reproducibility: reproducibility.md
+      - Version lineage: version_lineage.md
       - Results: results.md
   - Tutorials:
       - Quickstart notebook: tutorials/01_quickstart.ipynb

@@ -1,0 +1,56 @@
+{
+  "phase": "6",
+  "title": "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs",
+  "targets": {
+    "technical_book": {
+      "pages": 168,
+      "page_size": "595.276 x 841.89 pts (A4)"
+    },
+    "main_paper_two_column": {
+      "pages": 35,
+      "page_size": "612 x 792 pts (letter)"
+    },
+    "main_paper_single_column": {
+      "pages": 42,
+      "page_size": "612 x 792 pts (letter)"
+    },
+    "executive_summary": {
+      "pages": 12,
+      "page_size": "612 x 792 pts (letter)"
+    }
+  },
+  "total_pages": 257,
+  "formal_results": {
+    "book_established": 28,
+    "book_proof_obligations": 1,
+    "paper_established": 12,
+    "paper_proof_obligations": 1
+  },
+  "bibliography_entries": 38,
+  "coding_tasks": 16,
+  "experiment_protocols": 15,
+  "claims": 14,
+  "results": 17,
+  "presentation_handoff_files": 15,
+  "executive_roadmaps": 2,
+  "slide_sources": 0,
+  "mathematical_checks": 13,
+  "visual_contact_sheets": 22,
+  "historical_test_state": {
+    "collected": 179,
+    "passed": 157,
+    "skipped": 5,
+    "unresolved": 17,
+    "failed": 0,
+    "result_id": "RES-BB-QA-002"
+  },
+  "current_bounded_test_state": {
+    "collected": 179,
+    "passed": 173,
+    "skipped": 5,
+    "unresolved": 1,
+    "failed": 0,
+    "timeout_seconds_per_test": 20,
+    "result_id": "RES-BB-QA-003"
+  }
+}

@@ -42,6 +42,20 @@ from .utils import logsumexp
 from .validation import require_fitted
 
 
+def shared_fit(
+    base_estimator: BayesBreakSegmenter,
+    X: Any,
+    sequences: Sequence[np.ndarray] | np.ndarray,
+    *,
+    sample_weight: Any = None,
+    k_max: int | None = None,
+) -> SharedBoundaryReplicatesSegmenter:
+    """Fit the exact shared-boundary model for one known group."""
+
+    estimator = SharedBoundaryReplicatesSegmenter(base_estimator, k_max=k_max)
+    return estimator.fit(X, sequences, sample_weight=sample_weight)
+
+
 def _as_sequence_list(X: Any) -> list[np.ndarray]:
     if isinstance(X, list | tuple):
         ys = [np.asarray(a, dtype=float) for a in X]

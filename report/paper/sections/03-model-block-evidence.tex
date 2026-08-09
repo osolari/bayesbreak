@@ -1,0 +1,130 @@
+\section{Generalized segment models and integrated likelihoods}
+\label{sec:model}
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{0.94\textwidth}{!}{\input{shared/figures/tikz/workflows/segment_to_partition.tex}}
+  \caption{Statistical decomposition used by BayesBreak. A family-specific segment calculation supplies the integrated likelihood and optional posterior moment numerators. Local prior factors multiply the same triangular array. Sum-product and max-sum recursions over ordered partitions then produce posterior summaries and a joint MAP partition, respectively.}
+  \label{fig:block-to-global}
+\end{figure*}
+
+\subsection{Ordered partitions and support}
+Let $y_{1:n}$ be observed on an ordered design. Candidate boundary coordinates are denoted
+$u_0<u_1<\cdots<u_n$; on a regular grid, $u_i=i$. A $k$-segment partition is a vector
+$t=(t_0,\ldots,t_k)$ with
+\[
+\begin{aligned}
+0=t_0<t_1<\cdots<t_k=n,\\
+I_q(t)&=\{t_{q-1}+1,\ldots,t_q\}.
+\end{aligned}
+\]
+The half-open notation $(i,j]$ denotes indices $i+1,\ldots,j$. Physical block length is
+$\Delta_x(i,j)=u_j-u_i$ and is never inferred from an undefined observation $x_0$.
+
+\begin{assumption}[Offline structural support and block independence]
+\label{ass:offline}
+The candidate segment-count set $\{1,\ldots,k_{\max}\}$ is finite. Structural admissibility of a segment is fixed by the candidate grid, declared length restrictions, and prior support before the response values are observed. A structurally admissible segment has finite nonnegative local evidence; zero evidence removes its likelihood contribution but does not alter the partition-prior normalizer. Structurally excluded segments have local prior factor zero and log-score $-\infty$. Conditional on a partition, segment parameters are independent across segments. The conditional partition prior factorizes through local terms as in Assumption~\ref{ass:factorized-prior}. For approximate segment routines, the same statements define an exact posterior for the supplied approximate score array; comparison to the intended nonconjugate model additionally requires Assumption~\ref{ass:block-error}.
+\end{assumption}
+
+\subsection{Exponential-family segment likelihoods with exposure and power weights}
+Let $d_r$ collect scientifically specified family information, such as Poisson exposure, Binomial trial count, or Gaussian precision. Let $a_r\ge0$ be an optional power or reliability weight that multiplies the complete log contribution. The canonical local likelihood is
+\begin{equation}
+\begin{aligned}
+\log p(y_r\mid\theta,d_r)^{a_r}
+&=a_r\log h(y_r,d_r)\\
+&\quad+a_rS(y_r,d_r)^\top\eta(\theta)\\
+&\quad-a_rE(d_r)A(\theta).
+\end{aligned}
+\label{eq:local-ef}
+\end{equation}
+The corresponding block summaries are
+\begin{align}
+S_{ij}&=\sum_{r=i+1}^{j}a_rS(y_r,d_r),\nonumber\\
+W_{ij}&=\sum_{r=i+1}^{j}a_rE(d_r),\nonumber\\
+H_{ij}&=\sum_{r=i+1}^{j}a_r\log h(y_r,d_r).
+\label{eq:block-summaries}
+\end{align}
+This notation prevents three distinct quantities from being collapsed into a single scalar ``weight'': design spacing affects the partition prior, $d_r$ changes the observation law, and $a_r$ raises the entire observation contribution to a power.
+
+For conjugate hyperparameters $(\alpha,\beta)$, use the Diaconis--Ylvisaker normalizer convention
+\begin{align}
+p(\theta\mid\alpha,\beta)
+&=\exp\{\eta(\theta)^\top\alpha-\beta A(\theta)-\log Z(\alpha,\beta)\},\nonumber\\
+Z(\alpha,\beta)
+&=\int e^{\eta(\theta)^\top\alpha-\beta A(\theta)}\dd\theta.
+\label{eq:conjugate-prior}
+\end{align}
+Fix a scientifically declared reference descriptor $d_\star$ when the conditional observation mean depends on exposure or trial structure, and write $m_\star(\theta)=m(\theta;d_\star)$ for the segment functional reported by the analysis (for example, a Poisson rate at unit exposure rather than an exposure-specific count mean). Define
+\begin{align*}
+A^{(0)}_{ij}&=p(y_{i+1:j}\mid d_{i+1:j},a_{i+1:j}),\\
+A^{(r)}_{ij}&=A^{(0)}_{ij}\,\mathbb E[m_\star(\theta)^r\mid y_{i+1:j}].
+\end{align*}
+
+\begin{theorem}[Exposure-aware conjugate block integration]
+\label{thm:block-integration}
+If $Z(\alpha_0+S_{ij},\beta_0+W_{ij})<\infty$, then
+\begin{equation}
+ A^{(0)}_{ij}=e^{H_{ij}}
+ \frac{Z(\alpha_0+S_{ij},\beta_0+W_{ij})}{Z(\alpha_0,\beta_0)}.
+\label{eq:block-evidence}
+\end{equation}
+The block posterior is conjugate with hyperparameters
+$(\alpha_0+S_{ij},\beta_0+W_{ij})$. Whenever its $r$th moment exists,
+\begin{equation}
+ A^{(r)}_{ij}=A^{(0)}_{ij}
+ \mathbb E[m_\star(\theta)^r\mid\alpha_0+S_{ij},\beta_0+W_{ij}].
+\label{eq:block-moment}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Multiplying the powered likelihood terms in Equation~\eqref{eq:local-ef} gives
+$e^{H_{ij}}\exp\{\eta(\theta)^\top S_{ij}-W_{ij}A(\theta)\}$. Multiplication by the prior in Equation~\eqref{eq:conjugate-prior} produces the same conjugate kernel with updated hyperparameters $(\alpha_0+S_{ij},\beta_0+W_{ij})$. Integrating the kernel yields the ratio of normalizers in Equation~\eqref{eq:block-evidence}; division by this evidence gives the posterior. Inserting $m_\star(\theta)^r$ into the integral then factors the result into the evidence times the posterior moment, proving Equation~\eqref{eq:block-moment}.
+\end{proof}
+
+\begin{remark}[Scope of exactness]
+Theorem~\ref{thm:block-integration} is exact for the displayed powered, exposure-aware model. It does not permit a Binomial trial count to be treated as a likelihood power, an irregular coordinate gap to be inserted as exposure, or a numerical integral to be described as conjugate closed form.
+\end{remark}
+
+\subsection{Local prior factors}
+\begin{assumption}[Factorized ordered-partition prior]
+\label{ass:factorized-prior}
+For fixed $k$ and boundary coordinates $u$, the prior on $t$ is
+\begin{equation}
+ p(t\mid k,u)=C_k(u)^{-1}
+ \prod_{q=1}^{k}c_u(t_{q-1},t_q)
+ \prod_{q=1}^{k-1}h_u(t_q),
+\label{eq:partition-prior}
+\end{equation}
+where $c_u(i,j)\ge0$ is a complete-segment cohesion and $h_u(j)\ge0$ is an interior-boundary hazard. Define
+$\gamma_u(i,j)=c_u(i,j)h_u(j)^{\1\{j<n\}}$ and
+$\widetilde A^{(r)}_{ij}=A^{(r)}_{ij}\gamma_u(i,j)$.
+\end{assumption}
+The normalizer $C_k(u)$ is itself a partition sum and can be computed by the same dynamic program after replacing all likelihood evidences by one. This ensures that fixed-$k$ evidence remains properly normalized for nonuniform local priors.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Supported local block constructions. Closed-form rows instantiate Theorem~\ref{thm:block-integration}; the Beta-valued response uses deterministic one-dimensional quadrature and is therefore exact only up to its numerical tolerance.}
+\label{tab:block-families}
+\begin{tabularx}{0.97\textwidth}{@{}L{0.15\textwidth}L{0.19\textwidth}L{0.17\textwidth}Y L{0.16\textwidth}@{}}
+\toprule
+Family & Descriptor $d_r$ & Segment parameter & Integrated block construction & Status \\
+\midrule
+Gaussian, known variance & precision or inverse variance & mean $\mu$ & Gaussian--Gaussian normalizer and posterior moments & closed form \\
+Poisson & exposure $e_r$ & rate $\lambda$ & Gamma--Poisson normalizer; $E(d_r)=e_r$ & closed form \\
+Binomial & trial count $m_r$ & probability $p$ & Beta--Binomial normalizer; $E(d_r)=m_r$ & closed form \\
+Negative Binomial & fixed dispersion & success parameter & Beta-conjugate distributional parameterization & closed form \\
+Beta-valued response & known precision $\phi_r$ & mean $\mu\in(0,1)$ & one-dimensional integral over a transformed mean & quadrature \\
+Nonconjugate GLM & link-specific inputs & regression parameter & Laplace, variational, EP, PG, or quadrature block score & approximate unless certified \\
+\bottomrule
+\end{tabularx}
+\end{table*}
+
+\subsection{Segment marginal-likelihood interface}
+The partition recursions require only a triangular array of segment log marginal likelihoods and, when posterior signal moments are requested, corresponding segment moment summaries. A family-specific implementation returns the segment log marginal likelihood, posterior hyperparameters or moments, a validity flag, and any numerical diagnostic needed to interpret an approximate value. Prefix summaries make Gaussian, Poisson, and Binomial segment calculations constant time after $\mathcal O(n)$ preprocessing. The recursion over partitions is therefore unchanged when the observation family changes.
+
+\begin{specificationbox}[Required segment quantities]
+For every candidate segment $(i,j]$, the family-specific calculation returns
+$\bigl(\log A^{(0)}_{ij},\,\mathcal M_{ij},\,\texttt{status}_{ij},\,\texttt{diagnostics}_{ij}\bigr)$,
+where $\mathcal M_{ij}$ contains the moments or posterior state required downstream. A segment outside the declared support receives log marginal likelihood $-\infty$, not an arbitrary finite penalty. Numerical approximations additionally report convergence information and a reference-error estimate whenever one is available.
+\end{specificationbox}

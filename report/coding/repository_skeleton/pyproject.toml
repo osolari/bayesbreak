@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "bayesbreak"
+dynamic = ["version"]
+description = "Interface-only BayesBreak repository skeleton; scientific implementation is intentionally incomplete"
+requires-python = ">=3.11"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+# The version source remains unresolved under CODE-BB-013. Do not publish this
+# skeleton as a completed package.

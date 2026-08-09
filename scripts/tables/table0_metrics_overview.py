@@ -27,7 +27,7 @@ column headers (e.g., "F1@τ", "MSE") without repeating definitions.
 
 Outputs
 -------
-- docs/report/tables/table0_metrics_overview.tex
+- results/tables/table0_metrics_overview.tex
 """
 
 from __future__ import annotations
@@ -55,7 +55,7 @@ def main(outdir: Path) -> None:
 
 def parse_args(argv: list[str]) -> argparse.Namespace:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/tables"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/tables"))
     return ap.parse_args(argv)
 
 

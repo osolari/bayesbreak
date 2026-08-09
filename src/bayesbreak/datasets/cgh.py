@@ -51,7 +51,7 @@ def _load_acgh_real(individuals: list[int] | None) -> DatasetBundle | None:
 
     try:
         import rdata  # type: ignore[import-not-found]
-        import requests  # type: ignore[import-not-found]
+        import requests  # type: ignore[import-untyped]
     except ImportError:
         return None
 

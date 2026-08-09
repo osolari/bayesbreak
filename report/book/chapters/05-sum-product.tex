@@ -1,0 +1,474 @@
+\chapter{Sum-product partition inference}
+\label{ch:sumproduct}
+\label{app:marginals}
+\chapterpromise{Forward/backward identities, evidence, segment-count uncertainty, boundary marginals, and model-averaged Bayes curves.}
+
+\label{sec:dp}
+
+For $k\in\{0,\dots,k_{\max}\}$ and $j\in\{0,\dots,n\}$, let $L_{k j}$ denote the evidence of
+the prefix $y_{1:j}$ under a segmentation into $k$ segments (after integrating out segment
+parameters), and let $R_{k i}$ denote the evidence of the suffix $y_{i+1:n}$ under $k$
+segments. We adopt the conventions
+\[
+L_{0,0}=1,\quad L_{0,j}=0\ (j>0),\qquad
+R_{0,n}=1,\quad R_{0,i}=0\ (i<n).
+\]
+
+\subsection{Forward/backward recursions}
+Given single-block evidences $A^{(0)}_{ij}$, the forward and backward recursions are
+\begin{equation}
+L_{k+1,j}
+ = \sum_{h=k}^{j-1} L_{k,h}\,A^{(0)}_{h j},\qquad
+R_{k+1,i}
+ = \sum_{h=i+1}^{n-k} A^{(0)}_{i h}\,R_{k,h},
+\label{eq:LR}
+\end{equation}
+for $k\ge0$, $1\le j\le n$, and $0\le i\le n-1$, where sums are restricted to valid indices.
+
+\begin{proposition}[Forward--backward duality and total-evidence identity]
+\label{prop:fb-duality}
+Under Assumption~\ref{ass:standing-offline} and Assumption~\ref{ass:factorizing-prior}, with
+prior-adjusted block scores $\widetilde A^{(0)}_{ij}=A^{(0)}_{ij}\gamma_x(i,j)$
+\eqref{eq:Atilde}, let $\{\widetilde L_{k,j}\}$ and $\{\widetilde R_{k,i}\}$ denote the prefix and
+suffix sum-product messages of \eqref{eq:LR}. Then for every admissible
+$k\in\{1,\dots,k_{\max}\}$:
+\begin{enumerate}[label=\textnormal{(\roman*)}]
+\item \emph{Boundary conditions.}
+$\widetilde L_{0,0}=1$, $\widetilde L_{0,j}=0$ for $j>0$, $\widetilde R_{0,n}=1$, and
+$\widetilde R_{0,i}=0$ for $i<n$. Furthermore $\widetilde L_{k,j}=0$ whenever $j<k$ and
+$\widetilde R_{k,i}=0$ whenever $i>n-k$.
+\item \emph{Total-evidence identity.}
+$\widetilde L_{k,n}=\widetilde R_{k,0}=\sum_{t\in\mathcal T_{k,n}^{+}}\prod_{q=1}^k \widetilde A^{(0)}_{t_{q-1}t_q}$,
+i.e.\ the forward-evidence terminal and the backward-evidence initial value both equal the same
+prior-adjusted partition sum.
+\item \emph{Boundary marginal product form.}
+For interior boundary position $h\in\{p,\dots,n-(k-p)\}$ and $1\le p\le k-1$,
+\[
+p(t_p=h\mid y,k)=\frac{\widetilde L_{p,h}\,\widetilde R_{k-p,h}}{\widetilde L_{k,n}},
+\]
+and the boundary-event marginal of Definition~\ref{def:posterior-summaries}(a) satisfies
+$\mathrm{MB}_h(k)=\sum_{p=1}^{k-1}p(t_p=h\mid y,k)$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Boundary conditions follow from definition; the support constraints $j\ge k$ and $i\le n-k$
+restate that a $k$-segment prefix requires at least $k$ observations and a $k$-segment suffix requires at least $k$ observations.
+For (ii), iterate \eqref{eq:LR} forward from $\widetilde L_{0,0}$: by induction on $k$,
+$\widetilde L_{k,j}=\sum_{t_0<\cdots<t_k=j}\prod_{q=1}^k\widetilde A^{(0)}_{t_{q-1}t_q}$,
+so $\widetilde L_{k,n}$ enumerates all $k$-segmentations of $\{1,\dots,n\}$. The same induction
+backward from $\widetilde R_{0,n}$ gives $\widetilde R_{k,i}=\sum_{i=t_0<\cdots<t_k=n}\prod_{q=1}^k\widetilde A^{(0)}_{t_{q-1}t_q}$,
+and $\widetilde R_{k,0}$ enumerates the same set. Both equal the asserted partition sum.
+For (iii), split each segmentation at the $p$th boundary: a segmentation with $t_p=h$ is uniquely
+described by its first $p$ blocks (counted by $\widetilde L_{p,h}$) and its last $k-p$ blocks
+(counted by $\widetilde R_{k-p,h}$). Their product, divided by $\widetilde L_{k,n}$, is the
+conditional probability that $t_p=h$. Summing over $p\in\{1,\dots,k-1\}$ yields the boundary-event
+marginal because the boundaries are strictly ordered, so for fixed $h$ at most one $p$ satisfies
+$t_p=h$ in any given $t$.
+\end{proof}
+
+The identity $\widetilde L_{k,n}=\widetilde R_{k,0}$ is also one of the DP invariants used in the
+runtime correctness checklist of Section~\ref{sec:alg-checklist}; Proposition~\ref{prop:fb-duality}
+states the algebraic basis of that numerical check.
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:dp-core} presents the algebraic sum-product recursions corresponding to
+\eqref{eq:LR}. It is a mathematical specification rather than the recommended floating-point
+implementation: Section~\ref{sec:alg-dp-impl} gives the implementable log-space version using
+\texttt{logsumexp}. The algebraic routine takes a triangular block-evidence array and returns the
+forward messages, backward messages, and segment-count posteriors needed for boundary and moment
+extraction.
+
+\begin{algorithm}[H]
+\caption{Generic algebraic DP for EF segmentation (prefix/suffix form)}
+\label{alg:dp-core}
+\KwIn{Block evidences $\widetilde{A}^{(0)}_{ij}$ for $0\le i<j\le n$; $k_{\max}$; $C_k$ (default $C_k=\binom{n-1}{k-1}$)}
+Initialize $\widetilde{L}_{0,0}=1$, $\widetilde{L}_{0,j>0}=0$; $\widetilde{R}_{0,n}=1$, $\widetilde{R}_{0,i<n}=0$\;
+\For{$k=0$ \KwTo $k_{\max}-1$}{
+  \For{$j=1$ \KwTo $n$}{
+    $\widetilde{L}_{k+1,j}\leftarrow \sum_{h=k}^{j-1} \widetilde{L}_{k,h}\widetilde{A}^{(0)}_{h j}$\;
+  }
+  \For{$i=0$ \KwTo $n-1$}{
+    $\widetilde{R}_{k+1,i}\leftarrow \sum_{h=i+1}^{n-k} \widetilde{A}^{(0)}_{i h} \widetilde{R}_{k,h}$\;
+  }
+}
+Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ (cf.\ \eqref{eq:post-k}) and choose $\widehat{k}$\;
+\For{$p=1$ \KwTo $\widehat{k}-1$}{
+  For $h\in\{p,\dots,n-(\widehat{k}-p)\}$ set $P(t_p=h\mid y,\widehat{k})\leftarrow \widetilde{L}_{p,h}\widetilde{R}_{\widehat{k}-p,h}/\widetilde{L}_{\widehat{k}n}$\;
+  Record the marginal mode $\arg\max_h P(t_p=h\mid y,\widehat{k})$ as a diagnostic only\;
+}
+\KwOut{$\{\widetilde{L}_{k j}\}$, $\{\widetilde{R}_{k i}\}$, $P(k\mid y)$, $\widehat{k}$, and boundary-marginal diagnostics}
+\end{algorithm}
+
+\subsection{Incorporating segment-factorized boundary priors}
+\label{subsec:priorinc}
+
+Suppose the boundary prior given $k$ factorizes over segment lengths as in \eqref{eq:partition-prior-factor}:
+\[
+p(t\mid k) = \frac{1}{C_k}\prod_{q=1}^k g(\Delta_x(t_{q-1},t_q)),
+\qquad
+C_k := \sum_{t:\,0=t_0<\cdots<t_k=n}\ \prod_{q=1}^k g(\Delta_x(t_{q-1},t_q)).
+\]
+Then we can absorb $g$ into block evidences by defining
+\begin{equation}
+\widetilde{A}^{(0)}_{ij} := A^{(0)}_{ij}\,\gamma_x(i,j),
+\qquad
+\widetilde{A}^{(r)}_{ij} := A^{(r)}_{ij}\,\gamma_x(i,j).
+\label{eq:Atilde}
+\end{equation}
+Running the DP \eqref{eq:LR} with $\widetilde{A}^{(0)}_{ij}$ computes $\widetilde{L}_{k n}$,
+the \emph{unnormalized} evidence sum over all segmentations weighted by $g$. The normalizer
+$C_k$ can be computed by the same DP with $A^{(0)}_{ij}\equiv 1$:
+\begin{equation}
+C_k
+ = \sum_{t}\prod_{q=1}^k g(\Delta_x(t_{q-1},t_q))
+ = L^{(g)}_{k n},
+\quad\text{where}\quad
+L^{(g)}_{k+1,j}=\sum_{h=k}^{j-1}L^{(g)}_{k,h}\,\gamma_x(h,j),\ L^{(g)}_{0,0}=1.
+\label{eq:Ck-general}
+\end{equation}
+In the index-uniform case $g\equiv 1$, \eqref{eq:Ck-general} reduces to $C_k=\binom{n-1}{k-1}$.
+
+\subsection[Posteriors over segment counts, boundary marginals, and joint MAP segmentations]{Posteriors over $k$, boundary marginals, and joint MAP segmentations}
+Let $p(k)$ be a prior on segment count. Under index-uniform $p(t\mid k)$ we have
+$C_k=\binom{n-1}{k-1}$ and
+\[
+P(y\mid k) = \frac{L_{k n}}{C_k},
+\qquad
+P(k\mid y)\propto p(k)\,\frac{L_{k n}}{C_k}.
+\]
+For general segment-factorized $p(t\mid k)$, replace $L$ by $\widetilde{L}$ and $C_k$ by
+\eqref{eq:Ck-general}. In all cases we can write compactly
+\begin{equation}
+P(k\mid y)\ \propto\ p(k)\,\frac{\widetilde{L}_{k n}}{C_k},
+\qquad k=1,\dots,k_{\max}.
+\label{eq:post-k}
+\end{equation}
+Let $\widehat{k}=\arg\max_k P(k\mid y)$ denote the MAP segment count.
+
+Conditional on $k$, the marginal posterior for the $p$th boundary $t_p$ is
+\begin{equation}
+P(t_p=h\mid y,k)
+ = \frac{\widetilde{L}_{p,h}\,\widetilde{R}_{k-p,h}}{\widetilde{L}_{k n}},
+\qquad
+h\in\{p,\dots,n-(k-p)\},
+\label{eq:boundary-post}
+\end{equation}
+where $(\widetilde{L},\widetilde{R})$ are computed from $\widetilde{A}^{(0)}$ as in
+\eqref{eq:LR}. The denominator is the unnormalized evidence under the length-weighted partition
+prior; the normalizer $C_k$ cancels in \eqref{eq:boundary-post} because the same $C_k$ multiplies
+every boundary vector in the numerator and denominator. (When $g\equiv 1$, tildes can be dropped.)
+
+\begin{remark}[Boundary-event marginal]
+\label{rem:boundary-event}
+A related object we use repeatedly is the \emph{boundary-event marginal}
+\begin{equation}
+P(b_i=1\mid y,k)
+ := \sum_{p=1}^{k-1} P(t_p=i\mid y,k)
+ = \sum_{p=1}^{k-1}\frac{\widetilde{L}_{p,i}\,\widetilde{R}_{k-p,i}}{\widetilde{L}_{k n}},
+ \qquad 1\le i\le n-1,
+\label{eq:boundary-event}
+\end{equation}
+the posterior probability that interior index $i$ coincides with \emph{some} boundary, without
+conditioning on which boundary. The objects $P(t_p=h\mid y,k)$ and $P(b_i=1\mid y,k)$ are
+distinct: the former is a probability distribution over $h$ for each fixed $p$ (and sums to $1$ over
+$h$), while the latter is a per-index Bernoulli probability summing to $k-1$ over $i$. Calibration
+experiments in Section~\ref{sec:experiments} target $P(b_i=1\mid y,k)$; a full derivation is given
+in Appendix~\ref{app:marginals}.
+\end{remark}
+
+A useful diagnostic is the \emph{marginal boundary mode}
+\[
+\widetilde{t}^{\,\mathrm{marg}}_p(k)
+  \in \arg\max_h P(t_p=h\mid y,k).
+\]
+However, maximizing the marginals independently need not yield an ordered boundary vector and, in
+general, does \emph{not} recover the joint MAP segmentation.
+
+\begin{remark}[A small counterexample]
+\label{rem:marg-vs-joint}
+Consider $n=5$ and $k=3$, so the two interior boundaries satisfy $1\le t_1<t_2\le4$.
+For example, let the joint posterior put masses $0.30,0.28,0.22,0.20$ on the four ordered
+configurations $(1,4),(2,3),(2,4),(3,4)$, respectively. The marginal modes are then
+$t_1=2$ and $t_2=4$, so the independently selected marginal-mode vector is $(2,4)$, even though
+the joint MAP configuration is $(1,4)$. This is exactly the kind of discrepancy the max-sum DP
+resolves.
+\end{remark}
+
+The joint MAP segmentation is the solution of
+\begin{equation}
+\widehat{t}^{\,\mathrm{MAP}}(k)
+ \in \arg\max_{0=t_0<\cdots<t_k=n}
+ \Bigg\{\sum_{q=1}^k \log \widetilde{A}^{(0)}_{t_{q-1} t_q}\Bigg\},
+\label{eq:joint-map-k}
+\end{equation}
+with the convention that any $k$-specific prior terms such as $\log p(k)-\log C_k$ are added only
+when selecting among different values of $k$. Equation~\eqref{eq:joint-map-k} is solved exactly by
+a max-sum DP with backpointers. Inline, the max-sum recursion reads
+\begin{equation}
+M_{k+1,j} = \max_{h\in\{k,\dots,j-1\}}\big\{M_{k,h} + \log \widetilde{A}^{(0)}_{hj}\big\},
+\qquad
+h^\star(k+1,j) \in \arg\max_{h} \big\{M_{k,h} + \log \widetilde{A}^{(0)}_{hj}\big\},
+\label{eq:max-sum-inline}
+\end{equation}
+with initial conditions $M_{0,0}=0$, $M_{0,j}=-\infty$ for $j>0$, and backtracking from
+$(k,n)$ as detailed in Section~\ref{sec:algorithms}.
+In the sequel, whenever we report an \emph{exported MAP segmentation}, we mean the joint optimizer
+$\widehat{t}^{\,\mathrm{MAP}}:=\widehat{t}^{\,\mathrm{MAP}}(\widehat{k})$ rather than a vector of marginal
+boundary modes.
+
+\subsection{Segment-level and regression-curve posterior moments}
+For segment-wise posterior moments attached to a \emph{fixed} segmentation
+$t=(t_0,\dots,t_k)$, let segment $q\in\{1,\dots,k\}$ correspond to block
+$(i,j]=(t_{q-1},t_q]$. Then
+\begin{equation}
+\mu^{(r)}_q(t)
+ = \frac{\widetilde{A}^{(r)}_{ij}}{\widetilde{A}^{(0)}_{ij}}
+ = \frac{A^{(r)}_{ij}}{A^{(0)}_{ij}},
+\qquad r=1,2,\dots,
+\label{eq:segmom-seg}
+\end{equation}
+where the final equality holds because the prior factor $\gamma_x(i,j)$ cancels. In particular, for
+an exported joint MAP segmentation $\widehat{t}^{\,\mathrm{MAP}}$, the segment summaries are obtained by
+setting $t=\widehat{t}^{\,\mathrm{MAP}}$ in \eqref{eq:segmom-seg}.
+
+To compute the Bayes regression curve within a fixed $k$ (typically $k=\widehat{k}$),
+define, for each block $(i,j]$ and moment order $r$,
+\[
+F^{(r)}_{ij}(k)
+ := \frac{1}{\widetilde{L}_{k n}}\sum_{m=1}^k
+       \widetilde{L}_{m-1,i}\,\widetilde{A}^{(r)}_{ij}\,\widetilde{R}_{k-m,j}.
+\]
+Then the $r$th posterior moment of the latent mean at index $t$ given $k$ is obtained by summing
+$F^{(r)}_{ij}(k)$ over all candidate blocks $(i,j]$ that contain the index $t$ (i.e., all blocks
+with $i<t\le j$), so that each candidate segmentation contributes exactly once through the block
+that actually covers $t$:
+\begin{equation}
+\widehat{\mu}'^{(r)}_t
+ := \mathbb{E}[(\mu'_t)^r\mid y,k]
+ = \sum_{i<t\le j} F^{(r)}_{ij}(k),
+\qquad t=1,\dots,n.
+\label{eq:segmom}
+\end{equation}
+In particular, $\widehat{\mu}'_t := \widehat{\mu}'^{(1)}_t$ is the Bayes regression curve and
+$\mathbb{V}[\mu'_t\mid y,k]
+ = \widehat{\mu}'^{(2)}_t - (\widehat{\mu}'^{(1)}_t)^2$.
+If a fully $k$-marginalized curve is desired, compute the same conditional curve for each admissible
+$k$ and average the resulting moments using $P(k\mid y)$ from \eqref{eq:post-k}. The empirical
+sections report curves conditional on the selected $\widehat k$ unless explicitly stated otherwise.
+
+\begin{proposition}[Block-covering decomposition for Bayes-curve moments]
+\label{prop:block-covering-decomposition}
+Fix $k$ and an index $t\in\{1,\dots,n\}$. Under the support and factorization hypotheses of
+Theorem~\ref{thm:dp-correctness}, the conditional posterior moment of the latent mean at $t$ is
+obtained by summing the block contributions $F^{(r)}_{ij}(k)$ over exactly those candidate blocks
+$(i,j]$ with $i<t\le j$. No segmentation contributes more than once to the sum in
+\eqref{eq:segmom}.
+\end{proposition}
+
+\begin{proof}
+Every admissible ordered boundary vector partitions $\{1,\dots,n\}$ into disjoint blocks, hence
+contains a unique block $(i,j]$ satisfying $i<t\le j$. Conditioning on that covering block splits
+the remaining boundaries into an $(m-1)$-segmentation of the prefix $y_{1:i}$ and a
+$(k-m)$-segmentation of the suffix $y_{j+1:n}$ for some segment position $m$. The prefix, block, and
+suffix contributions multiply as
+$\widetilde L_{m-1,i}\,\widetilde A^{(r)}_{ij}\,\widetilde R_{k-m,j}$, and summing over $m$ and
+over all covering blocks gives \eqref{eq:segmom}. Disjointness of the covering block proves that no
+segmentation is double counted.
+\end{proof}
+
+\begin{theorem}[Correctness of the DP]
+\label{thm:dp-correctness}
+Assume finite block evidences on all admissible blocks, a finite segment-count range, and a
+segment-factorized conditional partition prior satisfying Assumption~\ref{ass:factorizing-prior}
+with the boundary-coordinate convention of Section~\ref{sec:notation}. Under the EF--conjugate
+single-segment model of Section~\ref{sec:ef}, or under any other block model whose exact evidence
+array is supplied, the recursions \eqref{eq:LR} compute exact marginal evidences for all
+prefixes/suffixes:
+$\widetilde{L}_{k j}$ and $\widetilde{R}_{k i}$ are exact evidence sums over all
+$k$-segmentations of the corresponding prefix/suffix. Moreover:
+\begin{enumerate}
+\item The posterior $P(k\mid y)$ given by \eqref{eq:post-k} is exact.
+\item The boundary marginal $P(t_p=h\mid y,k)$ given by \eqref{eq:boundary-post} is exact.
+\item The segment-wise moments \eqref{eq:segmom-seg} and regression-curve moments \eqref{eq:segmom}
+are exact posterior moments conditional on $k$.
+\end{enumerate}
+The separate max-sum recursion and backtracking theorem for the joint MAP partition is stated and
+proved immediately after its statement in Theorem~\ref{thm:map-correctness}.
+\end{theorem}
+
+\begin{proof}
+We argue for general $\widetilde{A}^{(0)}_{ij}$; $g\equiv 1$ is the untilded specialization.
+
+\paragraph{Step 1: $\widetilde{L}_{k j}$ is the prefix evidence sum.}
+For any $k$-segmentation $(t_0,\dots,t_k)$ of $y_{1:j}$ with $t_0=0$, $t_k=j$, integrating out
+segment parameters yields $p(y_{1:j}\mid t,k)=\prod_{q}\widetilde{A}^{(0)}_{t_{q-1},t_q}$.
+Summing over admissible $t$ gives
+$\widetilde{L}_{k j}=\sum_{t:\,t_k=j}\prod_{q=1}^k \widetilde{A}^{(0)}_{t_{q-1},t_q}$.
+
+\paragraph{Step 2: forward recursion.}
+Conditioning a $(k{+}1)$-segmentation of $y_{1:j}$ on its last boundary $h\in\{k,\dots,j-1\}$
+splits it into a $k$-segmentation of $y_{1:h}$ and the final block $(h,j]$; summing over $h$
+gives the forward recursion in \eqref{eq:LR}. The backward recursion follows by the same
+argument applied to suffixes.
+
+\paragraph{Step 3: posterior over $k$.}
+$P(y\mid k)=\widetilde{L}_{k n}/C_k$ by definition of $C_k$; Bayes' rule yields \eqref{eq:post-k}.
+
+\paragraph{Step 4: boundary posteriors.}
+Conditioning on $t_p=h$ splits the sequence into a $p$-segmentation of $y_{1:h}$ and a
+$(k{-}p)$-segmentation of $y_{h+1:n}$, contributing
+$\widetilde{L}_{p,h}\,\widetilde{R}_{k-p,h}$; normalizing by $\widetilde{L}_{k n}$ yields
+\eqref{eq:boundary-post}.
+
+\paragraph{Step 5: moments.}
+Theorem~\ref{thm:ef-integral} gives $A^{(r)}_{ij}=A^{(0)}_{ij}\,\mathbb{E}[m_\star(\theta)^r\mid(i,j]]$;
+the length factor $\gamma_x(i,j)$ cancels in the ratio, so \eqref{eq:segmom-seg} holds.
+Equation~\eqref{eq:segmom} follows by grouping segmentation contributions through the unique
+block $(i,j]$ that contains index $t$.
+\end{proof}
+
+\paragraph{Posterior-evidence sanity checks.}
+After every DP run, verify four invariants: normalized segment-count weights
+sum to one; the full-sequence forward and backward evidences agree, $\widetilde L_{kn}=\widetilde
+R_{k0}$; boundary-event marginals satisfy $\sum_{i=1}^{n-1}P(b_i=1\mid y,k)=k-1$; and the
+max-sum backtracking score equals the stored terminal max-sum value. In log-space arithmetic these
+checks are evaluated with a declared tolerance, typically a small multiple of machine epsilon times
+the number of accumulated summands. A failure of the first two checks is treated as a normalization
+or admissibility mismatch; a failure of the boundary-sum check indicates an indexing or support
+error; and a failure of the backtracking check indicates inconsistent tie-breaking or stale
+backpointers.
+
+\begin{theorem}[Time and space complexity]
+\label{thm:dp-complexity}
+Assume single-block evidences $A^{(0)}_{ij}$ are available for all $0\le i<j\le n$.
+Computing all forward and backward messages via \eqref{eq:LR} requires
+$\mathcal{O}(k_{\max}n^2)$ arithmetic operations. The triangular block-evidence matrix requires
+$\mathcal{O}(n^2)$ memory, while all forward and backward layers require
+$\mathcal{O}(k_{\max}n)$ memory. Max-sum values and backpointers each require
+$\mathcal{O}(k_{\max}n)$ additional memory. Boundary-event probabilities for every $k$ and candidate
+index require $\mathcal{O}(k_{\max}n)$ output storage. Ordered-boundary distributions for every
+triple $(k,p,h)$ require $\mathcal{O}(k_{\max}^2n)$ output storage, or $\mathcal{O}(kn)$ for one
+fixed segment count $k$. For $R$ requested reporting moments, retaining all block moment numerators
+requires $\mathcal{O}(Rn^2)$ memory and the final Bayes curves require $\mathcal{O}(Rn)$; explicitly
+retaining every block-cover contribution over all $k$ can require
+$\mathcal{O}(k_{\max}n^2)$ additional workspace but is not necessary when those contributions are
+accumulated sequentially.
+\end{theorem}
+
+\begin{proof}
+For each fixed $k$, the forward recursion computes $L_{k+1,j}$ for $j=1,\dots,n$, and each
+$L_{k+1,j}$ sums at most $j-k$ terms. Thus the forward work per $k$ is
+$\sum_{j=1}^n \mathcal{O}(j)=\mathcal{O}(n^2)$. The backward recursion is analogous. Repeating
+for $k=0,\dots,k_{\max}-1$ gives $\mathcal{O}(k_{\max}n^2)$ time. A message or backpointer array
+has one entry per $(k,j)$ state. Boundary-event output has one value per $(k,h)$, whereas the full
+ordered-boundary output has one value per $(k,p,h)$ and therefore
+$\sum_{k\le k_{\max}}\mathcal O(kn)=\mathcal O(k_{\max}^2n)$ entries. The remaining statements
+follow by counting the triangular block arrays, reporting-moment arrays, and optional block-cover
+workspace.
+\end{proof}
+
+\begin{corollary}[Decision rules for full-vector and coordinatewise losses]
+\label{cor:map-01}
+For the loss $\ell_{01}(t,t')=\mathbbm{1}\{t\neq t'\}$ on the full boundary vector, the Bayes
+estimator is the joint MAP segmentation $\widehat{t}^{\,\mathrm{MAP}}(k)$ from
+\eqref{eq:joint-map-k}. For a separable coordinatewise loss and an unconstrained Cartesian action
+space, each coordinate can instead be chosen by minimizing its marginal posterior risk; under
+coordinatewise 0--1 loss this gives the marginal modes. If the reported action must belong to the
+strictly ordered partition space $\mathcal T^+_{k,n}$, coordinatewise marginal modes can be
+inadmissible, and the Bayes action must minimize posterior expected loss over that constrained set.
+It can differ from both the coordinatewise marginal modes and the joint MAP partition.
+\end{corollary}
+
+\begin{proof}
+The posterior risk of $t'$ under full-vector 0--1 loss is $1-p(t=t'\mid y,k)$, so any joint
+posterior mode minimizes it. Under a separable loss on an unconstrained Cartesian action space, the
+posterior risk is a sum of coordinatewise risks, each minimized using the corresponding marginal
+posterior. Restricting the action to strictly ordered boundary vectors couples the coordinates, so
+independent coordinatewise minimization no longer solves the constrained decision problem.
+\end{proof}
+
+\begin{remark}[Memory/time trade-offs for large $n$]
+\label{rem:mem-time}
+Keeping only the current and previous $k$-layers reduces message memory to $\mathcal{O}(n)$, in
+addition to any stored block array, when only terminal fixed-$k$ evidences are required. Posterior
+marginals and MAP paths then require retained layers or a documented recomputation pass. Checkpoint
+spacing can trade retained layers against recomputation, but its exact cost depends on which
+summaries are requested and is therefore an implementation choice rather than a universal bound.
+When the $n^2$ block-evidence matrix is prohibitive and every segment score is available in constant
+time from prefix summaries, scores can instead be evaluated on demand during the DP sweep. This
+uses less block storage but performs up to $\mathcal{O}(k_{\max}n^2)$ segment evaluations because
+the same segment can be revisited at different DP layers.
+\end{remark}
+
+\begin{remark}[Evidence across segment counts need not be monotone]
+\label{prop:mono-k}
+The fixed-$k$ evidence $P(y\mid k)=\widetilde L_{kn}/C_k$ is not monotone in general. Adding a boundary changes both the set of admissible partitions and
+the product of block evidences, while the normalized conditional prior contributes the normalizer
+$C_k$. Consequently, diagnose segment-count behavior through the normalized evidences
+$P(y\mid k)$ and posterior weights $P(k\mid y)$ rather than through an unnormalized pathwise
+``add one boundary'' heuristic.
+\end{remark}
+
+\subsection{End-to-end BayesBreak inference routine}\label{sec:dp-alg}
+Collecting the ingredients from Sections~\ref{sec:ef} and \ref{sec:dp}---block-evidence precomputation,
+exact sum-product DP over partitions, and max-sum backtracking for exported segmentations---yields an
+end-to-end routine suitable for direct implementation. Algorithm~\ref{alg:bayesbreak} summarizes
+this workflow in a modular way: the only model-specific input is a function that evaluates (or
+approximates) block evidences $\log \mathcal{L}_{ij}$ and, when needed, block moment numerators.
+
+\begin{algorithm}[H]
+\caption{BayesBreak$(y,x,w,\texttt{model},\texttt{hyper},k_{\max},p(k),g)$}
+\label{alg:bayesbreak}
+\KwIn{
+  Observations $y_{1:n}$ at locations $x_{1:n}$ (optional); observation-model weights/exposures $w_{1:n}$ (default determined by the chosen likelihood, often $w_i\equiv 1$);\\
+  model family $\texttt{model}\in\{\texttt{Gaussian},\texttt{Poisson},\texttt{Binomial},\texttt{BetaObs},\dots\}$; \\
+  hyperparameters $\texttt{hyper}$; maximum segment count $k_{\max}$; prior $p(k)$; length factor $g(\cdot)$ (default $g\equiv 1$).
+}
+\KwOut{
+  Posterior $P(k\mid y)$; MAP segment count $\widehat{k}$; boundary marginals $P(t_p\mid y,\widehat{k})$;\\
+  exported joint MAP segmentation $\widehat{t}^{\,\mathrm{MAP}}$; segment-level moments; Bayes regression curve; (optional) evidence $P(y)$.
+}
+\BlankLine
+\textbf{1. Precompute block evidences and moments}\;
+\For{$0\le i<j\le n$}{
+  Compute block summaries $(S_{ij},W_{ij},H_{ij})$ using prefix sums (or running sums)\;
+  Call a family-specific routine to obtain $A^{(0)}_{ij},A^{(1)}_{ij},A^{(2)}_{ij}$\;
+  Set $\widetilde{A}^{(r)}_{ij}\leftarrow A^{(r)}_{ij}\,\gamma_x(i,j)$ for $r\in\{0,1,2\}$ (cf.\ \eqref{eq:Atilde})\;
+}
+Compute $C_k$ under the same admissibility and length-prior convention used in the score array; for $g\equiv1$, use $C_k=\binom{n-1}{k-1}$, and otherwise use \eqref{eq:Ck-general} (DP with $A^{(0)}_{ij}\equiv 1$)\;
+\BlankLine
+\textbf{2. Run the sum-product dynamic program}\;
+Compute $\widetilde{L}_{k j},\widetilde{R}_{k i}$ via \eqref{eq:LR} for $k=0,\dots,k_{\max}$ using $\widetilde{A}^{(0)}_{ij}$\;
+Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ via \eqref{eq:post-k}; set $\widehat{k}\leftarrow \arg\max_k P(k\mid y)$\;
+\BlankLine
+\textbf{3. Boundary marginals}\;
+\For{$p=1$ \KwTo $\widehat{k}-1$}{
+  For all $h\in\{p,\dots,n-(\widehat{k}-p)\}$, set
+  $P(t_p=h\mid y,\widehat{k})\leftarrow \widetilde{L}_{p,h}\widetilde{R}_{\widehat{k}-p,h}/\widetilde{L}_{\widehat{k}n}$ (cf.\ \eqref{eq:boundary-post})\;
+}
+\BlankLine
+\textbf{4. Export a joint MAP segmentation}\;
+Run the max-sum/backpointer recursion of Section~\ref{sec:algorithms} using $\log \widetilde{A}^{(0)}_{ij}$ and the chosen count $\widehat{k}$\;
+Backtrack to obtain $\widehat{t}^{\,\mathrm{MAP}}=(0=\widehat{t}^{\,\mathrm{MAP}}_0<\cdots<\widehat{t}^{\,\mathrm{MAP}}_{\widehat{k}}=n)$\;
+\BlankLine
+\textbf{5. Segment-level posterior moments on the exported segmentation}\;
+\For{$q=1$ \KwTo $\widehat{k}$}{
+  Let $(i,j]\leftarrow (\widehat{t}^{\,\mathrm{MAP}}_{q-1},\widehat{t}^{\,\mathrm{MAP}}_{q}]$\;
+  For $r\in\{1,2\}$ set $\widehat{\mu}^{(r)}_q \leftarrow \widetilde{A}^{(r)}_{ij}/\widetilde{A}^{(0)}_{ij}$ (cf.\ \eqref{eq:segmom-seg})\;
+}
+\BlankLine
+\textbf{6. Bayes regression curve within $\widehat{k}$}\;
+Using $\widetilde{L},\widetilde{R},\widetilde{A}^{(r)}$ and \eqref{eq:segmom}, compute $\widehat{\mu}'_i$ and $\mathbb{V}[\mu'_i\mid y,\widehat{k}]$ for $i=1,\dots,n$\;
+\BlankLine
+\textbf{7. Optional: pooling/groups}\;
+If multiple subjects or groups are present, pool block evidences (Theorem~\ref{thm:multisubject}) and/or run the finite latent-group template procedure of Chapter~\ref{ch:templates}, then repeat Steps 2--6.
+\end{algorithm}
+
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/workflows/semiring_inference_routes.tex}}
+\caption{Same local scores, different semirings. Sum-product produces marginal posterior quantities; max-sum produces one joint maximizing path.}
+\label{fig:semiring-routes}
+\end{figure}

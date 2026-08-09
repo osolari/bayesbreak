@@ -63,6 +63,18 @@ class _GroupState:
     log_score_offset: float  # log p(k_g) - log C_{k_g}
 
 
+@dataclass(frozen=True)
+class RestartDiagnostic:
+    """Terminal status for one latent-template optimization restart."""
+
+    restart: int
+    seed: int
+    status: str
+    final_objective: float | None
+    n_iterations: int
+    reason: str | None = None
+
+
 def _canonical_template_order(group_states: list[_GroupState]) -> list[int]:
     """Return a permutation of ``group_states`` that anchors the
     permutation indeterminacy of Proposition ``prop:latent-identifiability``.
@@ -183,7 +195,7 @@ def _midpoint_u(x_design: FloatArray, n: int) -> FloatArray:
     return np.concatenate(([u0], mids, [un])).astype(float)
 
 
-def _template_log_score(
+def template_log_score(
     log_A0_s: FloatArray, template: list[int], log_g: FloatArray | None
 ) -> float:
     """``Σ_q log Ã^{(0,s)}_{t_{q-1} t_q}`` along the boundary vector ``template``."""
@@ -197,6 +209,9 @@ def _template_log_score(
             return float("-inf")
         total += v
     return total
+
+
+_template_log_score = template_log_score
 
 
 class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
@@ -475,7 +490,23 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
             prev_obj = obj
             prev_templates = current_templates
 
-        return prev_obj, pi, r, group_states, objective, log_A0_subjects
+        if not objective:
+            raise RuntimeError("A restart produced no objective values")
+        return objective[-1], pi, r, group_states, objective, log_A0_subjects
+
+    def _objective_trace_failure(self, trace: Sequence[float]) -> str | None:
+        if not trace:
+            return "empty objective trace"
+        if not all(np.isfinite(value) for value in trace):
+            return "nonfinite objective trace"
+        for iteration, (previous, current) in enumerate(zip(trace, trace[1:], strict=False), 2):
+            tolerance = max(1e-10, self.tol * max(1.0, abs(previous)))
+            if current < previous - tolerance:
+                return (
+                    f"objective decreased at iteration {iteration}: "
+                    f"{current - previous:.12g} < -{tolerance:.12g}"
+                )
+        return None
 
     # ---- sklearn API --------------------------------------------------
 
@@ -495,6 +526,12 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
 
         if self.n_groups < 1:
             raise ValueError("n_groups must be >= 1.")
+        if self.max_iter < 1:
+            raise ValueError("max_iter must be >= 1.")
+        if self.n_restarts < 1:
+            raise ValueError("n_restarts must be >= 1.")
+        if self.tol < 0:
+            raise ValueError("tol must be nonnegative.")
         k_max = min(max(1, n), int(self.k_max))
 
         # Length prior, p(k), C_k.
@@ -514,7 +551,8 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
 
         rng_master = check_random_state(self.random_state)
         best = None
-        for restart in range(max(1, int(self.n_restarts))):
+        restart_diagnostics: list[RestartDiagnostic] = []
+        for restart in range(int(self.n_restarts)):
             seed = rng_master.randint(0, 2**31 - 1)
             rng = np.random.default_rng(seed)
             try:
@@ -522,14 +560,45 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
                     rng, ys, ws, n, k_max, log_g, log_C_k, log_p_k
                 )
             except Exception as exc:
+                restart_diagnostics.append(
+                    RestartDiagnostic(restart, int(seed), "failed", None, 0, str(exc))
+                )
                 if self.verbose:
                     print(f"[mixture] restart {restart} failed: {exc}")
                 continue
-            if best is None or obj_final > best[0]:
-                best = (obj_final, pi, r, gs, traj, lA0_subj, seed)
+            trace_failure = self._objective_trace_failure(traj)
+            if obj_final != traj[-1]:
+                trace_failure = (
+                    f"returned objective {obj_final:.12g} differs from "
+                    f"final trace value {traj[-1]:.12g}"
+                )
+            if trace_failure is not None:
+                restart_diagnostics.append(
+                    RestartDiagnostic(
+                        restart,
+                        int(seed),
+                        "invalid",
+                        float(traj[-1]),
+                        len(traj),
+                        trace_failure,
+                    )
+                )
+                continue
+            restart_diagnostics.append(
+                RestartDiagnostic(
+                    restart,
+                    int(seed),
+                    "valid",
+                    float(obj_final),
+                    len(traj),
+                )
+            )
+            if best is None or obj_final > best[0] + 1e-12:
+                best = (obj_final, pi, r, gs, traj, lA0_subj, seed, restart)
         if best is None:
-            raise RuntimeError("All EM restarts failed.")
-        _, pi, r, group_states, traj, lA0_subj, seed = best
+            self.restart_diagnostics_ = restart_diagnostics
+            raise RuntimeError("No valid EM restarts.")
+        final_objective, pi, r, group_states, traj, lA0_subj, seed, selected_restart = best
 
         # Anchor the label-permutation indeterminacy of
         # ``prop:latent-identifiability`` deterministically (§5b
@@ -547,6 +616,10 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         self.responsibilities_ = r
         self.group_states_ = group_states
         self.objective_ = traj
+        self.objective_trace_ = traj
+        self.final_objective_ = float(final_objective)
+        self.selected_restart_ = int(selected_restart)
+        self.restart_diagnostics_ = restart_diagnostics
         self.n_ = n
         self.n_seq_ = S
         self.boundary_coordinates_ = u

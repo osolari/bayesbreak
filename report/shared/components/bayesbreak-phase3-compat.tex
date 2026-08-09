@@ -1,0 +1,56 @@
+% Phase-3 compatibility vocabulary. Deliberately omits definitions already
+% owned by shared/components/bayesbreak.tex.
+\providecommand{\ProofStep}[1]{\par\smallskip\noindent\textbf{#1}\quad}
+\providecommand{\1}{\mathbbm{1}}
+\providecommand{\eps}{\varepsilon}
+\providecommand{\figref}[1]{figure~\ref{#1}}
+\providecommand{\Figref}[1]{Figure~\ref{#1}}
+\providecommand{\secref}[1]{section~\ref{#1}}
+\providecommand{\Secref}[1]{Section~\ref{#1}}
+\providecommand{\algref}[1]{algorithm~\ref{#1}}
+\providecommand{\Algref}[1]{Algorithm~\ref{#1}}
+\providecommand{\Eqref}[1]{Equation~\ref{#1}}
+\providecommand{\ceil}[1]{\lceil #1\rceil}
+\providecommand{\floor}[1]{\lfloor #1\rfloor}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{targettheorem}[theorem]{Target theorem}
+\newtheorem{proofobligation}[theorem]{Proof obligation}
+
+\providecommand{\EstablishedTag}{\SAIMEvidenceTag{Positive}{PositivePale}{Established}}
+\providecommand{\ExactDerivedTag}{\SAIMEvidenceTag{Secondary}{SecondaryPale}{Exact derivation}}
+\providecommand{\RealResultTag}{\SAIMEvidenceTag{Positive}{PositivePale}{Real result}}
+\providecommand{\PartialTag}{\SAIMEvidenceTag{Warning}{WarningPale}{Partial}}
+\providecommand{\TargetTag}{\SAIMEvidenceTag{RuleDark}{LightPanel}{Target}}
+\providecommand{\ExcludedTag}{\SAIMEvidenceTag{PrimaryDark}{PrimaryWash}{Excluded}}
+\providecommand{\ConditionalTag}{\SAIMEvidenceTag{Warning}{WarningPale}{Conditional}}
+\providecommand{\ExternalVerifiedTag}{\SAIMEvidenceTag{Secondary}{SecondaryPale}{Verified external}}
+
+\newtcolorbox{statusbox}[1][Result status]{
+ enhanced,breakable,colback=PrimaryWash,colframe=Primary,boxrule=0.6pt,arc=2pt,
+ left=10pt,right=10pt,top=8pt,bottom=8pt,before skip=9pt,after skip=10pt,
+ title={\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{PrimaryDark}\MakeUppercase{#1}},
+ attach title to upper={\par\vspace{5pt}}}
+\providecommand{\taskid}[1]{\texttt{#1}}
+\providecommand{\Real}{\mathbb{R}}
+\providecommand{\bbone}{\mathbbm{1}}
+\providecommand{\NA}{\textsc{na}}
+\providecommand{\pluseq}{\mathrel{+}=}
+\providecommand{\code}[1]{\texttt{#1}}
+\newenvironment{takeawaybox}{\begin{keyidea}}{\end{keyidea}}
+
+% tikz-bayesnet 0.1 terminates \foreach blocks with standalone semicolon
+% tokens, which pdfTeX reports as missing characters in nullfont. These
+% equivalent local definitions retain the drawing paths but remove those
+% non-drawing tokens so clean builds have no false missing-glyph warnings.
+\renewcommand{\edge}[3][]{%
+  \foreach \x in {#2}{%
+    \foreach \y in {#3}{%
+      \draw[->,#1] (\x) -- (\y);%
+    }%
+  }%
+}
+\renewcommand{\plate}[4][]{%
+  \node[wrap=#3] (#2-wrap) {};%
+  \node[plate caption=#2-wrap] (#2-caption) {#4};%
+  \node[plate=(#2-wrap)(#2-caption),#1] (#2) {};%
+}

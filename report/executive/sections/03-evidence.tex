@@ -1,0 +1,85 @@
+\section{Established results and executed evidence}
+\label{sec:exec-evidence}
+
+The current scientific status separates mathematical results, executed empirical results, implementation diagnostics, and work that remains planned. No result is strengthened merely because it appears in an executive summary.
+
+\subsection{Mathematical status}
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.96\textwidth}{@{}p{0.25\textwidth}p{0.22\textwidth}X@{}}
+\toprule
+\textbf{Statement} & \textbf{Current status} & \textbf{Interpretation} \\
+\midrule
+Conjugate exponential-family segment marginal likelihoods & Exactly derived under the stated regularity, propriety, and moment conditions & Supplies exact family-specific segment calculations from cumulative sufficient statistics. \\
+Sum-product partition recursion & Established & Computes fixed-count marginal likelihoods, segment-count posterior probabilities, changepoint marginals, and posterior signal moments. \\
+Max-sum recursion with backtracking & Established & Returns the joint MAP partition; it is not replaced by marginal changepoint modes. \\
+Shared-boundary pooling & Established for aligned, conditionally independent sequences with a common partition & Subject-specific segment marginal likelihoods multiply before partition inference. \\
+Finite-candidate shared-boundary concentration & Established under a positive average expected log-score gap and law-of-large-numbers conditions & Does not follow from one informative sequence as the number of sequences grows. \\
+Nonconjugate error propagation & Conditional theorem & A uniform reachable-segment log-score error yields explicit bounds on partition marginal likelihoods and posterior odds. \\
+Routine-specific nonconjugate rates & Proof obligation & No rate claim is used without method-specific assumptions and a complete proof. \\
+\bottomrule
+\end{tabularx}
+\caption{Status of the main mathematical statements.}
+\label{tab:exec-theory-status}
+\end{table}
+
+\subsection{Selected executed simulation results}
+
+\begin{resultbox}[Real executed numerical results]
+In the archived studies, the repeated Gaussian boundary-calibration experiment produced ECE approximately $0.010$ and Brier score approximately $0.011$. A two-group latent-allocation experiment produced $96\%$ hard assignment accuracy at $\sigma=1.0$ with 24 sequences. The $k_{\max}=20$ timing study increased from $0.0455$ seconds at $n=50$ to $1.0585$ seconds at $n=800$. These are results for their stated designs, not universal performance guarantees.
+\end{resultbox}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig2_family_showcase.pdf}
+    \caption*{(a) Executed examples for several observation families.}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig3_boundary_calibration.pdf}
+    \caption*{(b) Boundary-posterior calibration in the archived Gaussian design.}
+  \end{minipage}
+  \caption{Examples of observation-family portability and posterior calibration. The partition recursion is shared; each panel retains the sampling model and prior appropriate to its observation family.}
+  \label{fig:exec-family-calibration}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig4_latent_groups_cropped.pdf}
+    \caption*{(a) Finite latent-group simulation.}
+  \end{minipage}\hfill
+  \begin{minipage}[t]{0.48\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{fig5_runtime_scaling.pdf}
+    \caption*{(b) Finite-range timing study.}
+  \end{minipage}
+  \caption{Executed latent-allocation and timing results. The timing slopes observed over $n=50,\ldots,800$ are empirical summaries over that range and do not replace the worst-case $\mathcal O(k_{\max}n^2)$ complexity statement.}
+  \label{fig:exec-latent-runtime}
+\end{figure}
+
+\subsection{Applied studies}
+
+Four archived applications illustrate well-log, array-CGH, equity-volatility, and methylation analyses. They show that the implementation can fit heterogeneous ordered datasets using the corresponding segment models and hierarchical structures. They are descriptive case studies because independent reference changepoints are unavailable. Fitted vertical markers are MAP changepoints, not externally established geological, genomic, or macroeconomic events.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabularx}{0.96\textwidth}{@{}p{0.18\textwidth}p{0.20\textwidth}p{0.23\textwidth}X@{}}
+\toprule
+\textbf{Application} & \textbf{Executed model} & \textbf{Selected archived output} & \textbf{Permitted interpretation} \\
+\midrule
+Well-log & Gaussian segmentation with two prior specifications & $\widehat{k}=23$ and $25$; corresponding log marginal likelihoods $-4989.2835$ and $-4997.1478$ & Descriptive segmentation and prior sensitivity; no external-boundary accuracy claim. \\
+Array-CGH & Shared-boundary fit to 43 aligned sequences of length 2,215 & $\widehat{k}=15$; pooled log marginal likelihood $76359.7996$ & Descriptive common-partition fit; not a Bayes factor against the separately factorized independent analysis. \\
+SPX & Gaussian volatility response and Bernoulli threshold-incidence response & $\widehat{k}=29$ and $50$; log marginal likelihoods $-1296.6537$ and $-114.4100$ & Two different response models; contextual event alignment only. \\
+Methylation & Beta-valued segmentation on the methylKit chromosome-21 example & $\widehat{k}=15$; log marginal likelihood $-9518.6675$; $n=1904$ & Descriptive segmentation; corrected family-specific prediction remains to be run. \\
+\bottomrule
+\end{tabularx}
+\caption{Selected real executed outputs and their interpretation limits. Values are rounded here for readability; archived records remain unchanged.}
+\label{tab:exec-real-data}
+\end{table}

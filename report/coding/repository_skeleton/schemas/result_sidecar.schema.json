@@ -1,0 +1,54 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/bayesbreak/result_sidecar.schema.json",
+  "title": "BayesBreak result record blueprint",
+  "type": "object",
+  "additionalProperties": true,
+  "required": [
+    "result_id",
+    "execution_status",
+    "scientific_interpretation",
+    "data_hash",
+    "config_hash",
+    "code_hash",
+    "environment_hash",
+    "metrics",
+    "artifacts"
+  ],
+  "properties": {
+    "result_id": {
+      "type": "string",
+      "pattern": "^RES-BB-"
+    },
+    "parent_result_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "execution_status": {
+      "type": "string"
+    },
+    "scientific_interpretation": {
+      "type": "string"
+    },
+    "data_hash": {
+      "type": "string"
+    },
+    "config_hash": {
+      "type": "string"
+    },
+    "code_hash": {
+      "type": "string"
+    },
+    "environment_hash": {
+      "type": "string"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "artifacts": {
+      "type": "object"
+    }
+  }
+}

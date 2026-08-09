@@ -11,8 +11,8 @@ For each of welllog / cgh / spx / methylation:
 
 Output:
 
-    docs/report/figures/baselines_metrics.json
-    docs/report/figures/baselines_metrics.txt
+    results/figures/baselines_metrics.json
+    results/figures/baselines_metrics.txt
 
 Each row records algorithm, package + version, k_hat (= len(boundaries)+1),
 the interior boundaries, runtime, and the Jaccard / boundary-MAE
@@ -37,6 +37,12 @@ sys.path.insert(0, str(ROOT / "src"))
 import numpy as np  # noqa: E402
 
 from bayesbreak.baselines import segment_with  # noqa: E402
+from bayesbreak.comparators import (  # noqa: E402
+    ComparatorInputSchema,
+    ComparatorValidationError,
+    TuningBudget,
+)
+from bayesbreak.metrics import boundary_metrics  # noqa: E402
 
 FITCACHE = ROOT / ".cache" / "fitcache"
 OUT = ROOT / "docs" / "report" / "figures"
@@ -56,10 +62,6 @@ def _signal_and_truth(name: str) -> tuple[np.ndarray | None, list[int] | None]:
     if fit is None:
         return None, None
     if name == "fig7_cgh":
-        # The CGH cache holds a dict with a SharedBoundaryReplicatesSegmenter
-        # under "rep" and per_subj_logE. The replicates segmenter does NOT
-        # retain _y_train_; we use the per-probe mean across subjects as a
-        # 1-D baseline driver.
         if isinstance(fit, dict):
             rep = fit.get("rep")
         else:
@@ -75,11 +77,23 @@ def _signal_and_truth(name: str) -> tuple[np.ndarray | None, list[int] | None]:
         n = int(getattr(rep, "n_", 0))
         if n == 0:
             return None, None
-        # No raw y available; return synthetic from the segment-mean curve.
-        # This is the best reproducible signal we have without re-downloading.
         y = np.asarray(getattr(rep, "map_curve_", np.zeros(n)), dtype=float)
-        truth = [int(b) for b in rep.map_boundaries_[1:-1]]
-        return y, truth
+        ComparatorInputSchema(
+            values=y,
+            coordinate_axis=np.arange(n, dtype=float),
+            task_type="multisequence",
+            tuning_budget=TuningBudget(
+                parameter_evaluations=0,
+                selection_rule="historical cached route; no valid selection",
+                data_access="cached fitted output only",
+                tuning_stratum="invalid-cached-map-curve",
+            ),
+            metadata={
+                "source_kind": "cached-map-curve",
+                "result_id": "RES-BB-CMP-002",
+            },
+        )
+        raise AssertionError("cached CGH map curve unexpectedly passed schema validation")
     y = getattr(fit, "_y_train_", None)
     if y is None:
         return None, None
@@ -95,41 +109,21 @@ def _jaccard(a: list[int], b: list[int]) -> float:
     return len(sa & sb) / len(union)
 
 
-def _boundary_mae(pred: list[int], truth: list[int]) -> float | None:
-    """Asymmetric matched MAE: for each truth boundary, distance to the
-    nearest predicted boundary (in index units). Returns None when one
-    side is empty."""
-    if not pred or not truth:
-        return None
-    pred_arr = np.asarray(sorted(pred), dtype=int)
-    diffs = [int(np.min(np.abs(pred_arr - t))) for t in truth]
-    return float(np.mean(diffs))
+def _boundary_mae(pred: list[int], truth: list[int], tol: int = 3) -> float | None:
+    """Canonical one-to-one matched MAE at ``tol`` index units."""
+
+    return boundary_metrics(
+        pred,
+        truth,
+        tol,
+        "bayesbreak-map-agreement",
+    ).matched_mae
 
 
 def _boundary_f1(pred: list[int], truth: list[int], tol: int = 3) -> float | None:
-    """F1 over the matching {predicted boundary, truth boundary} pairs at
-    tolerance `tol` indices."""
-    if not pred and not truth:
-        return 1.0
-    if not pred or not truth:
-        return 0.0
-    sp = sorted(int(x) for x in pred)
-    st = sorted(int(x) for x in truth)
-    matched = 0
-    used = [False] * len(sp)
-    for t in st:
-        for i, p in enumerate(sp):
-            if used[i]:
-                continue
-            if abs(p - t) <= tol:
-                used[i] = True
-                matched += 1
-                break
-    precision = matched / max(1, len(sp))
-    recall = matched / max(1, len(st))
-    if precision + recall == 0:
-        return 0.0
-    return 2 * precision * recall / (precision + recall)
+    """Canonical one-to-one F1 at ``tol`` index units."""
+
+    return boundary_metrics(pred, truth, tol, "bayesbreak-map-agreement").f1
 
 
 def _try_run(algo: str, y: np.ndarray, **kwargs: Any) -> dict[str, Any] | None:
@@ -154,7 +148,16 @@ def _try_run(algo: str, y: np.ndarray, **kwargs: Any) -> dict[str, Any] | None:
 
 
 def run_on(name: str, dataset_label: str) -> dict[str, Any]:
-    y, bb_boundaries = _signal_and_truth(name)
+    try:
+        y, bb_boundaries = _signal_and_truth(name)
+    except ComparatorValidationError as exc:
+        return {
+            "dataset": dataset_label,
+            "execution_status": "rejected-before-comparator",
+            "failure_id": exc.failure_id,
+            "scientific_interpretation": "diagnostic-only",
+            "error": str(exc),
+        }
     if y is None:
         return {"dataset": dataset_label, "skipped": f"no cached fit at {name}"}
 
@@ -200,10 +203,17 @@ def run_on(name: str, dataset_label: str) -> dict[str, Any]:
             enriched.append(r)
             continue
         r["jaccard_vs_bayesbreak"] = _jaccard(r["boundaries"], bb_boundaries or [])
-        r["boundary_mae_vs_bayesbreak"] = _boundary_mae(r["boundaries"], bb_boundaries or [])
-        r["boundary_f1_vs_bayesbreak_tau3"] = _boundary_f1(
-            r["boundaries"], bb_boundaries or [], tol=3
+        metric = boundary_metrics(
+            r["boundaries"],
+            bb_boundaries or [],
+            3,
+            "bayesbreak-map-agreement",
         )
+        r["boundary_mae_vs_bayesbreak"] = metric.matched_mae
+        r["boundary_f1_vs_bayesbreak_tau3"] = metric.f1
+        r["boundary_metric_version"] = metric.metric_version
+        r["boundary_matching_rule"] = metric.matching_rule
+        r["boundary_reference_type"] = metric.reference_type
         enriched.append(r)
 
     return {

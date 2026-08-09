@@ -1,0 +1,42 @@
+% SAIM Computer Modern Sans typography system - single source of truth.
+% The system uses CMSS (regular), CMSSBX (bold), CMSSI (slanted), CMTT
+% (monospaced), and the standard Computer Modern mathematics family. To
+% prevent silent font drift, every target intentionally compiles with pdfLaTeX.
+\RequirePackage{iftex}
+\ifPDFTeX\else
+  \PackageError{saim-typography}
+    {The reference typography requires pdfLaTeX}
+    {Select pdfLaTeX so the project uses the exact Computer Modern Sans and Computer Modern Math fonts.}
+\fi
+
+% Keep native OT1 Computer Modern encoding. pdfLaTeX
+% embeds the Type 1 Computer Modern fonts supplied by the TeX distribution;
+% no uploaded font files are required.
+\RequirePackage[utf8]{inputenc}
+\RequirePackage{fix-cm}
+\RequirePackage[protrusion=true,expansion=true]{microtype}
+\RequirePackage{setspace}
+
+% CMSS is the dominant voice everywhere. Existing \rmfamily calls are mapped
+% to CMSS as well, so paper, lecture notes, book, slides, captions, tables,
+% diagrams, and running furniture remain typographically unified.
+\renewcommand{\rmdefault}{cmss}
+\renewcommand{\sfdefault}{cmss}
+\renewcommand{\ttdefault}{cmtt}
+\renewcommand{\familydefault}{\sfdefault}
+\renewcommand{\itdefault}{sl}
+
+% Semantic font roles.
+\providecommand{\SAIMBodyFont}{\sffamily}
+\providecommand{\SAIMHeadingFont}{\sffamily\bfseries}
+\providecommand{\SAIMCoverTitleFont}{\sffamily\bfseries}
+\providecommand{\SAIMCoverSubtitleFont}{\sffamily}
+\providecommand{\SAIMNavigationFont}{\sffamily\bfseries}
+\providecommand{\SAIMMetaFont}{\sffamily}
+\providecommand{\SAIMCodeFont}{\ttfamily}
+
+% Compatibility aliases used by the front-matter implementations.
+\providecommand{\SAIMFrontFont}{\sffamily}
+\providecommand{\SAIMFrontTitleFont}{\SAIMCoverTitleFont}
+\providecommand{\SAIMFrontMetaFont}{\SAIMMetaFont}
+\providecommand{\SAIMFrontRagged}{\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000}

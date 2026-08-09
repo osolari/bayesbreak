@@ -1,0 +1,131 @@
+\chapter[Orientation and scope]{Generalized hierarchical Bayesian segmentation: problem, outputs, and scope}
+\label{ch:orientation}
+\chapterpromise{The research problem, the meaning of generality and hierarchy, the returned posterior quantities, and the conditions for exact computation.}
+
+\begin{objectives}
+\begin{itemize}
+\item State the generalized hierarchical Bayesian segmentation problem and its principal outputs.
+\item Explain why the partition recursions are common across observation models once segment marginal likelihoods are available.
+\item Identify the roles of irregular designs, multiple sequences, known groups, and latent groups.
+\item Distinguish exact conjugate calculations from explicitly approximate nonconjugate calculations.
+\end{itemize}
+\end{objectives}
+
+Multiple-changepoint analysis partitions an ordered set of observations into contiguous segments
+within which a statistical parameter is constant or follows a specified segment model. Given
+responses $y_1,\ldots,y_n$ observed at ordered coordinates $u_1<\cdots<u_n$, the inferential
+questions include the number of segments, the changepoint locations, the segment-specific
+parameters, and uncertainty in all of these quantities. Bayesian formulations place a prior on the
+partition and segment parameters and therefore yield posterior probabilities for competing
+segmentations rather than only a single penalized estimate \citep{barry1992ppm,barry1993bayesCP,
+fearnhead2006exact,hutter2006bpcr}.
+
+The central statistical structure is a product-partition model. Conditional on a partition,
+observations in different segments are independent after segment parameters are introduced. When a
+segment parameter can be integrated out, each candidate segment $(i,j]$ contributes a segment
+marginal likelihood. A prior that factorizes over segments or transitions then permits exact finite
+summation over all admissible ordered partitions by dynamic programming. This yields marginal
+likelihoods, posterior distributions for the segment count, ordered-changepoint marginals,
+changepoint-event probabilities, and posterior moments of segment functionals
+\citep{barry1992ppm,fearnhead2006exact,hutter2006bpcr}.
+
+\BayesBreak develops this calculation as a generalized hierarchical Bayesian segmentation method.
+The term \emph{generalized} refers to the following mathematical property: the recursion over
+partitions does not depend on the particular observation family once the required segment marginal
+likelihoods and posterior moments have been computed. For a regular exponential family with a
+proper conjugate prior and finite normalizing constants, these segment quantities are available by
+exact integration from sufficient statistics. Gaussian observations with an unknown segment mean,
+Poisson counts with exposure, and Binomial observations with known trial counts are examples. A
+nonconjugate segment model may use numerical integration or another stated approximation, but exact
+partition summation for an approximate score array is not the same as exact Bayesian inference for
+the intended observation model.
+
+The term \emph{hierarchical} refers to probability models that couple sequences or groups through
+shared partition structure or group-level parameters. The book treats: (i) a single ordered
+sequence; (ii) irregularly spaced observations through design-dependent segment cohesion and
+boundary hazards; (iii) multiple aligned sequences with common changepoints and conditionally
+independent segment likelihoods; (iv) known groups of sequences; and (v) a finite latent-group
+criterion in which sequences are assigned to candidate changepoint templates. The first four are
+Bayesian models with explicit joint distributions under their stated assumptions. The finite
+latent-group extension is presented according to its actual optimization criterion and is not
+relabelled as a normalized mixture likelihood.
+
+\paragraph{Principal contributions.}
+\begin{itemize}
+\item \textbf{Exponential-family segment integration.} A common notation separates sufficient
+statistics, exposure or trial descriptors, and optional likelihood powers. Proper conjugate priors
+give exact segment marginal likelihoods and posterior moments through ratios of normalizing
+constants.
+
+\item \textbf{Posterior computation over ordered partitions.} Forward and backward sum-product
+recursions compute fixed-count marginal likelihoods, $p(k\mid y)$, ordered-changepoint marginals,
+changepoint-event probabilities, and model-averaged segment functionals. A distinct max-sum
+recursion with backtracking computes the joint MAP partition.
+
+\item \textbf{Irregular-design priors.} Segment cohesion and interior-boundary hazard are separated
+mathematically. This permits priors based on physical segment length or local design spacing without
+confusing design geometry with exposure in the observation likelihood.
+
+\item \textbf{Multiple-sequence hierarchies.} For aligned conditionally independent sequences with
+a common partition, sequence-specific segment marginal likelihoods multiply. Known groups use the
+same calculation within each group. A finite-candidate consistency result states conditions under
+which the posterior concentrates on the common partition as the number of informative sequences
+increases.
+
+\item \textbf{Grouped and latent-group segmentation.} Known group memberships lead to groupwise
+shared-changepoint posteriors. For unknown memberships, a finite latent-group objective alternates
+auxiliary allocation weights with exact responsibility-weighted max-sum updates of the group
+templates; monotonicity follows from a Jensen minorization argument.
+
+\item \textbf{Numerical segment integration and prediction.} For nonconjugate observation models,
+the effect of a uniform segmentwise log marginal-likelihood error is propagated through the
+partition sums. Posterior prediction is defined by the fitted observation family and coordinate
+support, and changepoint metrics use one-to-one matching.
+\end{itemize}
+
+\section{Research question and returned quantities}
+The research question is whether one generalized Bayesian formulation can combine
+observation-model-specific segment integration with posterior computation over contiguous
+partitions while retaining irregular-design and hierarchical multiple-sequence structure. For a
+sequence $y$, the principal returned quantities are
+\[
+\left\{p(y\mid k),\ p(k\mid y),\ p(t_p=h\mid y,k),\
+p(b_h=1\mid y),\ \mathbb E[m(\theta_s)\mid y],\
+\widehat t^{\mathrm{MAP}}(k)\right\}.
+\]
+These quantities have different meanings. In particular, a marginal mode of each changepoint
+coordinate need not form the joint MAP partition, and a posterior mean curve is not a selected
+piecewise-constant partition.
+
+\begin{keyidea}
+The observation model determines the segment marginal likelihoods and posterior moments. The
+partition model determines how these quantities are summed over ordered segmentations. Generality
+comes from separating these two mathematical calculations while keeping their probability models
+explicit.
+\end{keyidea}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/workflows/segment_to_partition.tex}}
+\caption{Observation-model calculations and inference over ordered partitions. Sum-product and
+max-sum recursions use the same prior-adjusted segment scores but return different posterior or
+optimization quantities.}
+\label{fig:block-to-global}
+\end{figure}
+
+\section{Conditions and exclusions}
+The exact results concern offline segmentation on a finite ordered candidate set with a prior and
+likelihood that factor into segment or transition contributions. The method is not an online
+run-length filter, a general nonparametric detector, or a proof that arbitrary dependence can be
+represented without enlarging the state space. Exact Bayesian inference requires exact segment
+marginal likelihoods. When these quantities are approximated, the resulting partition calculation
+is exact only for the supplied approximate array; comparison with the intended posterior requires
+additional numerical error analysis.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/theory/result_status_map.tex}}
+\caption{Distinction among exact calculations, numerical approximations, executed empirical
+results, planned validation, and executed results excluded from an incompatible interpretation.}
+\label{fig:evidence-status}
+\end{figure}

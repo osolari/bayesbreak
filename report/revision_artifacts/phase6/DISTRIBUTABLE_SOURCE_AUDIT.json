@@ -1,0 +1,24 @@
+{
+  "phase": "6",
+  "status": "pass",
+  "passed": true,
+  "scope": "Distributable source is created from the unified project while excluding build/, caches, Python bytecode, operating-system metadata, and font files.",
+  "excluded_build_products": true,
+  "cache_artifacts_present": [],
+  "font_files_present": [],
+  "latex_build_products_outside_build_present": [],
+  "exclusion_rules": [
+    "build/",
+    "**/__pycache__/**",
+    "**/.pytest_cache/**",
+    "**/*.pyc",
+    ".DS_Store",
+    "__MACOSX/",
+    "*.ttf",
+    "*.otf",
+    "*.woff",
+    "*.woff2",
+    "*.pfb",
+    "*.afm"
+  ]
+}

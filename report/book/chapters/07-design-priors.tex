@@ -1,0 +1,92 @@
+\chapter[Ordered partition priors]{Ordered priors: segment cohesion\\ and boundary hazard}
+\label{ch:priors}
+\chapterpromise{Irregular designs enter through explicitly separated local factors, retaining exact dynamic programming without a false Poisson-process equivalence.}
+
+\section{Two distinct geometric beliefs}
+\label{sec:irregular}
+A segment cohesion $c_x(i,j)$ scores the span of a complete block. An interior-boundary hazard
+$h_x(j)$ scores the candidate split at $j$. They answer different questions and cannot be justified
+by the same Poisson-process argument unless the model explicitly contains both factors.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/models/cohesion_boundary_hazard.tex}}
+\caption{Segment cohesion labels complete intervals, whereas a boundary hazard labels interior endpoints only. Both remain local and compatible with dynamic programming.}
+\label{fig:cohesion-hazard}
+\end{figure}
+
+\begin{theorem}[Local prior factors preserve exact partition DP]
+\label{thm:prior-local-dp}
+Under Assumption~\ref{ass:factorizing-prior}, replace every block evidence by
+$\widetilde A^{(r)}_{ij}=A^{(r)}_{ij}\gamma_x(i,j)$, where
+$\gamma_x(i,j)=c_x(i,j)h_x(j)^{\mathbf1\{j<n\}}$. The forward and backward recursions then sum
+exactly the unnormalized joint weights $p(y,t\mid k,x)$, and division by $C_k(x)$ yields the
+proper fixed-$k$ evidence.
+\end{theorem}
+\begin{proof}
+For any ordered partition $t$, multiplication of its local factors gives
+\[
+ \prod_{q=1}^k A^{(0)}_{t_{q-1},t_q}\gamma_x(t_{q-1},t_q)
+ =\left\{\prod_q A^{(0)}_{t_{q-1},t_q}\right\}
+  \left\{\prod_q c_x(t_{q-1},t_q)\right\}
+  \left\{\prod_{q<k}h_x(t_q)\right\}.
+\]
+The terminal indicator removes $h_x(n)$. This is precisely the likelihood times the unnormalized
+prior in Equation~\eqref{eq:partition-prior-factor}. The ordinary partition recursion enumerates
+every admissible path once, so it returns their sum. Dividing by the prior normalizer completes the
+claim.
+\end{proof}
+
+\begin{proposition}[Fixed-count interval occupancy from a Poisson boundary process]
+\label{prop:pp-index-uniform}
+Let potential interior boundaries arise from an inhomogeneous Poisson process of intensity
+$\lambda(u)$ over disjoint physical coordinate intervals $(u_{j-1},u_j]$, and let
+$\Lambda_j=\int_{u_{j-1}}^{u_j}\lambda(v)\,dv$. If the process is reduced to the occupancy
+indicators of these intervals and one conditions on exactly $m$ distinct occupied candidate
+intervals, then a subset $B$ with $|B|=m$ has probability proportional to
+\[
+ \prod_{j\in B}\frac{1-e^{-\Lambda_j}}{e^{-\Lambda_j}}
+ =\prod_{j\in B}\bigl(e^{\Lambda_j}-1\bigr).
+\]
+Thus the compatible fixed-count local boundary factor is
+$h_x(j)\propto e^{\Lambda_j}-1$. For constant intensity and equal-width intervals this factor is
+constant, so the induced fixed-count boundary prior is index-uniform when $c_x\equiv1$.
+\end{proposition}
+\begin{proof}
+Counts in disjoint Poisson-process intervals are independent. Their occupancy indicators are
+therefore independent Bernoulli variables with $p_j=1-e^{-\Lambda_j}$. For a subset $B$ of
+occupied intervals,
+\[
+ \Pr(B)=\prod_{j\in B}p_j\prod_{j\notin B}(1-p_j)
+ =\left\{\prod_j(1-p_j)\right\}\prod_{j\in B}\frac{p_j}{1-p_j}.
+\]
+After conditioning on $|B|=m$, the first factor is common to all subsets and the local odds are
+$p_j/(1-p_j)=e^{\Lambda_j}-1$. Equal integrated intensities give equal odds and hence a uniform
+prior over subsets of the fixed size.
+\end{proof}
+
+\begin{remark}[What the proposition does not imply]
+The proposition weights candidate boundary intervals after conditioning on their number. Without that conditioning, both occupied and unoccupied Bernoulli factors remain in the probability. It does not imply that multiplying each
+segment likelihood by its physical length is a Poisson boundary-process prior. A length cohesion
+$c_x(i,j)=g(u_j-u_i)$ is a separate modeling choice.
+\end{remark}
+
+\begin{proposition}[Coarse-to-fine likelihood consistency for inherited partitions]
+\label{thm:refine}
+Suppose a fine grid refines a coarse grid without changing observations or the physical contents of
+any inherited coarse block, and the block model's sufficient summaries are additive. Then the
+likelihood block evidence $A^{(r)}_{ij}$ for every inherited block is the same whether computed on
+the coarse representation or by aggregating the fine representation. Prior invariance additionally
+requires the chosen $c_x$ and $h_x$ to assign the same factors to inherited boundaries.
+\end{proposition}
+\begin{proof}
+Additivity makes $S_{ij}$, $W_{ij}$, and $H_{ij}$ identical for an inherited physical block, so the
+block integral and moments are identical. The prior statement follows only if its local factors are
+also representation invariant; it is logically separate from likelihood equality.
+\end{proof}
+
+\section{Recommended configurations}
+Use $c_x=h_x=1$ for a truly index-uniform fixed-count prior. Use $c_x(i,j)=g(u_j-u_i)$ when the
+scientific belief concerns segment duration. Use $h_x(j)$ when external geometry or intensity
+changes the prior plausibility of a boundary at candidate location $j$. Combined models are valid,
+but sensitivity to both components must be reported.

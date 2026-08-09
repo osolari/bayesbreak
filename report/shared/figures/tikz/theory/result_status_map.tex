@@ -1,0 +1,14 @@
+\begin{tikzpicture}[node distance=8mm and 10mm]
+\node[successbox,text width=29mm] (exact) {Exact conjugate segment marginal likelihoods};
+\node[secondarybox,below=of exact,text width=29mm] (approx) {Numerically approximated segment marginal likelihoods};
+\node[primarybox,right=of exact,yshift=-8mm,text width=30mm] (dp) {Posterior and MAP calculations over ordered partitions};
+\node[successbox,right=of dp,yshift=13mm,text width=28mm] (real) {Executed results with valid interpretation};
+\node[neutralbox,right=of dp,yshift=-13mm,text width=28mm] (planned) {Planned validation studies};
+\node[draw=Warning,fill=WarningPale,rounded corners,right=of dp,text width=30mm,align=center,minimum height=10mm] (excluded) {Executed results excluded from a stated analysis};
+\draw[arrPrimary] (exact)--(dp);
+\draw[arrSecondary,dashed] (approx)--node[above,sloped,font=\scriptsize]{with stated numerical assumptions}(dp);
+\draw[arrPrimary] (dp)--(real);
+\draw[arr,dashed] (dp)--(planned);
+\draw[arr,draw=Warning] (dp)--(excluded);
+\node[below=2mm of excluded,font=\scriptsize,text=Warning,align=center,text width=34mm] {The output remains recorded but does not support the incompatible claim.};
+\end{tikzpicture}

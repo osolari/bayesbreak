@@ -1,0 +1,24 @@
+# Illustrative keys only. These are not approved scientific defaults.
+[model]
+family = "UNRESOLVED"
+family_descriptors = "UNRESOLVED"
+prior = "UNRESOLVED"
+
+[partition]
+k_max = 0  # must be set by a validated experiment configuration
+min_segment_length = 0
+segment_cohesion = "UNRESOLVED"
+boundary_hazard = "UNRESOLVED"
+
+[prediction]
+extrapolation = "error"
+
+[metrics]
+matching_rule = "maximum-cardinality-then-minimum-distance-one-to-one"
+reference_type = "UNRESOLVED"
+metric_version = "UNRESOLVED"
+
+[execution]
+seed = 0
+result_id = "UNRESOLVED"
+parent_result_id = ""

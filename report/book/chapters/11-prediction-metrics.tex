@@ -1,0 +1,480 @@
+\chapter{Prediction, coordinate support, and canonical metrics}
+\label{ch:prediction}
+\chapterpromise{Family-specific posterior prediction, explicit extrapolation, and evaluation rules that do not create false success from unmatched boundaries.}
+
+\section{Posterior prediction}
+A prediction path must dispatch to the fitted observation family's posterior predictive. It may not
+fall through to a Gaussian default. The exported model also carries a coordinate support interval.
+Coordinates outside that interval raise an error by default; a named extrapolation policy may be
+used only when its behavior and provenance are recorded.
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/workflows/posterior_prediction_workflow.tex}}
+\caption{Posterior prediction and evaluation. The fitted observation family and coordinate support are checked before a proper score is evaluated.}
+\label{fig:posterior-prediction}
+\end{figure}
+
+\begin{definition}[Canonical one-to-one boundary matching]
+\label{def:metric-f1}
+Given predicted boundaries $\widehat{\mathcal B}$, references $\mathcal B^\star$, and tolerance
+$\tau$, construct the bipartite graph containing edges $(\widehat b,b^\star)$ with
+$|\widehat b-b^\star|\le\tau$. Select a matching with maximum cardinality; among all such matchings,
+select one with minimum total absolute distance, using a fixed deterministic tie rule. Precision,
+recall, and $F_1$ use the resulting matched count. No predicted or reference boundary is reused.
+\end{definition}
+
+\begin{definition}[Matched boundary-location error]
+\label{def:metric-mae}
+For the canonical matching $\mathcal M_\tau$, define
+$\mathrm{MAE}_\tau=|\mathcal M_\tau|^{-1}\sum_{(\widehat b,b^\star)\in\mathcal M_\tau}
+|\widehat b-b^\star|$ when at least one match exists. If no match exists, the quantity is
+\emph{not defined} and is reported as \NA, never as zero.
+\end{definition}
+
+\begin{definition}[Held-out predictive log score]
+\label{def:metric-loglik}
+A held-out log score is valid only when the held-out observations are disjoint from training,
+the fitted family's posterior predictive is used, and every held-out coordinate is in support or
+is handled by a predeclared extrapolation policy. Failure of any condition makes the archived
+number inadmissible as a predictive score.
+\end{definition}
+
+\begin{exclusionbox}[Methylation held-out computation]
+The archived value $-387.50040013308154$ on $m=381$ observations is real. It is not a valid
+Beta-observation held-out score because the implementation used a Gaussian predictive fallback and
+silently assigned coordinates beyond the training range to the final MAP block. It is retained as
+\resultid{RES-BB-RD-007Q} and excluded from predictive claims.
+\end{exclusionbox}
+\label{sec:prediction}
+
+Having developed training-time posterior inference for partitions and segment parameters (Sections~\ref{sec:dp}--\ref{sec:nonconj}), we now turn to prediction for new $(X,y)$ data.
+The prediction layer consumes posterior summaries (e.g., boundary posteriors, segment-parameter posteriors, and group evidences) and is therefore agnostic to whether block evidences were computed in closed form (Section~\ref{sec:families}) or via approximation (Section~\ref{sec:nonconj}). We assume we have already trained (or otherwise obtained)
+a collection of $G$ group-specific BayesBreak models
+$\{\mathcal{M}_g\}_{g=1}^G$, where each $\mathcal{M}_g$ comprises:
+(i) a fitted segmentation posterior (e.g.\ $P_g(k\mid y)$ and boundary posteriors),
+(ii) an exported MAP segmentation $\widehat{t}^{(g)}$ with segment-level posterior
+hyperparameters, and (iii) optionally a Bayesian curve representation
+(e.g.\ posterior mean/variance at design points).
+
+Typical outputs are group log scores, posterior group probabilities, optional unit-level
+responsibilities, exported MAP signal values, Bayes-curve values, and optional pointwise
+uncertainty summaries. These prediction interfaces define the outputs consumed by the planned real-data prediction diagnostics in Section~\ref{sec:realdata}.
+
+We pause to fix two terms that have been used informally above and that recur throughout the rest of this section.
+
+\begin{definition}[Exported segmentation]
+\label{def:exported-segmentation}
+An \emph{exported segmentation} for a fitted group-specific model $\mathcal{M}_g$ is the tuple
+$\big(\widehat k_g,\ \widehat t^{(g)},\ \{\widehat\theta^{(g)}_q\}_{q=1}^{\widehat k_g}\big)$,
+where $\widehat k_g$ is a chosen segment count (either an estimator of $k$ such as the posterior
+mode, or a deterministic choice fixed at training time), $\widehat t^{(g)}=(\widehat t^{(g)}_0,\dots,\widehat t^{(g)}_{\widehat k_g})$ is the
+joint MAP boundary vector at $\widehat k_g$ produced by Algorithms~\ref{alg:map-forward}--\ref{alg:map-backtrack}, and each $\widehat\theta^{(g)}_q$ is a deterministic point summary of the
+segment-$q$ posterior (typically the conjugate-family posterior mean or median of the
+expectation parameter). The exported segmentation is the signal-level analogue of a fitted model;
+it is what downstream prediction routines (P1 and P2) consume.
+\end{definition}
+
+\begin{definition}[Bayes curve]
+\label{def:bayes-curve}
+The \emph{Bayes curve} for a fitted group-specific model $\mathcal{M}_g$ evaluated at design
+point $x$ is the posterior mean of the latent piecewise-constant signal under the
+segment-marginalized posterior:
+\[
+\widehat f^{\mathrm{Bayes}}_g(x) := \mathbb{E}\!\left[\, f(x)\ \big|\ y,\, \mathcal{M}_g\,\right]
+= \sum_{k=1}^{k_{\max}} P(k\mid y,\mathcal{M}_g)\,
+\mathbb{E}\!\left[\, f(x)\ \big|\ y, k, \mathcal{M}_g\,\right],
+\]
+where the inner conditional expectation is taken over both the boundary vector $t$ and the
+segment parameters $\theta_{1:k}$, and where $f(x)=\theta_{q(x)}$ is the segment-$q$ mean
+parameter for the segment $q(x)$ containing $x$ under the boundary vector $t$.
+\end{definition}
+
+\begin{definition}[Segment-assignment map]
+\label{def:segment-assignment-map}
+For an exported boundary vector $\widehat t^{(g)}$ on ordered coordinates
+$u_0^{(g)}<\cdots<u_{n_g}^{(g)}$, a segment-assignment map is a declared function
+$a_g(x)\in\{1,\dots,\widehat k_g\}$ assigning each query coordinate $x$ to a training segment.
+The default interval-containment rule is
+$a_g(x)=q$ when $u_{\widehat t^{(g)}_{q-1}}^{(g)} < x \le u_{\widehat t^{(g)}_q}^{(g)}$, with
+endpoint conventions recorded by the implementation. Queries outside the training range are either
+rejected or assigned by an explicitly declared extrapolation rule; silent extrapolation is not part
+of the default interface.
+\end{definition}
+
+The \emph{exported segmentation} (Definition~\ref{def:exported-segmentation}) and the
+\emph{Bayes curve} (Definition~\ref{def:bayes-curve}) are distinct objects with different
+operational meanings: the exported segmentation is a fixed piecewise-constant function with a
+discrete change-point structure that is convenient for downstream tasks (e.g.\ region labeling,
+hypothesis testing, set-valued prediction); the Bayes curve is a continuous mixture that integrates
+segmentation uncertainty and is the appropriate target when smooth predictive quantities are needed.
+
+Prediction supports two primary tasks:
+
+\paragraph{(P1) Group membership likelihoods/posteriors.}
+Given new inputs $(X,y)$, compute for each group $g$ an out-of-sample
+posterior-predictive likelihood
+$p(\text{new}\mid \mathcal{M}_g)$ (or its log), and convert these into posterior group
+membership probabilities $P(g\mid \text{new})$ under a prior $\pi_g$.
+
+\paragraph{(P2) Signal prediction given group.}
+Given query design points $X$ and a specified (or inferred) group label $g$, return:
+(i) MAP piecewise-constant signal values $\widehat{f}^{\text{MAP}}_g(X)$ including the
+corresponding breakpoints and segment levels, and/or (ii) Bayesian curve values
+$\widehat{f}^{\text{Bayes}}_g(X)$ with pointwise uncertainty summaries when available.
+
+\begin{table}[H]
+\centering
+\small
+\begin{tabular}{@{}ll@{}}
+\toprule
+Prediction output & Interpretation \\
+\midrule
+$\ell_g$ & Group-specific log posterior-predictive score. \\
+$P(g\mid \mathrm{new})$ & Group posterior after combining $\ell_g$ with prior weight $\pi_g$. \\
+$\widehat f^{\mathrm{MAP}}_g(X)$ & Piecewise-constant signal under the exported MAP segmentation. \\
+$\widehat f^{\mathrm{Bayes}}_g(X)$ & Bayes-curve posterior mean, optionally with pointwise uncertainty. \\
+Unit responsibilities & Optional probabilities for set-valued units or grouped observations. \\
+\bottomrule
+\end{tabular}
+\caption[Prediction-layer outputs]{Prediction-layer outputs exposed by fitted BayesBreak models. These interfaces support downstream scoring and calibration separately from the empirical result tables. This is an interface-definition table; no source CSV is associated with it.}
+\label{tab:prediction-outputs}
+\end{table}
+
+Crucially, we distinguish \emph{single point observations} $(x_i,y_i)$ from
+\emph{multivariate / set-valued observations} where each unit contains multiple internal
+pairs $(x_{u r},y_{u r})$, i.e.\ $X_u$ and $y_u$ are vectors. We also separately address
+\emph{vector-valued responses} $y_i\in\mathbb{R}^d$ observed at each design point.
+
+\subsection{Prediction inputs: pointwise vs multivariate/set-valued observations}
+\label{sec:prediction-inputs}
+
+\begin{definition}[Prediction-input classes]
+\label{def:prediction-cases}
+We distinguish three classes of new prediction inputs, jointly partitioning the
+observation-shape design space considered in this book.
+\begin{description}
+\item[\textnormal{(Case A)} Pointwise observations.] A new dataset
+\[
+\mathcal{D}^{\mathrm{new}}_{\mathrm{pt}}
+= \{(x_i^{\mathrm{new}}, y_i^{\mathrm{new}}, w_i^{\mathrm{new}})\}_{i=1}^m
+\]
+with $x_1^{\mathrm{new}}<\cdots<x_m^{\mathrm{new}}$, scalar (or low-fixed-dimensional)
+responses $y_i^{\mathrm{new}}$, and optional exposure/precision weights
+$w_i^{\mathrm{new}}$ from the observation model. Each new observation lies on a single
+design point.
+\item[\textnormal{(Case B)} Multivariate/set-valued observations.] A new dataset
+\[
+\mathcal{D}^{\mathrm{new}}_{\mathrm{mv}}
+= \Big\{\big([a_u,b_u],\{(x_{ur},y_{ur},w_{ur})\}_{r=1}^{R_u}\big)\Big\}_{u=1}^U,
+\]
+where each \emph{unit} $u$ carries an interval support $[a_u,b_u]$ and a finite collection of
+internal observations indexed by $r=1,\dots,R_u$. Prediction is performed at the unit level by
+integrating or aggregating over each unit's internal observations.
+\item[\textnormal{(Case C)} Vector-valued response at each design point.] A new dataset
+\[
+\{(x_i^{\mathrm{new}}, \mathbf{y}_i^{\mathrm{new}}, w_i^{\mathrm{new}})\}_{i=1}^m
+\]
+where each $\mathbf{y}_i^{\mathrm{new}}\in\mathbb{R}^d$ is a vector response (or a mixed
+discrete/continuous component vector). Two sub-cases are admitted: (C-i) a factorized EF
+across dimensions, and (C-ii) a joint multivariate EF with a single joint log-partition
+function and conjugate or approximate block routine.
+\end{description}
+The three cases are mutually exclusive in the data type they consume and jointly cover the
+observation shapes considered by the BayesBreak prediction interface.
+\end{definition}
+
+The remainder of this subsection treats the three cases in turn; the corresponding algorithms
+appear in Section~\ref{sec:alg-prediction}.
+
+\subsection{Posterior-predictive scoring for a fixed segment under EF conjugacy}
+\label{sec:predictive-scoring}
+
+For group membership inference, we require out-of-sample likelihoods. The most
+computationally efficient and interpretable approach is to score new data against the
+\emph{exported} group curve (MAP segmentation or Bayesian curve). We first derive
+segment-level posterior-predictive likelihoods under EF conjugacy; these become building
+blocks for both Case A and Case B.
+
+Fix a group $g$ and consider a segment (or block) $B$ of its exported MAP segmentation.
+Let the posterior for the segment parameter $\theta$ after training be the conjugate posterior
+\[
+p(\theta\mid \alpha^{(g)}_B,\beta^{(g)}_B)
+\ \propto\
+\exp\{\eta(\theta)^\top\alpha^{(g)}_B - \beta^{(g)}_B A(\theta)\},
+\]
+where $(\alpha^{(g)}_B,\beta^{(g)}_B)$ are the training-updated hyperparameters for that segment.
+Now let $\mathcal{Y}_B^{\text{new}}$ denote the collection of new observations whose design
+points fall into this segment.
+
+\begin{proposition}[EF posterior-predictive likelihood within a fixed segment]
+\label{prop:ef-predictive}
+Assume the weighted EF likelihood and conjugate prior conventions of \S\ref{sec:ef} and
+\S\ref{sec:notation}, and let $(S_B^{\text{new}},W_B^{\text{new}},H_B^{\text{new}})$ denote the
+EF block summaries of the new data restricted to segment $B$:
+\[
+S_B^{\text{new}}:=\sum_{i\in B} w_i^{\text{new}} T(y_i^{\text{new}}),\qquad
+W_B^{\text{new}}:=\sum_{i\in B} w_i^{\text{new}},\qquad
+H_B^{\text{new}}:=\sum_{i\in B} \log h(y_i^{\text{new}},w_i^{\text{new}}).
+\]
+Then the posterior-predictive likelihood of the new data in segment $B$ under group $g$ is
+\begin{equation}
+p(\mathcal{Y}_B^{\text{new}} \mid \mathcal{M}_g)
+=
+\exp\{H_B^{\text{new}}\}\,
+\frac{Z(\alpha_B^{(g)}+S_B^{\text{new}},\beta_B^{(g)}+W_B^{\text{new}})}
+     {Z(\alpha_B^{(g)},\beta_B^{(g)})}.
+\label{eq:pp-seg}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+The proof is identical to the single-block evidence derivation (Theorem~\ref{thm:ef-integral})
+after replacing the prior hyperparameters $(\alpha_0,\beta_0)$ by the segment posterior
+hyperparameters $(\alpha_B^{(g)},\beta_B^{(g)})$ learned from training data.
+\end{proof}
+
+\paragraph{Interpretation.}
+Equation~\eqref{eq:pp-seg} integrates out the segment parameter $\theta$ under the
+\emph{posterior} induced by training, yielding a strictly Bayesian out-of-sample likelihood
+for new observations assigned to that segment. It is therefore suitable for group scoring
+and group posterior computation.
+
+\subsection{Group likelihoods for pointwise observations (Case A)}
+\label{sec:group-lik-point}
+
+\paragraph{MAP-segmentation-based scoring.}
+Let $\widehat{t}^{(g)}$ denote the exported MAP boundaries for group $g$ on the relevant domain.
+Assign each new design point $x_i^{\text{new}}$ to its containing MAP segment $B=B(i;g)$ and
+compute segment-wise block summaries $(S_B^{\text{new}},W_B^{\text{new}},H_B^{\text{new}})$.
+The group log-likelihood is then:
+\begin{equation}
+\ell_g^{\text{MAP}}(\mathcal{D}^{\text{new}}_{\text{pt}})
+:= \log p(\mathcal{D}^{\text{new}}_{\text{pt}}\mid \mathcal{M}_g)
+= \sum_{B\in \widehat{t}^{(g)}} \log p(\mathcal{Y}_B^{\text{new}}\mid \mathcal{M}_g),
+\label{eq:group-lik-map}
+\end{equation}
+where each segment term uses \eqref{eq:pp-seg}. This yields $\mathcal{O}(m)$ evaluation time
+once segment membership is determined.
+
+\paragraph{Bayesian-curve-based scoring (optional).}
+If $\mathcal{M}_g$ exports a Bayesian curve representation that provides a local posterior over
+the mean parameter at each design point (or each small bin), then one can score each point
+under its local posterior predictive and sum over points. This can improve robustness near
+uncertain boundaries at additional computational cost.
+
+\paragraph{Resegmentation scoring (optional, flexible).}
+An alternative definition of group likelihood is to rerun the DP on the new data under
+group-specific hyperparameters (treating the new dataset as another draw from group $g$'s
+prior). This yields an evidence $P(\mathcal{D}^{\text{new}}_{\text{pt}}\mid g)$ that does not
+condition on the trained MAP boundaries. This option is useful when groups differ primarily in
+hyperparameters rather than in the learned curve geometry, but is computationally
+$\mathcal{O}(k_{\max}m^2)$ per group.
+
+\subsection{Group likelihoods for multivariate/set-valued observations (Case B)}
+\label{sec:group-lik-mv}
+
+In Case B, each unit $u$ contains multiple internal observations
+$\{(x_{u r},y_{u r})\}_{r=1}^{R_u}$. Two output granularities are typically desired:
+(i) \emph{unit-level} group likelihoods and group responsibilities, and (ii) a \emph{global}
+group likelihood for the entire new dataset (product over units).
+
+\paragraph{Unit-level predictive likelihood under a fixed group.}
+Fix a group $g$. Partition the unit's internal design points by the MAP segments of group $g$.
+For each segment $B$, compute the block summaries $(S_{u,B}^{\text{new}},W_{u,B}^{\text{new}},H_{u,B}^{\text{new}})$
+restricted to those internal points. Then define the unit likelihood as:
+\begin{equation}
+\ell_{u g}
+:= \log p(\text{unit }u \mid \mathcal{M}_g)
+= \sum_{B \in \widehat{t}^{(g)}} \log p(\mathcal{Y}^{\text{new}}_{u,B}\mid \mathcal{M}_g),
+\label{eq:unit-lik}
+\end{equation}
+where $\mathcal{Y}^{\text{new}}_{u,B}$ is the subset of unit $u$'s internal observations that
+fall into segment $B$ and each segment term uses \eqref{eq:pp-seg} with summaries for that subset.
+
+\paragraph{Dataset likelihood and independence assumption.}
+\begin{assumption}[Prediction-unit conditional independence]
+\label{ass:prediction-independence}
+For Case B prediction, units are conditionally independent given the exported group model, and each
+unit contributes only through the segment-restricted predictive factors used in \eqref{eq:unit-lik}.
+\end{assumption}
+Under Assumption~\ref{ass:prediction-independence}, the dataset likelihood under group $g$ is:
+\[
+\ell_g^{\text{MV}}(\mathcal{D}^{\text{new}}_{\text{mv}})=\sum_{u=1}^{U}\ell_{u g}.
+\]
+This is the direct multivariate generalization of \eqref{eq:group-lik-map} and corresponds to
+the earlier ``fragment-level'' intuition, but is fully application-agnostic.
+
+\subsection{Vector-valued responses (Case C): factorized and multivariate EF scoring}
+\label{sec:prediction-multivariate-response}
+
+Suppose each observation is $\mathbf{y}_i=(y_{i1},\dots,y_{id})$.
+
+\paragraph{Factorized EF across dimensions (recommended default).}
+Assume conditional independence across dimensions given segment parameters:
+\[
+p(\mathbf{y}_i\mid \boldsymbol{\theta})
+=\prod_{\ell=1}^d p_\ell(y_{i\ell}\mid \theta_\ell),
+\qquad
+p(\boldsymbol{\theta})=\prod_{\ell=1}^d p_\ell(\theta_\ell).
+\]
+Then all block evidences and posterior-predictive terms factorize over $\ell$, so
+log-likelihoods are sums over dimensions:
+\[
+\ell_g(\mathbf{y})=\sum_{\ell=1}^d \ell_{g,\ell}(y_{\cdot\ell}),
+\]
+where each $\ell_{g,\ell}$ is computed by \eqref{eq:group-lik-map} or \eqref{eq:unit-lik} for
+dimension $\ell$. Computationally, this costs $\mathcal{O}(d)$ per observation (or per unit).
+
+\paragraph{Multivariate EF (when available).}
+If $(\mathbf{y}_i)$ admit a multivariate EF with conjugate prior on a joint parameter
+$\theta\in\mathbb{R}^p$, then the same ratio-of-normalizers structure applies with vector-valued
+sufficient statistics. BayesBreak's DP layer remains unchanged; only the definition of $S_{ij}$
+and $Z(\alpha,\beta)$ changes.
+
+\subsection{From group likelihoods to posterior group membership probabilities}
+\label{sec:group-posterior}
+
+\paragraph{Single-dataset membership (one group per dataset).}
+If the new dataset is assumed to come from a single (unknown) group $g$, define:
+\[
+\ell_g := \log p(\text{new}\mid \mathcal{M}_g),
+\qquad
+P(g\mid \text{new})
+= \frac{\pi_g\exp(\ell_g)}{\sum_{g'=1}^G \pi_{g'}\exp(\ell_{g'})}.
+\]
+This yields a \emph{group membership likelihood vector} (the $\ell_g$) and a
+\emph{group membership posterior vector} (the $P(g\mid\text{new})$), matching the requested
+prediction behavior in an application-agnostic way.
+
+\paragraph{Unit-wise membership (one group per unit).}
+If each multivariate unit $u$ is assumed to originate from one group, then define unit-wise
+responsibilities:
+\begin{equation}
+r_{u g}
+:= P(g\mid \text{unit }u)
+= \frac{\pi_g\exp(\ell_{u g})}{\sum_{g'=1}^G \pi_{g'}\exp(\ell_{u g'})},
+\label{eq:unit-resp}
+\end{equation}
+where $\ell_{u g}$ is given by \eqref{eq:unit-lik}. This is precisely the out-of-sample analog
+of the E-step responsibilities in the latent-group model (Section~\ref{sec:latent-em}).
+
+\subsection{MAP signal evaluation given group membership}
+\label{sec:map-eval}
+
+Given a group label $g$ and query design points $X^\star=\{x^\star_1,\dots,x^\star_M\}$,
+BayesBreak returns either:
+(i) \emph{MAP piecewise-constant predictions} or (ii) \emph{Bayesian curve predictions}.
+
+\paragraph{MAP piecewise-constant predictions.}
+Let $\widehat{t}^{(g)}$ be the exported MAP boundaries and let each MAP segment $B$ provide
+the posterior mean of the mean parameter:
+\[
+\widehat{\mu}^{(g)}_B := \mathbb{E}[m_\star(\theta)\mid \alpha^{(g)}_B,\beta^{(g)}_B].
+\]
+Then the MAP signal at a query point $x^\star$ is:
+\[
+\widehat{f}^{\text{MAP}}_g(x^\star) = \widehat{\mu}^{(g)}_{B(x^\star;g)},
+\]
+where $B(x^\star;g)$ denotes the MAP segment containing $x^\star$.
+
+\paragraph{Bayesian curve predictions.}
+If the DP-derived Bayes regression curve is exported on a grid, return
+$\widehat{f}^{\text{Bayes}}_g(x^\star)$ by evaluating on the nearest grid point (or by
+piecewise-constant interpolation within each grid interval). When pointwise posterior
+variances are available, also return pointwise credible intervals; simultaneous bands require an
+additional construction and are not implied by the pointwise variances alone.
+
+\subsection{Algorithms for prediction}
+\label{sec:alg-prediction}
+\label{sec:prediction-algorithms}
+
+\begin{algorithm}[H]
+\caption{PredictGroup$(\{\mathcal{M}_g\}_{g=1}^G,\ \mathcal{D}^{\text{new}},\ \pi)$}
+\label{alg:predict-group}
+\KwIn{
+Trained group models $\{\mathcal{M}_g\}$; new data $\mathcal{D}^{\text{new}}$ (Case A or Case B);
+group prior weights $\pi$ (default uniform)
+}
+\KwOut{
+Log-likelihoods $\{\ell_g\}$ and posterior membership probabilities $\{P(g\mid \text{new})\}$;
+if Case B, also unit responsibilities $\{r_{u g}\}$
+}
+\BlankLine
+\For{$g=1$ \KwTo $G$}{
+  \eIf{\textbf{Case A (pointwise)}}
+  {
+    Assign each $(x_i^{\text{new}},y_i^{\text{new}})$ to a MAP segment $B(i;g)$ under $\widehat{t}^{(g)}$\;
+    Accumulate segment summaries $(S_B^{\text{new}},W_B^{\text{new}},H_B^{\text{new}})$\;
+    Compute $\ell_g \leftarrow \sum_B \Big[ H_B^{\text{new}} + \log Z(\alpha_B^{(g)}+S_B^{\text{new}},\beta_B^{(g)}+W_B^{\text{new}})
+      - \log Z(\alpha_B^{(g)},\beta_B^{(g)})\Big]$\;
+  }
+  {
+    \tcp{Case B (multivariate/set-valued units)}
+    \For{$u=1$ \KwTo $U$}{
+      Partition unit $u$ internal pairs by MAP segments of group $g$; compute per-segment summaries\;
+      Compute $\ell_{u g}$ via \eqref{eq:unit-lik} using \eqref{eq:pp-seg}\;
+    }
+    $\ell_g \leftarrow \sum_{u=1}^U \ell_{u g}$\;
+  }
+}
+Compute $P(g\mid \text{new}) \propto \pi_g\exp(\ell_g)$ and normalize over $g$\;
+\If{\textbf{Case B}}{
+  Compute unit responsibilities $r_{u g}\propto \pi_g\exp(\ell_{u g})$ and normalize over $g$ for each $u$ (cf.\ \eqref{eq:unit-resp})\;
+}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{PredictMAPSignal$(\mathcal{M}_g,\ X^\star,\ \texttt{mode})$}
+\label{alg:predict-map}
+\KwIn{
+A group model $\mathcal{M}_g$ with exported MAP segmentation $\widehat{t}^{(g)}$ and/or Bayes curve;
+query points $X^\star=\{x^\star_1,\dots,x^\star_M\}$; mode $\in\{\texttt{MAP},\texttt{Bayes}\}$
+}
+\KwOut{
+Predicted signal values at $X^\star$ (and optionally uncertainty)
+}
+\BlankLine
+\eIf{\texttt{mode}=\texttt{MAP}}{
+  \ForEach{$x^\star$ in $X^\star$}{
+    Find containing MAP segment $B(x^\star;g)$ (binary search on breakpoint coordinates)\;
+    Return $\widehat{f}^{\text{MAP}}_g(x^\star)=\widehat{\mu}^{(g)}_{B(x^\star;g)}$\;
+  }
+}{
+  Evaluate/interpolate the exported Bayes regression curve at $X^\star$; optionally return posterior variances\;
+}
+\end{algorithm}
+
+\subsection{Complexity}
+For Case A, prediction under a fixed group is $\mathcal{O}(m)$ after segment assignment
+($\mathcal{O}(m\log k)$ worst case via binary search; often $\mathcal{O}(m)$ with a streaming pointer).
+For Case B, it is $\mathcal{O}(\sum_u R_u)$ per group, plus segment assignment for internal points.
+Vector-valued responses add a factor of $d$ in the factorized EF construction. Importantly,
+prediction does \emph{not} require rerunning the DP unless the optional resegmentation scoring
+mode is enabled.
+Membership posterior normalization is performed in log space by subtracting
+$\texttt{logsumexp}_g(\log\pi_g+\ell_g)$; unit responsibilities use the same normalization
+independently for each unit. Segment assignment is a numerical convention, not an inferential
+identity: implementations must record whether binary search, streaming pointers, nearest-neighbor
+assignment, or a declared extrapolation rule was used for out-of-range query points.
+\subsection{Prediction diagnostics}
+\label{sec:prediction-diagnostics}
+
+Because the predictive layer reuses segment-level posteriors, the group posterior
+$P(g\mid\text{new})$ derived from \eqref{eq:group-lik-map} and the pointwise predictive summaries
+inherit their calibration quality from the segmentation. Use two diagnostics for real-data
+deployments:
+\begin{itemize}\itemsep2pt
+\item \textbf{Held-out log-likelihood (HLL) trace.} Split each test sequence into blocks and
+compute the per-block posterior-predictive log-likelihood under \eqref{eq:pp-seg}. The sum over
+blocks is the HLL for that sequence. Compare HLL trajectories across candidate segmentations
+(exported MAP vs.\ Bayes curve) and across groups; a well-calibrated model yields an HLL
+ranking consistent with the $k$-posterior ranking on held-out data.
+\item \textbf{PIT residuals.} For point-valued new observations with continuous predictive CDF,
+evaluate the probability-integral transform $u_i=F_g(y_i^{\text{new}}\mid\mathcal{M}_g)$.
+Under correct calibration the $\{u_i\}$ are Uniform$(0,1)$; histograms or Kolmogorov--Smirnov
+summaries flag miscalibration (overconfident predictive widths show up as U-shaped histograms).
+\end{itemize}
+These diagnostics are cheap post-hoc checks. In this book they are planned outputs
+for the real-data analyses in Section~\ref{sec:experiments}; the planned per-case-study results tables
+identify the HLL and boundary-recovery fields that the completed analyses report.

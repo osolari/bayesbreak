@@ -1,0 +1,13 @@
+\begin{tikzpicture}[node distance=7mm and 8mm]
+\node[secondarybox,text width=29mm] (post) {Posterior distribution for each fitted segment};
+\node[primarybox,right=of post,text width=29mm] (cond) {Condition on a MAP partition or average over partitions};
+\node[primarybox,right=of cond,text width=29mm] (coord) {Check prediction coordinate against fitted support};
+\node[successbox,right=of coord,text width=29mm] (score) {Evaluate the observation-family posterior predictive};
+\draw[arrPrimary] (post)--(cond);
+\draw[arrPrimary] (cond)--(coord);
+\draw[arrPrimary] (coord)--node[above,font=\scriptsize]{in support}(score);
+\node[draw=Warning,fill=WarningPale,rounded corners,below=9mm of coord,text width=35mm,align=center] (err) {Outside support: reject unless an extrapolation model was specified before scoring};
+\draw[arr,draw=Warning] (coord)--(err);
+\node[neutralbox,below=9mm of score,text width=32mm] (match) {Boundary evaluation uses one-to-one matching; unmatched location error is NA};
+\draw[arr] (score)--(match);
+\end{tikzpicture}

@@ -1,0 +1,46 @@
+\section{Limitations and scope}
+\label{sec:limitations}
+
+The partition recursions are exact for the stated offline, contiguous, locally factorized segmentation model when each segment marginal likelihood is exact. The following conditions delimit the method and the empirical conclusions.
+
+\paragraph{Computational regime.}
+The exact dynamic program has worst-case cost $\Theta(k_{\max}n^2)$ and is not an online changepoint detector. It is practical for moderate sequence lengths and segment-count bounds. Larger problems require a restricted candidate set, a pruning rule with its own correctness result, or an explicitly approximate calculation. The finite-range timing slopes in Section~\ref{sec:results} do not alter the worst-case bound.
+
+\paragraph{Candidate changepoints and dependence across segments.}
+A changepoint absent from the candidate set cannot be recovered. Nonlocal interactions among segments, unrestricted dependence among segment labels, and priors that cannot be represented by local transition factors fall outside the dynamic program derived here. Some forms of dependence can be incorporated by enlarging the state space, but that produces a different recursion and requires a separate analysis.
+
+\paragraph{Observation-model misspecification.}
+Posterior conclusions are conditional on the chosen segment model, descriptor semantics, hyperparameters, and within-segment independence assumptions. Heavy tails under a Gaussian model, zero inflation under a Poisson model, overdispersion under a Binomial model, and unmodeled serial dependence can distort segment marginal likelihoods and hence the posterior over partitions. The method does not by itself identify the scientifically appropriate observation family.
+
+\paragraph{Prior sensitivity.}
+Posterior distributions for segment count and changepoint locations can be sensitive to $p(k)$, $c_u(i,j)$, and $h_u(j)$, especially with irregularly spaced observations. Sensitivity to segment cohesion and boundary hazard should be reported. Marginal-likelihood values from analyses with different priors describe different models and should not be interpreted as a single Bayes-factor comparison without specifying the compared probability models.
+
+\paragraph{Nonconjugate approximation.}
+Theorem~\ref{thm:stability-paper} is conditional on Assumption~\ref{ass:block-error}. The effect of a fixed segmentwise log-score error increases with the number of segments. A numerical method that does not establish the uniform error bound yields an exact dynamic-programming calculation for its approximate score matrix, not an error-controlled approximation to the intended posterior. In the archived study, expectation propagation had maximum absolute segment-score discrepancy about $14.5$, which is not a small-error setting.
+
+\paragraph{Latent-group non-uniqueness.}
+The finite latent-group criterion is invariant to permutation of group labels and may admit duplicate or collapsed templates. Multiple restarts do not guarantee a global maximum. The archived implementation can return a stale objective value along one convergence path; that defect must be corrected before objective values are used to rank restarts. The present analysis does not imply identifiability of a normalized finite-mixture model.
+
+\paragraph{Shared-changepoint assumptions.}
+Exact pooling assumes aligned candidate coordinates and conditional independence of sequences given a common partition. Dependence among sequences or genuinely sequence-specific changepoints can make a common partition inappropriate. The finite-candidate consistency result additionally requires a positive average expected log-score gap; information from only one sequence is not sufficient as the number of sequences grows.
+
+\paragraph{Posterior prediction.}
+The observation family and coordinate support are part of the predictive model. A fallback to another family or silent assignment of out-of-range coordinates can produce a finite but invalid predictive score, as shown by the excluded methylation computation. Prediction outside the fitted coordinate range requires an explicit extrapolation model.
+
+\paragraph{Evaluation of changepoints.}
+Boundary $F_1$ depends on the tolerance and matching rule. Agreement with the \BayesBreak joint-MAP set is not accuracy against independent truth. Matched location error is undefined when no pair is matched. Red lines in the case-study plots are fitted changepoints rather than external annotations. The archived analyses therefore do not support causal attribution to geological, genomic, or financial events.
+
+\paragraph{Incomplete empirical coverage.}
+The current archive lacks broad repeated uncertainty intervals, a fully fairness-controlled comparator study, comprehensive misspecification grids, larger scaling studies, and method-specific error bounds for the nonconjugate approximations. These omissions limit comparative, robustness, and approximation claims even though the populated numerical values are real executed results.
+
+\paragraph{Implementation verification.}
+The historical Phase~1 bounded verification collected 179 tests: 157 passed, five were skipped because of optional dependencies, and 17 nonconjugate or grouped-model tests did not finish. An independent Phase~6 rerun collected the same 179 tests: 173 passed, five were skipped, one EP logistic-normal test exceeded a 20-second per-test cap, and none failed. The remaining timeout is neither a pass nor a failure. No package code or research experiment was changed or rerun for this verification.
+
+\begin{figure*}[t]
+  \centering
+  \resizebox{0.86\textwidth}{!}{\input{shared/figures/tikz/workflows/scope_and_failure_map.tex}}
+  \caption{Scope of the exact partition calculation. The recursion cannot compensate for a missing candidate changepoint, nonlocal segment dependence, a misspecified observation model, uncontrolled numerical segment scores, an undefined extrapolation rule, or comparator outputs on incompatible coordinate axes.}
+  \label{fig:scope-failure-paper}
+\end{figure*}
+
+\BayesBreak is therefore a generalized hierarchical Bayesian method for offline segmentation of ordered data under locally factorized segment models. It is not a universal changepoint procedure. Online detection, changes in slope, reversible-jump posterior simulation, and segmentation of nonordered graphs require different models or additional theory \citep{adamsmackay2007bocpd,ruggieri2014bcpvs,green1995rjMCMC,fearnhead2006exact}.

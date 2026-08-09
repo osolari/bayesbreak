@@ -47,6 +47,7 @@ from numpy.typing import ArrayLike, NDArray
 from sklearn.base import BaseEstimator, RegressorMixin, clone
 
 from .base import BayesBreakSegmenter
+from .prediction import ExtrapolationPolicy, _assign_training_positions, _record_prediction_policy
 from .validation import check_segmentation_input, require_fitted
 
 FloatArray = NDArray[np.floating]
@@ -127,6 +128,7 @@ class SlidingWindowSegmenter(BaseEstimator, RegressorMixin):
         )
         n = int(y_arr.size)
         self.n_ = n
+        self.x_design_ = x_design
 
         if n <= self.window_size:
             # Fast path: single window. Behaviour matches the wrapped
@@ -197,10 +199,18 @@ class SlidingWindowSegmenter(BaseEstimator, RegressorMixin):
         return self
 
     # -------------------------------------------------------------- predict
-    def predict(self, X: ArrayLike) -> FloatArray:
+    def predict(
+        self,
+        X: ArrayLike,
+        *,
+        extrapolation: str | ExtrapolationPolicy = ExtrapolationPolicy.ERROR,
+    ) -> FloatArray:
         require_fitted(self, ["map_curve_"])
         X_arr = np.asarray(X, dtype=float)
         x_new = X_arr[:, 0] if X_arr.ndim == 2 else X_arr.ravel()
+        positions = _assign_training_positions(self.x_design_, x_new, extrapolation)
+        x_eval = self.x_design_[positions]
+        _record_prediction_policy(self, extrapolation)
         # Reuse per-window predictions: assign each query x to the window
         # whose interior contains it. Where windows overlap, average their
         # predictions (matches map_curve semantics on the training axis).
@@ -209,10 +219,10 @@ class SlidingWindowSegmenter(BaseEstimator, RegressorMixin):
         for _s, _e, est in self.windows_:
             x_design_w = est.x_design_
             lo, hi = float(x_design_w[0]), float(x_design_w[-1])
-            mask = (x_new >= lo) & (x_new <= hi)
+            mask = (x_eval >= lo) & (x_eval <= hi)
             if not mask.any():
                 continue
-            preds = est.predict(x_new[mask])
+            preds = est.predict(x_eval[mask])
             out[mask] += preds
             counts[mask] += 1.0
         # Anywhere no window covers x_new, fall back to the nearest
@@ -220,14 +230,14 @@ class SlidingWindowSegmenter(BaseEstimator, RegressorMixin):
         uncov = counts == 0
         if uncov.any():
             for idx in np.flatnonzero(uncov):
-                xv = float(x_new[idx])
+                xv = float(x_eval[idx])
                 _, _, est = min(
                     self.windows_,
                     key=lambda w: min(
                         abs(xv - float(w[2].x_design_[0])), abs(xv - float(w[2].x_design_[-1]))
                     ),
                 )
-                out[idx] = float(est.predict(np.array([xv]))[0])
+                out[idx] = float(est.predict(np.array([xv]), extrapolation="clip")[0])
                 counts[idx] = 1.0
         return out / np.maximum(counts, 1.0)
 

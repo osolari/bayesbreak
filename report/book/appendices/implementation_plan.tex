@@ -1,0 +1,83 @@
+\chapter{Detailed implementation plan}
+\label{app:implementation}
+\label{app:code}
+\chapterpromise{A module-by-module plan for implementing the stated probability models, numerical methods, experiments, data schemas, tests, and reproducibility records.}
+
+\section{Scope and non-goals}
+The implementation work preserves the author-approved method: generalized hierarchical Bayesian
+segmentation with exponential-family segment models, irregular-design priors, multiple-sequence
+hierarchies, and known or latent groups. The core software separates observation-model calculations
+from sum-product and max-sum recursions over ordered partitions. The plan does not introduce an
+online detector, reinterpret the finite latent-group criterion as a normalized mixture likelihood,
+change the scientific endpoint, or overwrite archived numerical results. A corrected computation
+receives a new result identifier and records its relationship to the earlier output.
+
+\section{Repository organization}
+\begin{description}
+\item[\path{src/bayesbreak/}] Observation families, segment priors, sum-product recursion, max-sum MAP calculation, multiple-sequence models, grouped models, and prediction.
+\item[\path{configs/}] Versioned model, comparator, dataset, and execution specifications.
+\item[\path{experiments/}] Drivers for \texttt{EPR-BB-001} through \texttt{EPR-BB-015}.
+\item[\path{scripts/}] Data-schema, result-metadata, bibliography, build, and release validators.
+\item[\path{tests/}] Unit, property-based, numerical, statistical, regression, and reproducibility tests.
+\item[\path{data/}] Immutable source records and versioned processed datasets.
+\item[\path{artifacts/}] Result files, figures, tables, numerical error records, and records of excluded computations.
+\item[\path{docs/schemas/}] Schemas for results, numerical-error summaries, metrics, and reproducibility metadata.
+\end{description}
+Responsibility is organized by component: observation models, partition inference, posterior
+prediction and metrics, experiments and result metadata, and release verification. A task is
+complete only when the corresponding mathematical invariant and regression test pass together.
+
+\section{Public functions and returned objects}
+\begin{description}
+\item[Observation-family calculation] Returns a log segment marginal likelihood, requested
+posterior moments or posterior state, support information, and, for a numerical approximation, the
+available convergence and error information for each admissible segment.
+\item[Partition prior] Returns log segment cohesion and log interior-boundary hazard separately,
+including zero-probability cases.
+\item[Partition inference] Uses the same prior-adjusted segment scores in sum-product and max-sum
+recursions and returns marginal likelihoods, $P(k\mid y)$, changepoint marginals, Bayes curves, and a
+joint MAP partition.
+\item[Posterior prediction] Dispatches according to the fitted observation family and applies the
+stated coordinate-support or extrapolation rule.
+\item[Changepoint metrics] Validates coordinate axes and uses maximum-cardinality,
+minimum-distance one-to-one matching; matched-location MAE is \NA{} when no pair is matched.
+\item[Result record] Distinguishes execution status from validity for a specified analysis and does
+not mutate an archived result in place.
+\end{description}
+
+\section{Task registry and acceptance criteria}
+\input{shared/handoffs/implementation_task_registry.tex}
+
+\section{Data, result metadata, and leakage controls}
+Each dataset receives a source record, immutable hash, license or access note, raw schema, and a
+versioned sequence of transformations. Splits are fixed before fitting. Simulation truth is stored
+separately from fitted outputs. Comparator tuning uses only the declared training or validation
+information. Agreement with a \BayesBreak fit is not relabelled as external truth. The well-log,
+array-CGH, equity, and methylation datasets retain their executed preprocessing and hashes; a
+corrected or extended analysis is stored as a new version.
+
+\section{Execution, caching, and failure states}
+A run records code, data, model specification, environment, random seed, wall time, memory,
+convergence state, and output hashes. Cached segment calculations are reused only when the
+observation family, descriptors, priors, support, and code hash agree. A nonconjugate method may
+finish with a numerical value but without a verified error bound; a comparator calculation may
+finish but be invalid for a specified comparison; a test may remain unresolved because it does not
+terminate under the execution limit. These states are reported separately.
+
+\section{Tests}
+Unit tests cover sufficient statistics, conjugate normalizers, support, and segment factorization.
+Property-based tests compare sum-product and max-sum recursions with exhaustive enumeration on
+small problems. Numerical tests check log-domain normalization and segmentwise error calculations.
+Statistical tests cover calibration, null simulations, and repeated-seed behavior. Regression tests
+preserve archived result identifiers and ensure that excluded values cannot enter incompatible
+figures or tables. Reproducibility tests rebuild figures and tables and compare declared hashes or
+numerical tolerances.
+
+\section{Implementation order and stopping criteria}
+The dependency order is: segment-cohesion and boundary-hazard semantics; dynamic-programming
+invariants; latent-group and shared-changepoint numerical corrections; posterior prediction and
+changepoint metrics; comparator and data schemas; full-suite profiling; controlled recomputation;
+figure and table regeneration; and source synchronization. Each stage has a pre-specified
+acceptance criterion. When a theorem assumption, numerical error bound, comparator definition, or
+test cannot be satisfied, the corresponding claim is narrowed or the calculation remains excluded
+from that scientific interpretation. An unimplemented item remains explicitly incomplete.

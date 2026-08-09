@@ -1,0 +1,34 @@
+{
+  "passed": true,
+  "checks": {
+    "exists:shared/PRESENTATION_SOURCE_OF_TRUTH.md": true,
+    "exists:shared/EVIDENCE_STATUS_LEDGER.md": true,
+    "exists:shared/ASSET_AND_DIAGRAM_INDEX.md": true,
+    "exists:shared/CITATION_MAP.md": true,
+    "exists:shared/NOTATION_AND_TERMINOLOGY.md": true,
+    "exists:shared/AVAILABLE_TEMPLATES_AND_BUILD_TARGETS.md": true,
+    "exists:shared/PRESENTATION_DO_NOT_CHANGE.md": true,
+    "exists:technical/TECHNICAL_DECK_BRIEF.md": true,
+    "exists:technical/REQUIRED_THEORY_AND_RESULTS.md": true,
+    "exists:technical/TECHNICAL_NARRATIVE_BOUNDARY.md": true,
+    "exists:technical/MAIN_ROUTE_AND_APPENDIX_GUIDANCE.md": true,
+    "exists:executive/EXECUTIVE_DECK_BRIEF.md": true,
+    "exists:executive/DECISION_AND_VALUE_SUMMARY.md": true,
+    "exists:executive/EXECUTIVE_NARRATIVE_BOUNDARY.md": true,
+    "exists:executive/EXECUTIVE_DO_NOT_CHANGE.md": true,
+    "exact_title": true,
+    "test_state_present": true,
+    "excluded_results_present": true,
+    "technical_has_no_roadmap_sources": true,
+    "technical_explicit_no_roadmap_rule": true,
+    "executive_has_exact_approved_roadmaps": true,
+    "no_slide_sources": true,
+    "no_rejected_branding": true
+  },
+  "required_file_count": 15,
+  "approved_roadmaps": [
+    "shared/figures/tikz/roadmaps/executive_implementation_sequence.tex",
+    "shared/figures/tikz/roadmaps/executive_release_decisions.tex"
+  ],
+  "slide_source_paths": []
+}

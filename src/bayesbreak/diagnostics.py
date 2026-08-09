@@ -33,6 +33,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from . import dp as _dp
+from .nonconjugate import evaluate_reachable_segment_error, propagate_partition_bounds
 from .utils import logsumexp as _logsumexp
 
 if TYPE_CHECKING:
@@ -285,7 +286,7 @@ def run_non_conjugate_diagnostics(
     - ``k_posterior_l1`` between the two fits;
     - ``boundary_marginal_l1`` at the chosen ``k_map``;
     - ``map_path_overlap`` (Jaccard of map_boundaries_);
-    - ``pk_tv_upper_bound`` = ``exp(2 k_max ε_max) − 1``, the worst-case
+    - ``pk_tv_upper_bound`` = ``min(1, exp(2 k_max ε_max) − 1)``, the worst-case
       total-variation bound on ``P(k | y)`` from
       Corollary ``cor:probability-error-conversion`` (derivable directly
       from Proposition ``prop:stability``); the bound is conservative
@@ -330,9 +331,28 @@ def run_non_conjugate_diagnostics(
     pk_len = min(p_k_a.size, p_k_r.size)
     p_k_l1 = float(np.sum(np.abs(p_k_a[:pk_len] - p_k_r[:pk_len])))
     pk_tv_empirical = 0.5 * p_k_l1
-    # Worst-case TV bound: exp(2 k_max ε_max) − 1, with
-    # ε_max := uniform block-error supremum over the shared admissible mask.
-    pk_tv_upper_bound = float(math.expm1(2.0 * k_max * max_err))
+    approx = getattr(estimator, "approx", None)
+    reference_method = str(getattr(reference, "approx", None) or type(reference).__name__)
+    convergence_status = "unverifiable"
+    if (
+        str(approx).lower().replace("-", "_") == "ep"
+        and getattr(estimator, "ep_all_converged_", None) is False
+    ):
+        convergence_status = "failed"
+    error_record = evaluate_reachable_segment_error(
+        lA0_a,
+        lA0_r,
+        family=klass,
+        reference_method=reference_method,
+        k_max=k_max,
+        convergence_status=convergence_status,
+    )
+    if error_record.max_log_score_error is None:
+        pk_tv_upper_bound = None
+        partition_bounds = None
+    else:
+        partition_bounds = propagate_partition_bounds(error_record.max_log_score_error, k_max)
+        pk_tv_upper_bound = partition_bounds["tv_upper_bound"]
 
     # Boundary-marginal L1 at the reference's k_map (avoids comparing different k's).
     bm_a = _boundary_marginals_at_k(estimator, int(reference.k_map_))
@@ -348,7 +368,9 @@ def run_non_conjugate_diagnostics(
 
     # TV check passes when empirical TV ≤ Corollary-bound + numerical slack.
     tv_slack = 1e-9
-    tv_passed = bool(pk_tv_empirical <= pk_tv_upper_bound + tv_slack)
+    tv_passed = bool(
+        pk_tv_upper_bound is not None and pk_tv_empirical <= pk_tv_upper_bound + tv_slack
+    )
 
     checks = [
         DiagnosticCheck(
@@ -391,9 +413,10 @@ def run_non_conjugate_diagnostics(
             passed=tv_passed,
             detail=(
                 f"TV(P̂(k|y), P_ref(k|y)) = {pk_tv_empirical:.4f}; "
-                f"cor:probability-error-conversion bound "
-                f"exp(2·k_max·ε_max) − 1 = "
-                f"{pk_tv_upper_bound:.4f} for k_max={k_max}, ε_max={max_err:.4f}"
+                f"conditional cor:stability-paper bound "
+                f"min(1, exp(2·k_max·ε_max) − 1) = "
+                f"{pk_tv_upper_bound if pk_tv_upper_bound is not None else 'unverifiable'} "
+                f"for k_max={k_max}, ε_max={max_err:.4f}"
             ),
             measured=pk_tv_empirical,
             tolerance=pk_tv_upper_bound,
@@ -401,9 +424,8 @@ def run_non_conjugate_diagnostics(
         ),
     ]
 
-    # Per-routine theoretical-rate annotation from prop:uniform-bounds.
-    approx = getattr(estimator, "approx", None)
-    theoretical_rate, rate_violated = _theoretical_rate(approx, n, estimator, max_err)
+    theoretical_rate = "not established; routine-specific certification remains required"
+    rate_violated = None
 
     extra = {
         "block_error_quantiles": measured_q,
@@ -420,6 +442,8 @@ def run_non_conjugate_diagnostics(
         "approx_routine": approx,
         "theoretical_rate": theoretical_rate,
         "theoretical_rate_violated": rate_violated,
+        "segment_error_record": error_record.to_dict(),
+        "conditional_partition_bounds": partition_bounds,
     }
 
     return DiagnosticReport(
@@ -750,65 +774,6 @@ def select_n_groups_by_holdout(
         checks=checks,
         extra=extra,
     )
-
-
-def _theoretical_rate(
-    approx: str | None, n: int, estimator: Any, max_err: float
-) -> tuple[str, bool | None]:
-    """Map a non-conjugate routine name to its uniform-error rate.
-
-    Implements the routine-by-routine ``ε`` rates of
-    Proposition ``prop:uniform-bounds`` (§4):
-
-    - ``"laplace"`` / ``"jj"`` / ``"pg_vb"``: ``O(n^{-1})`` on reachable
-      blocks (Laplace from strict log-concavity + bounded fourth derivative;
-      JJ and PG mean field from monotone variational bounds);
-    - ``"gh"`` / ``"quadrature"``: ``O(Q^{-2r})`` for ``C^{2r}`` integrands
-      with ``Q`` Gauss--Hermite nodes;
-    - ``"ep"`` (true per-observation EP): not uniformly bounded; flagged
-      as a violation iff at least one block failed to converge
-      (``estimator.ep_all_converged_ is False``) per
-      ``prop:uniform-bounds`` part (v).
-
-    The boolean ``rate_violated`` flags ``ε > 10 · expected`` (off by an
-    order of magnitude) for variance/quadrature routines, and EP
-    non-convergence specifically for EP. ``None`` when the routine is
-    unknown or has no closed-form expected rate.
-    """
-    if approx is None:
-        return ("(routine not declared on estimator)", None)
-
-    approx_norm = str(approx).lower().replace("-", "_")
-    nn = max(int(n), 1)
-
-    if approx_norm in {"laplace", "jj", "pg_vb"}:
-        expected = 1.0 / float(nn)
-        violated = max_err > 10.0 * expected
-        return (f"O(n^-1) on reachable blocks (expected ~{expected:.2e} for n={nn})", violated)
-    if approx_norm in {"gh", "quadrature"}:
-        Q = int(getattr(estimator, "gh_points", 0)) or None
-        if Q is None:
-            return ("O(Q^-2r) for C^{2r} integrands", None)
-        expected = 1.0 / float(Q * Q)
-        violated = max_err > 10.0 * expected
-        return (
-            f"O(Q^-2r) for C^{{2r}} integrands (Q={Q}; conservative ~{expected:.2e})",
-            violated,
-        )
-    if approx_norm == "ep":
-        all_conv = getattr(estimator, "ep_all_converged_", None)
-        if all_conv is None:
-            return (
-                "EP: not uniformly bounded (prop:uniform-bounds (v))",
-                None,
-            )
-        return (
-            "EP: not uniformly bounded; uniform-ε control conditional on "
-            "convergence of every per-observation site update "
-            "(prop:uniform-bounds (v))",
-            (not bool(all_conv)),
-        )
-    return (f"unknown approx {approx_norm!r}", None)
 
 
 def _log_p_k_from_estimator(estimator: Any, k_max: int) -> FloatArray:

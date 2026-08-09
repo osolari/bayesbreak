@@ -48,8 +48,8 @@ Interpretation
 
 Outputs
 -------
-- docs/report/figures/fig8_multivariate_shared.png
-- docs/report/figures/fig8_multivariate_shared.pdf
+- results/figures/fig8_multivariate_shared.png
+- results/figures/fig8_multivariate_shared.pdf
 
 Usage
 -----
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser(
         description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
     )
-    ap.add_argument("--outdir", type=Path, default=Path("docs/report/figures"))
+    ap.add_argument("--outdir", type=Path, default=Path("results/figures"))
     ap.add_argument("--seed", type=int, default=42)
     args = ap.parse_args()
     main(outdir=args.outdir, seed=args.seed)

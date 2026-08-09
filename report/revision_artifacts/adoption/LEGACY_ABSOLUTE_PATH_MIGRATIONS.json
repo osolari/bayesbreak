@@ -1,0 +1,35 @@
+{
+  "schema_version": "1",
+  "status": "legacy-read-only-path-migration",
+  "reason": "The archived sidecars are immutable Phase 4R numerical assets. Consumers must expose repository-relative figure paths without rewriting the historical records.",
+  "records": [
+    {
+      "asset": "shared/figures/results/fig6_welllog.json",
+      "asset_sha256": "5f122e5f2a9320e324a2e7cb07beb4ec91df98d2abfdb0bfa15470258d152119",
+      "field": "figure_path",
+      "archived_value": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig6_welllog.pdf",
+      "canonical_relative_value": "shared/figures/results/fig6_welllog.pdf"
+    },
+    {
+      "asset": "shared/figures/results/fig7_cgh.json",
+      "asset_sha256": "65d1ebd25933c91e31c4e7ca0c6fece865e052dac2d54702f0740e58c170e886",
+      "field": "figure_path",
+      "archived_value": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig7_cgh.pdf",
+      "canonical_relative_value": "shared/figures/results/fig7_cgh.pdf"
+    },
+    {
+      "asset": "shared/figures/results/fig8_spx.json",
+      "asset_sha256": "55f670da3aed5107f2a4ce4430d5f4a187c7b88b3ff5c1e32ab8c2be394e13d5",
+      "field": "figure_path",
+      "archived_value": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig8_spx.pdf",
+      "canonical_relative_value": "shared/figures/results/fig8_spx.pdf"
+    },
+    {
+      "asset": "shared/figures/results/fig9_methylation.json",
+      "asset_sha256": "2c25a43dfa3b00a8eb7f712bd66581f6cb13f60a3a028358f71791328477410e",
+      "field": "figure_path",
+      "archived_value": "/Users/Omid.Solari/workspace/projects/bayesbreak/docs/report/figures/fig9_methylation.pdf",
+      "canonical_relative_value": "shared/figures/results/fig9_methylation.pdf"
+    }
+  ]
+}
