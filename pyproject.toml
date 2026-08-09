@@ -92,7 +92,7 @@ Homepage = "https://github.com/osolari/bayesbreak"
 Documentation = "https://osolari.github.io/bayesbreak"
 Repository = "https://github.com/osolari/bayesbreak"
 Issues = "https://github.com/osolari/bayesbreak/issues"
-Report = "https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf"
+Report = "https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf"
 
 [project.scripts]
 bayesbreak = "bayesbreak.cli:main"

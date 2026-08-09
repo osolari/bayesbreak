@@ -17,17 +17,16 @@ skill is the entry point; use the specialized phase skills for implementation de
 - `status`: compare completed evidence with the gates below. Do not infer completion.
 - `execute <phase>`: modify only the named phase after explicit user confirmation in the
   current conversation.
-- `review-pr`: prepare or open a Gate E review PR from `phase6-adoption-gate-b`; this does
-  not authorize merging, tagging, or publication.
+- `review-pr`: prepare or open a Gate E review PR from the active adoption branch to `main`;
+  this does not authorize merging, tagging, or publication.
 - `release-status`: inspect merge, tag, workflow, and PyPI state without changing them.
 - A general request to inspect, explain, or plan is not execution confirmation.
 - Confirmation for one phase does not authorize later phases or scientific reruns.
 
 ## Current Verified State
 
-- Gates A-D and integrated Phase 4 validation are complete on
-  `phase6-adoption-gate-b`; use the adoption ledger and test manifest as evidence rather
-  than repeating completed scientific runs.
+- Gates A-D and integrated Phase 4 validation are merged on `main`; use the adoption ledger
+  and test manifest as evidence rather than repeating completed scientific runs.
 - Corrected results are `RES-BB-SYN-005`, `RES-BB-CMP-003`, and
   `RES-BB-RD-008Q`. Their historical parents remain immutable, and the two invalid parent
   interpretations remain excluded.
@@ -118,8 +117,8 @@ is identified with status, evidence, owner or reason, and scope of impact.
 
 ### Phase 5: Gate E Review and Release Promotion
 
-1. Open a review PR from `phase6-adoption-gate-b` to the protected default branch and attach
-  the Gate D evidence; PR creation does not imply approval.
+1. Open a review PR from the active adoption branch to `main` and attach the Gate D evidence;
+  PR creation does not imply approval.
 2. Obtain explicit author/reviewer approval for the merge and release candidate.
 3. Merge only after required checks and approvals pass. Do not discard the adoption branch's
   result or provenance history.

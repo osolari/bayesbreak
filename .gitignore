@@ -36,6 +36,7 @@ venv/
 
 # IDE
 .idea/
+.claude/
 
 # Development
 .mypy_cache/
@@ -56,3 +57,6 @@ notebooks/
 # fit cache (pickle of fitted real-data estimators; may be large)
 *.fit.pkl
 .cache/
+
+# Local release intake archive (adopted contents are versioned separately)
+/BayesBreak_Phase6_Final_Release_Package.zip

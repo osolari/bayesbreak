@@ -2,7 +2,7 @@ name: Docs
 
 on:
   push:
-    branches: [master, main]
+    branches: [main]
   workflow_dispatch:
 
 permissions:
@@ -34,7 +34,7 @@ jobs:
         run: mkdocs build --strict
 
       - name: Deploy to gh-pages
-        if: github.ref == 'refs/heads/master' || github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

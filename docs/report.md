@@ -5,7 +5,7 @@
 > Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 > Grouped/Latent-Group Designs.* sAIm Labs.
 > [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
-> [Journal paper](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
+> [Journal paper](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
 </div>
 
 The repository adopts the complete verified Phase 6 report under `report/`. The
@@ -13,13 +13,13 @@ editable source includes the technical book, two journal layouts, executive summ
 canonical implementation handoff, claim and result registries, experiment protocols,
 presentation handoffs, and release validators.
 
-- [Technical book](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Technical_Book.pdf)
-- [Main journal paper, two-column](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf)
-- [Main journal paper, single-column](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf)
-- [Executive summary](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf)
-- [Canonical editable source](https://github.com/osolari/bayesbreak/tree/master/report)
-- [Phase 6 manifest](https://github.com/osolari/bayesbreak/blob/master/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md)
-- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/master/report/coding/CODING_AGENT_HANDOFF.md)
+- [Technical book](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Technical_Book.pdf)
+- [Main journal paper, two-column](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf)
+- [Main journal paper, single-column](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf)
+- [Executive summary](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf)
+- [Canonical editable source](https://github.com/osolari/bayesbreak/tree/main/report)
+- [Phase 6 manifest](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md)
+- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/main/report/coding/CODING_AGENT_HANDOFF.md)
 
 ## Scientific Status
 
