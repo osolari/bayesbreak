@@ -126,8 +126,10 @@ under Python 3.11.14. No baseline test failed.
 ## Remaining Gates
 
 - Gate D implementation, corrected reruns, and integrated validation are complete. Gate E
-  release promotion awaits explicit author approval; no merge, `v2.0.0rc3` tag, or PyPI
-  publication has been performed.
+  review PR #8 merged to `main` at commit
+  `9ef9c554014d3957a831460c3de2aa5149931a88`; `main` is now the default and active
+  development branch. Release promotion still awaits explicit approval; no `v2.0.0rc3`
+  tag or PyPI publication has been performed.
 - Nonblocking scientific limitations remain explicit: routine-specific nonconjugate rate
   proofs are not established; Beta-observation PIT calibration is unavailable; independent
   external changepoint annotations are unavailable; and the removed historical EP node

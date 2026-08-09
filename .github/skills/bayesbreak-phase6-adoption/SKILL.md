@@ -34,7 +34,10 @@ skill is the entry point; use the specialized phase skills for implementation de
 - The canonical registry contains 20 unique results. The terminal package profile records
   324 collected and passed tests, all corrected artifact hashes, strict MkDocs, package
   build/Twine checks, and repository-pinned all-file hooks.
-- The next gate is Gate E review and release promotion. No `v2.0.0rc3` tag or PyPI
+- Gate E review PR #8 merged to `main` at commit
+  `9ef9c554014d3957a831460c3de2aa5149931a88`; `main` is the default branch and the
+  required branch for subsequent work and pushes.
+- The next approval boundary is release promotion. No `v2.0.0rc3` tag or PyPI
   publication exists unless newer evidence proves otherwise.
 
 ## Authority Order

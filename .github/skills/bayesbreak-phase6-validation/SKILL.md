@@ -165,8 +165,9 @@ Before tagging or publication:
 4. After push, verify the release workflow, trusted-publishing result, PyPI version, and
   published artifact metadata/hashes. Record failure states; do not retry by mutating history.
 
-The current verified decision is review-ready, not published. Opening a PR is reversible;
-merge and tag remain separate approval boundaries.
+Gate E review and merge are complete on `main` through PR #8. The current verified decision
+is merged-but-not-published: tag creation and PyPI publication remain a separate explicit
+approval boundary.
 
 ## Final Deliverables
 
