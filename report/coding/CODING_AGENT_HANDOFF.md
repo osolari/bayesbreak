@@ -2,7 +2,7 @@
 
 Canonical handoff: `HANDOFF-BB-CANONICAL-001`
 Phase: `6`
-Canonical JSON SHA-256: `557de254e298fd6f27fcd2d8e746e4fb4092b005eb9443a9bd68d2d628d52c0b`
+Canonical JSON SHA-256: `4d3688a0bfb9930cc392b43d2769576e79fec3910804b8f92e49ffc95004e3e8`
 
 ## Author-fixed scientific scope
 
@@ -658,7 +658,7 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 **Claims:** CLM-BB-012
 
-**Status:** Beta-observation predictive and coordinate-support certification executed; other family and model-averaged cases remain planned
+**Status:** MAP predictive certification executed across concrete families with unsupported logistic-normal failure explicit; model-averaged prediction remains planned
 
 **Hypothesis:** Every family produces finite, normalized or correctly generalized predictive scores on supported inputs and rejects unsupported extrapolation by default.
 

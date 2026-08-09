@@ -96,11 +96,11 @@ Each scientific statement is linked to at least one of four sources of support: 
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
 
 \subsection{\texttt{CLM-BB-012}}
-\textbf{Claim.} Posterior-predictive calculations and exported segmentation and Bayes-curve quantities are partially implemented.\par
-\textbf{Status and confidence.} partially implemented; exact-family coverage is incomplete, BetaObs uses a Gaussian fallback, and coordinate assignment silently clips out of range; medium for interfaces; low for current methyl held-out interpretation.\par
-\textbf{Disposition.} retain the statistical quantities after family-specific posterior prediction and coordinate-support corrections.\par
+\textbf{Claim.} Posterior-predictive calculations and exported segmentation and Bayes-curve quantities are implemented at the scopes declared by each family.\par
+\textbf{Status and confidence.} MAP predictive scoring is certified across the concrete conjugate and Beta-observation families; unsupported logistic-normal prediction fails explicitly; coordinate assignment rejects out-of-support values by default. Model-averaged prediction remains planned.\par
+\textbf{Disposition.} retain family-specific MAP predictive quantities and the corrected methylation child; do not infer model-averaged prediction or reinterpret the excluded parent.\par
 \textbf{Source anchor.} docs/report/sections/4.method.tex:1960-2140; src/bayesbreak/prediction.py.\par
-\textbf{Obligation.} Define observation-scale mean/predictive targets, implement Beta predictive density, reject or explicitly govern extrapolation, and rerun predictive evidence..\par
+\textbf{Obligation.} Implement and certify model-averaged prediction separately; add a routine-specific logistic-normal predictive only with a declared target and reference test.\par
 \textbf{Destinations.} Workstreams REV-BB-009; book CH-BB-11;CH-BB-14;CH-BB-15; paper PPR-BB-01;PPR-BB-07;PPR-BB-08;PPR-BB-10;PPR-BB-11; experiments EPR-BB-012;EPR-BB-014.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
 

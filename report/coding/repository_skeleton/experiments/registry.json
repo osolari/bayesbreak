@@ -187,7 +187,7 @@
       "phase1_id": "EXP-BB-010",
       "title": "Family-specific posterior-prediction tests",
       "claims": "CLM-BB-012",
-      "status": "Beta-observation predictive and coordinate-support certification executed; other family and model-averaged cases remain planned",
+      "status": "MAP predictive certification executed across concrete families with unsupported logistic-normal failure explicit; model-averaged prediction remains planned",
       "hypothesis": "Every family produces finite, normalized or correctly generalized predictive scores on supported inputs and rejects unsupported extrapolation by default.",
       "competing": "Base-class fallbacks hide family-specific errors.",
       "design": "Unit and integration cases for each family, MAP versus model-averaged prediction, left/right out-of-range coordinates, zero weights, edge parameters, and invalid inputs.",

@@ -141,4 +141,6 @@ class BayesBreakBernoulli(BayesBreakSegmenter):
         beta_post = beta + (W_post - S_post)
         p_hat = np.clip(alpha_post / (alpha_post + beta_post), 1e-12, 1.0 - 1e-12)
         y_new = np.asarray(y_new, dtype=float)
+        if np.any(~np.isfinite(y_new)) or np.any((y_new != 0.0) & (y_new != 1.0)):
+            raise ValueError("Bernoulli prediction requires y_new in {0, 1}")
         return y_new * math.log(p_hat) + (1.0 - y_new) * math.log(1.0 - p_hat)

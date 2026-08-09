@@ -159,7 +159,9 @@ class BayesBreakBeta(BayesBreakSegmenter):
         alpha_post = alpha + S_post
         beta_post = alpha + beta + N_post - alpha_post
         # Beta density log p(y) = (a-1) log y + (b-1) log(1-y) - log B(a, b)
-        y_new = np.clip(np.asarray(y_new, dtype=float), 1e-12, 1.0 - 1e-12)
+        y_new = np.asarray(y_new, dtype=float)
+        if np.any(~np.isfinite(y_new)) or np.any((y_new <= 0.0) | (y_new >= 1.0)):
+            raise ValueError("BayesBreakBeta prediction requires y_new strictly in (0, 1)")
         log_B = (
             math.lgamma(alpha_post) + math.lgamma(beta_post) - math.lgamma(alpha_post + beta_post)
         )

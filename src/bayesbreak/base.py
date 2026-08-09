@@ -175,21 +175,14 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
     ) -> FloatArray:
         """Per-sample log posterior-predictive density on MAP block ``(a, b]``.
 
-        Default: a Gaussian fallback around the segment posterior mean.
-        Conjugate families override with the exact closed form
-        ``Z(α_B + S_new, β_B + W_new) / Z(α_B, β_B)``.
+        Every concrete family must implement its own predictive distribution.
+        An implicit Gaussian fallback would silently change the observation
+        model and is therefore prohibited.
         """
 
-        require_fitted(self, ["map_segment_means_", "hyper_"])
-        assert self.map_segment_means_ is not None and self.boundaries_internal_ is not None
-
-        seg_idx = int(np.searchsorted(self.boundaries_internal_, a, side="right"))
-        seg_idx = min(max(seg_idx - 1, 0), len(self.map_segment_means_) - 1)
-        mu = float(self.map_segment_means_[seg_idx])
-
-        sigma2 = float(self.hyper_.get("sigma2", 1.0)) if self.hyper_ is not None else 1.0
-        denom = 2.0 * sigma2
-        return -0.5 * np.log(2.0 * np.pi * sigma2) - w_new * (y_new - mu) ** 2 / denom
+        raise NotImplementedError(
+            f"{type(self).__name__} does not implement posterior-predictive scoring"
+        )
 
     # ------------------------------------------------------------------
     # Length-prior helpers

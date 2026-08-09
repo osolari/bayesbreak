@@ -195,8 +195,20 @@ in-support, and unsorted query order is preserved. Each call records
 `prediction_metadata_` and `prediction_provenance_` with the selected policy
 and fitted coordinate support.
 
-`BayesBreakBetaObs` overrides the generic fallback with its fitted observation
-family. For each MAP block it integrates
+Every concrete family used for MAP predictive scoring implements its own
+observation-family distribution; the abstract base raises `NotImplementedError`
+instead of silently substituting a Gaussian model. Direct numerical or analytic
+reference tests cover Gaussian, Poisson, negative-binomial, Bernoulli,
+Beta-Binomial, fractional-Beta, and Beta-observation scoring. Unsupported
+logistic-normal prediction fails explicitly. Model-averaged prediction over
+partitions remains a separate planned API.
+
+For `BayesBreakBinomial`, prediction `sample_weight` supplies the positive
+integer new-observation trial count; omission gives the one-trial Bernoulli
+special case. Bernoulli and fractional-Beta prediction reject values outside
+their declared support rather than clipping them.
+
+For `BayesBreakBetaObs`, each MAP block integrates
 `Beta(y_new | phi_new * mu, phi_new * (1 - mu))` over the fitted quadrature
 posterior for `mu`. In this family, prediction `sample_weight` values are the
 known positive `phi_new` descriptors; training likelihood-power weights remain

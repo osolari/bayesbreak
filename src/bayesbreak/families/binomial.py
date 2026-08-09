@@ -155,8 +155,9 @@ class BayesBreakBinomial(BayesBreakSegmenter):
     ) -> np.ndarray:
         """Beta-Binomial posterior-predictive log-density on block ``(a, b]``.
 
-        For simplicity, we use ``n_trials = 1`` (Bernoulli-like) for new data
-        unless the caller provides integer ``y_new`` with an implicit interpretation.
+        ``w_new`` supplies the known number of trials for each new observation.
+        The prediction router uses one trial per observation when no descriptor
+        is supplied, recovering the Bernoulli special case.
         """
 
         assert (
@@ -173,8 +174,26 @@ class BayesBreakBinomial(BayesBreakSegmenter):
         alpha_post = alpha + S_post
         beta_post = beta + (N_post - S_post)
 
-        y_new = np.asarray(y_new, dtype=float)
-        # Assume one trial per new point (commonest Bernoulli-test use case).
-        p_hat = alpha_post / (alpha_post + beta_post)
-        p_hat = np.clip(p_hat, 1e-12, 1.0 - 1e-12)
-        return y_new * math.log(p_hat) + (1.0 - y_new) * math.log(1.0 - p_hat)
+        successes = np.asarray(y_new, dtype=float)
+        trials = np.asarray(w_new, dtype=float)
+        if successes.shape != trials.shape:
+            raise ValueError("Binomial y_new and n_trials must have the same shape")
+        if np.any(~np.isfinite(successes)) or np.any(successes != np.floor(successes)):
+            raise ValueError("Binomial y_new must contain finite integer counts")
+        if np.any(~np.isfinite(trials)) or np.any(trials < 1) or np.any(trials != np.floor(trials)):
+            raise ValueError("Binomial prediction n_trials must be positive integers")
+        if np.any(successes < 0) or np.any(successes > trials):
+            raise ValueError("Binomial y_new must satisfy 0 <= y_new <= n_trials")
+
+        log_combination = (
+            gammaln(trials + 1.0) - gammaln(successes + 1.0) - gammaln(trials - successes + 1.0)
+        )
+        log_beta_posterior = (
+            gammaln(alpha_post + successes)
+            + gammaln(beta_post + trials - successes)
+            - gammaln(alpha_post + beta_post + trials)
+        )
+        log_beta_training = (
+            math.lgamma(alpha_post) + math.lgamma(beta_post) - math.lgamma(alpha_post + beta_post)
+        )
+        return log_combination + log_beta_posterior - log_beta_training
