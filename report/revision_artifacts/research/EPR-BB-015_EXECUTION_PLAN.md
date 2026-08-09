@@ -70,4 +70,5 @@ The bounded re-pilot executed from commit `236ec8c509224688cc6e29d855a2df182a869
 in 21.28 seconds at 154 MB peak RSS. EP timed out at 20.01 seconds and the timeout is retained.
 All non-EP scientific outputs matched the first pilot. The revised full-suite projection is
 17.7 minutes, below the 30-minute resource threshold. Full execution remains a separate explicit
-approval boundary.
+approval boundary. The 400-run full suite was explicitly approved after review of the bounded
+re-pilot; execution remains pending until the approved-status revision is committed.
