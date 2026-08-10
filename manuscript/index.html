@@ -27,7 +27,7 @@
     
     
       
-        <title>Manuscript PDF - BayesBreak</title>
+        <title>Manuscript - BayesBreak</title>
       
     
     
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#phase-6-report" class="md-skip">
+        <a href="#manuscript" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Manuscript PDF
+              Manuscript
             
           </span>
         </div>
@@ -1571,7 +1571,7 @@
   <span class="md-ellipsis">
     
   
-    Manuscript PDF
+    Manuscript
   
 
     
@@ -1589,7 +1589,7 @@
   <span class="md-ellipsis">
     
   
-    Manuscript PDF
+    Manuscript
   
 
     
@@ -1770,28 +1770,28 @@
   
 
 
-<h1 id="phase-6-report">Phase 6 Report<a class="headerlink" href="#phase-6-report" title="Permanent link">&para;</a></h1>
+<h1 id="manuscript">Manuscript<a class="headerlink" href="#manuscript" title="Permanent link">&para;</a></h1>
 <div class="saim-cite">
 <blockquote>
 <p><strong>Solari, O. S.</strong> (2026). <em>Generalized Hierarchical Bayesian
 Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 Grouped/Latent-Group Designs.</em> sAIm Labs.
 <a href="https://arxiv.org/abs/2603.14681" target="_blank">arXiv:2603.14681</a> ·
-<a href="https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf" target="_blank">Journal paper</a></p>
+<a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf" target="_blank">Journal paper</a></p>
 </blockquote>
 </div>
-<p>The repository adopts the complete verified Phase 6 report under <code>report/</code>. The
+<p>The repository keeps the complete verified manuscript under <code>docs/manuscript/</code>. The
 editable source includes the technical book, two journal layouts, executive summary,
 canonical implementation handoff, claim and result registries, experiment protocols,
 presentation handoffs, and release validators.</p>
 <ul>
-<li><a href="https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Technical_Book.pdf">Technical book</a></li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf">Main journal paper, two-column</a></li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf">Main journal paper, single-column</a></li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf">Executive summary</a></li>
-<li><a href="https://github.com/osolari/bayesbreak/tree/main/report">Canonical editable source</a></li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md">Phase 6 manifest</a></li>
-<li><a href="https://github.com/osolari/bayesbreak/blob/main/report/shared/handoffs/coding_agent_handoff.json">Canonical coding handoff</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Technical_Book.pdf">Technical book</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf">Main journal paper, two-column</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf">Main journal paper, single-column</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Executive_Summary.pdf">Executive summary</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/tree/main/docs/manuscript">Canonical editable source</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md">Phase 6 manifest</a></li>
+<li><a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/shared/handoffs/coding_agent_handoff.json">Canonical coding handoff</a></li>
 </ul>
 <h2 id="scientific-status">Scientific Status<a class="headerlink" href="#scientific-status" title="Permanent link">&para;</a></h2>
 <p>The methodology and research direction are unchanged. BayesBreak remains a generalized
@@ -1818,14 +1818,14 @@ intended conclusions:</p>
 receive new result identifiers, parent-result links, and data, configuration, code, and
 environment hashes.</p>
 <h2 id="build-and-validation">Build and Validation<a class="headerlink" href="#build-and-validation" title="Permanent link">&para;</a></h2>
-<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>report
+<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nb">cd</span><span class="w"> </span>docs/manuscript
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>make<span class="w"> </span>validate-phase6
 </span></code></pre></div>
 <p>This builds the 168-page technical book, 35-page two-column paper, 42-page
 single-column paper, and 12-page executive summary, then runs the synchronization,
 presentation, and mathematical checks. Historical release-validation records remain under
-<code>report/releases/phase6/</code> and <code>report/revision_artifacts/</code>.
-The committed PDFs under <code>report/releases/phase6/</code> are the checksum-verified release
+<code>docs/manuscript/releases/phase6/</code> and <code>docs/manuscript/revision_artifacts/</code>.
+The committed PDFs under <code>docs/manuscript/releases/phase6/</code> are the checksum-verified release
 artifacts.</p>
 
 

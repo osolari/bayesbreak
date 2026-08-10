@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../report/">
+        <link rel="prev" href="../manuscript/">
       
       
       
@@ -1553,14 +1553,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../report/" class="md-nav__link">
+      <a href="../manuscript/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Manuscript PDF
+    Manuscript
   
 
     
@@ -2127,22 +2127,22 @@
 <h1 id="changelog">Changelog<a class="headerlink" href="#changelog" title="Permanent link">&para;</a></h1>
 <h2 id="phase-6-report-adoption-2026-08-05">Phase 6 Report Adoption - 2026-08-05<a class="headerlink" href="#phase-6-report-adoption-2026-08-05" title="Permanent link">&para;</a></h2>
 <ul>
-<li>Replaced the legacy <code>docs/report/</code> manuscript wholesale with the complete Phase 6
-  source under <code>report/</code>, including the technical book, journal layouts, executive
+<li>Consolidated the complete manuscript under <code>docs/manuscript/</code>, including the technical
+  book, journal layouts, executive
   summary, canonical registries, coding handoff, repository skeleton, presentation
   handoffs, and verification records.</li>
-<li>Added all signed release artifacts under <code>report/releases/phase6/</code> and verified them
+<li>Added all signed release artifacts under <code>docs/manuscript/releases/phase6/</code> and verified them
   against the supplied SHA-256 manifest.</li>
 <li>Preserved all 53 archived numerical assets; each matches the Phase 4R read-only hash
   baseline. The two excluded historical computations retain their recorded status.</li>
 <li>Redirected figure and table generation to <code>results/</code> so new executions cannot
   overwrite archived report assets.</li>
 <li>Recorded the source archive's case-colliding bibliography manifests and the normalized
-  macOS adoption in <code>report/revision_artifacts/adoption/ADOPTION_LEDGER.md</code>.</li>
+  macOS adoption in <code>docs/manuscript/revision_artifacts/adoption/ADOPTION_LEDGER.md</code>.</li>
 </ul>
 <h2 id="200rc3-unreleased">[2.0.0rc3] — Unreleased<a class="headerlink" href="#200rc3-unreleased" title="Permanent link">&para;</a></h2>
 <p>Aligns the implementation with the 2026-05-15 Phase Three manuscript
-(now in <code>docs/report/</code>, replacing the May 14 draft). The Phase Three
+(now archived under <code>docs/manuscript/</code>, replacing the May 14 draft). The Phase Three
 draft adds a dedicated §5b limitations section and several named
 theorems / propositions / assumptions / definitions, and rolls back some
 of the prior draft's broader literature additions. This release updates
@@ -2195,7 +2195,7 @@ docstrings and code surfaces to track those changes.</p>
 </ul>
 <h2 id="200-rc2-unreleased">[2.0.0-rc2] — Unreleased<a class="headerlink" href="#200-rc2-unreleased" title="Permanent link">&para;</a></h2>
 <p>Aligns the implementation with the 2026-05-14 revised manuscript in
-<code>docs/report/</code> (replaces the earlier May 9 draft). Surfaces the
+<code>docs/manuscript/</code> (replaces the earlier May 9 draft). Surfaces the
 "Block-score contract" of §<code>sec:setup</code>, adds the absolute-probability TV
 diagnostic from Corollary <code>cor:abs-prob</code>, declares per-family
 moment-sign contracts (§5 5-C1), adds a prior-sensitivity diagnostic
@@ -2254,7 +2254,7 @@ to simulated data.</p>
     with <code>nloyfer/wgbs_tools</code> + <code>nloyfer/UXM_deconv</code>, the companion
     software for <code>loyfer2023atlas</code>. Records GEO accession
     <code>GSE186458</code> as the canonical raw source.</li>
-<li>Manuscript caption hygiene in <code>docs/report/sections/6.evaluation.tex</code>:
+<li>Manuscript caption hygiene in the source now under <code>docs/manuscript/</code>:
   the four real-data figures (<code>fig:welllog</code>, <code>fig:cgh</code>, <code>fig:spx</code>,
   <code>fig:methylation</code>) no longer carry the <code>(PLANNED)</code> prefix —
   populated PDFs are reported as observed. <code>tab:realdata-status</code>
@@ -2264,7 +2264,7 @@ to simulated data.</p>
 </ul>
 <h2 id="200-rc1-earlier-may-2026">[2.0.0-rc1] — Earlier May 2026<a class="headerlink" href="#200-rc1-earlier-may-2026" title="Permanent link">&para;</a></h2>
 <p>This release aligns the implementation with the May 2026 revision of the
-manuscript at <code>docs/report/bayesbreak.pdf</code>. The whole DP layer, latent-group
+manuscript now archived under <code>docs/manuscript/</code>. The whole DP layer, latent-group
 EM, prediction layer, real-data pipelines, and figure aesthetic now match
 the report's terminology, conventions, and reproducibility constraints.</p>
 <h3 id="breaking">Breaking<a class="headerlink" href="#breaking" title="Permanent link">&para;</a></h3>
