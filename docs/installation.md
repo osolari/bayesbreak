@@ -25,7 +25,7 @@ combine them, e.g. `pip install bayesbreak[plots,datasets,baselines]`.
 | `datasets-live` | `yfinance` | Live S&P 500 download path used by `load_spx()`. |
 | `baselines` | `ruptures` | External-baseline wrappers for PELT, optimal partitioning, BS, WBS. |
 | `baselines-r` | `rpy2` (plus a working R install) | R-side baselines: CBS via `DNAcopy`, SMUCE via `stepR`, RJMCMC-style MCMC via `mcp`. |
-| `notebooks` | `jupyter`, `jupyterlab`, `ipykernel` | Run the tutorials locally. |
+| `notebooks` | `jupyter`, `jupyterlab`, `ipykernel`, `nbconvert`, `nbformat`, `matplotlib`, `pandas` | Run and validate the tutorials locally. |
 | `docs` | `mkdocs`, `mkdocs-material`, `mkdocstrings[python]` | Build this site locally. |
 | `dev` | `pytest`, `pytest-cov`, `ruff`, `mypy`, `pre-commit`, `nbstripout`, `codespell` | Development workflow. |
 

@@ -1,0 +1,29 @@
+{
+  "result_id": "RES-BB-SYN-006",
+  "protocol_id": "EPR-BB-015",
+  "artifact_sha256": "f0731f55c1682fd42e89b3ea0f67ec593c887cfbfeae3176fc8cc623e81f7024",
+  "code_commit": "96464039e12b43207735835b004b0a59a9966b57",
+  "plan_sha256": "3b1e8d937a892ba29b2c99f7c7efaacc41001aaf6f22c56be7838c29906f70ab",
+  "environment_sha256": "2bb8cd82f87f01c2be2c4ed673281ba8bf51e6a74b85856d09e05379c21482f7",
+  "record_count": 400,
+  "identity_checks_passed": true,
+  "seed_schedule_passed": true,
+  "input_hashes_complete": true,
+  "top_level_status_counts": {
+    "executed": 400
+  },
+  "nested_method_status_counts": {
+    "ep:timed-out": 50,
+    "laplace:executed": 50,
+    "quadrature-40:executed": 50
+  },
+  "elapsed_wall_seconds": 1114.2574783339514,
+  "peak_rss": {
+    "value": 169656320,
+    "self_value": 169656320,
+    "children_value": 156008448,
+    "units": "bytes"
+  },
+  "scientific_interpretation": "pending-independent-review",
+  "all_required_checks_passed": true
+}

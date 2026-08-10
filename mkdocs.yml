@@ -88,6 +88,10 @@ nav:
       - Baselines comparison: tutorials/05_baselines.ipynb
       - Sliding-window for large n: tutorials/06_sliding_window.ipynb
       - Latent-group EM: tutorials/07_latent_groups.ipynb
+      - Core DP verification: tutorials/08_core_dp_verification.ipynb
+      - Family and prediction verification: tutorials/09_family_prediction_verification.ipynb
+      - Advanced model verification: tutorials/10_advanced_model_verification.ipynb
+      - Result and provenance explorer: tutorials/11_result_provenance_explorer.ipynb
   - Reference:
       - API: api.md
       - Math notes: math.md

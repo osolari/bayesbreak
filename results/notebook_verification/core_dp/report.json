@@ -1,0 +1,36 @@
+{
+  "environment": {
+    "python": "3.11.14",
+    "bayesbreak": "2.0.0rc3",
+    "numpy": "2.4.2",
+    "pandas": "3.0.0",
+    "matplotlib": "3.10.8",
+    "platform": "macOS-26.3-arm64-arm-64bit",
+    "seed": 20260809
+  },
+  "fixture": {
+    "n": 110,
+    "true_boundaries": [
+      0,
+      35,
+      70,
+      110
+    ]
+  },
+  "fit": {
+    "seconds": 2.2707455409690738,
+    "k_map": 3,
+    "boundaries": [
+      0,
+      35,
+      70,
+      110
+    ]
+  },
+  "status_counts": {
+    "pass": 17,
+    "fail": 0,
+    "error": 0
+  },
+  "all_required_checks_passed": true
+}

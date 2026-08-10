@@ -1,0 +1,5 @@
+case,status,exception,message,elapsed_ms
+k_max=0,pass,ValueError,k_max must be a positive integer.,0.008416012860834599
+nonfinite y,pass,ValueError,y must contain only finite values.,0.04237494431436062
+length mismatch,pass,ValueError,"X and y must agree on the sample dimension: X has 109, y has 110.",0.008167000487446785
+predict before fit,pass,RuntimeError,"Estimator is not fitted yet. Call fit() before using this method. Missing attributes: ['map_segment_means_', 'x_design_', 'map_boundaries_'].",0.008499948307871819

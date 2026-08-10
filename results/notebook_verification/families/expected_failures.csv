@@ -1,0 +1,5 @@
+case,status,exception,message,elapsed_ms,traceback
+bernoulli nonbinary,pass,ValueError,"Bernoulli prediction requires y_new in {0, 1}",0.12579199392348528,
+binomial fractional trials,pass,ValueError,Binomial prediction n_trials must be positive integers,0.08366699330508709,
+beta boundary zero,pass,ValueError,"BayesBreakBeta prediction requires y_new strictly in (0, 1)",0.06962497718632221,
+logistic prediction unsupported,pass,NotImplementedError,BayesBreakLogisticNormal does not implement posterior-predictive scoring,0.05137501284480095,

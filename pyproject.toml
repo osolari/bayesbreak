@@ -85,6 +85,10 @@ notebooks = [
     "jupyter>=1.0",
     "jupyterlab>=4.0",
     "ipykernel>=6.25",
+    "nbconvert>=7.16",
+    "nbformat>=5.9",
+    "matplotlib>=3.6",
+    "pandas>=2.0",
 ]
 
 [project.urls]

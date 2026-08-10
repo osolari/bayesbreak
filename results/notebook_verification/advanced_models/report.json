@@ -1,0 +1,37 @@
+{
+  "bayesbreak_version": "2.0.0rc3",
+  "seed": 20260811,
+  "multivariate": {
+    "shared_f1": 1.0,
+    "independent_mean_f1": 0.9333333333333332,
+    "shared_seconds": 0.06584183394443244,
+    "independent_seconds": 0.18267758295405656
+  },
+  "replicates": {
+    "pooled_max_abs_error": 2.2737367544323206e-13,
+    "diagnostics_passed": true
+  },
+  "sliding_window": {
+    "nearest_boundary_error": 0,
+    "seconds": 0.14864637493155897,
+    "interpretation": "approximate stitched fit"
+  },
+  "groups": {
+    "supervised_accuracy": 1.0,
+    "aligned_latent_accuracy": 0.5,
+    "supervised_seconds": 0.1822828750591725,
+    "mixture_seconds": 14.580236749956384
+  },
+  "baselines": {
+    "algorithms": [
+      "pelt",
+      "optimal_partitioning",
+      "binary_segmentation",
+      "wild_binary_segmentation",
+      "fearnhead_exact",
+      "bayesbreak_map"
+    ],
+    "all_metrics_finite": true
+  },
+  "all_required_checks_passed": true
+}
