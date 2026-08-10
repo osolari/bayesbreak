@@ -22,9 +22,8 @@ make paper                # two-column journal paper
 make paper-single         # single-column review paper
 make executive            # executive summary
 make handoff-check        # canonical coding-handoff synchronization
-make skeleton-check       # repository-interface and explicit-status checks
 make presentation-check   # presentation-source handoffs; no slides
-make validate-phase6      # build every target and run the final verification suite
+make validate-phase6      # build every target and run current source checks
 ```
 
 Generated PDFs:
@@ -44,8 +43,7 @@ build/executive/bayesbreak-executive-summary.pdf
 - `executive/`: decision-oriented summary derived from the book and paper; it introduces no new scientific claims.
 - `shared/bibliography/references.bib`: 38 bibliography records.
 - `shared/bibliography/annotated_entries/`: one project-specific annotation for each book reference.
-- `shared/handoffs/coding_agent_handoff.json`: canonical implementation specification rendered into the book appendix and standalone Markdown.
-- `coding/repository_skeleton/`: typed interface blueprint with `scientific_implementation_complete=false`.
+- `shared/handoffs/coding_agent_handoff.json`: canonical implementation specification rendered into the book appendix and task registry.
 - `presentation_handoffs/`: technical and executive content handoffs; no slide sources are generated.
 - `shared/figures/tikz/`: editable scientific diagrams and the two executive release diagrams.
 - `shared/figures/results/` and `shared/tables/results/`: archived executed numerical assets, verified unchanged from the corrective Phase 4R source.

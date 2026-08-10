@@ -20,7 +20,7 @@ ships as the ``welldata`` object in the R package
 ``changepoint.influence`` (CRAN). The CRAN page itself documents it as
 "a vector of length 4050. The data described and provided in
 Fearnhead and Clifford (2003)." This caveat is reproduced in the
-``CODING_AGENT_HANDOFF.md`` author-verification list; a finalized
+canonical coding-handoff author-verification list; a finalized
 real-data run that hits the ``Lai2005fig4`` label-mismatch should
 switch to ``changepoint.influence::welldata``.
 """

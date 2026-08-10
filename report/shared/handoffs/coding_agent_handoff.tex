@@ -5,7 +5,7 @@
 
 \begin{statusbox}[Canonical synchronization]
 Canonical handoff ID: \texttt{HANDOFF-BB-CANONICAL-001}. Phase: \texttt{6}. Canonical JSON SHA-256:
-\path{51f9c42a7086b06b9c77faea16964ce05242794fb1f81dc09a0e543857777b2a}. The book appendix, task registry, standalone Markdown handoff, repository registries, and synchronization manifest are checked mechanically.
+\path{d46ea69340b8e43253a89dc1b7d454b9d9b8d83ebfd53fb0c09a49ebe1b7f480}. The book appendix, task registry, standalone Markdown handoff, repository registries, and synchronization manifest are checked mechanically.
 \end{statusbox}
 
 \section{Author-fixed scientific scope}
@@ -33,23 +33,21 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 
 \section{Repository bootstrap and explicit status}
 \begin{statusbox}[Repository status]
-\textbf{Root.} \path{coding/repository_skeleton}\par
-\textbf{Status.} interface blueprint; scientific implementation intentionally incomplete\par
-\textbf{Environment.} Use a pinned environment selected during CODE-BB-012; the exact package version source is unresolved under CODE-BB-013.\par
-\textbf{Use restriction.} Do not publish or install the skeleton as a completed BayesBreak release. It exists to expose approved modules, schemas, task IDs, and explicit incomplete states.
+\textbf{Root.} \path{.}\par
+\textbf{Status.} implemented package; verification state is recorded in provenance/test-manifest.json\par
+\textbf{Environment.} Use the pinned BayesBreak environment and the canonical version from src/bayesbreak/\_version.py.\par
+\textbf{Use restriction.} Install the package from the repository root and preserve result/version provenance for every scientific execution.
 \end{statusbox}
 \paragraph{Required top-level paths.}
 \begin{itemize}[leftmargin=1.7em,itemsep=1.5pt,topsep=2pt]
 \item \path{src/bayesbreak}
 \item \path{tests}
-\item \path{configs}
 \item \path{schemas}
-\item \path{experiments}
 \item \path{scripts}
-\item \path{data}
-\item \path{docs/data_cards}
-\item \path{artifacts}
+\item \path{docs}
+\item \path{results}
 \item \path{provenance}
+\item \path{report}
 \end{itemize}
 
 \subsection{Module ownership}
@@ -141,9 +139,8 @@ BayesBreak is the method developed in Generalized Hierarchical Bayesian Segmenta
 \item \path{execution.parent_result_id}
 \end{itemize}
 \subsection{Commands}
-\paragraph{Skeleton Validation.}
+\paragraph{Synchronization Validation.}
 \begin{itemize}[leftmargin=1.7em,itemsep=1.5pt,topsep=2pt]
-\item \path{python coding/repository_skeleton/scripts/check_skeleton.py}
 \item \path{python scripts/check_sync.py}
 \end{itemize}
 \paragraph{Implementation Tests After Code Exists.}
@@ -520,13 +517,11 @@ The task cards below are generated directly from the canonical handoff. No task 
 \begin{itemize}[leftmargin=1.7em,itemsep=1.5pt,topsep=2pt]
 \item \path{shared/handoffs/}
 \item \path{book/appendices/coding_agent_handoff.tex}
-\item \path{coding/CODING_AGENT_HANDOFF.md}
 \item \path{scripts/check_sync.py}
 \end{itemize}
 \textbf{Interfaces.}
 \begin{itemize}[leftmargin=1.7em,itemsep=1.5pt,topsep=2pt]
 \item \path{canonical handoff schema}
-\item \path{Markdown renderer}
 \item \path{LaTeX renderer}
 \end{itemize}
 \textbf{Theory-to-code invariants.}
@@ -536,7 +531,7 @@ The task cards below are generated directly from the canonical handoff. No task 
 \item hash of normalized content recorded.
 \end{itemize}
 \textbf{Dependencies.} REV-BB-002;REV-BB-012\par
-\textbf{Acceptance.} Book appendix and standalone handoff pass semantic and ID synchronization checks.
+\textbf{Acceptance.} Book appendix and task registry pass semantic and ID synchronization checks.
 \end{statusbox}
 
 \begin{statusbox}[CODE-BB-015]
@@ -916,6 +911,6 @@ reproducibility & Pinned environment, seeds, hashes, commands, clean checkout, a
 \item Posterior prediction is family-specific and out-of-range coordinates follow an explicit recorded policy.
 \item Comparator axes, reference type, matching rule, and tuning budget are validated before metric computation.
 \item Every corrected result has a new ID, a parent link, and data, configuration, code, and environment hashes; archived populated values remain unchanged.
-\item Book appendix, standalone coding handoff, repository registries, figures, tables, and metadata pass synchronization checks.
+\item Book appendix, task registry, figures, tables, and metadata pass synchronization checks.
 \item Every unresolved proof, test, computation, annotation, or release decision is stated directly rather than represented as complete.
 \end{itemize}

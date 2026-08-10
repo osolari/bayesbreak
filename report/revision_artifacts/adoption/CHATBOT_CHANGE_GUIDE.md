@@ -1,5 +1,10 @@
 # BayesBreak Change Guide for Chatbots
 
+> Historical adoption input. Current implementation, experiment, and result status lives in
+> `provenance/test-manifest.json`, `shared/metadata/experiment_protocols.json`, and
+> `shared/metadata/result_interpretation.json`. The counts and rerun list below describe the
+> pre-adoption state and must not be used as current status.
+
 ## Purpose
 
 Use this file to understand what changed during the BayesBreak manuscript revision and what must remain unchanged in future work.

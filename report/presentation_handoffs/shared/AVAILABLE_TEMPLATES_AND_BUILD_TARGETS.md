@@ -14,7 +14,7 @@ No slide source is created in this project. A later presentation workflow may ad
 | Two-column journal paper | `make paper` | `build/paper/bayesbreak-main-paper.pdf` |
 | Single-column review paper | `make paper-single` | `build/paper-single/bayesbreak-main-paper-single.pdf` |
 | Executive summary | `make executive` | `build/executive/bayesbreak-executive-summary.pdf` |
-| Phase 6 final validation | `make validate-phase6` | Builds all current documents and runs mathematical, source, handoff, repository, presentation, bibliography, result-integrity, and release checks. |
+| Current report validation | `make validate-phase6` | Builds all current documents and runs handoff, presentation, and mathematical checks. Historical release checks are preserved in the signed Phase 6 records. |
 
 ## Reusable sources
 

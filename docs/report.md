@@ -19,7 +19,7 @@ presentation handoffs, and release validators.
 - [Executive summary](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf)
 - [Canonical editable source](https://github.com/osolari/bayesbreak/tree/main/report)
 - [Phase 6 manifest](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md)
-- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/main/report/coding/CODING_AGENT_HANDOFF.md)
+- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/main/report/shared/handoffs/coding_agent_handoff.json)
 
 ## Scientific Status
 
@@ -36,8 +36,8 @@ error conditions.
 
 ## Result Status
 
-The release contains 14 scientific result records. Twelve are usable subject to their
-recorded limitations. Two remain real historical computations but are excluded from their
+The current registry contains 20 scientific result records, including corrected children and
+pending-review research extensions. Two historical computations remain excluded from their
 intended conclusions:
 
 - `RES-BB-CMP-002`: excluded from comparator conclusions because the compared
@@ -59,6 +59,7 @@ make validate-phase6
 
 This builds the 168-page technical book, 35-page two-column paper, 42-page
 single-column paper, and 12-page executive summary, then runs the synchronization,
-skeleton, presentation, mathematical, bibliography, source, and result-integrity checks.
+presentation, and mathematical checks. Historical release-validation records remain under
+`report/releases/phase6/` and `report/revision_artifacts/`.
 The committed PDFs under `report/releases/phase6/` are the checksum-verified release
 artifacts.

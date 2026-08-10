@@ -11,7 +11,6 @@ ROOT = Path(__file__).resolve().parents[1]
 SRC = ROOT / "shared/handoffs/coding_agent_handoff.json"
 TEX_DETAIL = ROOT / "shared/handoffs/coding_agent_handoff.tex"
 TEX_SUMMARY = ROOT / "shared/handoffs/implementation_task_registry.tex"
-MD_OUT = ROOT / "coding/CODING_AGENT_HANDOFF.md"
 SYNC_MANIFEST = ROOT / "shared/handoffs/SYNC_MANIFEST.json"
 
 
@@ -355,7 +354,6 @@ def render_sync_manifest(data: dict[str, Any]) -> str:
         "generated_files": [
             str(TEX_DETAIL.relative_to(ROOT)),
             str(TEX_SUMMARY.relative_to(ROOT)),
-            str(MD_OUT.relative_to(ROOT)),
         ],
         "counts": {
             "tasks": len(data["tasks"]),
@@ -373,8 +371,6 @@ def main() -> None:
     data = json.loads(SRC.read_text())
     TEX_DETAIL.write_text(render_detail(data))
     TEX_SUMMARY.write_text(render_summary(data))
-    MD_OUT.parent.mkdir(parents=True, exist_ok=True)
-    MD_OUT.write_text(render_markdown(data))
     SYNC_MANIFEST.write_text(render_sync_manifest(data))
     print(
         f"rendered {len(data['tasks'])} tasks, {len(data['experiments'])} experiments, "

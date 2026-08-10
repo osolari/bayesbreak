@@ -3,7 +3,6 @@
   "checks": {
     "generated:shared/handoffs/coding_agent_handoff.tex": true,
     "generated:shared/handoffs/implementation_task_registry.tex": true,
-    "generated:coding/CODING_AGENT_HANDOFF.md": true,
     "generated:shared/handoffs/SYNC_MANIFEST.json": true,
     "unique_task_ids": true,
     "unique_experiment_ids": true,
@@ -13,9 +12,6 @@
     "claims_match_metadata": true,
     "experiments_match_metadata": true,
     "results_match_metadata": true,
-    "repository_task_ids_match": true,
-    "repository_experiment_ids_match": true,
-    "repository_explicitly_incomplete": true,
     "book_appendix_uses_generated_source": true
   },
   "details": {

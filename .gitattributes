@@ -1,3 +1,2 @@
-# Phase 6 report sources and the author change guide are retained byte-for-byte.
+# Historical Phase 6 report sources are retained byte-for-byte.
 report/** -whitespace
-BayesBreak_Chatbot_Change_Guide.md -whitespace

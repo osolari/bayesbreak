@@ -16,7 +16,7 @@ BayesBreak is a generalized hierarchical Bayesian method for offline multiple-ch
 | Main journal paper | `paper/main.tex`, `paper/main-two-column.tex` | `compiled/BayesBreak_Final_Main_Journal_Paper.pdf` |
 | Single-column review paper | `paper/main.tex`, `paper/main-single-column.tex` | `compiled/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf` |
 | Executive summary | `executive/main.tex` | `compiled/BayesBreak_Executive_Summary.pdf` |
-| Coding handoff | `shared/handoffs/coding_agent_handoff.json` | `coding/CODING_AGENT_HANDOFF.md` |
+| Coding handoff | `shared/handoffs/coding_agent_handoff.json` | Book appendix generated from the canonical JSON |
 
 ## Source precedence for presentation preparation
 

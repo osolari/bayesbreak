@@ -20,7 +20,6 @@
 | `shared/figures/tikz/` | Editable scientific and executive diagrams | authoritative |
 | `shared/figures/results/` and `shared/tables/results/` | Archived executed-result assets | read-only |
 | `presentation_handoffs/` | Technical and executive presentation-source constraints | authoritative communication handoff |
-| `coding/repository_skeleton/` | Interface/schema blueprint with explicit incomplete states | planned implementation surface |
 
 ## Generated synchronized views
 
@@ -28,7 +27,6 @@
 |---|---|
 | `shared/handoffs/coding_agent_handoff.tex` | `shared/handoffs/coding_agent_handoff.json` |
 | `shared/handoffs/implementation_task_registry.tex` | `shared/handoffs/coding_agent_handoff.json` |
-| `coding/CODING_AGENT_HANDOFF.md` | `shared/handoffs/coding_agent_handoff.json` |
 | `shared/handoffs/SYNC_MANIFEST.json` | Canonical handoff and rendered views |
 
 ## Compiled targets
@@ -44,11 +42,9 @@
 
 | Path | Role |
 |---|---|
-| `scripts/validate_phase6.py` | Final mechanical release validator |
 | `scripts/verify_phase6_math.py` | Independent finite-case and numerical checks |
 | `scripts/check_sync.py` | Canonical handoff synchronization check |
 | `scripts/check_presentation_handoffs.py` | Presentation-source and no-slides check |
-| `coding/repository_skeleton/scripts/check_skeleton.py` | Repository-interface and explicit-status check |
 | `revision_artifacts/phase6/INDEPENDENT_SCIENTIFIC_VERIFICATION.md` | Scientific verification and incomplete-item record |
 | `revision_artifacts/phase6/FORMAL_NUMERICAL_VERIFICATION.json` | Machine-readable numerical verification |
 | `revision_artifacts/phase6/BIBLIOGRAPHY_VERIFICATION.json` | Bibliography and annotation verification |

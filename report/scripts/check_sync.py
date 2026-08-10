@@ -34,7 +34,6 @@ def main() -> int:
     expected = {
         renderer.TEX_DETAIL: renderer.render_detail(data),
         renderer.TEX_SUMMARY: renderer.render_summary(data),
-        renderer.MD_OUT: renderer.render_markdown(data),
         renderer.SYNC_MANIFEST: renderer.render_sync_manifest(data),
     }
     for path, text in expected.items():
@@ -52,12 +51,6 @@ def main() -> int:
     checks["claims_match_metadata"] = data["claims"] == claim_doc["claims"]
     checks["experiments_match_metadata"] = data["experiments"] == exp_doc["protocols"]
     checks["results_match_metadata"] = data["results"] == result_doc["results"]
-
-    status = json.loads((ROOT / "coding/repository_skeleton/IMPLEMENTATION_STATUS.json").read_text())
-    registry = json.loads((ROOT / "coding/repository_skeleton/experiments/registry.json").read_text())
-    checks["repository_task_ids_match"] = [x["task_id"] for x in status["tasks"]] == [x["id"] for x in data["tasks"]]
-    checks["repository_experiment_ids_match"] = [x["id"] for x in registry["experiments"]] == [x["id"] for x in data["experiments"]]
-    checks["repository_explicitly_incomplete"] = status.get("scientific_implementation_complete") is False
 
     appendix = (ROOT / "book/appendices/coding_agent_handoff.tex").read_text()
     checks["book_appendix_uses_generated_source"] = "shared/handoffs/coding_agent_handoff.tex" in appendix

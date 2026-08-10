@@ -6,7 +6,7 @@ Phase: scientific report and release-source adoption
 
 ## Authority
 
-1. `BayesBreak_Chatbot_Change_Guide.md`
+1. `report/revision_artifacts/adoption/CHATBOT_CHANGE_GUIDE.md`
 2. `report/releases/phase6/BayesBreak_PHASE_6_AUTHOR_DECISIONS.md`
 3. Canonical sources and registries under `report/`
 4. Generated handoffs and the explicitly incomplete repository skeleton
@@ -36,7 +36,7 @@ Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs**.
 | Root and site metadata | `README.md`, `CITATION.cff`, `pyproject.toml`, `mkdocs.yml`, `docs/` | Merged Phase 6 title, scope, links, and result status | Adopted |
 | Artifact generators | `scripts/`, `examples/`, `src/bayesbreak/experiments/synthetic.py` | Redirected new outputs to `results/` | Adopted |
 
-The repository skeleton under `report/coding/repository_skeleton/` is an interface
+The now-retired repository skeleton was an interface
 blueprint. It was not copied over the functioning package implementation.
 
 ## Numerical Assets
