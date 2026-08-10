@@ -94,4 +94,6 @@ in 22.13 seconds at 160.17 MB peak RSS. Its projected 400-run cost is 18.44 minu
 the 30-minute and 4-GiB renewed-approval thresholds. Machine audit certified complete input
 hashes, same-subject truth pairing, Wilson intervals, exact-recovery semantics, and a retained
 20.01-second EP fit-only timeout. The corrected 400-run suite is now explicitly approved; execution
-remains pending until this machine-readable approval revision is committed.
+executed from commit `96464039e12b43207735835b004b0a59a9966b57` in 1,114.26 seconds at
+169.66 MB peak RSS. All 400 top-level records executed, and all 50 EP fits retained the
+predeclared timeout outcome. The artifact and sidecar remain pending independent scientific review.

@@ -1,0 +1,39 @@
+{
+  "artifacts": {
+    "results": "results/phase6/RES-BB-SYN-006/results.json"
+  },
+  "code_hash": "0a6f6558ed42c575f2492b881c8401984ab16856fc58f6f6e961a133f9126397",
+  "config_hash": "b9eade864efca65775f919bd9c504c9cebb9dede831b8ea77d17dc86d8b0540d",
+  "coordinate_metadata": {
+    "prediction_axis": "cell-specific observation-index or subject partition",
+    "reference_axis": "predeclared simulated truth or high-accuracy approximation reference",
+    "reference_type": "simulated-truth and approximation-reference"
+  },
+  "data_hash": "106e7ea09e4b7c04d326895e6f17990627c721633ad7eed8471bfb936fcff59a",
+  "environment_hash": "2bb8cd82f87f01c2be2c4ed673281ba8bf51e6a74b85856d09e05379c21482f7",
+  "execution_status": "executed",
+  "lineage_status": "original",
+  "metrics": {
+    "all_top_level_records_executed": true,
+    "elapsed_wall_seconds": 1114.2574783339514,
+    "ep_fit_timeout_count": 50,
+    "interpretation_limit": "This suite maps declared failure regimes. It is not a universal robustness claim; scientific interpretation remains pending independent review.",
+    "n_cells": 8,
+    "n_records": 400,
+    "peak_rss": {
+      "units": "bytes",
+      "value": 169656320
+    },
+    "protocol_id": "EPR-BB-015",
+    "repetitions_per_cell": 50
+  },
+  "output_hashes": {
+    "results": "f0731f55c1682fd42e89b3ea0f67ec593c887cfbfeae3176fc8cc623e81f7024"
+  },
+  "parent_result_id": null,
+  "result_id": "RES-BB-SYN-006",
+  "schema_version": "1.0.0",
+  "scientific_interpretation": "pending",
+  "split_hash": null,
+  "weights_hash": null
+}
