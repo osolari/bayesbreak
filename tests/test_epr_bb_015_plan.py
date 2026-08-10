@@ -20,7 +20,10 @@ def test_misspecification_plan_has_stable_identity_and_budget() -> None:
     assert plan["full_repetitions_per_cell"] == 50
     assert plan["seed_base"] == 261501
     assert plan["ep_timeout_seconds"] == 20
-    assert plan["full_execution_approved"] is False
+    assert plan["full_execution_approved"] is True
+    approval = plan["full_execution_approval"]
+    assert approval["approved_runs"] == 400
+    assert len(approval["basis_pilot_sha256"]) == 64
     assert plan["seed_schedule"] == "seed_base + 10000 * cell_index + repetition"
     assert "Wilson score intervals" in plan["uncertainty"]["summary"]
     assert any("fit-only timeout" in rule for rule in plan["abort_rules"])
@@ -53,5 +56,5 @@ def test_execution_brief_points_to_machine_readable_plan() -> None:
     ).read_text(encoding="utf-8")
     normalized = " ".join(brief.lower().split())
     assert "provenance/epr-bb-015-plan.json" in brief
-    assert "full execution remains unapproved" in normalized
+    assert "corrected 400-run suite is now explicitly approved" in normalized
     assert "20-second fit-only timeout" in brief

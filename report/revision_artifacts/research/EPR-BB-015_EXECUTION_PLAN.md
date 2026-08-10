@@ -93,5 +93,5 @@ The valid bounded pilot executed from commit `d03a06323d0e4ca5afb9409dc18c716e5a
 in 22.13 seconds at 160.17 MB peak RSS. Its projected 400-run cost is 18.44 minutes, below
 the 30-minute and 4-GiB renewed-approval thresholds. Machine audit certified complete input
 hashes, same-subject truth pairing, Wilson intervals, exact-recovery semantics, and a retained
-20.01-second EP fit-only timeout. Full execution remains unapproved pending renewed explicit
-authorization.
+20.01-second EP fit-only timeout. The corrected 400-run suite is now explicitly approved; execution
+remains pending until this machine-readable approval revision is committed.

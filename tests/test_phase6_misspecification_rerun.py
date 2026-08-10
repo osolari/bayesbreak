@@ -344,6 +344,9 @@ def test_main_rejects_existing_output(monkeypatch, tmp_path: Path) -> None:
 
 def test_main_rejects_unapproved_full_run(monkeypatch, tmp_path: Path) -> None:
     output = tmp_path / "full.json"
+    plan = rerun.load_plan(ROOT)
+    plan["full_execution_approved"] = False
+    monkeypatch.setattr(rerun, "load_plan", lambda root: plan)
     monkeypatch.setattr(
         sys,
         "argv",

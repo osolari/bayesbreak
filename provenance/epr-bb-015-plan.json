@@ -7,7 +7,15 @@
   "seed_base": 261501,
   "pilot_repetitions_per_cell": 1,
   "full_repetitions_per_cell": 50,
-  "full_execution_approved": false,
+  "full_execution_approved": true,
+  "full_execution_approval": {
+    "basis_pilot": "results/phase6/RES-BB-SYN-006/pilot-semantic-corrected-v2.json",
+    "basis_pilot_sha256": "3cd660ccbc660a8a2300405fa3dd0af4cde537a50cf35392ceacb2cdeab117e0",
+    "projected_wall_seconds": 1106.5542354510399,
+    "peak_rss_bytes": 160169984,
+    "approved_runs": 400,
+    "scope": "corrected EPR-BB-015 full suite only"
+  },
   "seed_schedule": "seed_base + 10000 * cell_index + repetition",
   "boundary_tolerance": 3,
   "ep_timeout_seconds": 20,
