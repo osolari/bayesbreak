@@ -80,7 +80,7 @@ check before rendering provenance badges.
 
 ## Headline numbers from the real-data fits
 
-Archived in `report/shared/figures/results/realdata_metrics.json`; see
+Archived in `docs/manuscript/shared/figures/results/realdata_metrics.json`; see
 [Results](results.md) for interpretation and exclusions.
 
 | Case study | Fit | Outcome |

@@ -1,2 +1,2 @@
 # Historical Phase 6 report sources are retained byte-for-byte.
-report/** -whitespace
+docs/manuscript/** -whitespace

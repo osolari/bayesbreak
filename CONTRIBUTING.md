@@ -9,12 +9,12 @@ DP (`bayesbreak.dp`) — so most changes touch one of those layers.
 ```bash
 git clone https://github.com/osolari/bayesbreak.git
 cd bayesbreak
-bash create_env.sh              # conda env "bayesbreak", Python 3.11
+bash setup_env.sh               # conda env "bayesbreak", Python 3.11
 conda activate bayesbreak
 pre-commit install
 ```
 
-`create_env.sh --venv` uses `python -m venv` instead of conda.
+`setup_env.sh --venv` uses `python -m venv` instead of conda.
 
 ## Tooling
 

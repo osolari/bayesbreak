@@ -2,10 +2,10 @@
 # Create a reproducible BayesBreak development environment.
 #
 # Usage:
-#   bash create_env.sh              # conda env "bayesbreak" with Python 3.11
-#   bash create_env.sh 3.12         # override Python version
-#   bash create_env.sh --venv       # use python -m venv instead of conda
-#   bash create_env.sh --lock       # pin dependencies to requirements-lock.txt
+#   bash setup_env.sh              # conda env "bayesbreak" with Python 3.11
+#   bash setup_env.sh 3.12         # override Python version
+#   bash setup_env.sh --venv       # use python -m venv instead of conda
+#   bash setup_env.sh --lock       # pin dependencies to requirements-lock.txt
 
 set -euo pipefail
 

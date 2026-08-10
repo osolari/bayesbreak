@@ -2,23 +2,23 @@
 
 ## Phase 6 Report Adoption - 2026-08-05
 
-- Replaced the legacy `docs/report/` manuscript wholesale with the complete Phase 6
-  source under `report/`, including the technical book, journal layouts, executive
+- Consolidated the complete manuscript under `docs/manuscript/`, including the technical
+  book, journal layouts, executive
   summary, canonical registries, coding handoff, repository skeleton, presentation
   handoffs, and verification records.
-- Added all signed release artifacts under `report/releases/phase6/` and verified them
+- Added all signed release artifacts under `docs/manuscript/releases/phase6/` and verified them
   against the supplied SHA-256 manifest.
 - Preserved all 53 archived numerical assets; each matches the Phase 4R read-only hash
   baseline. The two excluded historical computations retain their recorded status.
 - Redirected figure and table generation to `results/` so new executions cannot
   overwrite archived report assets.
 - Recorded the source archive's case-colliding bibliography manifests and the normalized
-  macOS adoption in `report/revision_artifacts/adoption/ADOPTION_LEDGER.md`.
+  macOS adoption in `docs/manuscript/revision_artifacts/adoption/ADOPTION_LEDGER.md`.
 
 ## [2.0.0rc3] — Unreleased
 
 Aligns the implementation with the 2026-05-15 Phase Three manuscript
-(now in `docs/report/`, replacing the May 14 draft). The Phase Three
+(now archived under `docs/manuscript/`, replacing the May 14 draft). The Phase Three
 draft adds a dedicated §5b limitations section and several named
 theorems / propositions / assumptions / definitions, and rolls back some
 of the prior draft's broader literature additions. This release updates
@@ -73,7 +73,7 @@ docstrings and code surfaces to track those changes.
 ## [2.0.0-rc2] — Unreleased
 
 Aligns the implementation with the 2026-05-14 revised manuscript in
-`docs/report/` (replaces the earlier May 9 draft). Surfaces the
+`docs/manuscript/` (replaces the earlier May 9 draft). Surfaces the
 "Block-score contract" of §`sec:setup`, adds the absolute-probability TV
 diagnostic from Corollary `cor:abs-prob`, declares per-family
 moment-sign contracts (§5 5-C1), adds a prior-sensitivity diagnostic
@@ -133,7 +133,7 @@ to simulated data.
     with `nloyfer/wgbs_tools` + `nloyfer/UXM_deconv`, the companion
     software for `loyfer2023atlas`. Records GEO accession
     `GSE186458` as the canonical raw source.
-- Manuscript caption hygiene in `docs/report/sections/6.evaluation.tex`:
+- Manuscript caption hygiene in the source now under `docs/manuscript/`:
   the four real-data figures (`fig:welllog`, `fig:cgh`, `fig:spx`,
   `fig:methylation`) no longer carry the `(PLANNED)` prefix —
   populated PDFs are reported as observed. `tab:realdata-status`
@@ -144,7 +144,7 @@ to simulated data.
 ## [2.0.0-rc1] — Earlier May 2026
 
 This release aligns the implementation with the May 2026 revision of the
-manuscript at `docs/report/bayesbreak.pdf`. The whole DP layer, latent-group
+manuscript now archived under `docs/manuscript/`. The whole DP layer, latent-group
 EM, prediction layer, real-data pipelines, and figure aesthetic now match
 the report's terminology, conventions, and reproducibility constraints.
 

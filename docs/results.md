@@ -183,7 +183,7 @@ family and split changed.
 ## Reproducing these numbers
 
 The values above are stored in
-[`report/shared/figures/results/realdata_metrics.json`](https://github.com/osolari/bayesbreak/blob/main/report/shared/figures/results/realdata_metrics.json).
+[`docs/manuscript/shared/figures/results/realdata_metrics.json`](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/shared/figures/results/realdata_metrics.json).
 This archived file is read-only. New executions are written to `results/` with new result
 identifiers and provenance. The current generation entry point is
 
@@ -202,7 +202,7 @@ cached real-data fits at the same `k` target as each BayesBreak
 $\widehat k$ when the algorithm requires one. F1@3 is an agreement diagnostic
 at a 3-index tolerance window measured against BayesBreak's MAP boundaries; it
 is not independent ground-truth accuracy. Numbers are archived in
-`report/shared/figures/results/baselines_metrics.json`.
+`docs/manuscript/shared/figures/results/baselines_metrics.json`.
 
 | Dataset | PELT | OP@$\widehat k$ | BS@$\widehat k$ | WBS@$\widehat k$ | Fearnhead-2006 ref |
 |---|---:|---:|---:|---:|---:|

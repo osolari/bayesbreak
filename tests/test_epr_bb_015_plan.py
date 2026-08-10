@@ -52,7 +52,12 @@ def test_misspecification_plan_preserves_failed_and_reversed_outcomes() -> None:
 
 def test_execution_brief_points_to_machine_readable_plan() -> None:
     brief = (
-        ROOT / "report" / "revision_artifacts" / "research" / "EPR-BB-015_EXECUTION_PLAN.md"
+        ROOT
+        / "docs"
+        / "manuscript"
+        / "revision_artifacts"
+        / "research"
+        / "EPR-BB-015_EXECUTION_PLAN.md"
     ).read_text(encoding="utf-8")
     normalized = " ".join(brief.lower().split())
     assert "provenance/epr-bb-015-plan.json" in brief

@@ -1,25 +1,25 @@
-# Phase 6 Report
+# Manuscript
 
 <div class="saim-cite" markdown>
 > **Solari, O. S.** (2026). *Generalized Hierarchical Bayesian
 > Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 > Grouped/Latent-Group Designs.* sAIm Labs.
 > [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
-> [Journal paper](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
+> [Journal paper](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
 </div>
 
-The repository adopts the complete verified Phase 6 report under `report/`. The
+The repository keeps the complete verified manuscript under `docs/manuscript/`. The
 editable source includes the technical book, two journal layouts, executive summary,
 canonical implementation handoff, claim and result registries, experiment protocols,
 presentation handoffs, and release validators.
 
-- [Technical book](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Technical_Book.pdf)
-- [Main journal paper, two-column](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf)
-- [Main journal paper, single-column](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf)
-- [Executive summary](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Executive_Summary.pdf)
-- [Canonical editable source](https://github.com/osolari/bayesbreak/tree/main/report)
-- [Phase 6 manifest](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md)
-- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/main/report/shared/handoffs/coding_agent_handoff.json)
+- [Technical book](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Technical_Book.pdf)
+- [Main journal paper, two-column](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf)
+- [Main journal paper, single-column](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper_Single_Column.pdf)
+- [Executive summary](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Executive_Summary.pdf)
+- [Canonical editable source](https://github.com/osolari/bayesbreak/tree/main/docs/manuscript)
+- [Phase 6 manifest](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_PHASE_6_MANIFEST.md)
+- [Canonical coding handoff](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/shared/handoffs/coding_agent_handoff.json)
 
 ## Scientific Status
 
@@ -53,13 +53,13 @@ environment hashes.
 ## Build and Validation
 
 ```bash
-cd report
+cd docs/manuscript
 make validate-phase6
 ```
 
 This builds the 168-page technical book, 35-page two-column paper, 42-page
 single-column paper, and 12-page executive summary, then runs the synchronization,
 presentation, and mathematical checks. Historical release-validation records remain under
-`report/releases/phase6/` and `report/revision_artifacts/`.
-The committed PDFs under `report/releases/phase6/` are the checksum-verified release
+`docs/manuscript/releases/phase6/` and `docs/manuscript/revision_artifacts/`.
+The committed PDFs under `docs/manuscript/releases/phase6/` are the checksum-verified release
 artifacts.

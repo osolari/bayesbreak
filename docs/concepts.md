@@ -1,7 +1,7 @@
 # Concepts
 
 This page introduces the mental model that makes BayesBreak's API natural.
-The reference treatment is the [Phase 6 report package](report.md); here we
+The reference treatment is the [manuscript package](manuscript.md); here we
 summarise the four ideas that recur throughout.
 
 ## 1. Block evidence and dynamic programming are separate

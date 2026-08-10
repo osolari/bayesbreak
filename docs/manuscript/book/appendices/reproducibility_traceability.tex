@@ -10,7 +10,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-001}]{\texttt{CLM-BB-001}: Generalized hierarchical Bayesian segmentation through observation-model-specific segment integration and common recursions over ordered partitions.}
 \textbf{Status and confidence.} established by derivation, implementation, and exact-regime tests; high.\par
 \textbf{Disposition.} retain as the central thesis together with irregular designs, multiple-sequence hierarchies, and grouped or latent-group models.\par
-\textbf{Source anchor.} docs/report/sections/2.problem.tex; 4.method.tex; src/bayesbreak/base.py; dp.py.\par
+\textbf{Source anchor.} docs/manuscript/sections/2.problem.tex; 4.method.tex; src/bayesbreak/base.py; dp.py.\par
 \textbf{Obligation.} State the exponential-family conditions, hierarchical extensions, and exact relationship to product-partition and multiple-changepoint literature; do not claim priority for established recursions.\par
 \textbf{Destinations.} Workstreams REV-BB-002;REV-BB-005; book CH-BB-01;CH-BB-02;CH-BB-12;CH-BB-16; paper PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-11; experiments EPR-BB-001.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -18,7 +18,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-002}]{\texttt{CLM-BB-002}: Closed-form weighted conjugate exponential-family block evidences and moments from cumulative sufficient statistics.}
 \textbf{Status and confidence.} family-specific supported formulas are exactly derived; generic scalar-weight display is too narrow for all exposure/trial specializations; proof presentation incomplete; high after notation and presentation repair.\par
 \textbf{Disposition.} retain and prove/reclassify in place.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:54-125, 1088-1267.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:54-125, 1088-1267.\par
 \textbf{Obligation.} Use an exposure-aware statistic S(y,w) with -w A(theta); add immediate algebraic proofs or derived corollaries; state moment-existence conditions..\par
 \textbf{Destinations.} Workstreams REV-BB-003; book CH-BB-03;CH-BB-04;CH-BB-13; paper PPR-BB-01;PPR-BB-04;PPR-BB-08;PPR-BB-09; experiments EPR-BB-002;EPR-BB-012.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -26,7 +26,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-003}]{\texttt{CLM-BB-003}: Sum-product DP yields evidence, P(k|y), fixed-count boundary marginals, and Bayes curves for the declared factorized model.}
 \textbf{Status and confidence.} established by complete derivation and brute-force/invariant tests; high.\par
 \textbf{Disposition.} retain; position against Fearnhead and Hutter.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:150-486; tests/test\_dp*.py.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:150-486; tests/test\_dp*.py.\par
 \textbf{Obligation.} State exact regime and prior normalization precisely; narrow novelty language..\par
 \textbf{Destinations.} Workstreams REV-BB-005; book CH-BB-02;CH-BB-05;CH-BB-13; paper PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-05;PPR-BB-08;PPR-BB-09; experiments EPR-BB-001;EPR-BB-003;EPR-BB-004;EPR-BB-008.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -34,7 +34,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-004}]{\texttt{CLM-BB-004}: Separate max-sum/backtracking recursion yields the joint MAP segmentation rather than marginal boundary modes.}
 \textbf{Status and confidence.} established, but the named theorem defers/duplicates its proof; high.\par
 \textbf{Disposition.} retain; move one complete proof immediately after the theorem.\par
-\textbf{Source anchor.} docs/report/sections/5.algorithms.tex:149-164; 8.appendix.tex:439-462.\par
+\textbf{Source anchor.} docs/manuscript/sections/5.algorithms.tex:149-164; 8.appendix.tex:439-462.\par
 \textbf{Obligation.} Remove duplicate proposition and satisfy in-place proof policy..\par
 \textbf{Destinations.} Workstreams REV-BB-005; book CH-BB-06; paper PPR-BB-05; experiments EPR-BB-001.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -42,7 +42,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-005}]{\texttt{CLM-BB-005}: Design-aware segment-length cohesion handles irregular coordinates and gives large physical gaps greater boundary prior mass.}
 \textbf{Status and confidence.} partially supported; the Poisson boundary-gap derivation and implemented segment-length cohesion are different priors; medium for general design-aware prior, low for current gap interpretation.\par
 \textbf{Disposition.} repair without changing the DP core.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:580-697.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:580-697.\par
 \textbf{Obligation.} Separate segment cohesion c(i,j) from boundary hazard h(j), or remove the Poisson-process rationale from g(length)..\par
 \textbf{Destinations.} Workstreams REV-BB-004; book CH-BB-02;CH-BB-03;CH-BB-07;CH-BB-14; paper PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-04;PPR-BB-06;PPR-BB-08;PPR-BB-10; experiments EPR-BB-009;EPR-BB-015.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -50,7 +50,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-006}]{\texttt{CLM-BB-006}: Shared-boundary pooling across conditionally independent subjects is exact after multiplying per-subject block evidences.}
 \textbf{Status and confidence.} established algebraically; high.\par
 \textbf{Disposition.} retain.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:699-785; src/bayesbreak/replicates.py.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:699-785; src/bayesbreak/replicates.py.\par
 \textbf{Obligation.} Keep evidence-comparison semantics model-consistent and add numerical-stability checks..\par
 \textbf{Destinations.} Workstreams REV-BB-006; book CH-BB-02;CH-BB-08;CH-BB-13;CH-BB-14; paper PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-06;PPR-BB-08;PPR-BB-09;PPR-BB-10; experiments EPR-BB-006;EPR-BB-010.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -58,7 +58,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-007}]{\texttt{CLM-BB-007}: The stated shared-boundary identifiability result follows when one subject distinguishes every alternative boundary vector.}
 \textbf{Status and confidence.} unsupported as stated; low.\par
 \textbf{Disposition.} replace with a finite-candidate posterior-consistency theorem.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:787-827.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:787-827.\par
 \textbf{Obligation.} Require a positive average expected log-score gap and LLN conditions; remove the claim that exponential-family identifiability makes the condition automatic..\par
 \textbf{Destinations.} Workstreams REV-BB-006; book CH-BB-08;CH-BB-15; paper PPR-BB-01;PPR-BB-06;PPR-BB-11; experiments EPR-BB-006;EPR-BB-015.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -66,7 +66,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-008}]{\texttt{CLM-BB-008}: Finite latent-template EM monotonically optimizes the documented template-score objective.}
 \textbf{Status and confidence.} partially established as monotone alternating optimization of the stated finite latent-group criterion; one convergence path returns a stale restart objective; medium.\par
 \textbf{Disposition.} retain as finite latent-group template estimation; use the stated criterion and test every convergence path.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:843-1016; src/bayesbreak/mixture.py:397-478.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:843-1016; src/bayesbreak/mixture.py:397-478.\par
 \textbf{Obligation.} Remove normalized likelihood/generative language, rename sequence likelihood API, return objective[-1], and test all convergence/restart-selection exits..\par
 \textbf{Destinations.} Workstreams REV-BB-007; book CH-BB-02;CH-BB-09;CH-BB-13; paper PPR-BB-01;PPR-BB-02;PPR-BB-03;PPR-BB-07;PPR-BB-08;PPR-BB-09; experiments EPR-BB-005.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -74,7 +74,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-009}]{\texttt{CLM-BB-009}: The latent-template construction is a normalized finite-mixture density identifiable up to label permutation.}
 \textbf{Status and confidence.} unsupported under the current S\_g definition; low.\par
 \textbf{Disposition.} remove from established claims; retain normalized mixture as reserve research.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:883-919; 8.appendix.tex:220-252.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:883-919; 8.appendix.tex:220-252.\par
 \textbf{Obligation.} Do not apply finite-mixture density identifiability to current scores; a normalized branch needs a new model, proof, and rerun of affected results..\par
 \textbf{Destinations.} Workstreams REV-BB-007; book CH-BB-09;CH-BB-15; paper PPR-BB-01;PPR-BB-07;PPR-BB-11; experiments EPR-BB-005.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -82,7 +82,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-010}]{\texttt{CLM-BB-010}: Uniform segment log marginal-likelihood error implies controlled partition marginal likelihoods and posterior odds.}
 \textbf{Status and confidence.} established conditionally on the uniform error assumption; high.\par
 \textbf{Disposition.} retain as the main approximation theorem.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:1753-1851.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:1753-1851.\par
 \textbf{Obligation.} Sharpen/cap the TV corollary and distinguish odds control, probability control, and ranking margins..\par
 \textbf{Destinations.} Workstreams REV-BB-008; book CH-BB-10;CH-BB-13;CH-BB-15; paper PPR-BB-01;PPR-BB-07;PPR-BB-08;PPR-BB-09;PPR-BB-11; experiments EPR-BB-007;EPR-BB-015.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -90,7 +90,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-011}]{\texttt{CLM-BB-011}: Laplace, quadrature, JJ, PG mean-field, and EP satisfy the stated routine-specific uniform rates over reachable blocks.}
 \textbf{Status and confidence.} unsupported or overstrong as stated; low.\par
 \textbf{Disposition.} remove the method-wide rate theorem; replace it with method-specific numerical error analysis.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:1450-1884; 8.appendix.tex:464-505.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:1450-1884; 8.appendix.tex:464-505.\par
 \textbf{Obligation.} Strengthen Laplace hypotheses, separate quadrature tail and discretization error, and avoid unproved JJ/PG/EP evidence rates..\par
 \textbf{Destinations.} Workstreams REV-BB-008; book CH-BB-10; paper PPR-BB-07; experiments EPR-BB-007;EPR-BB-015.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -99,7 +99,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \textbf{Claim.} Posterior-predictive calculations and exported segmentation and Bayes-curve quantities are implemented at the scopes declared by each family.\par
 \textbf{Status and confidence.} MAP predictive scoring is certified across the concrete conjugate and Beta-observation families; unsupported logistic-normal prediction fails explicitly; coordinate assignment rejects out-of-support values by default. Model-averaged prediction remains planned.\par
 \textbf{Disposition.} retain family-specific MAP predictive quantities and the corrected methylation child; do not infer model-averaged prediction or reinterpret the excluded parent.\par
-\textbf{Source anchor.} docs/report/sections/4.method.tex:1960-2140; src/bayesbreak/prediction.py.\par
+\textbf{Source anchor.} docs/manuscript/sections/4.method.tex:1960-2140; src/bayesbreak/prediction.py.\par
 \textbf{Obligation.} Implement and certify model-averaged prediction separately; add a routine-specific logistic-normal predictive only with a declared target and reference test.\par
 \textbf{Destinations.} Workstreams REV-BB-009; book CH-BB-11;CH-BB-14;CH-BB-15; paper PPR-BB-01;PPR-BB-07;PPR-BB-08;PPR-BB-10;PPR-BB-11; experiments EPR-BB-012;EPR-BB-014.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -107,7 +107,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-013}]{\texttt{CLM-BB-013}: Synthetic recovery, calibration, latent-group, approximation, model-selection, and runtime outputs are real executed results.}
 \textbf{Status and confidence.} empirically supported by archived outputs; generality is scope-limited; high as provenance, medium as broad evidence.\par
 \textbf{Disposition.} retain all populated values read-only.\par
-\textbf{Source anchor.} docs/report/figures; tables; scripts; sidecars.\par
+\textbf{Source anchor.} docs/manuscript/figures; tables; scripts; sidecars.\par
 \textbf{Obligation.} Add uncertainty, repetitions, falsification criteria, and avoid converting local scaling slopes into asymptotic claims..\par
 \textbf{Destinations.} Workstreams REV-BB-010; book CH-BB-12;CH-BB-13;CH-BB-15;CH-BB-16; paper PPR-BB-01;PPR-BB-08;PPR-BB-09;PPR-BB-11; experiments EPR-BB-002;EPR-BB-003;EPR-BB-004;EPR-BB-005;EPR-BB-008;EPR-BB-015.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.
@@ -115,7 +115,7 @@ Each scientific statement is linked to at least one of four sources of support: 
 \subsection[\texttt{CLM-BB-014}]{\texttt{CLM-BB-014}: Four real-data case-study fits and populated comparator outputs are real executed results.}
 \textbf{Status and confidence.} all populated outputs are real executions; scientific interpretation varies and two outputs are excluded from comparator or predictive conclusions; high confidence in execution provenance, limited support for comparative efficacy.\par
 \textbf{Disposition.} retain all populated values; relabel and exclude invalid comparisons.\par
-\textbf{Source anchor.} docs/report/figures/realdata\_metrics.json; baselines\_metrics.json; fitcache.\par
+\textbf{Source anchor.} docs/manuscript/figures/realdata\_metrics.json; baselines\_metrics.json; fitcache.\par
 \textbf{Obligation.} Preserve the values; exclude the incompatible-axis array-CGH comparator and the invalid Beta/endpoint-assigned methylation calculation from their stated conclusions; correct sources, captions, and model labels.\par
 \textbf{Destinations.} Workstreams REV-BB-010;REV-BB-011; book CH-BB-14;CH-BB-16; paper PPR-BB-01;PPR-BB-08;PPR-BB-10;PPR-BB-11; experiments EPR-BB-009;EPR-BB-010;EPR-BB-011;EPR-BB-012;EPR-BB-013.\par
 \textbf{Language rule.} Use no stronger language than is justified by the mapped proof, derivation, or empirical result.

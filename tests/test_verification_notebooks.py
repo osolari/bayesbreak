@@ -4,17 +4,13 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).parents[1]
-NOTEBOOK_NAMES = (
-    "08_core_dp_verification.ipynb",
-    "09_family_prediction_verification.ipynb",
-    "10_advanced_model_verification.ipynb",
-    "11_result_provenance_explorer.ipynb",
-)
+TUTORIAL_DIR = ROOT / "docs" / "tutorials"
 
 
-def test_verification_notebooks_are_valid_stripped_json() -> None:
-    for name in NOTEBOOK_NAMES:
-        path = ROOT / "tutorials" / name
+def test_tutorial_notebooks_are_valid_stripped_json() -> None:
+    paths = sorted(TUTORIAL_DIR.glob("*.ipynb"))
+    assert len(paths) == 11
+    for path in paths:
         notebook = json.loads(path.read_text(encoding="utf-8"))
         assert notebook["nbformat"] == 4
         assert notebook["cells"]
@@ -27,14 +23,19 @@ def test_verification_notebooks_are_valid_stripped_json() -> None:
                 assert cell["outputs"] == []
 
 
-def test_documentation_notebooks_are_byte_identical() -> None:
-    for name in NOTEBOOK_NAMES:
-        assert (ROOT / "tutorials" / name).read_bytes() == (
-            ROOT / "docs" / "tutorials" / name
-        ).read_bytes()
-
-
-def test_mkdocs_lists_every_verification_notebook() -> None:
+def test_mkdocs_lists_every_tutorial_notebook() -> None:
     mkdocs = (ROOT / "mkdocs.yml").read_text(encoding="utf-8")
-    for name in NOTEBOOK_NAMES:
-        assert f"tutorials/{name}" in mkdocs
+    for path in TUTORIAL_DIR.glob("*.ipynb"):
+        assert f"tutorials/{path.name}" in mkdocs
+
+
+def test_docs_are_the_only_user_facing_source_tree() -> None:
+    assert (ROOT / "docs" / "tutorials").is_dir()
+    assert (ROOT / "docs" / "manuscript").is_dir()
+    for obsolete in ("tutorials", "report", "examples"):
+        assert not (ROOT / obsolete).exists()
+
+
+def test_environment_setup_script_has_canonical_name() -> None:
+    assert (ROOT / "setup_env.sh").is_file()
+    assert not (ROOT / "create_env.sh").exists()

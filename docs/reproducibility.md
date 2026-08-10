@@ -53,7 +53,7 @@ importable from Python if you want to drive it programmatically.
 | `scripts/figures/supplementary/figA5_missing_data.py` | `fig:missing` | Missing-data handling |
 
 Each script writes both `.png` and `.pdf` to `results/figures/`. The archived
-Phase 6 files under `report/shared/figures/results/` are read-only.
+Phase 6 files under `docs/manuscript/shared/figures/results/` are read-only.
 
 ## Tables
 
@@ -88,7 +88,7 @@ pip install -e ".[dev,plots,datasets,docs,notebooks]"
 pre-commit install
 pytest                       # 179+ tests, conceptual-correctness + sklearn contract
 bayesbreak reproduce all     # writes new figures + tables under results/
-cd report && make validate-phase6               # rebuild and validate all report targets
+make -C docs/manuscript validate-phase6         # rebuild and validate all manuscript targets
 ```
 
 ## What's reproducible without network

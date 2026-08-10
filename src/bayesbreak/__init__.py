@@ -10,7 +10,7 @@ The public API follows strict scikit-learn conventions:
 - All constructor arguments are stored untouched; validation happens in
   ``fit``.
 
-See the accompanying Phase 6 report under ``report/`` for the mathematical
+See the accompanying manuscript under ``docs/manuscript/`` for the mathematical
 background; this module is the reference implementation.
 """
 

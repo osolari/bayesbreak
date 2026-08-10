@@ -39,8 +39,8 @@ pip install "bayesbreak[dev]"         # + test/lint/type toolchain
 Editable dev setup:
 
 ```bash
-bash create_env.sh                    # conda env "bayesbreak" with Python 3.11
-bash create_env.sh --venv             # or a plain python -m venv
+bash setup_env.sh                     # conda env "bayesbreak" with Python 3.11
+bash setup_env.sh --venv              # or a plain python -m venv
 ```
 
 ## Quickstart
@@ -263,7 +263,7 @@ bayesbreak realdata --dataset cgh --verified
 Real-data figures **default to placeholder mode** with a translucent
 "PLACEHOLDER" watermark and a sidecar JSON (`<fig>.json`) containing the
 raw-data hash, preprocessing hash, fit hyperparameters, and DP diagnostics.
-Per the report's §6 placeholder convention, only `--verified` (or
+Per the manuscript's §6 placeholder convention, only `--verified` (or
 `BAYESBREAK_VERIFIED=1`) clears the watermark — and only after author
 approval. Simulated-fallback bundles are *always* placeholders regardless
 of the flag.
@@ -285,8 +285,8 @@ preprint: [arXiv:2603.14681](https://arxiv.org/abs/2603.14681).
 ```
 
 See also [`CITATION.cff`](CITATION.cff), the
-[main journal paper](report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf),
-and the [complete Phase 6 report package](docs/report.md).
+[main journal paper](docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf),
+and the [complete manuscript package](docs/manuscript.md).
 
 ## Contributing
 

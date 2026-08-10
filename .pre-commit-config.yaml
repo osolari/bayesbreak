@@ -1,6 +1,6 @@
 exclude: |
   (?x)^(
-      report/.*|
+      docs/manuscript/.*|
       conda-recipe/meta\.yaml
   )$
 

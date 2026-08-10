@@ -18,9 +18,14 @@ from bayesbreak.provenance import (
 )
 
 ROOT = Path(__file__).parents[1]
-ARCHIVED_RESULTS = ROOT / "report" / "shared" / "figures" / "results"
+ARCHIVED_RESULTS = ROOT / "docs" / "manuscript" / "shared" / "figures" / "results"
 MIGRATION_MANIFEST = (
-    ROOT / "report" / "revision_artifacts" / "adoption" / "LEGACY_ABSOLUTE_PATH_MIGRATIONS.json"
+    ROOT
+    / "docs"
+    / "manuscript"
+    / "revision_artifacts"
+    / "adoption"
+    / "LEGACY_ABSOLUTE_PATH_MIGRATIONS.json"
 )
 SHA256 = "a" * 64
 

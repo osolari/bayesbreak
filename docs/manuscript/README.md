@@ -1,6 +1,6 @@
-# BayesBreak unified SAIM LaTeX project
+# BayesBreak manuscript sources
 
-This project contains the technical book, two journal-paper layouts, executive summary, implementation handoff, repository interface skeleton, and presentation-source handoffs for:
+This directory contains the technical book, two journal-paper layouts, executive summary, implementation handoff, and presentation-source handoffs for:
 
 **Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs**
 
@@ -14,16 +14,16 @@ For supported regular exponential-family observation models with proper conjugat
 
 ## Build and validation
 
-From the project root:
+From the repository root:
 
 ```bash
-make book                 # technical book
-make paper                # two-column journal paper
-make paper-single         # single-column review paper
-make executive            # executive summary
-make handoff-check        # canonical coding-handoff synchronization
-make presentation-check   # presentation-source handoffs; no slides
-make validate-phase6      # build every target and run current source checks
+make -C docs/manuscript book                 # technical book
+make -C docs/manuscript paper                # two-column journal paper
+make -C docs/manuscript paper-single         # single-column review paper
+make -C docs/manuscript executive            # executive summary
+make -C docs/manuscript handoff-check        # canonical handoff synchronization
+make -C docs/manuscript presentation-check   # presentation-source handoffs
+make -C docs/manuscript validate-phase6      # build and validate all targets
 ```
 
 Generated PDFs:
@@ -57,3 +57,9 @@ Every populated archived numerical value is a real executed computation and is r
 - A corrected computation must receive a new result identifier, parent-result link, configuration and data hashes, and a new interpretation record.
 
 No research experiment or scientific package implementation is performed by this LaTeX release project.
+
+## Historical snapshots
+
+Files under `releases/phase6/` and the phase-specific revision-artifact directories are
+checksum-preserved historical snapshots. Paths written inside those snapshots describe the
+layout at the time of release; current editable sources live under `docs/manuscript/`.

@@ -8,7 +8,7 @@ import json
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "report"
+REPORT = ROOT / "docs" / "manuscript"
 HASH_BASELINE = REPORT / "revision_artifacts" / "phase5" / "PHASE4R_READONLY_HASHES.json"
 RESULT_REGISTRY = REPORT / "shared" / "metadata" / "result_interpretation.json"
 VISUAL_QA = REPORT / "revision_artifacts" / "phase6" / "VISUAL_QA.json"
@@ -63,7 +63,7 @@ def build_manifest() -> dict[str, object]:
         }
         assets.append(
             {
-                "path": f"report/{relative_path}",
+                "path": f"docs/manuscript/{relative_path}",
                 "sha256": expected_hash,
                 "status": "archived-read-only",
                 "result_ids": result_ids,
@@ -76,8 +76,8 @@ def build_manifest() -> dict[str, object]:
     return {
         "schema_version": "1.0.0",
         "generated_from": [
-            "report/revision_artifacts/phase5/PHASE4R_READONLY_HASHES.json",
-            "report/shared/metadata/result_interpretation.json",
+            "docs/manuscript/revision_artifacts/phase5/PHASE4R_READONLY_HASHES.json",
+            "docs/manuscript/shared/metadata/result_interpretation.json",
         ],
         "asset_count": len(assets),
         "assets": assets,

@@ -9,10 +9,10 @@ The manuscript presents BayesBreak as a generalized hierarchical Bayesian multip
 ## Build targets
 
 ```bash
-make paper          # two-column journal route
-make paper-single   # single-column review route
-make paper-all      # both routes
-make validate-paper # build and mechanical validation
+make -C docs/manuscript paper          # two-column journal route
+make -C docs/manuscript paper-single   # single-column review route
+make -C docs/manuscript paper-all      # both routes
+make -C docs/manuscript validate-phase6
 ```
 
 The SAIM Unified Professional template controls document typography and layout only. The title, terminology, model statements, contribution claims, and interpretation of results are determined by the manuscript and the author's decisions.

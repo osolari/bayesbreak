@@ -1,14 +1,13 @@
-"""Generate the demonstration notebooks under tutorials/ (and copy to
-docs/tutorials/ for mkdocs).
+"""Generate demonstration notebooks directly under docs/tutorials/.
 
 Each notebook is authored programmatically so that updating the demo set
 is a single-file change. Running this script populates:
 
-- tutorials/03_real_data_showcase.ipynb
-- tutorials/04_diagnostics.ipynb
-- tutorials/05_baselines.ipynb
-- tutorials/06_sliding_window.ipynb
-- tutorials/07_latent_groups.ipynb
+- docs/tutorials/03_real_data_showcase.ipynb
+- docs/tutorials/04_diagnostics.ipynb
+- docs/tutorials/05_baselines.ipynb
+- docs/tutorials/06_sliding_window.ipynb
+- docs/tutorials/07_latent_groups.ipynb
 
 The notebooks are NOT executed at generation time (mkdocs-jupyter is
 configured with execute=false). Users run them interactively.
@@ -17,30 +16,34 @@ configured with execute=false). Users run them interactively.
 from __future__ import annotations
 
 import json
-import shutil
 from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-TUTORIALS = ROOT / "tutorials"
-DOCS_TUTORIALS = ROOT / "docs" / "tutorials"
+TUTORIALS = ROOT / "docs" / "tutorials"
 
 
 def md(text: str) -> dict[str, Any]:
-    return {"cell_type": "markdown", "metadata": {}, "source": text.splitlines(keepends=True)}
+    return {
+        "cell_type": "markdown",
+        "metadata": {"language": "markdown"},
+        "source": text.splitlines(keepends=True),
+    }
 
 
 def code(src: str) -> dict[str, Any]:
     return {
         "cell_type": "code",
         "execution_count": None,
-        "metadata": {},
+        "metadata": {"language": "python"},
         "outputs": [],
         "source": src.splitlines(keepends=True),
     }
 
 
 def write_notebook(name: str, cells: list[dict[str, Any]]) -> None:
+    for index, cell in enumerate(cells):
+        cell["id"] = f"{name}-{index:02d}"
     notebook = {
         "cells": cells,
         "metadata": {
@@ -60,8 +63,6 @@ def write_notebook(name: str, cells: list[dict[str, Any]]) -> None:
     out = TUTORIALS / f"{name}.ipynb"
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(json.dumps(notebook, indent=1), encoding="utf-8")
-    DOCS_TUTORIALS.mkdir(parents=True, exist_ok=True)
-    shutil.copy(out, DOCS_TUTORIALS / out.name)
     print(f"wrote {out.relative_to(ROOT)}")
 
 

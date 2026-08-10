@@ -14,7 +14,7 @@ hide:
   <p class="saim-hero-badges">
     <a href="https://arxiv.org/abs/2603.14681">arXiv:2603.14681</a>
     <a href="https://github.com/osolari/bayesbreak">GitHub</a>
-    <a href="report.md">Manuscript PDF</a>
+    <a href="manuscript.md">Manuscript PDF</a>
     <a href="quickstart.md">Quickstart</a>
     <a href="tutorials/01_quickstart.ipynb">Notebooks</a>
   </p>
@@ -28,7 +28,7 @@ companion paper:
 > Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 > Grouped/Latent-Group Designs.* sAIm Labs.
 > [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
-> [PDF](https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
+> [PDF](https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf){target=_blank}
 
 ```bibtex
 @article{solari2026bayesbreak,
@@ -152,7 +152,7 @@ trade-off study (Laplace / JJ / PG-VB / EP / 1-D quadrature).
 
     Every public class and function with manuscript cross-references.
 
--   :material-file-pdf-box:{ .lg } **[Manuscript](report.md)**
+-   :material-file-pdf-box:{ .lg } **[Manuscript](manuscript.md)**
 
     The technical report this implementation matches one-to-one.
 

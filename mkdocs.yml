@@ -11,9 +11,8 @@ edit_uri: edit/main/docs/
 docs_dir: docs
 site_dir: site
 
-not_in_nav: |
-  CHANGELOG.prior.md
-  CODING_AGENT_HANDOFF.prior.md
+exclude_docs: |
+  manuscript/**
 
 theme:
   name: material
@@ -95,7 +94,7 @@ nav:
   - Reference:
       - API: api.md
       - Math notes: math.md
-      - Manuscript PDF: report.md
+      - Manuscript: manuscript.md
       - Changelog: changelog.md
 
 markdown_extensions:

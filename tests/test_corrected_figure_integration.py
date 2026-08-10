@@ -8,17 +8,17 @@ ROOT = Path(__file__).parents[1]
 FIGURES = {
     "RES-BB-SYN-005": (
         ROOT / "results/phase6/RES-BB-SYN-005/stress_summary.png",
-        ROOT / "report/shared/figures/results/fig_phase6_latent_stress.png",
+        ROOT / "docs/manuscript/shared/figures/results/fig_phase6_latent_stress.png",
         ROOT / "docs/assets/figures/fig_phase6_latent_stress.png",
     ),
     "RES-BB-CMP-003": (
         ROOT / "results/phase6/RES-BB-CMP-003/boundary_agreement.png",
-        ROOT / "report/shared/figures/results/fig_phase6_cgh_agreement.png",
+        ROOT / "docs/manuscript/shared/figures/results/fig_phase6_cgh_agreement.png",
         ROOT / "docs/assets/figures/fig_phase6_cgh_agreement.png",
     ),
     "RES-BB-RD-008Q": (
         ROOT / "results/phase6/RES-BB-RD-008Q/predictive_summary.png",
-        ROOT / "report/shared/figures/results/fig_phase6_methyl_predictive.png",
+        ROOT / "docs/manuscript/shared/figures/results/fig_phase6_methyl_predictive.png",
         ROOT / "docs/assets/figures/fig_phase6_methyl_predictive.png",
     ),
 }
@@ -33,9 +33,11 @@ def test_reader_facing_figures_are_byte_identical_to_corrected_artifacts() -> No
 
 def test_paper_book_and_docs_reference_every_corrected_result() -> None:
     documents = {
-        "paper": (ROOT / "report/paper/sections/09-results.tex").read_text(),
-        "book-synthetic": (ROOT / "report/book/chapters/13-synthetic-validation.tex").read_text(),
-        "book-real": (ROOT / "report/book/chapters/14-real-data.tex").read_text(),
+        "paper": (ROOT / "docs/manuscript/paper/sections/09-results.tex").read_text(),
+        "book-synthetic": (
+            ROOT / "docs/manuscript/book/chapters/13-synthetic-validation.tex"
+        ).read_text(),
+        "book-real": (ROOT / "docs/manuscript/book/chapters/14-real-data.tex").read_text(),
         "docs": (ROOT / "docs/results.md").read_text(),
     }
     assert (
@@ -48,9 +50,9 @@ def test_paper_book_and_docs_reference_every_corrected_result() -> None:
 
 
 def test_completed_protocols_name_the_corrected_results() -> None:
-    protocols = json.loads((ROOT / "report/shared/metadata/experiment_protocols.json").read_text())[
-        "protocols"
-    ]
+    protocols = json.loads(
+        (ROOT / "docs/manuscript/shared/metadata/experiment_protocols.json").read_text()
+    )["protocols"]
     statuses = {protocol["id"]: protocol["status"] for protocol in protocols}
     assert "RES-BB-SYN-005" in statuses["EPR-BB-005"]
     assert "RES-BB-CMP-003" in statuses["EPR-BB-010"]

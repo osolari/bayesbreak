@@ -96,7 +96,7 @@ Homepage = "https://github.com/osolari/bayesbreak"
 Documentation = "https://osolari.github.io/bayesbreak"
 Repository = "https://github.com/osolari/bayesbreak"
 Issues = "https://github.com/osolari/bayesbreak/issues"
-Report = "https://github.com/osolari/bayesbreak/blob/main/report/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf"
+Report = "https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/releases/phase6/BayesBreak_Final_Main_Journal_Paper.pdf"
 
 [project.scripts]
 bayesbreak = "bayesbreak.cli:main"
@@ -163,7 +163,7 @@ line-length = 100
 target-version = "py310"
 extend-exclude = [
     "src/bayesbreak/_version.py",
-    "report/**",
+    "docs/manuscript/**",
 ]
 
 [tool.ruff.lint]
@@ -186,6 +186,6 @@ quote-style = "double"
 indent-style = "space"
 
 [tool.codespell]
-skip = "*.bib,*.bst,*.cls,*.sty,*.tex,*.ipynb,*.pdf,*.png,*.zip,report/**,scripts/**/results/*"
+skip = "*.bib,*.bst,*.cls,*.sty,*.tex,*.ipynb,*.pdf,*.png,*.zip,docs/manuscript/**,scripts/**/results/*"
 # CNA = Copy Number Array (DNAcopy::CNA class); not a typo.
 ignore-words-list = "cna"
