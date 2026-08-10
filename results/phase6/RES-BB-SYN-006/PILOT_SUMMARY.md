@@ -39,3 +39,36 @@ subprocess timeout.
 - The prior-conflict cell remains an explicit failed outcome.
 
 The full suite remains unexecuted and requires separate explicit approval.
+
+## Semantic redesign and valid bounded pilot
+
+The approved final pilot executed from commit
+`d03a06323d0e4ca5afb9409dc18c716e5a5c5c56` after the semantic redesign. Its
+immutable artifact is `pilot-semantic-corrected-v2.json` with SHA-256
+`3cd660ccbc660a8a2300405fa3dd0af4cde537a50cf35392ceacb2cdeab117e0`.
+
+- All eight cells executed in 22.13 seconds with 160.17 MB peak RSS. The projected
+  400-run suite is 1,106.55 seconds (18.44 minutes), below both renewed-approval
+  thresholds.
+- Every record carries complete data, truth, and effective-configuration hashes.
+- Binary rates use Wilson score intervals. Exact recovery requires no missed or extra
+  boundaries.
+- The null cell produced three false boundaries; its one-dataset false-positive rate is
+  1.0 with Wilson 95% interval [0.207, 1.0].
+- Zero-inflated Poisson and dense Gaussian both saturated their declared segment budgets.
+  Dense Gaussian found every true boundary within tolerance but added three boundaries,
+  so exact recovery is false.
+- The short-segment cell found both true boundaries but added one boundary, so exact
+  recovery is false despite a zero missed-change rate.
+- The prior-conflict cell executed with `k=2`; unsupported counts have zero posterior
+  mass instead of poisoning feasible counts.
+- Shared and independent methods were scored against the same per-subject truths. Mean
+  F1@3 was 0.483 for the shared model and 0.628 independently; the shared model selected
+  the subject-specific boundary near 60.
+- EP timed out after 20.01 seconds of fit time (20.75 seconds total worker lifecycle),
+  with child RSS retained. No EP diagnostics were imputed.
+
+The intermediate `pilot-semantic-corrected.json` remains excluded because its audit found
+non-exact recovery semantics, degenerate rate intervals, and a subprocess deadline that
+included worker startup. The valid pilot is implementation-verification evidence only.
+The full suite remains machine-blocked and requires renewed explicit approval.

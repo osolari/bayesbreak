@@ -1,0 +1,2284 @@
+{
+  "schema_version": "1.0.0",
+  "record_role": "resource-pilot",
+  "result_id": "RES-BB-SYN-006",
+  "parent_result_id": null,
+  "protocol_id": "EPR-BB-015",
+  "execution_status": "executed",
+  "scientific_interpretation": "implementation-verification",
+  "mode": "pilot",
+  "plan_sha256": "f075d2ff8cea66a3ba3e8bf22a9078c81b7665ab46422cc68eef2f67d217a89a",
+  "config_sha256": "0cecf58a16960bada2da62aac842dc571b82c48a8c98159d37f923cc9ec4565c",
+  "seed_base": 261501,
+  "seed_schedule": "seed_base + 10000 * cell_index + repetition",
+  "repetitions_per_cell": 1,
+  "full_execution_approved": false,
+  "cell_ids": [
+    "null-gaussian",
+    "heavy-tail-gaussian",
+    "zero-inflated-poisson",
+    "dense-gaussian",
+    "short-segment-gaussian",
+    "prior-conflict-gaussian",
+    "shared-boundary-heterogeneity",
+    "logistic-approximation-failure"
+  ],
+  "code": {
+    "commit": "d03a06323d0e4ca5afb9409dc18c716e5a5c5c56",
+    "commit_sha256": "f7b974e5fda0e97f5ed7b6cbff9554fa898dd9263b02a1579cd54e2808330a0a",
+    "relevant_paths_clean": true
+  },
+  "environment": {
+    "python": "3.11.14",
+    "platform": "macOS-26.3-arm64-arm-64bit",
+    "bayesbreak_module_version": "2.0.0rc3",
+    "packages": {
+      "bayesbreak": "2.0.0rc3",
+      "numpy": "2.4.2",
+      "scipy": "1.17.0",
+      "scikit-learn": "1.8.0"
+    },
+    "sha256": "2bb8cd82f87f01c2be2c4ed673281ba8bf51e6a74b85856d09e05379c21482f7"
+  },
+  "records": [
+    {
+      "status": "executed",
+      "cell": "null-gaussian",
+      "seed": 261501,
+      "family": "gaussian",
+      "n": 120,
+      "true_boundaries": [
+        0,
+        120
+      ],
+      "predicted_boundaries": [
+        0,
+        66,
+        83,
+        94,
+        120
+      ],
+      "k_max": 8,
+      "k_map": 4,
+      "k_error": 3,
+      "posterior_mass_at_k_max": 0.13007461408324036,
+      "map_at_k_max": false,
+      "posterior_k_entropy": 2.0746134465588346,
+      "boundary_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mae_or_na": null,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "false_discovery_count": 3,
+      "false_positive_dataset": true,
+      "missed_change_count": 0,
+      "missed_change_rate": null,
+      "complete_boundary_recovery": false,
+      "log_evidence": -167.1207503238519,
+      "wall_seconds": 0.06347875000210479,
+      "data_hash": "84af6bf3250b17185a367aab8f4bb3c48d6b62928f88b3674eb6d9848f12e70d",
+      "warnings": [],
+      "truth_hash": "55bbc1c2e4ad4a16f4e6c2300d1b06500890bedd5ce20947937ee2e2652bd11e",
+      "weights_hash": null,
+      "effective_config_hash": "86736fcb05e15e71cac2aca79c653caf0125d03a092a52721f48de47e0d7e441"
+    },
+    {
+      "status": "executed",
+      "cell": "heavy-tail-gaussian",
+      "seed": 271501,
+      "family": "gaussian",
+      "n": 120,
+      "true_boundaries": [
+        0,
+        40,
+        80,
+        120
+      ],
+      "predicted_boundaries": [
+        0,
+        40,
+        80,
+        120
+      ],
+      "k_max": 8,
+      "k_map": 3,
+      "k_error": 0,
+      "posterior_mass_at_k_max": 0.028315814259836824,
+      "map_at_k_max": false,
+      "posterior_k_entropy": 1.5002525603592987,
+      "boundary_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ]
+        ],
+        "precision": 1.0,
+        "recall": 1.0,
+        "f1": 1.0,
+        "mae_or_na": 0.0,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "false_discovery_count": null,
+      "false_positive_dataset": null,
+      "missed_change_count": 0,
+      "missed_change_rate": 0.0,
+      "complete_boundary_recovery": true,
+      "log_evidence": -129.53879570743618,
+      "wall_seconds": 0.06267974997172132,
+      "data_hash": "cc7b76302d6a155276a5eefb4c2ff4024036ae8ddf6b86f7b1d66347d6911ca9",
+      "warnings": [],
+      "truth_hash": "88494561b1889be2666e72167e15d979026024df3a0d9609570a764329c9ce99",
+      "weights_hash": null,
+      "effective_config_hash": "86736fcb05e15e71cac2aca79c653caf0125d03a092a52721f48de47e0d7e441"
+    },
+    {
+      "status": "executed",
+      "cell": "zero-inflated-poisson",
+      "seed": 281501,
+      "family": "poisson",
+      "n": 120,
+      "true_boundaries": [
+        0,
+        40,
+        80,
+        120
+      ],
+      "predicted_boundaries": [
+        0,
+        43,
+        56,
+        58,
+        63,
+        66,
+        77,
+        79,
+        120
+      ],
+      "k_max": 8,
+      "k_map": 8,
+      "k_error": 5,
+      "posterior_mass_at_k_max": 0.9951802072729309,
+      "map_at_k_max": true,
+      "posterior_k_entropy": 0.03065922410181958,
+      "boundary_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            6,
+            1
+          ]
+        ],
+        "precision": 0.2857142857142857,
+        "recall": 1.0,
+        "f1": 0.4444444444444445,
+        "mae_or_na": 2.0,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "false_discovery_count": null,
+      "false_positive_dataset": null,
+      "missed_change_count": 0,
+      "missed_change_rate": 0.0,
+      "complete_boundary_recovery": false,
+      "log_evidence": -331.82695422594986,
+      "wall_seconds": 0.06277008296456188,
+      "data_hash": "fe32b039eb7c433b07a04e1d895acde7a464571527b1cd83b3a641b946ec3cb6",
+      "warnings": [],
+      "truth_hash": "88494561b1889be2666e72167e15d979026024df3a0d9609570a764329c9ce99",
+      "weights_hash": null,
+      "effective_config_hash": "fde85c8a759c6abf8b6b72a46f48a0a4b107875a2129fb4c8649bd7b357200dd"
+    },
+    {
+      "status": "executed",
+      "cell": "dense-gaussian",
+      "seed": 291501,
+      "family": "gaussian",
+      "n": 120,
+      "true_boundaries": [
+        0,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        90,
+        100,
+        110,
+        120
+      ],
+      "predicted_boundaries": [
+        0,
+        10,
+        20,
+        30,
+        40,
+        50,
+        60,
+        70,
+        80,
+        88,
+        89,
+        90,
+        99,
+        100,
+        110,
+        120
+      ],
+      "k_max": 15,
+      "k_map": 15,
+      "k_error": 3,
+      "posterior_mass_at_k_max": 0.5927843953233021,
+      "map_at_k_max": true,
+      "posterior_k_entropy": 0.9756278559232044,
+      "boundary_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [
+          [
+            0,
+            0
+          ],
+          [
+            1,
+            1
+          ],
+          [
+            2,
+            2
+          ],
+          [
+            3,
+            3
+          ],
+          [
+            4,
+            4
+          ],
+          [
+            5,
+            5
+          ],
+          [
+            6,
+            6
+          ],
+          [
+            7,
+            7
+          ],
+          [
+            10,
+            8
+          ],
+          [
+            12,
+            9
+          ],
+          [
+            13,
+            10
+          ]
+        ],
+        "precision": 0.7857142857142857,
+        "recall": 1.0,
+        "f1": 0.88,
+        "mae_or_na": 0.0,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "false_discovery_count": null,
+      "false_positive_dataset": null,
+      "missed_change_count": 0,
+      "missed_change_rate": 0.0,
+      "complete_boundary_recovery": false,
+      "log_evidence": -153.99414079044732,
+      "wall_seconds": 0.11503145797178149,
+      "data_hash": "386c36f6f9184e6d55165124fc175b13bf6bbc466bcbbe7a44bf5119d82596cf",
+      "warnings": [],
+      "truth_hash": "27b6c18d6214e52f669552829216165d605cfbe94f9ed5b89535d749eb5120e1",
+      "weights_hash": null,
+      "effective_config_hash": "539534400c1d10ee524816c5045fb55074d5a4fef5c7904e8eea16ae820161d3"
+    },
+    {
+      "status": "executed",
+      "cell": "short-segment-gaussian",
+      "seed": 301501,
+      "family": "gaussian",
+      "n": 100,
+      "true_boundaries": [
+        0,
+        48,
+        52,
+        100
+      ],
+      "predicted_boundaries": [
+        0,
+        35,
+        48,
+        52,
+        100
+      ],
+      "k_max": 8,
+      "k_map": 4,
+      "k_error": 1,
+      "posterior_mass_at_k_max": 0.08833434655646513,
+      "map_at_k_max": false,
+      "posterior_k_entropy": 1.7446451170325015,
+      "boundary_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [
+          [
+            1,
+            0
+          ],
+          [
+            2,
+            1
+          ]
+        ],
+        "precision": 0.6666666666666666,
+        "recall": 1.0,
+        "f1": 0.8,
+        "mae_or_na": 0.0,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "false_discovery_count": null,
+      "false_positive_dataset": null,
+      "missed_change_count": 0,
+      "missed_change_rate": 0.0,
+      "complete_boundary_recovery": false,
+      "log_evidence": -90.57563722240606,
+      "wall_seconds": 0.05363412504084408,
+      "data_hash": "1f8b23e9f485ad0e92c2d17f8a62ad5cc8f2c01709797230e3822c4ca021fe48",
+      "warnings": [],
+      "truth_hash": "bfed76bd9176a01853291f0ab5fd2e274d64ef0f36da04b6bfe30a10fda898e2",
+      "weights_hash": null,
+      "effective_config_hash": "86736fcb05e15e71cac2aca79c653caf0125d03a092a52721f48de47e0d7e441"
+    },
+    {
+      "status": "executed",
+      "cell": "prior-conflict-gaussian",
+      "seed": 311501,
+      "family": "gaussian",
+      "n": 120,
+      "true_boundaries": [
+        0,
+        40,
+        80,
+        120
+      ],
+      "predicted_boundaries": [
+        0,
+        70,
+        120
+      ],
+      "k_max": 8,
+      "k_map": 2,
+      "k_error": -1,
+      "posterior_mass_at_k_max": 0.0,
+      "map_at_k_max": false,
+      "posterior_k_entropy": 1.991933004582952e-32,
+      "boundary_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [],
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "mae_or_na": null,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "false_discovery_count": null,
+      "false_positive_dataset": null,
+      "missed_change_count": 2,
+      "missed_change_rate": 1.0,
+      "complete_boundary_recovery": false,
+      "log_evidence": -358.33309519012136,
+      "wall_seconds": 0.09360866597853601,
+      "data_hash": "372f95b970fb2713e88ca267411a81271581e4076a639706ad8ee2a777fa31eb",
+      "warnings": [],
+      "truth_hash": "88494561b1889be2666e72167e15d979026024df3a0d9609570a764329c9ce99",
+      "weights_hash": null,
+      "effective_config_hash": "1c4414aebba8a652985c57fbccf9fb2e44eb8a1316ecb17c7fd922fcbf81da1c"
+    },
+    {
+      "status": "executed",
+      "cell": "shared-boundary-heterogeneity",
+      "seed": 321501,
+      "n": 120,
+      "n_sequences": 8,
+      "noise_scales": [
+        0.25,
+        0.25,
+        0.5,
+        0.5,
+        1.0,
+        1.0,
+        1.5,
+        1.5
+      ],
+      "common_boundaries": [
+        0,
+        40,
+        80,
+        120
+      ],
+      "shared_boundaries": [
+        0,
+        4,
+        5,
+        40,
+        49,
+        60,
+        80,
+        81,
+        120
+      ],
+      "shared_k_map": 8,
+      "shared_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-common-truth",
+        "matched_pairs": [
+          [
+            2,
+            0
+          ],
+          [
+            5,
+            1
+          ]
+        ],
+        "precision": 0.2857142857142857,
+        "recall": 1.0,
+        "f1": 0.4444444444444445,
+        "mae_or_na": 0.0,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "shared_subject_metrics": [
+        {
+          "subject": 0,
+          "truth_boundaries": [
+            0,
+            40,
+            60,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "precision": 0.42857142857142855,
+            "recall": 1.0,
+            "f1": 0.6,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 1,
+          "truth_boundaries": [
+            0,
+            40,
+            60,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                4,
+                1
+              ],
+              [
+                5,
+                2
+              ]
+            ],
+            "precision": 0.42857142857142855,
+            "recall": 1.0,
+            "f1": 0.6,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 2,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 3,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 4,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 5,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 6,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 7,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            40,
+            49,
+            60,
+            80,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                5,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        }
+      ],
+      "shared_mean_subject_f1": 0.4833333333333334,
+      "subject_specific_boundary_60_selected_as_shared": true,
+      "independent": [
+        {
+          "subject": 0,
+          "k_map": 8,
+          "truth_boundaries": [
+            0,
+            40,
+            60,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            4,
+            5,
+            12,
+            40,
+            52,
+            60,
+            80,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                3,
+                0
+              ],
+              [
+                5,
+                1
+              ],
+              [
+                6,
+                2
+              ]
+            ],
+            "precision": 0.42857142857142855,
+            "recall": 1.0,
+            "f1": 0.6,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 1,
+          "k_map": 8,
+          "truth_boundaries": [
+            0,
+            40,
+            60,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            40,
+            60,
+            80,
+            81,
+            101,
+            110,
+            111,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                1
+              ],
+              [
+                2,
+                2
+              ]
+            ],
+            "precision": 0.42857142857142855,
+            "recall": 1.0,
+            "f1": 0.6,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 2,
+          "k_map": 8,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            5,
+            40,
+            42,
+            43,
+            65,
+            68,
+            80,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                1,
+                0
+              ],
+              [
+                6,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 3,
+          "k_map": 8,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            9,
+            13,
+            40,
+            44,
+            71,
+            78,
+            80,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                6,
+                1
+              ]
+            ],
+            "precision": 0.2857142857142857,
+            "recall": 1.0,
+            "f1": 0.4444444444444445,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 4,
+          "k_map": 4,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            40,
+            80,
+            85,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                0,
+                0
+              ],
+              [
+                1,
+                1
+              ]
+            ],
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 5,
+          "k_map": 4,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            1,
+            39,
+            79,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                1,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "precision": 0.6666666666666666,
+            "recall": 1.0,
+            "f1": 0.8,
+            "mae_or_na": 1.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 6,
+          "k_map": 5,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            1,
+            4,
+            41,
+            81,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                2,
+                0
+              ],
+              [
+                3,
+                1
+              ]
+            ],
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "mae_or_na": 1.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        {
+          "subject": 7,
+          "k_map": 5,
+          "truth_boundaries": [
+            0,
+            40,
+            80,
+            120
+          ],
+          "predicted_boundaries": [
+            0,
+            40,
+            77,
+            81,
+            117,
+            120
+          ],
+          "metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-subject-truth",
+            "matched_pairs": [
+              [
+                0,
+                0
+              ],
+              [
+                2,
+                1
+              ]
+            ],
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "mae_or_na": 0.5,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        }
+      ],
+      "independent_mean_f1": 0.6277777777777778,
+      "shared_wall_seconds": 0.21597887499956414,
+      "independent_wall_seconds": 0.5098871249938384,
+      "wall_seconds": 0.7258659999934025,
+      "data_hash": "f5f9a45f8faf9fb737f30883ee827b709ad45b68b436a2238cb2243de5dea22b",
+      "warnings": [],
+      "truth_hash": "7fee0a864ffdf5603ff420e9ed0453b77f5d2569d052e846efb6f3f5c0bd42d2",
+      "weights_hash": "c4f7fb329f1de1a7929f81cd293d740389d0f4048e8935e012c53a9abd45d578",
+      "effective_config_hash": "b0de828d2ce7b74eef5d2ebb39b20c495aaf43fda54e1caf18a6b03824a754e8"
+    },
+    {
+      "status": "executed",
+      "cell": "logistic-approximation-failure",
+      "seed": 331501,
+      "n": 80,
+      "true_boundaries": [
+        0,
+        40,
+        80
+      ],
+      "reference_k_map": 3,
+      "reference_boundaries": [
+        0,
+        34,
+        40,
+        80
+      ],
+      "reference_metrics": {
+        "schema_version": "1.0.0",
+        "prediction_axis": "observation-index",
+        "reference_axis": "observation-index",
+        "tolerance": 3.0,
+        "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+        "reference_type": "simulated-truth",
+        "matched_pairs": [
+          [
+            1,
+            0
+          ]
+        ],
+        "precision": 0.5,
+        "recall": 1.0,
+        "f1": 0.6666666666666666,
+        "mae_or_na": 0.0,
+        "metric_version": "boundary-metrics-1.0.0"
+      },
+      "methods": {
+        "quadrature-40": {
+          "status": "executed",
+          "wall_seconds": 0.07115204201545566,
+          "k_map": 3,
+          "boundaries": [
+            0,
+            34,
+            40,
+            80
+          ],
+          "diagnostics": {
+            "estimator_class": "BayesBreakLogisticNormal",
+            "n": 80,
+            "k_max": 4,
+            "k_map": 3,
+            "passed": true,
+            "summary": "6/6 checks passed",
+            "checks": [
+              {
+                "name": "block_error_max",
+                "passed": true,
+                "detail": "max |\u0394 log A0| over reachable blocks = 4.0274",
+                "measured": 4.027387038980606,
+                "tolerance": null,
+                "failure_mode": "short-segment-laplace"
+              },
+              {
+                "name": "block_error_quantiles",
+                "passed": true,
+                "detail": "q50=3.7876 q95=4.0090 q100=4.0274",
+                "measured": 3.787602720833494,
+                "tolerance": null,
+                "failure_mode": "mf-vb-variance"
+              },
+              {
+                "name": "k_posterior_l1",
+                "passed": true,
+                "detail": "|P\u0302(k) \u2212 P_ref(k)|_1 = 0.0381",
+                "measured": 0.038057442962977917,
+                "tolerance": null,
+                "failure_mode": "method-sensitivity"
+              },
+              {
+                "name": "boundary_marginal_l1_at_ref_k_map",
+                "passed": true,
+                "detail": "|P\u0302(b|y,k) \u2212 P_ref(b|y,k)|_1 at k = 3 = 0.0635",
+                "measured": 0.06346220895218428,
+                "tolerance": null,
+                "failure_mode": "method-sensitivity"
+              },
+              {
+                "name": "map_path_jaccard",
+                "passed": true,
+                "detail": "Jaccard(MAP_a, MAP_r) = 1.0000",
+                "measured": 1.0,
+                "tolerance": null,
+                "failure_mode": "ep-nonconvergence"
+              },
+              {
+                "name": "pk_tv_bound_check",
+                "passed": true,
+                "detail": "TV(P\u0302(k|y), P_ref(k|y)) = 0.0190; conditional cor:stability-paper bound min(1, exp(2\u00b7k_max\u00b7\u03b5_max) \u2212 1) = 1.0 for k_max=4, \u03b5_max=4.0274",
+                "measured": 0.019028721481488958,
+                "tolerance": 1.0,
+                "failure_mode": "tv-bound"
+              }
+            ],
+            "extra": {
+              "block_error_quantiles": {
+                "q50": 3.787602720833494,
+                "q95": 4.009003909889655,
+                "q100": 4.027387038980606
+              },
+              "block_error_max": 4.027387038980606,
+              "block_error_median": 3.787602720833494,
+              "n_reachable_blocks": 10,
+              "k_posterior_l1": 0.038057442962977917,
+              "boundary_marginal_l1": 0.06346220895218428,
+              "map_path_jaccard": 1.0,
+              "k_map_estimator": 3,
+              "k_map_reference": 3,
+              "pk_tv_empirical": 0.019028721481488958,
+              "pk_tv_upper_bound": 1.0,
+              "approx_routine": "quadrature",
+              "theoretical_rate": "not established; routine-specific certification remains required",
+              "theoretical_rate_violated": null,
+              "segment_error_record": {
+                "family": "BayesBreakLogisticNormal",
+                "block_support_hash": "1d9f6b483f5a4be9703752edc3e0f8bcafb2ba09d5dc3e90ce10cedb1e5d3b6a",
+                "reference_method": "quadrature",
+                "max_log_score_error": 4.027387038980606,
+                "optimization_residual": null,
+                "tail_bound": null,
+                "quadrature_error": null,
+                "convergence_status": "unverifiable",
+                "n_reachable_blocks": 10,
+                "failure_reason": null,
+                "schema_version": "1.0.0"
+              },
+              "conditional_partition_bounds": {
+                "max_log_evidence_error": 16.109548155922425,
+                "max_log_posterior_odds_error": 32.21909631184485,
+                "probability_ratio_lower": 1.0172419456214824e-14,
+                "probability_ratio_upper": 98305030018109.56,
+                "tv_upper_bound": 1.0
+              }
+            },
+            "created_at": 1786327250.9602728
+          },
+          "truth_metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-truth",
+            "matched_pairs": [
+              [
+                1,
+                0
+              ]
+            ],
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        "laplace": {
+          "status": "executed",
+          "wall_seconds": 0.028630791988689452,
+          "k_map": 3,
+          "boundaries": [
+            0,
+            34,
+            40,
+            80
+          ],
+          "diagnostics": {
+            "estimator_class": "BayesBreakLogisticNormal",
+            "n": 80,
+            "k_max": 4,
+            "k_map": 3,
+            "passed": true,
+            "summary": "6/6 checks passed",
+            "checks": [
+              {
+                "name": "block_error_max",
+                "passed": true,
+                "detail": "max |\u0394 log A0| over reachable blocks = 6.9205",
+                "measured": 6.920496268683628,
+                "tolerance": null,
+                "failure_mode": "short-segment-laplace"
+              },
+              {
+                "name": "block_error_quantiles",
+                "passed": true,
+                "detail": "q50=5.9734 q95=6.8218 q100=6.9205",
+                "measured": 5.9733532074769045,
+                "tolerance": null,
+                "failure_mode": "mf-vb-variance"
+              },
+              {
+                "name": "k_posterior_l1",
+                "passed": true,
+                "detail": "|P\u0302(k) \u2212 P_ref(k)|_1 = 0.0707",
+                "measured": 0.07071135161305503,
+                "tolerance": null,
+                "failure_mode": "method-sensitivity"
+              },
+              {
+                "name": "boundary_marginal_l1_at_ref_k_map",
+                "passed": true,
+                "detail": "|P\u0302(b|y,k) \u2212 P_ref(b|y,k)|_1 at k = 3 = 0.0188",
+                "measured": 0.018811114535588883,
+                "tolerance": null,
+                "failure_mode": "method-sensitivity"
+              },
+              {
+                "name": "map_path_jaccard",
+                "passed": true,
+                "detail": "Jaccard(MAP_a, MAP_r) = 1.0000",
+                "measured": 1.0,
+                "tolerance": null,
+                "failure_mode": "ep-nonconvergence"
+              },
+              {
+                "name": "pk_tv_bound_check",
+                "passed": true,
+                "detail": "TV(P\u0302(k|y), P_ref(k|y)) = 0.0354; conditional cor:stability-paper bound min(1, exp(2\u00b7k_max\u00b7\u03b5_max) \u2212 1) = 1.0 for k_max=4, \u03b5_max=6.9205",
+                "measured": 0.035355675806527515,
+                "tolerance": 1.0,
+                "failure_mode": "tv-bound"
+              }
+            ],
+            "extra": {
+              "block_error_quantiles": {
+                "q50": 5.9733532074769045,
+                "q95": 6.821829748321312,
+                "q100": 6.920496268683628
+              },
+              "block_error_max": 6.920496268683628,
+              "block_error_median": 5.9733532074769045,
+              "n_reachable_blocks": 10,
+              "k_posterior_l1": 0.07071135161305503,
+              "boundary_marginal_l1": 0.018811114535588883,
+              "map_path_jaccard": 1.0,
+              "k_map_estimator": 3,
+              "k_map_reference": 3,
+              "pk_tv_empirical": 0.035355675806527515,
+              "pk_tv_upper_bound": 1.0,
+              "approx_routine": "laplace",
+              "theoretical_rate": "not established; routine-specific certification remains required",
+              "theoretical_rate_violated": null,
+              "segment_error_record": {
+                "family": "BayesBreakLogisticNormal",
+                "block_support_hash": "1d9f6b483f5a4be9703752edc3e0f8bcafb2ba09d5dc3e90ce10cedb1e5d3b6a",
+                "reference_method": "quadrature",
+                "max_log_score_error": 6.920496268683628,
+                "optimization_residual": null,
+                "tail_bound": null,
+                "quadrature_error": null,
+                "convergence_status": "unverifiable",
+                "n_reachable_blocks": 10,
+                "failure_reason": null,
+                "schema_version": "1.0.0"
+              },
+              "conditional_partition_bounds": {
+                "max_log_evidence_error": 27.681985074734513,
+                "max_log_posterior_odds_error": 55.363970149469026,
+                "probability_ratio_lower": 9.030946465415283e-25,
+                "probability_ratio_upper": 1.1073036517596228e+24,
+                "tv_upper_bound": 1.0
+              }
+            },
+            "created_at": 1786327250.988938
+          },
+          "truth_metrics": {
+            "schema_version": "1.0.0",
+            "prediction_axis": "observation-index",
+            "reference_axis": "observation-index",
+            "tolerance": 3.0,
+            "matching_rule": "maximum-cardinality-then-minimum-distance-one-to-one",
+            "reference_type": "simulated-truth",
+            "matched_pairs": [
+              [
+                1,
+                0
+              ]
+            ],
+            "precision": 0.5,
+            "recall": 1.0,
+            "f1": 0.6666666666666666,
+            "mae_or_na": 0.0,
+            "metric_version": "boundary-metrics-1.0.0"
+          }
+        },
+        "ep": {
+          "status": "timed-out",
+          "timeout_seconds": 20,
+          "timeout_scope": "ep-fit-only",
+          "fit_wall_seconds": 20.006622957997024,
+          "wall_seconds": 20.74921966699185,
+          "peak_rss": {
+            "value": 153747456,
+            "units": "bytes"
+          }
+        }
+      },
+      "wall_seconds": 20.95121075003408,
+      "data_hash": "7c5f128637de5f18f74d843b535a9eaad6898818745dbead10d6dddf472a0803",
+      "warnings": [],
+      "truth_hash": "986e39be22bbcea1d23c9f7ed9dc13642dfb0fe7d62a0a799f21a24eae10fd44",
+      "weights_hash": null,
+      "effective_config_hash": "8de55440a0f21b6540b577b6461edbe5ac7547cbe6bbcc59a3f99bc9aade8926"
+    }
+  ],
+  "summary": {
+    "cells": {
+      "null-gaussian": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.06347875000210479,
+          "standard_error": 0.0,
+          "ci95_lower": 0.06347875000210479,
+          "ci95_upper": 0.06347875000210479,
+          "min": 0.06347875000210479,
+          "max": 0.06347875000210479
+        },
+        "boundary_f1": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "k_error": {
+          "mean": 3.0,
+          "standard_error": 0.0,
+          "ci95_lower": 3.0,
+          "ci95_upper": 3.0,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "posterior_k_entropy": {
+          "mean": 2.0746134465588346,
+          "standard_error": 0.0,
+          "ci95_lower": 2.0746134465588346,
+          "ci95_upper": 2.0746134465588346,
+          "min": 2.0746134465588346,
+          "max": 2.0746134465588346
+        },
+        "missed_change_count": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "missed_change_rate": null,
+        "posterior_mass_at_k_max": {
+          "mean": 0.13007461408324036,
+          "standard_error": 0.0,
+          "ci95_lower": 0.13007461408324036,
+          "ci95_upper": 0.13007461408324036,
+          "min": 0.13007461408324036,
+          "max": 0.13007461408324036
+        },
+        "map_saturation_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "complete_boundary_recovery_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "false_discovery_count": {
+          "mean": 3.0,
+          "standard_error": 0.0,
+          "ci95_lower": 3.0,
+          "ci95_upper": 3.0,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "false_positive_dataset_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.20654931437723745,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "heavy-tail-gaussian": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.06267974997172132,
+          "standard_error": 0.0,
+          "ci95_lower": 0.06267974997172132,
+          "ci95_upper": 0.06267974997172132,
+          "min": 0.06267974997172132,
+          "max": 0.06267974997172132
+        },
+        "boundary_f1": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "k_error": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "posterior_k_entropy": {
+          "mean": 1.5002525603592987,
+          "standard_error": 0.0,
+          "ci95_lower": 1.5002525603592987,
+          "ci95_upper": 1.5002525603592987,
+          "min": 1.5002525603592987,
+          "max": 1.5002525603592987
+        },
+        "missed_change_count": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "missed_change_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "posterior_mass_at_k_max": {
+          "mean": 0.028315814259836824,
+          "standard_error": 0.0,
+          "ci95_lower": 0.028315814259836824,
+          "ci95_upper": 0.028315814259836824,
+          "min": 0.028315814259836824,
+          "max": 0.028315814259836824
+        },
+        "map_saturation_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "complete_boundary_recovery_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.20654931437723745,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "zero-inflated-poisson": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.06277008296456188,
+          "standard_error": 0.0,
+          "ci95_lower": 0.06277008296456188,
+          "ci95_upper": 0.06277008296456188,
+          "min": 0.06277008296456188,
+          "max": 0.06277008296456188
+        },
+        "boundary_f1": {
+          "mean": 0.4444444444444445,
+          "standard_error": 0.0,
+          "ci95_lower": 0.4444444444444445,
+          "ci95_upper": 0.4444444444444445,
+          "min": 0.4444444444444445,
+          "max": 0.4444444444444445
+        },
+        "k_error": {
+          "mean": 5.0,
+          "standard_error": 0.0,
+          "ci95_lower": 5.0,
+          "ci95_upper": 5.0,
+          "min": 5.0,
+          "max": 5.0
+        },
+        "posterior_k_entropy": {
+          "mean": 0.03065922410181958,
+          "standard_error": 0.0,
+          "ci95_lower": 0.03065922410181958,
+          "ci95_upper": 0.03065922410181958,
+          "min": 0.03065922410181958,
+          "max": 0.03065922410181958
+        },
+        "missed_change_count": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "missed_change_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "posterior_mass_at_k_max": {
+          "mean": 0.9951802072729309,
+          "standard_error": 0.0,
+          "ci95_lower": 0.9951802072729309,
+          "ci95_upper": 0.9951802072729309,
+          "min": 0.9951802072729309,
+          "max": 0.9951802072729309
+        },
+        "map_saturation_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.20654931437723745,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "complete_boundary_recovery_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "dense-gaussian": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.11503145797178149,
+          "standard_error": 0.0,
+          "ci95_lower": 0.11503145797178149,
+          "ci95_upper": 0.11503145797178149,
+          "min": 0.11503145797178149,
+          "max": 0.11503145797178149
+        },
+        "boundary_f1": {
+          "mean": 0.88,
+          "standard_error": 0.0,
+          "ci95_lower": 0.88,
+          "ci95_upper": 0.88,
+          "min": 0.88,
+          "max": 0.88
+        },
+        "k_error": {
+          "mean": 3.0,
+          "standard_error": 0.0,
+          "ci95_lower": 3.0,
+          "ci95_upper": 3.0,
+          "min": 3.0,
+          "max": 3.0
+        },
+        "posterior_k_entropy": {
+          "mean": 0.9756278559232044,
+          "standard_error": 0.0,
+          "ci95_lower": 0.9756278559232044,
+          "ci95_upper": 0.9756278559232044,
+          "min": 0.9756278559232044,
+          "max": 0.9756278559232044
+        },
+        "missed_change_count": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "missed_change_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "posterior_mass_at_k_max": {
+          "mean": 0.5927843953233021,
+          "standard_error": 0.0,
+          "ci95_lower": 0.5927843953233021,
+          "ci95_upper": 0.5927843953233021,
+          "min": 0.5927843953233021,
+          "max": 0.5927843953233021
+        },
+        "map_saturation_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.20654931437723745,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "complete_boundary_recovery_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "short-segment-gaussian": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.05363412504084408,
+          "standard_error": 0.0,
+          "ci95_lower": 0.05363412504084408,
+          "ci95_upper": 0.05363412504084408,
+          "min": 0.05363412504084408,
+          "max": 0.05363412504084408
+        },
+        "boundary_f1": {
+          "mean": 0.8,
+          "standard_error": 0.0,
+          "ci95_lower": 0.8,
+          "ci95_upper": 0.8,
+          "min": 0.8,
+          "max": 0.8
+        },
+        "k_error": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "posterior_k_entropy": {
+          "mean": 1.7446451170325015,
+          "standard_error": 0.0,
+          "ci95_lower": 1.7446451170325015,
+          "ci95_upper": 1.7446451170325015,
+          "min": 1.7446451170325015,
+          "max": 1.7446451170325015
+        },
+        "missed_change_count": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "missed_change_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "posterior_mass_at_k_max": {
+          "mean": 0.08833434655646513,
+          "standard_error": 0.0,
+          "ci95_lower": 0.08833434655646513,
+          "ci95_upper": 0.08833434655646513,
+          "min": 0.08833434655646513,
+          "max": 0.08833434655646513
+        },
+        "map_saturation_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "complete_boundary_recovery_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "prior-conflict-gaussian": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.09360866597853601,
+          "standard_error": 0.0,
+          "ci95_lower": 0.09360866597853601,
+          "ci95_upper": 0.09360866597853601,
+          "min": 0.09360866597853601,
+          "max": 0.09360866597853601
+        },
+        "boundary_f1": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "k_error": {
+          "mean": -1.0,
+          "standard_error": 0.0,
+          "ci95_lower": -1.0,
+          "ci95_upper": -1.0,
+          "min": -1.0,
+          "max": -1.0
+        },
+        "posterior_k_entropy": {
+          "mean": 1.991933004582952e-32,
+          "standard_error": 0.0,
+          "ci95_lower": 1.991933004582952e-32,
+          "ci95_upper": 1.991933004582952e-32,
+          "min": 1.991933004582952e-32,
+          "max": 1.991933004582952e-32
+        },
+        "missed_change_count": {
+          "mean": 2.0,
+          "standard_error": 0.0,
+          "ci95_lower": 2.0,
+          "ci95_upper": 2.0,
+          "min": 2.0,
+          "max": 2.0
+        },
+        "missed_change_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "posterior_mass_at_k_max": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.0,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "map_saturation_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "complete_boundary_recovery_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        }
+      },
+      "shared-boundary-heterogeneity": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 0.7258659999934025,
+          "standard_error": 0.0,
+          "ci95_lower": 0.7258659999934025,
+          "ci95_upper": 0.7258659999934025,
+          "min": 0.7258659999934025,
+          "max": 0.7258659999934025
+        },
+        "shared_common_truth_f1": {
+          "mean": 0.4444444444444445,
+          "standard_error": 0.0,
+          "ci95_lower": 0.4444444444444445,
+          "ci95_upper": 0.4444444444444445,
+          "min": 0.4444444444444445,
+          "max": 0.4444444444444445
+        },
+        "shared_mean_subject_f1": {
+          "mean": 0.4833333333333334,
+          "standard_error": 0.0,
+          "ci95_lower": 0.4833333333333334,
+          "ci95_upper": 0.4833333333333334,
+          "min": 0.4833333333333334,
+          "max": 0.4833333333333334
+        },
+        "independent_mean_f1": {
+          "mean": 0.6277777777777778,
+          "standard_error": 0.0,
+          "ci95_lower": 0.6277777777777778,
+          "ci95_upper": 0.6277777777777778,
+          "min": 0.6277777777777778,
+          "max": 0.6277777777777778
+        },
+        "subject_deviation_selected_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.20654931437723745,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        }
+      },
+      "logistic-approximation-failure": {
+        "n_runs": 1,
+        "n_executed": 1,
+        "n_failed": 0,
+        "failure_rate": 0.0,
+        "failure_rate_interval": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "wall_seconds": {
+          "mean": 20.95121075003408,
+          "standard_error": 0.0,
+          "ci95_lower": 20.95121075003408,
+          "ci95_upper": 20.95121075003408,
+          "min": 20.95121075003408,
+          "max": 20.95121075003408
+        },
+        "quadrature-40_execution_rate": 1.0,
+        "quadrature-40_timeout_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "quadrature-40_max_block_error": {
+          "mean": 4.027387038980606,
+          "standard_error": 0.0,
+          "ci95_lower": 4.027387038980606,
+          "ci95_upper": 4.027387038980606,
+          "min": 4.027387038980606,
+          "max": 4.027387038980606
+        },
+        "quadrature-40_empirical_tv": {
+          "mean": 0.019028721481488958,
+          "standard_error": 0.0,
+          "ci95_lower": 0.019028721481488958,
+          "ci95_upper": 0.019028721481488958,
+          "min": 0.019028721481488958,
+          "max": 0.019028721481488958
+        },
+        "quadrature-40_conditional_tv_bound": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "quadrature-40_map_jaccard": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "quadrature-40_truth_f1": {
+          "mean": 0.6666666666666666,
+          "standard_error": 0.0,
+          "ci95_lower": 0.6666666666666666,
+          "ci95_upper": 0.6666666666666666,
+          "min": 0.6666666666666666,
+          "max": 0.6666666666666666
+        },
+        "quadrature-40_verified_convergence_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "laplace_execution_rate": 1.0,
+        "laplace_timeout_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "laplace_max_block_error": {
+          "mean": 6.920496268683628,
+          "standard_error": 0.0,
+          "ci95_lower": 6.920496268683628,
+          "ci95_upper": 6.920496268683628,
+          "min": 6.920496268683628,
+          "max": 6.920496268683628
+        },
+        "laplace_empirical_tv": {
+          "mean": 0.035355675806527515,
+          "standard_error": 0.0,
+          "ci95_lower": 0.035355675806527515,
+          "ci95_upper": 0.035355675806527515,
+          "min": 0.035355675806527515,
+          "max": 0.035355675806527515
+        },
+        "laplace_conditional_tv_bound": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "laplace_map_jaccard": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 1.0,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "laplace_truth_f1": {
+          "mean": 0.6666666666666666,
+          "standard_error": 0.0,
+          "ci95_lower": 0.6666666666666666,
+          "ci95_upper": 0.6666666666666666,
+          "min": 0.6666666666666666,
+          "max": 0.6666666666666666
+        },
+        "laplace_verified_convergence_rate": {
+          "mean": 0.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.0,
+          "ci95_upper": 0.7934506856227626,
+          "min": 0.0,
+          "max": 0.0
+        },
+        "ep_execution_rate": 0.0,
+        "ep_timeout_rate": {
+          "mean": 1.0,
+          "standard_error": 0.0,
+          "ci95_lower": 0.20654931437723745,
+          "ci95_upper": 1.0,
+          "min": 1.0,
+          "max": 1.0
+        },
+        "ep_max_block_error": null,
+        "ep_empirical_tv": null,
+        "ep_conditional_tv_bound": null,
+        "ep_map_jaccard": null,
+        "ep_truth_f1": null,
+        "ep_verified_convergence_rate": null
+      }
+    }
+  },
+  "resources": {
+    "elapsed_wall_seconds": 22.131084709020797,
+    "peak_rss": {
+      "value": 160169984,
+      "self_value": 160169984,
+      "children_value": 153747456,
+      "units": "bytes"
+    },
+    "output_bytes": 64981,
+    "projected_full_runs": 400,
+    "projected_full_wall_seconds": 1106.5542354510399
+  },
+  "interpretation_limit": "This suite maps declared failure regimes. It is not a universal robustness claim and retains failed, null, reversed, nonconverged, and timed-out outcomes."
+}

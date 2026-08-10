@@ -88,3 +88,10 @@ complete recovery did not penalize extra boundaries, binary rates used degenerat
 the EP subprocess deadline still included worker startup. The final redesign requires exact
 one-to-one recovery, Wilson score intervals for binary rates, and a worker-ready/start handshake
 that starts the deadline only after setup.
+
+The valid bounded pilot executed from commit `d03a06323d0e4ca5afb9409dc18c716e5a5c5c56`
+in 22.13 seconds at 160.17 MB peak RSS. Its projected 400-run cost is 18.44 minutes, below
+the 30-minute and 4-GiB renewed-approval thresholds. Machine audit certified complete input
+hashes, same-subject truth pairing, Wilson intervals, exact-recovery semantics, and a retained
+20.01-second EP fit-only timeout. Full execution remains unapproved pending renewed explicit
+authorization.
