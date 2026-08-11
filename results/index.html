@@ -2093,6 +2093,19 @@ objective equaled the final trace value, all traces were monotone, and all 1,200
 restarts were valid. Low separation and duplicate templates expose the expected
 non-identifiability/collapse boundary; this is not evidence for normalized-mixture
 identifiability.</p>
+<h4 id="pending-review-misspecification-and-negative-control-suite">Pending-review misspecification and negative-control suite<a class="headerlink" href="#pending-review-misspecification-and-negative-control-suite" title="Permanent link">&para;</a></h4>
+<p><code>RES-BB-SYN-006</code> retained 400 seeded datasets across eight predeclared failure
+regimes. The null-Gaussian false-positive dataset rate was <strong>0.680</strong>;
+zero-inflated Poisson and dense Gaussian saturated their MAP segment budgets in
+every dataset; short-segment exact recovery was <strong>0.080</strong>. Under heterogeneous
+subject boundaries, mean shared-model F1@3 was <strong>0.4907</strong> versus <strong>0.6206</strong> for
+independent fits scored against the same subject truths. All 50 EP fits reached
+the predeclared fit-only timeout, so no EP accuracy metric is imputed.</p>
+<p>The <a href="https://github.com/osolari/bayesbreak/blob/main/results/phase6/RES-BB-SYN-006/SUMMARY.md">full summary</a>
+and <a href="https://github.com/osolari/bayesbreak/blob/main/results/phase6/RES-BB-SYN-006/failure_map.png">failure map</a>
+are finalized, but scientific interpretation remains pending independent review.
+These cell-specific failure indicators are not directly comparable and do not
+support a universal robustness or model-superiority claim.</p>
 <h3 id="runtime-scaling">Runtime scaling<a class="headerlink" href="#runtime-scaling" title="Permanent link">&para;</a></h3>
 <p><img alt="Runtime" src="../assets/figures/fig5_runtime_scaling.png" /></p>
 <p>Empirical runtime vs sequence length for two values of <span class="arithmatex">\(k_{\max}\)</span>. The
