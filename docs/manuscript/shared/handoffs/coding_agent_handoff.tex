@@ -5,7 +5,7 @@
 
 \begin{statusbox}[Canonical synchronization]
 Canonical handoff ID: \texttt{HANDOFF-BB-CANONICAL-001}. Phase: \texttt{6}. Canonical JSON SHA-256:
-\path{13fec27bc1a1817dfcaa4a548e694cb877d2921dea016895bfbc6a9d83de488f}. The book appendix, task registry, standalone Markdown handoff, repository registries, and synchronization manifest are checked mechanically.
+\path{6ed4ace8a45bb13633655c99978c2338458073f5d48afe958863660d5cdcc4a2}. The book appendix, task registry, standalone Markdown handoff, repository registries, and synchronization manifest are checked mechanically.
 \end{statusbox}
 
 \section{Author-fixed scientific scope}
@@ -764,14 +764,14 @@ Each experiment driver owns a machine-readable run registry, configuration set, 
 
 \subsection{EPR-BB-015 -- Misspecification, failure-boundary, and negative-control suite}
 \textbf{Claims.} CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013\par
-\textbf{Status.} corrected 400-run full suite executed with retained outcomes; artifact and sidecar pending independent scientific review\par
+\textbf{Status.} corrected 400-run full suite and derived artifacts finalized with retained outcomes; scientific disposition pending independent review\par
 \textbf{Hypothesis.} BayesBreak fails in predictable, detectable ways under declared boundary cases.\par
 \textbf{Competing explanation.} Diagnostics remain optimistic under heavy tails, zero inflation, dense changes, unequal information, or adversarial priors.\par
 \textbf{Design.} Heavy tails, zero inflation, no change, dense change, short segments, unequal subject information, grid refinement, approximation failure, and prior conflict.\par
 \textbf{Metrics.} false discoveries, missed changes, posterior entropy/calibration, certificate failure, runtime, warning/error behavior.\par
 \textbf{Repetition and uncertainty.} Predeclared repetitions and regime-wise intervals; report reversed and null outcomes.\par
 \textbf{Dependencies.} CODE-BB-001;CODE-BB-005;CODE-BB-010;CODE-BB-012\par
-\textbf{Output.} failure map and decision thresholds.
+\textbf{Output.} finalized failure map, summary table/report, and pending-review sidecar.
 
 \section{Claim status map}
 \small
@@ -835,6 +835,7 @@ RES-BB-QA-003 & real Phase 6 QA execution & implementation verification result &
 RES-BB-SYN-005 & real corrected Phase 6 execution & valid for the stated interpretation, with limitations & Use as the corrected child of RES-BB-SYN-002 while retaining the parent and its historical 96 percent value unchanged. \\
 RES-BB-CMP-003 & real corrected Phase 6 execution & valid for the stated interpretation, with limitations & Use as the corrected child of RES-BB-CMP-002 for common-axis agreement diagnostics while retaining the excluded parent computation unchanged. \\
 RES-BB-RD-008Q & real corrected Phase 6 execution & valid for the stated interpretation, with limitations & Use as the corrected child of RES-BB-RD-007Q for the declared family-correct in-support predictive evaluation while retaining the excluded parent value unchanged. \\
+RES-BB-SYN-006 & real original Phase 6 execution; pending review & pending independent scientific review & Retain the immutable artifact, finalized failure map, and pending sidecar; do not promote the result into manuscript conclusions until independent review is recorded. \\
 \bottomrule
 \end{longtable}
 \normalsize

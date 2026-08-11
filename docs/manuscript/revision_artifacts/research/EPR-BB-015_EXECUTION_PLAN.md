@@ -2,10 +2,10 @@
 
 ## Purpose
 
-`EPR-BB-015` is the next bounded research extension after the corrected Gate D results and
+`EPR-BB-015` is the bounded research extension after the corrected Gate D results and
 family-specific MAP predictive certification. It is a failure-map experiment, not a search for a
-single favorable headline. The planned result ID is `RES-BB-SYN-006`; it is an original result and
-has no parent.
+single favorable headline. The executed result ID is `RES-BB-SYN-006`; it is an original result
+and has no parent.
 
 The machine-readable source of this plan is
 `provenance/epr-bb-015-plan.json`.
@@ -58,7 +58,7 @@ remain in the result.
 - Do not call agreement with a fitted partition external truth.
 - Do not run the full suite until the pilot record is reviewed and explicitly approved.
 
-## Remaining Approval Boundary
+## Execution and review history
 
 The one-dataset-per-cell pilot executed from commit
 `88eb9daddc81249379635f031327fc2e39fb22d6` in 77.02 seconds at 157 MB peak RSS.
@@ -66,21 +66,23 @@ It projects 64.2 minutes for the 50-repetition suite, exceeding the predeclared 
 approval threshold. EP consumed 75.73 seconds of the pilot and returned empirical posterior TV
 0.505; the prior-conflict cell failed explicitly because no feasible segment count had finite
 evidence. A 20-second EP timeout is now predeclared and approved for a second pilot only. Full
-execution remains unapproved pending the bounded re-pilot's resource and semantic review.
+At that stage, execution remained unapproved pending the bounded re-pilot's resource and semantic
+review.
 
 The bounded re-pilot executed from commit `236ec8c509224688cc6e29d855a2df182a869ca7`
 in 21.28 seconds at 154 MB peak RSS. EP timed out at 20.01 seconds and the timeout is retained.
 All non-EP scientific outputs matched the first pilot. The revised full-suite projection is
 17.7 minutes, below the 30-minute resource threshold. Full execution remains a separate explicit
 approval boundary. The 400-run full suite was explicitly approved after review of the bounded
-re-pilot; execution remains pending until the approved-status revision is committed.
+re-pilot; at that stage, execution remained pending until the approved-status revision was
+committed.
 
 The approved full attempt was stopped before writing `results.json` after an independent semantic
 audit identified three invalidating defects: unsupported prior counts poisoned feasible posterior
 counts through `-inf - -inf`, shared and independent methods were compared against different truth
 targets, and the EP timeout included reference fitting rather than only the EP fit. No full result
-was retained. Approval is revoked until the corrected DP, metric semantics, provenance fields, and
-EP-fit-only timeout pass a new bounded pilot.
+was retained. Approval was revoked until the corrected DP, metric semantics, provenance fields,
+and EP-fit-only timeout passed a new bounded pilot.
 
 An intermediate pilot from commit `5bcb82eb44054042b33f9b140caa20205bbfa762` is retained as
 `pilot-semantic-corrected.json` but excluded from scientific interpretation. Its audit showed that
@@ -93,7 +95,8 @@ The valid bounded pilot executed from commit `d03a06323d0e4ca5afb9409dc18c716e5a
 in 22.13 seconds at 160.17 MB peak RSS. Its projected 400-run cost is 18.44 minutes, below
 the 30-minute and 4-GiB renewed-approval thresholds. Machine audit certified complete input
 hashes, same-subject truth pairing, Wilson intervals, exact-recovery semantics, and a retained
-20.01-second EP fit-only timeout. The corrected 400-run suite is now explicitly approved; execution
-executed from commit `96464039e12b43207735835b004b0a59a9966b57` in 1,114.26 seconds at
+20.01-second EP fit-only timeout. The corrected 400-run suite subsequently executed from commit
+`96464039e12b43207735835b004b0a59a9966b57` in 1,114.26 seconds at
 169.66 MB peak RSS. All 400 top-level records executed, and all 50 EP fits retained the
-predeclared timeout outcome. The artifact and sidecar remain pending independent scientific review.
+predeclared timeout outcome. The result, table, report, figure, and sidecar are finalized; their
+scientific disposition remains pending independent review.

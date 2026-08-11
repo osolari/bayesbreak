@@ -36,7 +36,7 @@ error conditions.
 
 ## Result Status
 
-The current registry contains 20 scientific result records, including corrected children and
+The current registry contains 21 scientific result records, including corrected children and
 pending-review research extensions. Two historical computations remain excluded from their
 intended conclusions:
 

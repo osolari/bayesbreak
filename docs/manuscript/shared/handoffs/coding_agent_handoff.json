@@ -406,14 +406,14 @@
       "phase1_id": "EXP-BB-011",
       "title": "Misspecification, failure-boundary, and negative-control suite",
       "claims": "CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013",
-      "status": "corrected 400-run full suite executed with retained outcomes; artifact and sidecar pending independent scientific review",
+      "status": "corrected 400-run full suite and derived artifacts finalized with retained outcomes; scientific disposition pending independent review",
       "hypothesis": "BayesBreak fails in predictable, detectable ways under declared boundary cases.",
       "competing": "Diagnostics remain optimistic under heavy tails, zero inflation, dense changes, unequal information, or adversarial priors.",
       "design": "Heavy tails, zero inflation, no change, dense change, short segments, unequal subject information, grid refinement, approximation failure, and prior conflict.",
       "metrics": "false discoveries, missed changes, posterior entropy/calibration, certificate failure, runtime, warning/error behavior.",
       "uncertainty": "Predeclared repetitions and regime-wise intervals; report reversed and null outcomes.",
       "dependencies": "CODE-BB-001;CODE-BB-005;CODE-BB-010;CODE-BB-012",
-      "output": "failure map and decision thresholds."
+      "output": "finalized failure map, summary table/report, and pending-review sidecar."
     }
   ],
   "claims": [
@@ -817,6 +817,16 @@
       "interpretation_status": "valid for the stated interpretation, with limitations",
       "release_action": "Use as the corrected child of RES-BB-RD-007Q for the declared family-correct in-support predictive evaluation while retaining the excluded parent value unchanged.",
       "rerun_in_phase2": "executed 2026-08-06"
+    },
+    {
+      "result_id": "RES-BB-SYN-006",
+      "asset": "Misspecification, failure-boundary, and negative-control failure map",
+      "classification": "real original Phase 6 execution; pending review",
+      "populated_values": "400 seeded datasets across eight predeclared cells; null false-positive dataset rate=0.680; zero-inflated Poisson and dense Gaussian MAP saturation rate=1.000; short-segment exact recovery rate=0.080; shared mean subject F1=0.4907 versus independent mean F1=0.6206; EP timed out in 50 of 50 fits",
+      "interpretation_limit": "Maps the declared failure regimes only. Failure indicators differ by cell and are not directly comparable. EP accuracy is unavailable because every EP fit timed out; no universal robustness, model-superiority, or external-truth claim follows.",
+      "interpretation_status": "pending independent scientific review",
+      "release_action": "Retain the immutable artifact, finalized failure map, and pending sidecar; do not promote the result into manuscript conclusions until independent review is recorded.",
+      "rerun_in_phase2": "executed 2026-08-09"
     }
   ],
   "definition_of_done": [

@@ -189,5 +189,5 @@ The parent result remains immutable. New artifacts are under
   intentionally rejected by the project typography package because it requires pdfLaTeX.
   Integrated TeX labels and image paths passed structural checks.
 - Remaining research priorities are model-averaged prediction, a routine-specific
-  logistic-normal predictive target, the `EPR-BB-015` misspecification/negative-control suite,
+  logistic-normal predictive target, independent scientific disposition of `RES-BB-SYN-006`,
   and independently annotated external-truth comparator strata.

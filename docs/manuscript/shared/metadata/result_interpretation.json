@@ -202,6 +202,16 @@
       "interpretation_status": "valid for the stated interpretation, with limitations",
       "release_action": "Use as the corrected child of RES-BB-RD-007Q for the declared family-correct in-support predictive evaluation while retaining the excluded parent value unchanged.",
       "rerun_in_phase2": "executed 2026-08-06"
+    },
+    {
+      "result_id": "RES-BB-SYN-006",
+      "asset": "Misspecification, failure-boundary, and negative-control failure map",
+      "classification": "real original Phase 6 execution; pending review",
+      "populated_values": "400 seeded datasets across eight predeclared cells; null false-positive dataset rate=0.680; zero-inflated Poisson and dense Gaussian MAP saturation rate=1.000; short-segment exact recovery rate=0.080; shared mean subject F1=0.4907 versus independent mean F1=0.6206; EP timed out in 50 of 50 fits",
+      "interpretation_limit": "Maps the declared failure regimes only. Failure indicators differ by cell and are not directly comparable. EP accuracy is unavailable because every EP fit timed out; no universal robustness, model-superiority, or external-truth claim follows.",
+      "interpretation_status": "pending independent scientific review",
+      "release_action": "Retain the immutable artifact, finalized failure map, and pending sidecar; do not promote the result into manuscript conclusions until independent review is recorded.",
+      "rerun_in_phase2": "executed 2026-08-09"
     }
   ]
 }

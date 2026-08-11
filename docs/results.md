@@ -69,6 +69,22 @@ restarts were valid. Low separation and duplicate templates expose the expected
 non-identifiability/collapse boundary; this is not evidence for normalized-mixture
 identifiability.
 
+#### Pending-review misspecification and negative-control suite
+
+`RES-BB-SYN-006` retained 400 seeded datasets across eight predeclared failure
+regimes. The null-Gaussian false-positive dataset rate was **0.680**;
+zero-inflated Poisson and dense Gaussian saturated their MAP segment budgets in
+every dataset; short-segment exact recovery was **0.080**. Under heterogeneous
+subject boundaries, mean shared-model F1@3 was **0.4907** versus **0.6206** for
+independent fits scored against the same subject truths. All 50 EP fits reached
+the predeclared fit-only timeout, so no EP accuracy metric is imputed.
+
+The [full summary](https://github.com/osolari/bayesbreak/blob/main/results/phase6/RES-BB-SYN-006/SUMMARY.md)
+and [failure map](https://github.com/osolari/bayesbreak/blob/main/results/phase6/RES-BB-SYN-006/failure_map.png)
+are finalized, but scientific interpretation remains pending independent review.
+These cell-specific failure indicators are not directly comparable and do not
+support a universal robustness or model-superiority claim.
+
 ### Runtime scaling
 
 ![Runtime](assets/figures/fig5_runtime_scaling.png)

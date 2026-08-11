@@ -1,0 +1,9 @@
+cell,n_runs,n_failed,primary_failure_metric,primary_failure_rate,primary_failure_ci95_lower,primary_failure_ci95_upper,boundary_f1_mean,complete_recovery_rate,map_saturation_rate,missed_change_rate,wall_seconds_mean
+null-gaussian,50,0,false_positive_dataset_rate,0.68,0.5418970269185592,0.7924178373934316,0.32,0.32,0.58,,0.05912586665479466
+heavy-tail-gaussian,50,0,one_minus_complete_boundary_recovery_rate,0.5,0.3664451431682858,0.6335548568317142,0.8184126984126984,0.5,0.02,0.0,0.06258573666214944
+zero-inflated-poisson,50,0,map_saturation_rate,1.0,0.9286524008666414,1.0,0.4177777777777777,0.0,1.0,0.06,0.06090768753667362
+dense-gaussian,50,0,map_saturation_rate,1.0,0.9286524008666414,1.0,0.8800000000000001,0.0,1.0,0.0,0.10745486079598777
+short-segment-gaussian,50,0,one_minus_complete_boundary_recovery_rate,0.92,0.8116175308165716,0.968450485911407,0.8106666666666666,0.08,0.0,0.0,0.05115012081922032
+prior-conflict-gaussian,50,0,missed_change_rate,1.0,1.0,1.0,0.0,0.0,0.0,1.0,0.09149618330062367
+shared-boundary-heterogeneity,50,0,subject_deviation_selected_rate,1.0,0.9286524008666414,1.0,,,,,0.7220444958203006
+logistic-approximation-failure,50,0,ep_timeout_rate,1.0,0.9286524008666414,1.0,,,,,21.128176875782664

@@ -201,14 +201,14 @@
       "phase1_id": "EXP-BB-011",
       "title": "Misspecification, failure-boundary, and negative-control suite",
       "claims": "CLM-BB-005;CLM-BB-007;CLM-BB-010;CLM-BB-011;CLM-BB-013",
-      "status": "corrected 400-run full suite executed with retained outcomes; artifact and sidecar pending independent scientific review",
+      "status": "corrected 400-run full suite and derived artifacts finalized with retained outcomes; scientific disposition pending independent review",
       "hypothesis": "BayesBreak fails in predictable, detectable ways under declared boundary cases.",
       "competing": "Diagnostics remain optimistic under heavy tails, zero inflation, dense changes, unequal information, or adversarial priors.",
       "design": "Heavy tails, zero inflation, no change, dense change, short segments, unequal subject information, grid refinement, approximation failure, and prior conflict.",
       "metrics": "false discoveries, missed changes, posterior entropy/calibration, certificate failure, runtime, warning/error behavior.",
       "uncertainty": "Predeclared repetitions and regime-wise intervals; report reversed and null outcomes.",
       "dependencies": "CODE-BB-001;CODE-BB-005;CODE-BB-010;CODE-BB-012",
-      "output": "failure map and decision thresholds."
+      "output": "finalized failure map, summary table/report, and pending-review sidecar."
     }
   ]
 }

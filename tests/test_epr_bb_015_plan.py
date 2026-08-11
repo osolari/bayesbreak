@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 
@@ -16,6 +17,7 @@ def test_misspecification_plan_has_stable_identity_and_budget() -> None:
     assert plan["protocol_id"] == "EPR-BB-015"
     assert plan["planned_result_id"] == "RES-BB-SYN-006"
     assert plan["execution_status"] == "planned"
+    assert plan["scientific_interpretation"] == "pending"
     assert plan["pilot_repetitions_per_cell"] == 1
     assert plan["full_repetitions_per_cell"] == 50
     assert plan["seed_base"] == 261501
@@ -27,6 +29,13 @@ def test_misspecification_plan_has_stable_identity_and_budget() -> None:
     assert plan["seed_schedule"] == "seed_base + 10000 * cell_index + repetition"
     assert "Wilson score intervals" in plan["uncertainty"]["summary"]
     assert any("fit-only timeout" in rule for rule in plan["abort_rules"])
+    assert set(plan["planned_artifacts"]) >= {
+        "results.json",
+        "failure_summary.csv",
+        "failure_map.png",
+        "SUMMARY.md",
+        "result_sidecar.json",
+    }
 
 
 def test_misspecification_plan_covers_every_registered_failure_regime() -> None:
@@ -61,5 +70,14 @@ def test_execution_brief_points_to_machine_readable_plan() -> None:
     ).read_text(encoding="utf-8")
     normalized = " ".join(brief.lower().split())
     assert "provenance/epr-bb-015-plan.json" in brief
-    assert "corrected 400-run suite is now explicitly approved" in normalized
+    assert "scientific disposition remains pending independent review" in normalized
     assert "20-second fit-only timeout" in brief
+
+
+def test_full_result_retains_frozen_plan_hash() -> None:
+    result = json.loads(
+        (ROOT / "results" / "phase6" / "RES-BB-SYN-006" / "results.json").read_text(
+            encoding="utf-8"
+        )
+    )
+    assert result["plan_sha256"] == hashlib.sha256(PLAN_PATH.read_bytes()).hexdigest()

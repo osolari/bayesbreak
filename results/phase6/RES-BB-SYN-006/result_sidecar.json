@@ -1,6 +1,9 @@
 {
   "artifacts": {
-    "results": "results/phase6/RES-BB-SYN-006/results.json"
+    "results": "results/phase6/RES-BB-SYN-006/results.json",
+    "summary_figure": "results/phase6/RES-BB-SYN-006/failure_map.png",
+    "summary_report": "results/phase6/RES-BB-SYN-006/SUMMARY.md",
+    "summary_table": "results/phase6/RES-BB-SYN-006/failure_summary.csv"
   },
   "code_hash": "0a6f6558ed42c575f2492b881c8401984ab16856fc58f6f6e961a133f9126397",
   "config_hash": "b9eade864efca65775f919bd9c504c9cebb9dede831b8ea77d17dc86d8b0540d",
@@ -21,14 +24,29 @@
     "n_cells": 8,
     "n_records": 400,
     "peak_rss": {
+      "children_value": 156008448,
+      "self_value": 169656320,
       "units": "bytes",
       "value": 169656320
+    },
+    "primary_failure_rates": {
+      "dense-gaussian": 1.0,
+      "heavy-tail-gaussian": 0.5,
+      "logistic-approximation-failure": 1.0,
+      "null-gaussian": 0.68,
+      "prior-conflict-gaussian": 1.0,
+      "shared-boundary-heterogeneity": 1.0,
+      "short-segment-gaussian": 0.92,
+      "zero-inflated-poisson": 1.0
     },
     "protocol_id": "EPR-BB-015",
     "repetitions_per_cell": 50
   },
   "output_hashes": {
-    "results": "f0731f55c1682fd42e89b3ea0f67ec593c887cfbfeae3176fc8cc623e81f7024"
+    "results": "f0731f55c1682fd42e89b3ea0f67ec593c887cfbfeae3176fc8cc623e81f7024",
+    "summary_figure": "bf758109b5c89934a7cf432eb7d79605b59033b22f7b4730cd02c5e1add72954",
+    "summary_report": "4e8fe17d07dd6f30614e97c96fec2a9aea07a8c89ef7d5e25ad32c68957aea6b",
+    "summary_table": "b74c2690d893e41e3093ef763e8b8f7871d8058171845df75a46865df668b18a"
   },
   "parent_result_id": null,
   "result_id": "RES-BB-SYN-006",

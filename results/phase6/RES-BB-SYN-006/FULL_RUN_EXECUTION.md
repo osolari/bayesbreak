@@ -15,5 +15,9 @@ The explicitly approved corrected EPR-BB-015 suite executed from commit
 
 The result remains `pending-independent-review`. This execution record does not promote any
 scientific conclusion, register a valid-for-interpretation result, or alter manuscript claims.
-The exploratory notebook under `tutorials/11_result_provenance_explorer.ipynb` validates identity,
-seeds, hashes, retained statuses, and plotting behavior without changing that review boundary.
+The exploratory notebook under `docs/tutorials/11_result_provenance_explorer.ipynb` validates
+identity, seeds, hashes, retained statuses, and plotting behavior without changing that review
+boundary.
+
+Finalized derived artifacts are `failure_summary.csv`, `failure_map.png`, and `SUMMARY.md`.
+Their hashes are recorded in `result_sidecar.json`.

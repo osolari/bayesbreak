@@ -1,5 +1,9 @@
 # RES-BB-SYN-006 EPR-BB-015 resource pilot
 
+This file preserves the sequence of pilot decisions. The corrected 400-run suite was
+subsequently executed and finalized; current full-run evidence is in `SUMMARY.md`,
+`failure_summary.csv`, `failure_map.png`, and `result_sidecar.json`.
+
 The authorized one-dataset-per-cell pilot executed from code commit
 `88eb9daddc81249379635f031327fc2e39fb22d6`.
 
@@ -20,8 +24,8 @@ The authorized one-dataset-per-cell pilot executed from code commit
   block error 6.575 log units, and empirical posterior TV 0.505. The lower-order quadrature and
   Laplace comparisons were fast but still had large maximum block errors.
 
-The full suite has not been executed. It requires renewed approval of the projected resource cost
-and review of whether to retain the current EP budget or predeclare a bounded timeout.
+At this first-pilot stage, the full suite had not been executed and required renewed approval of
+the projected resource cost and a predeclared EP budget.
 
 ## Bounded EP re-pilot
 
@@ -38,7 +42,7 @@ subprocess timeout.
   or posterior TV value is imputed for that run.
 - The prior-conflict cell remains an explicit failed outcome.
 
-The full suite remains unexecuted and requires separate explicit approval.
+At this bounded re-pilot stage, the full suite remained unexecuted and required separate approval.
 
 ## Semantic redesign and valid bounded pilot
 
@@ -71,4 +75,6 @@ immutable artifact is `pilot-semantic-corrected-v2.json` with SHA-256
 The intermediate `pilot-semantic-corrected.json` remains excluded because its audit found
 non-exact recovery semantics, degenerate rate intervals, and a subprocess deadline that
 included worker startup. The valid pilot is implementation-verification evidence only.
-The full suite remains machine-blocked and requires renewed explicit approval.
+At this final-pilot stage, the full suite remained machine-blocked. It was later approved and
+executed from commit `96464039e12b43207735835b004b0a59a9966b57`; scientific interpretation
+remains pending independent review.

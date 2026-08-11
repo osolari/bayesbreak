@@ -129,9 +129,33 @@
       "remaining_research": [
         "model-averaged prediction over partitions",
         "routine-specific logistic-normal prediction",
-        "EPR-BB-015 misspecification and negative-control suite",
+        "independent scientific disposition of RES-BB-SYN-006",
         "independently annotated external-truth comparator strata"
       ]
+    },
+    "research_completion_misspecification": {
+      "protocol_id": "EPR-BB-015",
+      "result_id": "RES-BB-SYN-006",
+      "captured_at": "2026-08-09",
+      "branch": "main",
+      "execution_commit": "96464039e12b43207735835b004b0a59a9966b57",
+      "records": 400,
+      "cells": 8,
+      "repetitions_per_cell": 50,
+      "top_level_executed": 400,
+      "top_level_failed": 0,
+      "ep_fit_timeouts": 50,
+      "canonical_result_count_after_registration": 21,
+      "artifact_sha256": "f0731f55c1682fd42e89b3ea0f67ec593c887cfbfeae3176fc8cc623e81f7024",
+      "status": "executed-and-finalized-pending-independent-review",
+      "artifacts": [
+        "results/phase6/RES-BB-SYN-006/results.json",
+        "results/phase6/RES-BB-SYN-006/failure_summary.csv",
+        "results/phase6/RES-BB-SYN-006/failure_map.png",
+        "results/phase6/RES-BB-SYN-006/SUMMARY.md",
+        "results/phase6/RES-BB-SYN-006/result_sidecar.json"
+      ],
+      "interpretation_limit": "Maps declared failure regimes only; no universal robustness, model-superiority, external-truth, or EP-accuracy conclusion follows."
     }
   },
   "historical_phase6_state": {
