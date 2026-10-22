@@ -1,0 +1,7 @@
+{
+  "schema": 1,
+  "release_sha256": "01e2170a91026c6289ab95271dac903ea7becca0b277c505b2612ca8335d1f44",
+  "release_archive": "BayesBreak_Canonical_Clean_Release.zip",
+  "git_mode": "fresh",
+  "description": "Canonical clean BayesBreak baseline. Old state is not merged."
+}

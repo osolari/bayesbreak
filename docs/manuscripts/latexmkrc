@@ -1,0 +1,5 @@
+$pdf_mode = 1;
+$bibtex_use = 2;
+$bibtex = (-x '/usr/bin/bibtex.original') ? '/usr/bin/bibtex.original %O %B' : 'bibtex %O %B';
+$force_mode = 1;
+$max_repeat = 7;

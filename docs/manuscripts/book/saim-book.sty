@@ -1,0 +1,316 @@
+% saim-book.sty - SAIM unified technical-book system.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{book/saim-book}[2026/08/04 Computer Modern Sans technical-book system, v1.0]
+
+% Page geometry and language
+\RequirePackage{fix-cm}
+\RequirePackage[a4paper,inner=22mm,outer=39mm,top=23mm,bottom=25mm,
+  marginparwidth=29mm,marginparsep=5mm,headheight=21pt]{geometry}
+\RequirePackage[english]{babel}
+\input{shared/saim/brand/typography.tex}
+\RequirePackage{ragged2e}
+
+% Core typography, mathematics, tables, and graphics
+\RequirePackage{amsmath,amssymb,amsthm,mathtools}
+\RequirePackage{booktabs,array,tabularx,multirow}
+\renewcommand{\arraystretch}{1.24}
+\setlength{\tabcolsep}{5.2pt}
+\RequirePackage[table]{xcolor}
+\RequirePackage{enumitem}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\RequirePackage{listings}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{marginnote}
+\RequirePackage{fancyhdr}
+\RequirePackage{titlesec}
+\RequirePackage{caption}
+\RequirePackage{subcaption}
+\RequirePackage{needspace}
+\RequirePackage{lastpage}
+\RequirePackage[numbers,sort&compress]{natbib}
+\RequirePackage{hyperref}
+\RequirePackage[nameinlink,noabbrev]{cleveref}
+\usetikzlibrary{arrows.meta,positioning,calc,fit,backgrounds,
+  shapes.geometric,decorations.pathreplacing,shapes.misc,patterns}
+
+% Shared design system
+\input{shared/saim/brand/colors.tex}
+\input{shared/saim/components/frontmatter.tex}
+\input{shared/saim/components/table-columns.tex}
+\input{shared/saim/components/tikz.tex}
+\input{shared/saim/components/listings.tex}
+\input{shared/saim/components/evidence.tex}
+\color{Ink}
+
+% PDF metadata and links
+\hypersetup{
+  colorlinks=true,
+  linkcolor=PrimaryDark,
+  citecolor=PrimaryDark,
+  urlcolor=Secondary,
+  pdfborder={0 0 0},
+  pdftitle={\BookTitle},
+  pdfauthor={\BookAuthor},
+  pdfsubject={\BookSubtitle},
+  pdfkeywords={\ProjectKeywords}
+}
+
+% Paragraph and list rhythm
+\setstretch{1.06}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.56em plus 0.10em minus 0.08em}
+\setlength{\emergencystretch}{1.5em}
+\setlist[itemize]{leftmargin=1.45em,itemsep=2.2pt,topsep=3pt,parsep=0pt}
+\setlist[enumerate]{leftmargin=1.65em,itemsep=2.2pt,topsep=3pt,parsep=0pt}
+\renewcommand{\labelitemi}{\textcolor{Primary}{\raisebox{0.18ex}{\scriptsize$\bullet$}}}
+\setcounter{tocdepth}{2}
+\setcounter{secnumdepth}{3}
+\raggedbottom
+
+% Small typographic primitives
+\newcommand{\saimbookeyebrow}[1]{{\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{Primary}\textls[145]{\MakeUppercase{#1}}}}
+\newcommand{\saimbookmuted}[1]{{\color{Muted}#1}}
+
+% Chapter and section hierarchy
+\titleformat{\chapter}[display]
+  {\normalfont\rmfamily\bfseries\color{Ink}}
+  {\hfill\colorbox{Primary}{\color{white}\SAIMNavigationFont\fontsize{8.5}{10}\selectfont\textls[95]{\;CHAPTER \thechapter\;}}}
+  {17mm}
+  {\RaggedRight\hyphenpenalty=10000\exhyphenpenalty=10000\fontsize{25}{30}\selectfont}
+  [\vspace{8mm}{\color{Primary}\titlerule[1.8pt]}]
+\titlespacing*{\chapter}{0pt}{-7mm}{15mm}
+
+\titleformat{name=\chapter,numberless}[display]
+  {\normalfont\rmfamily\bfseries\color{Ink}}
+  {\saimbookeyebrow{Front matter}}
+  {8mm}
+  {\RaggedRight\hyphenpenalty=10000\exhyphenpenalty=10000\fontsize{25}{30}\selectfont}
+  [\vspace{5mm}{\color{Primary}\titlerule[1.6pt]}]
+\titlespacing*{\chapter}{0pt}{-5mm}{15mm}
+
+\titleformat{\section}
+  {\normalfont\Large\rmfamily\bfseries\color{PrimaryDark}}
+  {\thesection}{0.62em}{}
+\titlespacing*{\section}{0pt}{18pt plus 3pt minus 2pt}{6pt}
+\titleformat{\subsection}
+  {\normalfont\large\rmfamily\bfseries\color{Ink}}
+  {\color{Primary}\thesubsection}{0.58em}{}
+\titlespacing*{\subsection}{0pt}{13pt plus 2pt minus 1pt}{4pt}
+\titleformat{\subsubsection}
+  {\normalfont\normalsize\rmfamily\bfseries\color{Ink}}
+  {\color{Primary}\thesubsubsection}{0.52em}{}
+\titlespacing*{\subsubsection}{0pt}{10pt plus 2pt minus 1pt}{3pt}
+
+% Running heads and folios
+\pagestyle{fancy}
+\fancyhf{}
+\fancyhead[L]{\rmfamily\scriptsize\color{Muted}\BookShortTitle}
+\fancyhead[R]{\rmfamily\scriptsize\color{Muted}\nouppercase{\leftmark}}
+\fancyfoot[L]{\rmfamily\scriptsize\color{Muted}\BookVersion}
+\fancyfoot[R]{\rmfamily\scriptsize\color{PrimaryDark}\thepage\,/\,\pageref*{LastPage}}
+\renewcommand{\headrulewidth}{0.45pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{Primary}\leaders\hrule height \headrulewidth\hfill}}
+\renewcommand{\footrulewidth}{0pt}
+\renewcommand{\chaptermark}[1]{\markboth{\thechapter.\ #1}{}}
+\fancypagestyle{plain}{%
+  \fancyhf{}
+  \fancyfoot[L]{\rmfamily\scriptsize\color{Muted}\BookVersion}
+  \fancyfoot[R]{\rmfamily\scriptsize\color{PrimaryDark}\thepage\,/\,\pageref*{LastPage}}
+  \renewcommand{\headrulewidth}{0pt}}
+
+% Compact visual index for template-scale books. For a long production book,
+% authors may replace this with separate \listoffigures and \listoftables pages.
+\makeatletter
+\newcommand{\makevisualindex}{%
+  \chapter*{Figures and tables}%
+  \addcontentsline{toc}{chapter}{Figures and tables}%
+  \section*{Figures}%
+  \@starttoc{lof}%
+  \vspace{14pt}%
+  \section*{Tables}%
+  \@starttoc{lot}%
+}
+\makeatother
+
+% Chapter-opening promise: editorial rail rather than another large panel.
+\newcommand{\chapterpromise}[2][Chapter path]{%
+  \begin{tcolorbox}[
+    blanker,breakable,
+    left=11pt,right=3pt,top=2pt,bottom=2pt,
+    before skip=0pt,after skip=12pt,
+    borderline west={2.4pt}{0pt}{Primary}]
+    \saimbookeyebrow{#1}\par\vspace{4pt}
+    {\large\RaggedRight\color{Ink}#2\par}
+  \end{tcolorbox}}
+
+% Reusable pedagogical components. Each carries meaning, not decoration.
+\newtcolorbox{objectives}{
+  enhanced,breakable,colback=PrimaryWash,colframe=Primary,boxrule=0pt,arc=1.5pt,
+  borderline west={2.5pt}{0pt}{Primary},
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before skip=9pt,after skip=10pt,
+  title={\saimbookeyebrow{Learning objectives}},
+  attach title to upper={\par\vspace{4pt}},
+  fontupper=\small}
+\newtcolorbox{keyidea}{
+  enhanced,breakable,colback=PrimaryWash,colframe=Primary,boxrule=0.65pt,arc=2pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before skip=10pt,after skip=10pt,
+  title={\saimbookeyebrow{Key idea}},
+  attach title to upper={\par\vspace{5pt}}}
+\newtcolorbox{evidencebox}[1][Evidence note]{
+  enhanced,breakable,colback=SecondaryPale,colframe=Secondary,boxrule=0.65pt,arc=2pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before skip=10pt,after skip=10pt,
+  title={\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{Secondary}\textls[140]{\MakeUppercase{#1}}},
+  attach title to upper={\par\vspace{5pt}}}
+\newtcolorbox{notebox}[1][Note]{
+  enhanced,breakable,colback=LightPanel,colframe=Rule,boxrule=0pt,arc=1.5pt,
+  borderline west={2.2pt}{0pt}{RuleDark},
+  left=10pt,right=10pt,top=7pt,bottom=7pt,
+  before skip=9pt,after skip=9pt,
+  title={\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{Muted}\textls[130]{\MakeUppercase{#1}}},
+  attach title to upper={\par\vspace{4pt}}}
+\newtcolorbox{workedbox}{
+  enhanced,breakable,colback=PositivePale,colframe=Positive,boxrule=0.65pt,arc=2pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before skip=10pt,after skip=10pt,
+  title={\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{Positive}\textls[140]{WORKED EXAMPLE}},
+  attach title to upper={\par\vspace{5pt}}}
+\newtcolorbox{designbox}{
+  enhanced,breakable,colback=PositivePale,colframe=Positive,boxrule=0.65pt,arc=2pt,
+  left=10pt,right=10pt,top=8pt,bottom=8pt,
+  before skip=10pt,after skip=10pt,
+  title={\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{Positive}\textls[140]{DESIGN DECISION}},
+  attach title to upper={\par\vspace{5pt}}}
+
+% Numbered exercises and answer material
+\newcounter{exercise}[chapter]
+\renewcommand{\theexercise}{\thechapter.\arabic{exercise}}
+\newtcolorbox{exercisebox}[1][]{
+  enhanced,breakable,colback=white,colframe=Rule,boxrule=0.7pt,arc=2pt,
+  left=10pt,right=10pt,top=12pt,bottom=10pt,
+  before skip=11pt,after skip=11pt,
+  title={\rmfamily\bfseries\fontsize{7.5}{9}\selectfont\textls[80]{EXERCISE \theexercise\ #1}},
+  coltitle=white,colbacktitle=Primary,
+  attach boxed title to top left={xshift=8pt,yshift=-3mm},
+  boxed title style={boxrule=0pt,arc=0pt,left=7pt,right=7pt,top=4pt,bottom=4pt}}
+\newenvironment{exercise}[1][]{%
+  \refstepcounter{exercise}\begin{exercisebox}[#1]}{\end{exercisebox}}
+\newtcolorbox{solutionbox}[1][]{
+  enhanced,breakable,colback=SecondaryPale,colframe=Secondary,boxrule=0.7pt,arc=2pt,
+  left=10pt,right=10pt,top=9pt,bottom=9pt,
+  before skip=10pt,after skip=10pt,
+  title={\rmfamily\bfseries\fontsize{7.2}{8.6}\selectfont\color{Secondary}\textls[120]{SOLUTION #1}},
+  attach title to upper={\par\vspace{5pt}}}
+
+% Writable workspace for workbook-style exercises.
+\newtcolorbox{workspace}[1][55mm]{
+  enhanced,height=#1,colback=LightPanel,colframe=Rule,boxrule=0.65pt,arc=2pt,
+  left=10pt,right=10pt,top=12mm,bottom=8pt,
+  before skip=9pt,after skip=3pt,
+  overlay={
+    \node[anchor=north west,font=\rmfamily\bfseries\fontsize{6.8}{8}\selectfont,
+      text=Muted] at ([xshift=10pt,yshift=-8pt]frame.north west)
+      {\textls[120]{WORKSPACE}};
+    \foreach \p in {0.18,0.31,0.44,0.57,0.70,0.83}{
+      \draw[Rule,line width=0.38pt]
+        ($(interior.south west)!\p!(interior.north west)$) --
+        ($(interior.south east)!\p!(interior.north east)$);
+    }
+  }}
+\newcommand{\solutioninappendix}{%
+  \par\vspace{5pt}{\rmfamily\bfseries\small\color{Secondary}\fboxsep=5pt\fboxrule=0.6pt
+  \fcolorbox{Secondary}{white}{SOLUTION IN APPENDIX}}}
+
+% Theorem environments with an editorial rail
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newcommand{\saimbooktheoremstyle}[2]{%
+  \tcolorboxenvironment{#1}{
+    blanker,breakable,
+    before skip=9pt,after skip=8pt,
+    left=10pt,right=3pt,top=5pt,bottom=5pt,
+    borderline west={2pt}{0pt}{#2}}}
+\saimbooktheoremstyle{theorem}{Primary}
+\saimbooktheoremstyle{lemma}{Primary}
+\saimbooktheoremstyle{proposition}{Primary}
+\saimbooktheoremstyle{corollary}{Primary}
+\saimbooktheoremstyle{definition}{Secondary}
+\saimbooktheoremstyle{assumption}{Warning}
+\saimbooktheoremstyle{remark}{RuleDark}
+
+% Helpers
+\newcommand{\mnote}[1]{\marginnote{\RaggedRight\footnotesize\rmfamily\color{Muted}#1}}
+\newcommand{\placeholder}[1]{\textcolor{Primary}{\textbf{[REPLACE: #1]}}}
+\newcommand{\vect}[1]{\boldsymbol{#1}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\R}{\mathbb{R}}
+\DeclareMathOperator*{\argmin}{arg\,min}
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+% Captions and floats
+\captionsetup{
+  font={small},labelfont={bf,color=PrimaryDark},textfont={color=Muted},
+  labelsep=period,justification=raggedright,singlelinecheck=false
+}
+\captionsetup[table]{position=top,skip=7pt}
+\captionsetup[figure]{position=bottom,skip=6pt}
+\setlength{\textfloatsep}{16pt plus 3pt minus 3pt}
+\setlength{\floatsep}{13pt plus 3pt minus 2pt}
+
+% Solid-indigo cover retained as the strongest cross-medium brand moment.
+% v1.4 aligns the book cover with the slide title page: no horizontal rule,
+% no top-left logo, stacked author/date metadata below the subtitle, and the
+% knockout SAIM lockup anchored at the lower right.
+\newcommand{\makesaimbookcover}{%
+\begin{titlepage}
+\thispagestyle{empty}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[Primary] (current page.north west) rectangle (current page.south east);
+  \node[anchor=north west,xshift=22mm,yshift=-31mm,
+    text=white,font=\SAIMNavigationFont\fontsize{8}{9.6}\selectfont,
+    align=left,inner sep=0pt]
+    at (current page.north west)
+    {\textls[150]{SAIM RESEARCH}\enspace\textcolor{white!60}{/}\enspace\textls[150]{TECHNICAL BOOK}};
+  \node[anchor=north west,xshift=22mm,yshift=-53mm,
+    text=white,font=\SAIMCoverTitleFont\fontsize{23.5}{28}\selectfont,
+    align=left,text width=164mm,inner sep=0pt] (booktitle)
+    at (current page.north west){\SAIMFrontRagged\BookTitle\par};
+  \node[anchor=north west,
+    text=white!94,font=\SAIMCoverSubtitleFont\fontsize{13.5}{17}\selectfont,
+    align=left,text width=150mm,inner sep=0pt] (booksubtitle)
+    at ([yshift=-10mm]booktitle.south west){\SAIMFrontRagged\BookSubtitle\par};
+  \node[anchor=north west,
+    text=white,font=\rmfamily\bfseries\fontsize{12.8}{15.2}\selectfont,
+    align=left,text width=138mm,inner sep=0pt] (bookauthor)
+    at ([yshift=-12mm]booksubtitle.south west){\SAIMFrontRagged\BookAuthor\par};
+  \node[anchor=north west,
+    text=white!84,font=\rmfamily\fontsize{8.8}{10.6}\selectfont,
+    align=left,text width=138mm,inner sep=0pt] (bookdate)
+    at ([yshift=-7.5mm]bookauthor.south west){\SAIMFrontRagged\BookDate\enspace\textcolor{white!58}{\ensuremath{\bullet}}\enspace\BookAffiliation\enspace\textcolor{white!58}{\ensuremath{\bullet}}\enspace\BookVersion\par};
+  \node[anchor=north west,xshift=22mm,yshift=-207mm,
+    text=white!92,font=\rmfamily\bfseries\fontsize{10.5}{13}\selectfont,
+    align=left,text width=130mm,inner sep=0pt]
+    at (current page.north west){\SAIMFrontRagged\BookTagline\par};
+  \node[anchor=north west,xshift=22mm,yshift=-225mm,
+    text=white!78,font=\rmfamily\fontsize{8.4}{11.4}\selectfont,
+    align=left,text width=124mm,inner sep=0pt]
+    at (current page.north west){\SAIMFrontRagged\BookDescription\par};
+  \node[anchor=south east,xshift=-14mm,yshift=22mm]
+    at (current page.south east)
+    {\includegraphics[height=12mm]{shared/saim/brand/logos/saim-logo-white.png}};
+\end{tikzpicture}
+\null
+\end{titlepage}}
+
+\endinput

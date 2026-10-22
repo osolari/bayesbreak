@@ -1,0 +1,22 @@
+% Three-medium design comparison; no surrounding figure environment.
+\newcommand{\CSMediumCalibrationDiagram}{%
+\begin{tikzpicture}[
+  every node/.style={font=\rmfamily},
+  card/.style={draw=Rule,fill=white,rounded corners=2pt,
+    minimum width=39mm,minimum height=32mm,text width=34mm,
+    align=left,inner sep=4mm,line width=0.55pt},
+]
+  \node[card] (paper) {\textcolor{Primary}{\scriptsize\bfseries PAPER}\\[3pt]
+    \textbf{Editorial density}\\[2pt]
+    \scriptsize Restrained branding, compact evidence, precise captions, and
+    publication-friendly typography.};
+  \node[card,right=6mm of paper] (slides) {\textcolor{Primary}{\scriptsize\bfseries SLIDES}\\[3pt]
+    \textbf{Claim-led pacing}\\[2pt]
+    \scriptsize Solid-orange bookends, editorial section dividers, and one
+    visual argument per frame.};
+  \node[card,right=6mm of slides] (book) {\textcolor{Primary}{\scriptsize\bfseries BOOK}\\[3pt]
+    \textbf{Pedagogical depth}\\[2pt]
+    \scriptsize Chapter promises, margin notes, worked examples, exercises,
+    and reproducible implementation detail.};
+\end{tikzpicture}%
+}

@@ -1,0 +1,148 @@
+\chapter{Exact shared-boundary pooling}
+\label{ch:shared}
+\chapterpromise{Finite-sample block-evidence products, known groups, and a valid finite-candidate consistency theorem.}
+
+\label{sec:replicates}
+
+\paragraph{Plate model (shared boundaries, subject-specific parameters).}
+With a shared segmentation $t=(t_0,\dots,t_k)$ and subject-specific conjugate priors,
+the generative model nests an inner \emph{segment} plate inside an outer \emph{subject} plate:
+\begin{equation}
+t\sim p(t\mid k),\qquad
+\theta^{(s)}_q \stackrel{\mathrm{ind}}{\sim} p(\theta\mid \alpha^{(s)}_0,\beta^{(s)}_0),\quad
+y^{(s)}_i\mid \theta^{(s)}_{q(i)},\,w^{(s)}_i \stackrel{\mathrm{ind}}{\sim} p(y\mid \theta^{(s)}_{q(i)},w^{(s)}_i),
+\label{eq:plate-replicates}
+\end{equation}
+where $q(i)$ is the segment index containing observation $i$ under $t$.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \node[latent] (t) {$t$};
+  \node[const, left=0.9cm of t] (pk) {$p(k)$};
+  \node[latent, below=1.2cm of t] (th) {$\theta^{(s)}_q$};
+  \node[obs, below=1.2cm of th] (y) {$y^{(s)}_i$};
+  \node[const, left=0.9cm of th] (ab) {$\alpha^{(s)}_0,\beta^{(s)}_0$};
+  \node[const, right=0.9cm of y] (w) {$w^{(s)}_i$};
+  \edge {pk} {t}
+  \edge {ab} {th}
+  \edge {t,th,w} {y}
+  \plate {pseg} {(th)} {$q=1{:}k$}
+  \plate {psubj} {(pseg)(y)(ab)(w)} {$s=1{:}S$}
+\end{tikzpicture}
+\caption[Shared-boundary multi-subject plate model]{Plate model for multi-subject pooling under shared boundaries. The boundary vector $t$ is shared across subjects; each subject has its own segment parameters $\theta^{(s)}_q$ and exposures $w^{(s)}_i$.}
+\label{fig:plate-replicates}
+\end{figure}
+
+Suppose we observe $S$ independent subjects, each with its own observations
+$\{(x^{(s)}_i,y^{(s)}_i)\}$ and exposure weights $w^{(s)}_i$, but we wish to model them as
+sharing a common segmentation (boundary locations) while allowing subject-specific segment
+parameters. For simplicity of exposition, assume a common index grid $i=1,\dots,n$ (e.g., after
+alignment/union of grids); subject-specific missing observations are handled by setting $w^{(s)}_i=0$
+at missing indices.
+
+Let $(i,j]$ denote a block and write subject-specific block sums as
+$(S^{(s)}_{ij},W^{(s)}_{ij},H^{(s)}_{ij})$ with subject-specific prior hyperparameters
+$(\alpha^{(s)}_0,\beta^{(s)}_0)$.
+
+\begin{assumption}[Common-grid shared-boundary support and conditional independence]
+\label{ass:cond-indep-subjects}
+Subjects are aligned to a common ordered candidate-boundary grid, and every shared boundary vector
+$t=(t_0,\dots,t_k)$ used by the pooled DP lies in the intersection of the subject-specific
+admissible supports after missingness/exposure conventions are applied. Conditional on this shared
+segmentation, subjects $s=1,\dots,S$ are independent, each subject has its own segment parameters
+$\theta^{(s)}_{1:k}$ with subject-specific conjugate priors, and subject-level block evidences are
+finite and strictly positive on the pooled support.
+\end{assumption}
+
+\begin{theorem}[Exact pooling of block evidences]
+\label{thm:multisubject}
+Under Assumption~\ref{ass:cond-indep-subjects}, the pooled block evidence for $(i,j]$ factorizes as
+\[
+A^{(0)}_{ij,\mathrm{pool}}
+ = \prod_{s=1}^S
+    \exp\{H^{(s)}_{ij}\}\,
+    \frac{Z(\alpha^{(s)}_0+S^{(s)}_{ij},\beta^{(s)}_0+W^{(s)}_{ij})}
+         {Z(\alpha^{(s)}_0,\beta^{(s)}_0)}.
+\]
+Equivalently, $\log A^{(0)}_{ij,\mathrm{pool}}=\sum_s \log A^{(0)}_{ij,s}$. Running the DP
+recursions \eqref{eq:LR}--\eqref{eq:segmom} with $A^{(0)}_{ij}$ replaced by
+$A^{(0)}_{ij,\mathrm{pool}}$ yields the exact posterior over shared boundaries. Conditional on any
+selected or averaged boundary configuration, the subject-specific segment-parameter posteriors are
+then recovered from the corresponding subject-level conjugate updates.
+\end{theorem}
+
+\begin{proof}
+\ProofStep{Step 1: subject-wise block evidences.}
+For each subject $s$, Theorem~\ref{thm:ef-integral} yields the subject-specific block evidence
+$A^{(0)}_{ij,s}$ computed from $(S^{(s)}_{ij},W^{(s)}_{ij},H^{(s)}_{ij})$.
+
+\ProofStep{Step 2: independence implies product pooling.}
+Conditional on shared boundaries, subjects are independent and have independent segment
+parameters. Therefore, the joint likelihood (with segment parameters integrated out) for the
+block is the product of the subject-wise block evidences:
+$A^{(0)}_{ij,\mathrm{pool}}=\prod_s A^{(0)}_{ij,s}$, giving the stated form.
+
+\ProofStep{Step 3: DP correctness under pooled evidences.}
+The DP in Section~\ref{sec:dp} depends only on the block evidence matrix. Replacing
+$A^{(0)}_{ij}$ by $A^{(0)}_{ij,\mathrm{pool}}$ therefore computes the exact shared-boundary
+posterior for the pooled model; parameter posteriors remain available conditionally on boundaries
+from the subject-specific block updates.
+\end{proof}
+
+\section{Groups with known membership}
+\label{sec:groups-known}
+
+When subject group labels $z_s\in\{1,\dots,G\}$ are observed, BayesBreak applies the pooled DP
+of Theorem~\ref{thm:multisubject} independently within each group: for group $g$ with subject
+index set $\mathcal{S}_g$, pool per-subject block evidences
+$\{A^{(0)}_{ij,s}\}_{s\in\mathcal{S}_g}$ into a group-specific pooled evidence
+$A^{(0)}_{ij,g}$, then run the DP recursions \eqref{eq:LR}--\eqref{eq:segmom} with
+$A^{(0)}_{ij}=A^{(0)}_{ij,g}$. This yields group-specific $P_g(k\mid y)$, boundary posteriors
+$P_g(t_p\mid y,k)$, and segment/regression-curve moments at total cost $G$ times the
+single-group cost. This is the supervised counterpart of the latent-template mixture in
+Section~\ref{sec:latent-em}.
+
+
+\section{Finite-candidate concentration across independent subjects}
+\begin{theorem}[Shared-boundary posterior consistency on a finite candidate set]
+\label{prop:shared-boundary-identifiability}
+Let $\mathcal T$ be a finite set of candidate segmentations and let $t^\star\in\mathcal T$ be the
+data-generating candidate. For subject $s$, let $M_s(t)>0$ be the integrated score used by the
+shared-boundary model. Assume subjects are independent, the prior satisfies $p(t^\star)>0$, and for
+every $t\ne t^\star$:
+\begin{enumerate}[label=(\roman*)]
+\item $\mathbb E|\log M_s(t^\star)-\log M_s(t)|<\infty$;
+\item a strong law holds for the centered log-score differences; and
+\item $\liminf_{S\to\infty}S^{-1}\sum_{s=1}^S
+\mathbb E[\log M_s(t^\star)-\log M_s(t)]=\delta_t>0$.
+\end{enumerate}
+Then $p(t^\star\mid y^{(1:S)})\to1$ almost surely, and every joint MAP segmentation equals
+$t^\star$ eventually almost surely.
+\end{theorem}
+\begin{proof}
+For any $t\ne t^\star$, the posterior ratio is
+\[
+ \frac{p(t\mid y^{(1:S)})}{p(t^\star\mid y^{(1:S)})}
+ =\frac{p(t)}{p(t^\star)}
+ \exp\left\{-\sum_{s=1}^S\bigl[\log M_s(t^\star)-\log M_s(t)\bigr]\right\}.
+\]
+By the strong-law assumption and the positive limiting average expectation gap, the normalized sum
+in brackets has positive liminf $\delta_t$ almost surely. Hence the ratio converges to zero
+exponentially on the $S$ scale. Because $\mathcal T$ is finite, summing these ratios over all wrong
+candidates still converges to zero. Normalization gives posterior concentration at $t^\star$; the
+MAP conclusion follows because all wrong posterior ratios are eventually below one.
+\end{proof}
+
+\begin{remark}[Why one informative subject is insufficient]
+A single fixed informative subject does not imply a positive \emph{average} score gap as the number
+of subjects grows. The theorem requires information to accumulate through a positive limiting
+average gap; this repairs the earlier asymptotic statement without altering exact finite-sample
+pooling.
+\end{remark}
+
+\begin{figure}[H]
+\centering
+\resizebox{0.96\textwidth}{!}{\input{shared/figures/tikz/models/shared_boundary_plate.tex}}
+\caption{Conditional independence across subjects converts each pooled block score into a product of subject-level block evidences, or a sum in log space.}
+\label{fig:shared-plate}
+\end{figure}

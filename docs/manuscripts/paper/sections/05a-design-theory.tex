@@ -1,0 +1,31 @@
+\subsection{Renewal interpretation and refinement of an irregular design}
+\label{sec:design-refinement}
+The local prior factorization admits a renewal interpretation, but its conditioning matters. A conditional prior on partitions given a separately sampled count $k$ does not automatically induce a prior on the count.
+
+\begin{proposition}[Renewal-length equivalence conditional on $k$]
+\label{prop:renewal-equivalence-paper}
+On an index grid with $0=t_0<t_1<\cdots<t_k=n$, let the positive segment lengths $d_q=t_q-t_{q-1}$ have an unnormalized renewal mass $g(d_q)\ge0$. Conditional on $\sum_qd_q=n$ and a fixed count $k$, the boundary distribution is
+\[
+p(t\mid k)=\frac{1}{C_k}\prod_{q=1}^{k}g(t_q-t_{q-1}),\qquad
+C_k=\sum_{t\in\mathcal T_k}\prod_{q=1}^{k}g(t_q-t_{q-1}).
+\]
+For geometric $g(d)=\rho(1-\rho)^{d-1}$, $0<\rho<1$, the product is constant over $\mathcal T_k$, and thus $p(t\mid k)$ is uniform regardless of $\rho$.
+\end{proposition}
+\begin{proof}
+\textbf{Step 1 (one-to-one correspondence).} Each ordered partition uniquely determines a composition $(d_1,\ldots,d_k)$ of $n$ into positive integers, and conversely the partial sums of each such composition recover the boundaries.
+\textbf{Step 2 (condition the renewal mass).} The unnormalized composition weight is $\prod_qg(d_q)$. Summing those weights over every admissible composition defines $C_k$, so normalizing yields the displayed conditional distribution.
+\textbf{Step 3 (geometric specialization).} For $g(d)=\rho(1-\rho)^{d-1}$, the product equals $\rho^k(1-\rho)^{\sum_qd_q-k}=\rho^k(1-\rho)^{n-k}$, independent of $t$ at fixed $k$. The factor cancels against $C_k$ and cannot push the separately specified segment-count prior $p(k)$ toward one or toward $n$.
+\end{proof}
+
+\begin{proposition}[Score preservation under grid refinement]
+\label{prop:refinement-paper}
+Suppose a candidate-coordinate grid is refined by adding locations carrying no new observations. Embed an original partition into the refined grid by retaining all of its physical segment endpoints and placing no boundary at a newly inserted location. Each inherited block then has the same likelihood integral; any cohesion or hazard factor depending only on unchanged physical endpoints and retained boundary weights has the same unnormalized prior contribution. The fully normalized partition posterior need not remain unchanged if new boundary locations are made admissible.
+\end{proposition}
+\begin{proof}
+\textbf{Step 1 (likelihood equality).} Each inherited refined block contains exactly the original observations and descriptors, so its likelihood product and prior-integrated segment likelihood agree with those of the original block.
+\textbf{Step 2 (prior equality for inherited paths).} Preserving physical endpoints preserves a cohesion depending only on those endpoints; by hypothesis, each retained interior boundary also retains its hazard factor. Multiplying across blocks thus gives the same unnormalized path weight.
+\textbf{Step 3 (why posterior equality fails).} Refinement that admits an additional cut creates extra partitions in the sum defining $C_k$ and in the data-dependent partition sum. Even if every inherited path has unchanged weight, the two new normalizers generally differ. The equality is for inherited path scores, not for the whole posterior.
+\end{proof}
+
+\paragraph{Physical interval conventions.}
+Observation locations $x_1<\cdots<x_n$ and candidate boundary coordinates $u_0<\cdots<u_n$ are distinct objects. Interior cell edges may be set to $u_i=(x_i+x_{i+1})/2$ for $1\le i<n$ and endpoints determined from the scientific measurement domain. The complete-segment span $u_j-u_i$ is not the same object as the observation gap $x_{i+1}-x_i$. An inhomogeneous Poisson boundary process can supply hazard factors through integrated intensities, but an interval-length cohesion does not automatically produce that process.

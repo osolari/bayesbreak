@@ -1,0 +1,72 @@
+\section{Introduction}
+\label{sec:introduction}
+
+Multiple-changepoint analysis represents an ordered series by contiguous segments
+within which a sampling-model parameter is constant. It is used in statistical
+signal processing, genomics, environmental science, and econometrics. The
+statistical task is to estimate the segment count, changepoint locations,
+segment parameters, and their uncertainty. Bayesian methods assign posterior
+probabilities to segmentations and can average over these alternatives when
+estimating a piecewise-constant signal or predicting future observations
+\citep{barry1992ppm,barry1993bayesCP,fearnhead2006exact,hutter2006bpcr}.
+
+For an offline changepoint model with independent segment parameters and a
+factorizing partition prior, the probability of a partition is a product of
+integrated segment likelihoods and local prior terms. Dynamic programming
+then sums these products without enumerating every partition
+\citep{barry1992ppm,fearnhead2006exact,hutter2006bpcr}. This formulation is
+well established. Its practical use across heterogeneous outcomes depends on
+calculating segment marginal likelihoods with the correct sampling-model
+normalization and integrating the partition prior with the same care.
+
+\BayesBreak develops a generalized hierarchical formulation of this model.
+For regular exponential-family observations with proper conjugate priors,
+segment marginal likelihoods and posterior moments follow from cumulative
+sufficient statistics. The resulting partition recursions do not depend on
+which member of the family supplied the segment scores. The framework includes
+nonuniform partitions on irregular physical coordinates, several sequences
+sharing changepoints, known groups, and a finite latent-group template
+criterion. Nonconjugate segment integrals can also be approximated locally,
+but exact posterior interpretation of the resulting dynamic program requires
+control of the segment-level approximation error.
+
+\paragraph{Contributions.}
+The contributions of this paper are as follows.
+\begin{enumerate}
+\item We specify a common conjugate segment calculation for exponential-family
+  sampling models with known exposure, trial-count, and precision descriptors,
+  explicitly distinguishing ordinary marginal likelihoods from powered
+  likelihood integrals. The calculation provides segment marginal likelihoods
+  and the posterior moments required for Bayesian piecewise-constant regression.
+\item We derive normalized sum-product recursions for the segment-count
+  posterior, ordered and unordered changepoint marginals, and posterior signal
+  moments. We also derive a separate max-sum recursion for joint MAP
+  segmentation, with immediate proofs of the identities and decision rules.
+\item We extend the local-factor model to physical segment lengths and
+  candidate-boundary weights, and to the exact pooling of independently sampled
+  sequences under a common segmentation.
+\item We study known-group pooling and a finite latent-template criterion for
+  unknown groups. A Jensen minorization leads to alternating allocation and
+  responsibility-weighted optimal-partition updates, with monotonicity for the
+  specified objective rather than a claim of full Bayesian mixture inference.
+\item We analyze the effect of segment marginal-likelihood approximation error
+  on partition probabilities and posterior odds. The analysis is conditional
+  on a uniform bound across admissible segments, not on a numerical method's
+  name or an unverified finite-sample error estimate.
+\end{enumerate}
+
+The experiments examine simulation recovery, posterior calibration, numerical
+approximations, computation time, and applications to well-log measurements,
+array-CGH, financial returns, and methylation. Existing results are reported
+separately from the additional experiments specified in
+Section~\ref{sec:experimental-design}. The latter are planned evaluations and
+are not used to support conclusions about accuracy or comparative performance.
+
+Section~\ref{sec:related} reviews the relevant statistical literature.
+Section~\ref{sec:setup} defines the sampling model, partition, and inferential
+targets. Sections~\ref{sec:model} and~\ref{sec:exact-inference} derive segment
+integration and exact partition inference. Section~\ref{sec:extensions}
+covers hierarchical extensions. Sections~\ref{sec:approx-predict} and
+\ref{sec:algorithms} address numerical approximation, prediction, and
+implementation. The experimental protocols and results follow in
+Sections~\ref{sec:experimental-design} and~\ref{sec:results}.

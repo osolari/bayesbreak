@@ -1,0 +1,3 @@
+interface:
+  display_name: "BayesBreak Research Protocols"
+  short_description: "Validate Bayesian segmentation theory and execute reproducible BayesBreak experiments."

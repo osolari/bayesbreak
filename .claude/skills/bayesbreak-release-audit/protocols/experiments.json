@@ -1,0 +1,376 @@
+{
+  "schema_version": "1.0",
+  "status": "planned_not_executed",
+  "revision": "2026-10-21-2",
+  "seed_scheme": "np.random.SeedSequence([20261021, experiment_numeric_id, cell_index, replicate])",
+  "default_numeric_precision": "float64",
+  "default_prior": {
+    "segment_count": "p(k) proportional to exp(-ln(4)*(k-1)) for k=1,...,k_max",
+    "conditional_partition": "uniform, C_k=binomial(n-1,k-1) when unrestricted",
+    "likelihood_power": 1
+  },
+  "default_evaluation": {
+    "boundary_tolerance_primary": 3,
+    "boundary_tolerance_sensitivity": [
+      0,
+      1,
+      5
+    ],
+    "bootstrap_resamples": 2000,
+    "bootstrap_unit": "independent_simulated_dataset",
+    "calibration_bins": 10
+  },
+  "required_manifest_fields": [
+    "experiment_id",
+    "protocol_revision",
+    "config_sha256",
+    "git_revision",
+    "python_version",
+    "scipy_version",
+    "numpy_version",
+    "seed",
+    "input_sha256",
+    "source_kind",
+    "family",
+    "family_descriptor",
+    "prior",
+    "k_max",
+    "coordinate_axis",
+    "reference_type",
+    "fit_status",
+    "metric_schema",
+    "artifact_sha256"
+  ],
+  "experiments": [
+    {
+      "id": "E00",
+      "name": "exactness_oracles",
+      "type": "correctness",
+      "n_values": [
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9,
+        10
+      ],
+      "families": [
+        "gaussian",
+        "poisson",
+        "binomial",
+        "negative_binomial"
+      ],
+      "oracles": [
+        "brute_force_partition",
+        "numerical_quadrature"
+      ],
+      "tolerance": {
+        "probability_abs": 1e-09,
+        "finite_log_evidence_abs": 1e-08
+      },
+      "output_tables": [
+        "oracle_checks.json"
+      ],
+      "paper_figure_label": null,
+      "paper_table_label": "tab:planned-oracles-paper"
+    },
+    {
+      "id": "E01",
+      "name": "gaussian_calibration",
+      "type": "simulation",
+      "n_values": [
+        256,
+        512
+      ],
+      "k_true": [
+        1,
+        3,
+        6
+      ],
+      "jump_sigma": [
+        0.5,
+        1.0,
+        2.0
+      ],
+      "minimum_generating_segment_length": 32,
+      "sigma": 1.0,
+      "gaussian_prior": {
+        "mean": 0,
+        "variance": 4
+      },
+      "k_max": 12,
+      "replicates": 100,
+      "paper_figure_label": "fig:planned-calibration-paper",
+      "paper_table_label": "tab:planned-recovery-paper"
+    },
+    {
+      "id": "E02",
+      "name": "family_portability",
+      "type": "simulation",
+      "n_conjugate": 240,
+      "n_beta_quadrature": 120,
+      "k_true": 3,
+      "families": [
+        "gaussian",
+        "poisson",
+        "binomial",
+        "negative_binomial",
+        "beta_observation"
+      ],
+      "effect_settings_per_family": 2,
+      "replicates_conjugate": 100,
+      "replicates_beta": 50,
+      "k_max": 10,
+      "paper_figure_label": null,
+      "paper_table_label": "tab:planned-recovery-paper"
+    },
+    {
+      "id": "E03",
+      "name": "irregular_design_prior",
+      "type": "simulation",
+      "n": 240,
+      "grid_gaps": [
+        1,
+        4,
+        16
+      ],
+      "true_templates": [
+        [
+          60,
+          120
+        ],
+        [
+          60,
+          180
+        ]
+      ],
+      "priors": [
+        "uniform",
+        "gap_hazard",
+        "length_cohesion",
+        "combined"
+      ],
+      "replicates": 100,
+      "k_max": 8,
+      "paper_figure_label": "fig:planned-irregular-paper",
+      "paper_table_label": null
+    },
+    {
+      "id": "E04",
+      "name": "pooled_shared_boundaries",
+      "type": "simulation",
+      "n": 240,
+      "S": [
+        1,
+        4,
+        16,
+        64
+      ],
+      "nonshared_fractions": [
+        0,
+        0.25,
+        0.5
+      ],
+      "true_boundaries": [
+        80,
+        160
+      ],
+      "replicates": 100,
+      "k_max": 8,
+      "paper_figure_label": "fig:planned-hierarchical-paper",
+      "paper_table_label": null
+    },
+    {
+      "id": "E05",
+      "name": "latent_templates",
+      "type": "simulation",
+      "n": 180,
+      "G": [
+        1,
+        2,
+        3
+      ],
+      "S": [
+        24,
+        48
+      ],
+      "true_templates": [
+        [
+          60,
+          120
+        ],
+        [
+          90,
+          150
+        ],
+        [
+          45,
+          105
+        ]
+      ],
+      "jump_amplitudes": [
+        0.5,
+        1.5,
+        3.0
+      ],
+      "replicates": 50,
+      "restarts": 5,
+      "max_iterations": 100,
+      "k_max": 8,
+      "paper_figure_label": "fig:planned-hierarchical-paper",
+      "paper_table_label": null
+    },
+    {
+      "id": "E06",
+      "name": "nonconjugate_oracles",
+      "type": "simulation",
+      "family": "bernoulli_logistic_normal_prior",
+      "prior_mean": 0,
+      "prior_variance": 4,
+      "block_lengths": [
+        4,
+        8,
+        16,
+        32,
+        64,
+        128
+      ],
+      "true_probabilities": [
+        0.05,
+        0.5,
+        0.95
+      ],
+      "replicates_per_block_cell": 100,
+      "posterior_simulations": 100,
+      "quad_epsabs": 1e-11,
+      "quad_epsrel": 1e-10,
+      "methods": [
+        "quadrature",
+        "laplace",
+        "jj",
+        "ep_if_validated"
+      ],
+      "paper_figure_label": "fig:planned-nonconjugate-paper",
+      "paper_table_label": "tab:planned-nonconjugate-paper"
+    },
+    {
+      "id": "E07",
+      "name": "misspecification",
+      "type": "simulation",
+      "n": 256,
+      "true_boundaries": [
+        85,
+        170
+      ],
+      "noise_classes": [
+        "gaussian_reference",
+        "student_t3",
+        "overdispersed_poisson",
+        "beta_binomial"
+      ],
+      "missingness": [
+        "none",
+        "mcar_10",
+        "mcar_30",
+        "single_block_15"
+      ],
+      "replicates": 100,
+      "k_max": 10,
+      "paper_figure_label": null,
+      "paper_table_label": "tab:planned-robustness-paper"
+    },
+    {
+      "id": "E08",
+      "name": "posterior_prediction",
+      "type": "simulation_and_real",
+      "n_conjugate": 240,
+      "n_beta_quadrature": 120,
+      "families": [
+        "gaussian",
+        "poisson",
+        "binomial",
+        "beta_observation"
+      ],
+      "replicates": 50,
+      "holdout_fraction_intervals": [
+        [
+          0.1,
+          0.25
+        ],
+        [
+          0.3,
+          0.45
+        ],
+        [
+          0.55,
+          0.7
+        ],
+        [
+          0.75,
+          0.9
+        ]
+      ],
+      "real_holdout_intervals": 5,
+      "paper_figure_label": null,
+      "paper_table_label": "tab:planned-robustness-paper"
+    },
+    {
+      "id": "E09",
+      "name": "real_data_and_baselines",
+      "type": "real_data",
+      "datasets": [
+        "welllog",
+        "cgh",
+        "spx",
+        "methylation"
+      ],
+      "k_max_grid": [
+        15,
+        30,
+        60
+      ],
+      "min_segment_lengths": [
+        1,
+        5,
+        10
+      ],
+      "comparators": [
+        "pelt",
+        "optimal_partitioning",
+        "binary_segmentation",
+        "wild_binary_segmentation",
+        "smuce_if_available",
+        "bayesian_fearnhead_if_available"
+      ],
+      "strict_data_source": true,
+      "no_simulated_fallback": true,
+      "paper_figure_label": "fig:planned-external-paper",
+      "paper_table_label": "tab:planned-external-paper"
+    },
+    {
+      "id": "E10",
+      "name": "scaling",
+      "type": "benchmark",
+      "n_values": [
+        128,
+        256,
+        512,
+        1024,
+        2048
+      ],
+      "k_max_values": [
+        5,
+        10,
+        20
+      ],
+      "warmup": 3,
+      "repeats": 7,
+      "blas_threads": 1,
+      "paper_figure_label": "fig:planned-scaling-paper",
+      "paper_table_label": null
+    }
+  ]
+}

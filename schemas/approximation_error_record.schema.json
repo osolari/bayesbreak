@@ -1,0 +1,41 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://osolari.github.io/bayesbreak/schemas/approximation_error_record-1.0.0.schema.json",
+  "title": "BayesBreak segment approximation-error record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "family",
+    "block_support_hash",
+    "reference_method",
+    "max_log_score_error",
+    "optimization_residual",
+    "tail_bound",
+    "quadrature_error",
+    "convergence_status",
+    "n_reachable_blocks",
+    "failure_reason"
+  ],
+  "properties": {
+    "schema_version": { "const": "1.0.0" },
+    "family": { "type": "string", "minLength": 1 },
+    "block_support_hash": { "$ref": "#/$defs/sha256" },
+    "reference_method": { "type": "string", "minLength": 1 },
+    "max_log_score_error": { "$ref": "#/$defs/nonnegativeOrNull" },
+    "optimization_residual": { "$ref": "#/$defs/nonnegativeOrNull" },
+    "tail_bound": { "$ref": "#/$defs/nonnegativeOrNull" },
+    "quadrature_error": { "$ref": "#/$defs/nonnegativeOrNull" },
+    "convergence_status": {
+      "enum": ["verified", "unverifiable", "failed", "not-applicable"]
+    },
+    "n_reachable_blocks": { "type": "integer", "minimum": 0 },
+    "failure_reason": { "type": ["string", "null"] }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "nonnegativeOrNull": {
+      "oneOf": [{ "type": "number", "minimum": 0 }, { "type": "null" }]
+    }
+  }
+}

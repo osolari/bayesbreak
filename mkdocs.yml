@@ -1,0 +1,158 @@
+site_name: BayesBreak
+site_description: >-
+  Generalized hierarchical Bayesian segmentation with irregular designs,
+  multi-sequence hierarchies, grouped and latent-group designs, exact conjugate
+  inference, and explicitly approximate numerical segment integration.
+site_author: Omid Shams Solari
+repo_url: https://github.com/osolari/bayesbreak
+repo_name: osolari/bayesbreak
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+site_dir: site
+
+exclude_docs: |
+  manuscripts/**
+
+theme:
+  name: material
+  language: en
+  logo: assets/saim_logo.png
+  favicon: assets/favicon.ico
+  font:
+    text: Inter
+    code: JetBrains Mono
+  palette:
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      # SAIM indigo palette.
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+  features:
+    - navigation.instant
+    - navigation.tracking
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - navigation.indexes
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - content.tooltips
+    - search.suggest
+    - search.highlight
+    - search.share
+    - toc.follow
+    - announce.dismiss
+  icon:
+    repo: fontawesome/brands/github
+    edit: material/file-edit-outline
+
+nav:
+  - Home: index.md
+  - Getting started:
+      - Quickstart: quickstart.md
+      - Installation: installation.md
+      - Concepts: concepts.md
+  - User guide:
+      - Model families: models.md
+      - Real-data loaders: datasets.md
+      - Data cards:
+          - Overview: data_cards/index.md
+          - Well log: data_cards/welllog.md
+          - Array CGH: data_cards/cgh.md
+          - SPX: data_cards/spx.md
+          - Methylation: data_cards/methylation.md
+      - Diagnostics: diagnostics.md
+      - Baselines: baselines.md
+      - Reproducibility: reproducibility.md
+          - Results: results.md
+  - Tutorials:
+      - Quickstart notebook: tutorials/01_quickstart.ipynb
+      - Multivariate notebook: tutorials/02_multivariate.ipynb
+      - Real-data showcase: tutorials/03_real_data_showcase.ipynb
+      - Diagnostics walkthrough: tutorials/04_diagnostics.ipynb
+      - Baselines comparison: tutorials/05_baselines.ipynb
+      - Sliding-window for large n: tutorials/06_sliding_window.ipynb
+      - Latent-group EM: tutorials/07_latent_groups.ipynb
+      - Core DP verification: tutorials/08_core_dp_verification.ipynb
+      - Family and prediction verification: tutorials/09_family_prediction_verification.ipynb
+      - Advanced model verification: tutorials/10_advanced_model_verification.ipynb
+  - Reference:
+      - API: api.md
+      - Math notes: math.md
+      - Manuscript: manuscript.md
+    
+markdown_extensions:
+  - admonition
+  - footnotes
+  - attr_list
+  - md_in_html
+  - tables
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+  - pymdownx.inlinehilite
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.arithmatex:
+      generic: true
+  - toc:
+      permalink: true
+      toc_depth: 3
+
+plugins:
+  - search
+  - mkdocs-jupyter:
+      include_source: true
+      execute: false
+      include: ["tutorials/*.ipynb"]
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_root_heading: true
+            show_source: true
+            show_signature_annotations: true
+            members_order: source
+            docstring_style: numpy
+            heading_level: 3
+          paths:
+            - src
+
+extra_css:
+  - assets/css/saim.css
+
+extra_javascript:
+  - https://polyfill.io/v3/polyfill.min.js?features=es6
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/osolari/bayesbreak
+      name: BayesBreak on GitHub
+  generator: false
+  saim:
+    primary: "#32127A"
+    accent:  "#5B36B7"
+    bg_soft: "#D6CFE4"

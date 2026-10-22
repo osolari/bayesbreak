@@ -1,0 +1,201 @@
+\section{Results}
+\label{sec:results}
+
+The following results describe completed numerical calculations for the model configurations specified in this section.
+They are analyzed according to their data-generating mechanisms, observation
+models, and reference sets. Proposed additional evaluations remain unfilled in
+Section~\ref{sec:experimental-design}; their outcomes are not inferred from
+the present experiments.
+
+\FloatBarrier
+\subsection{Single-sequence posterior summaries}
+Figure~\ref{fig:gaussian-result-paper} shows a Gaussian sequence with two true changepoints. The boundary-event posterior concentrates near the generating changes while retaining a smaller shoulder of ambiguity before the first jump. The joint-MAP signal reflects this local uncertainty by inserting a short intermediate segment. Table~\ref{tab:gaussian-summary-paper} shows that the selected and modal segment count is four while the posterior mean is $4.742$, illustrating why an exported partition and posterior uncertainty over $k$ should not be collapsed into one object.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.94\textwidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig1_synthetic_gaussian.png}
+  \caption{Gaussian simulation. Top: marginal boundary-event posterior with generating changepoints shown by dashed lines. Bottom: observations, latent signal, joint-MAP segmentation, and 90\% segment-level posterior intervals.}
+  \label{fig:gaussian-result-paper}
+\end{figure}
+
+\begin{table}[!htbp]
+\centering
+\small
+\input{shared/tables/results/table2_posterior_summary.tex}
+\caption{Posterior summary for Figure~\ref{fig:gaussian-result-paper}.}
+\label{tab:gaussian-summary-paper}
+\end{table}
+
+\FloatBarrier
+\subsection{Portability across local observation models}
+The same global inference code was applied to Gaussian, Poisson, Binomial, and Beta-valued responses (Figure~\ref{fig:family-result-paper}). Table~\ref{tab:family-result-paper} reports the corresponding synthetic metrics. Gaussian, Binomial, and Beta-valued settings selected the generating three segments; Poisson selected four and had the weakest boundary score and largest reconstruction error in this small benchmark. The result supports interface portability and exposes relative difficulty in the bundled settings; it is not a population-level ranking of families.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.95\textwidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig2_family_showcase.png}
+  \caption{Observation-family comparison. Gaussian, Poisson, and Binomial use closed-form local conjugate integration; the Beta-valued response uses deterministic one-dimensional quadrature.}
+  \label{fig:family-result-paper}
+\end{figure}
+
+\begin{table}[!htbp]
+\centering
+\small
+\resizebox{0.88\textwidth}{!}{\input{shared/tables/results/table3_conjugate_summary.tex}}
+\caption{Synthetic summary across local observation models. The Beta-valued row is quadrature-based rather than closed-form conjugate.}
+\label{tab:family-result-paper}
+\end{table}
+
+\FloatBarrier
+\subsection{Calibration and latent-group segmentation}
+Repeated Gaussian simulations produced a reliability curve close to the diagonal, with ECE approximately $0.010$ and Brier score approximately $0.011$ (Figure~\ref{fig:calibration-template-paper}a). These values support calibration in the generating design, not robustness to arbitrary misspecification.
+
+The latent-group experiment used 24 sequences of length 80 from two known synthetic groups at noise standard deviation $1.0$. It achieved 96\% hard assignment accuracy, with one misassignment and visible ambiguity around the class boundary (Figure~\ref{fig:calibration-template-paper}b). Group-specific boundary marginals concentrate near the generating templates. The result is evidence for the finite score-clustering objective in Equation~\eqref{eq:latent-group-objective}; it is not evidence for normalized-mixture identifiability.
+
+\begin{figure}[!htbp]
+\centering
+\begin{subfigure}[t]{0.42\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig3_boundary_calibration.png}
+  \caption{Boundary-event reliability.}
+\end{subfigure}\hfill
+\begin{subfigure}[t]{0.54\textwidth}
+  \centering
+  \includegraphics[width=\linewidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig4_latent_groups_cropped.png}
+  \caption{Latent-group assignments and group-specific boundary marginals.}
+\end{subfigure}
+\caption{Calibration and latent-template analysis. Panel (a) reports ECE $\approx0.010$ and Brier $\approx0.011$ in the Gaussian calibration experiment. Panel (b) reports 96\% hard recovery for the declared two-template synthetic setting.}
+\label{fig:calibration-template-paper}
+\end{figure}
+
+A separate stress study evaluated 400 seeded datasets across eight predeclared cells. In the reference simulation cell, mean label-invariant hard accuracy was $0.9742$ (95\% interval $0.9536$--$0.9948$) and mean adjusted Rand index was $0.9183$. All 400 objective traces were monotone, every returned final objective equaled the final trace value, and all 1,200 restarts were valid. Recovery degraded under low separation, duplicate templates, higher noise, and shorter sequences, as summarized in Figure~\ref{fig:latent-stress-corrected-paper}. These results support the finite score-clustering criterion in the declared simulations, not normalized-mixture identifiability.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.88\textwidth]{shared/figures/results/fig_latent_template_stress.png}
+  \caption{Latent-group stress study. Top: label-invariant hard accuracy with dataset-level 95\% intervals. Bottom: collapsed or duplicate-template rate. The dashed $0.5$ line is a descriptive reference, not a universal recovery threshold.}
+  \label{fig:latent-stress-corrected-paper}
+\end{figure}
+
+\FloatBarrier
+\subsection{Nonconjugate block approximations}
+Table~\ref{tab:nonconjugate-result-paper} reports five method labels in the Bernoulli/logistic example, with quadrature as the local reference. The \texttt{jj} and \texttt{pg\_vb} labels currently share one implementation path and are not independent computational methods. Laplace was the fastest listed routine at $0.049$ seconds, whereas quadrature required $0.093$ seconds. Maximum absolute block-score discrepancies were $1.235$ for Laplace, $1.265$ for Jaakkola--Jordan and P\'olya--Gamma mean field, and $14.502$ for expectation propagation. Boundary $F_1$ did not vary monotonically with block-score discrepancy: quadrature and Laplace selected six segments with $F_1=0.286$, whereas the other listed labels reported $F_1=0.500$ under different selected segment counts. The repeated variational row must not be counted twice in method comparisons.
+
+\begin{table}[!htbp]
+\centering
+\scriptsize
+\resizebox{0.97\textwidth}{!}{\input{shared/tables/results/table4_nonconj_tradeoff.tex}}
+\caption{Local approximation comparison. The observed maximum errors are too large to treat this example as verification of a small uniform segmentwise error bound.}
+\label{tab:nonconjugate-result-paper}
+\end{table}
+
+This result demonstrates why segmentation output alone cannot certify a block approximation. The global dynamic program aggregates many local score differences, and a boundary metric can improve despite a worse local approximation. Claim-supporting use of Theorem~\ref{thm:stability-paper} therefore requires a uniform error bound over all admissible segments rather than retrospective agreement in the estimated segmentation.
+
+\FloatBarrier
+\subsection{Finite-range runtime behavior}
+Figure~\ref{fig:runtime-result-paper} reports length and segment-budget sweeps. At $k_{\max}=20$, mean runtime rose from $0.0455$ seconds at $n=50$ to $1.0585$ seconds at $n=800$ (Table~\ref{tab:runtime-result-paper}). Fitted log--log slopes were approximately $1.07$ in $n$ for $k_{\max}=10$, $1.14$ for $k_{\max}=20$, and $0.88$ in $k_{\max}$ at fixed $n=200$. They summarize this implementation over the measured range; they do not replace the $\Theta(k_{\max}n^2)$ worst-case accounting in Proposition~\ref{prop:complexity-paper}.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.92\textwidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig5_runtime_scaling.png}
+  \caption{Gaussian runtime measurements. Points are means over five repetitions and error bars are one standard deviation. Dashed references show quadratic-in-$n$ and linear-in-$k_{\max}$ guides, not fitted complexity claims.}
+  \label{fig:runtime-result-paper}
+\end{figure}
+
+\begin{table}[!htbp]
+\centering
+\small
+\input{shared/tables/results/table1_runtime_scaling.tex}
+\caption{Runtime measurements for $k_{\max}=20$ in the length sweep.}
+\label{tab:runtime-result-paper}
+\end{table}
+
+\FloatBarrier
+\subsection{Applications to four datasets}
+Table~\ref{tab:real-summary-paper} summarizes the executed case studies. Each fit passed the four stated dynamic-programming checks. Their figures provide fitted segmentation, boundary uncertainty, segment-count posterior information, and in-sample diagnostics. The executed run bundles did not include independently scored reference boundaries, so these case studies establish execution and descriptive posterior behavior rather than externally validated accuracy. This does not imply that external annotations are unavailable.
+
+\begin{table}[!htbp]
+\centering
+\small
+\caption{Real-data segmentations. The log evidences belong to different data models and are not compared across rows.}
+\label{tab:real-summary-paper}
+\begin{tabularx}{\columnwidth}{@{}Y C{0.19\columnwidth} C{0.12\columnwidth} C{0.28\columnwidth}@{}}
+\toprule
+Case & $n$ or shape & $\widehat k$ & Log evidence \\
+\midrule
+Well-log & 507 & 23 & $-4989.2835$ \\
+Array-CGH & $43\times2215$ & 15 & $76359.7996$ \\
+S\&P 500 & 566 & 29 & $-1296.6537$ \\
+Methylation & 1904 & 15 & $-9518.6675$ \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\paragraph{Well-log.}
+The available source contains 4,050 NMR response values and an executed downsampled sequence of $n=507$. Under the index-uniform prior, the Gaussian fit selected 23 segments with log evidence $-4989.2835$ (Figure~\ref{fig:welllog-paper}). A separately executed length-cohesion configuration selected 25 segments with log evidence $-4997.1478$. These are distinct prior models; the values do not establish a universal preference between index and physical-length priors. Comparator scores at tolerance three are agreement with the \BayesBreak MAP boundary set, not verified geology.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth,height=0.43\textheight,keepaspectratio]{shared/figures/results/fig6_welllog.png}
+  \caption{Well-log segmentation. Solid segmentation and red markers are fitted summaries; boundary probabilities and $p(k\mid y)$ are posterior quantities; the cumulative panel is in-sample.}
+  \label{fig:welllog-paper}
+\end{figure}
+
+\paragraph{Array-CGH.}
+The shared-boundary model used 43 subjects on 2,215 probes, selected the maximum considered 15 segments, and recorded pooled log evidence $76359.7996$ (Figure~\ref{fig:cgh-paper}). The sum of independently fitted subject evidences was $109617.6954$, but the two totals arise from different factorizations and are not a direct Bayes factor.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth,height=0.43\textheight,keepaspectratio]{shared/figures/results/fig7_cgh.png}
+  \caption{Shared-boundary array-CGH segmentation. The common red markers are fitted joint-MAP boundaries, not external copy-number annotations.}
+  \label{fig:cgh-paper}
+\end{figure}
+
+The comparator analysis uses the probe index for every method. A previous
+calculation applied a comparator to a flattened subject-by-probe matrix and
+cannot be interpreted as boundary agreement; it is not included in the
+comparison below.
+
+A probe-aligned comparator analysis used the exact hashed raw $2{,}215\times43$ probe-by-subject matrix and scored every method on the common probe-index axis (Figure~\ref{fig:cgh-agreement-corrected-paper}). Agreement $F_1@3$ with the model-derived BayesBreak MAP was $0.8000$ for PELT, $0.9286$ for dynamic programming, $0.7143$ for binary segmentation, and $0.7857$ for wild binary segmentation. Dynamic programming, binary segmentation, and wild binary segmentation used the 14-boundary target. The predeclared eight-value PELT grid did not attain 14 boundaries; its closest candidate returned 11 and was not retuned post hoc. These are agreement diagnostics, not external biological accuracy or predictive superiority.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.83\textwidth,height=0.41\textheight,keepaspectratio]{shared/figures/results/fig_cgh_probe_agreement.png}
+  \caption{Probe-aligned array-CGH comparison. Top: boundary locations on the shared probe axis. Bottom: $F_1@3$ and exact Jaccard agreement with the model-derived BayesBreak MAP.}
+  \label{fig:cgh-agreement-corrected-paper}
+\end{figure}
+
+\paragraph{S\&P 500 volatility.}
+The source covers January 1, 2015 through December 31, 2023, with approximately 2,263 raw observations and an executed stride-four series of $n=566$. The Gaussian log-squared-return model selected 29 segments with log evidence $-1296.6537$ (Figure~\ref{fig:spx-paper}). A secondary Bernoulli threshold-incidence signal selected 50 segments with log evidence $-114.4100$. It is a different response model, not a Poisson count, and its evidence is not directly comparable with the Gaussian total.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth,height=0.43\textheight,keepaspectratio]{shared/figures/results/fig8_spx.png}
+  \caption{S\&P 500 volatility fit after stride-four preprocessing. Red markers are fitted boundaries, not independently annotated macroeconomic events.}
+  \label{fig:spx-paper}
+\end{figure}
+
+\paragraph{Methylation.}
+The executed data are the \texttt{methylKit} \texttt{test1.myCpG} chromosome-21 example with 1,904 CpGs and per-CpG read coverage used as known precision. The Beta-valued quadrature model selected 15 segments and recorded log evidence $-9518.6675$ (Figure~\ref{fig:methylation-paper}). This is not the previously described methylation-atlas analysis. The segmentation fit remains admissible descriptive evidence; the previously reported held-out value is excluded from predictive conclusions under Definition~\ref{def:heldout-score-paper}.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.90\textwidth,height=0.43\textheight,keepaspectratio]{shared/figures/results/fig9_methylation.png}
+  \caption{Beta-valued fit to the methylKit chromosome-21 example. Red markers are fitted MAP boundaries; no independent atlas transition annotation was used.}
+  \label{fig:methylation-paper}
+\end{figure}
+
+Scores based on a different predictive observation family or extrapolation
+outside the fitted domain are excluded from the held-out comparison.
+
+A family-corrected held-out analysis used the Beta-observation predictive distribution, observed held-out coverage as positive $\phi_{\mathrm{new}}$, and \texttt{extrapolation=error}. Ten disjoint stratified interior blocks held out 1,520 CpGs while retaining both fitted-support endpoints. Total log predictive score was $-23605.6749$ and pooled mean score was $-15.5300$; the mean split score had a 95\% $t$ interval $[-23.1445,-7.9156]$. Mean boundary-stability $F_1@3$ against the model-derived full-data MAP was $0.8786$ (Figure~\ref{fig:methyl-predictive-corrected-paper}). The blocks are regions of one chromosome rather than independent biological samples, and no certified Beta-observation PIT or external atlas accuracy is reported. Because both family and split changed, this score is not numerically comparable with the invalid calculation.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.86\textwidth,height=0.41\textheight,keepaspectratio]{shared/figures/results/fig_methylation_heldout.png}
+  \caption{Beta-response held-out prediction. Top: mean Beta-observation log predictive score across ten in-support chromosome blocks. Bottom: boundary-stability $F_1@3$ against the model-derived full-data MAP. Shaded bands are split-level 95\% $t$ intervals.}
+  \label{fig:methyl-predictive-corrected-paper}
+\end{figure}
+
+\FloatBarrier
+\subsection{Summary of empirical findings}
+The empirical results demonstrate that common partition recursions can use closed-form conjugate segment marginal likelihoods, one-dimensional quadrature, other numerical segment calculations, shared-changepoint pooling, and finite latent-group templates. It provides calibrated boundary probabilities in one Gaussian simulation design, a corrected finite latent-group stress grid, finite-range runtime measurements, four traceable real-data fits, a corrected common-axis CGH agreement diagnostic, and a corrected family-specific methylation predictive evaluation. It does not yet establish external boundary accuracy, dominance under independently tuned predictive comparisons, robustness across broad misspecification regimes, routine-wide approximation guarantees, or asymptotic speed better than the quadratic dynamic-programming bound.

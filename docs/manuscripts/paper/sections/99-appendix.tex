@@ -1,0 +1,156 @@
+\section{Stable numerical implementation of posterior summaries}
+\label{app:numerical-summaries}
+Family-specific integrated likelihoods, conjugate posterior updates, and complete proofs are provided directly under Propositions~\ref{prop:gaussian-family}--\ref{prop:beta-response-family}; the appendix does not repeat those calculations. Here we record two implementation details whose incorrect handling changes posterior inference even when every family-specific segment calculation is correct.
+
+\subsection{A separate partition-prior normalizer}
+For a fixed segment count, the unnormalized prior score of a path is $\prod_q\gamma_u(t_{q-1},t_q)$. Defining $C_0(0)=1$ and $C_0(j>0)=0$, its normalizer obeys
+\begin{equation}
+C_q(j)=\sum_{i=q-1}^{j-1}C_{q-1}(i)\gamma_u(i,j),
+\qquad C_k(u)=C_k(n).
+\label{eq:prior-normalizer-recurrence}
+\end{equation}
+Under $\gamma_u\equiv1$ with all ordered paths allowed, $C_k(u)=\binom{n-1}{k-1}$. That normalizer is never one merely because the local factors equal one, except in the degenerate endpoint counts. Excluded paths receive $\gamma_u(i,j)=0$; likelihood-zero paths are not removed from the \emph{prior} sum.
+
+\begin{algorithm}[H]
+\caption{Log-space normalization of a factorized partition prior}
+\label{alg:partition-prior-normalizer}
+\KwIn{Log prior segment factors $g_{ij}=\log\gamma_u(i,j)$ with $-\infty$ for structurally excluded blocks, and $k_{\max}$.}
+Initialize $P_{0,0}=0$ and $P_{0,j>0}=-\infty$\;
+\For{$q=1$ \KwTo $k_{\max}$}{
+  \For{$j=q$ \KwTo $n$}{
+    $P_{q,j}\leftarrow\logsumexp_{i=q-1}^{j-1}(P_{q-1,i}+g_{ij})$\;
+  }
+}
+\KwOut{$\log C_k(u)=P_{k,n}$ for each feasible $k$; reject $k$ if $C_k=0$.}
+\end{algorithm}
+
+\subsection{Signed first moments and block inclusion weights}
+Let $m^{(r)}_{ij}$ denote the posterior block moment $\mathbb E[m_\star(\theta)^r\mid y_{i+1:j}]$. In the forward--backward decomposition, the posterior probability that $(i,j]$ is the segment covering a specified coordinate under fixed $k$ is
+\begin{equation}
+\omega_{ij}(k)=\frac{\widetilde A_{ij}^{(0)}}{L_{k,n}}
+\sum_{q=1}^{k}L_{q-1,i}R_{k-q,j}.
+\label{eq:block-inclusion-weight}
+\end{equation}
+For coordinate $s$ the first and second moments are $\sum_{i<s\le j}\omega_{ij}(k)m^{(r)}_{ij}$, $r=1,2$. A Gaussian posterior mean can be negative, so $\log A^{(1)}_{ij}$ is not generally defined. The numerically stable interface stores $\log A^{(0)}_{ij}$ and signed $m^{(1)}_{ij}$ separately.
+
+\begin{algorithm}[H]
+\caption{Fixed-count Bayes curve with potentially negative segment means}
+\label{alg:signed-moment-bayes-curve}
+\KwIn{Forward/backward log messages, $\log\widetilde A^{(0)}_{ij}$, posterior segment moments $m^{(1)}_{ij},m^{(2)}_{ij}$, fixed count $k$.}
+\For{each valid segment $(i,j]$}{
+  Compute $\log\omega_{ij}(k)$ with $\logsumexp_q$ using Equation~\eqref{eq:block-inclusion-weight}\;
+  Retain the sign of $m^{(1)}_{ij}$ separately from $\log|m^{(1)}_{ij}|$\;
+}
+\For{each coordinate $s$}{
+  Sum positive and negative contributions $\omega_{ij}(k)m^{(1)}_{ij}$ for $i<s\le j$ using compensated arithmetic or signed-log-sum-exp\;
+  Sum nonnegative contributions $\omega_{ij}(k)m^{(2)}_{ij}$ with stabilized arithmetic\;
+  Set $\widehat\mu_s$ to the signed first-moment sum and $v_s$ to the second-moment sum minus $\widehat\mu_s^2$\;
+  Check $v_s\ge-\delta$ for declared numerical tolerance $\delta$, and report any failure\;
+}
+\KwOut{Fixed-$k$ Bayes posterior-mean curve and pointwise posterior variances.}
+\end{algorithm}
+
+\paragraph{Masking rule.}
+An unobserved outcome is absent from every likelihood and sufficient statistic. In a shared-boundary analysis, a subject with no observed outcomes in one block contributes log segment evidence zero when it has a proper segment prior. It must not contribute $-\infty$ merely because that subject supplies no information. Minimum-observation requirements are structural admissibility constraints and are represented in the prior support instead.
+
+\section{Log-space dynamic programs}
+\label{app:algorithms}
+
+\begin{algorithm}[H]
+\caption{Log-space sum-product messages}
+\label{alg:log-sum-product-app}
+\KwIn{Prior-adjusted log scores $\widetilde\ell_{ij}$; $k_{\max}$.}
+Initialize $\Lambda_{0,0}=0$, $\Lambda_{0,j>0}=-\infty$, $\mathcal R_{0,n}=0$, and $\mathcal R_{0,i<n}=-\infty$\;
+\For{$k=0$ \KwTo $k_{\max}-1$}{
+  \For{$j=k+1$ \KwTo $n$}{
+    $\Lambda_{k+1,j}\leftarrow\logsumexp_{h=k}^{j-1}\{\Lambda_{k,h}+\widetilde\ell_{h,j}\}$\;
+  }
+  \For{$i\leftarrow n-k-1,n-k-2,\ldots,0$}{
+    $\mathcal R_{k+1,i}\leftarrow\logsumexp_{h=i+1}^{n-k}\{\widetilde\ell_{i,h}+\mathcal R_{k,h}\}$\;
+  }
+}
+Normalize $\log p(k)+\Lambda_{k,n}-\log C_k(u)$ over $k$\;
+\KwOut{$\Lambda$, $\mathcal R$, and $p(k\mid y)$.}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{Joint-MAP max-sum and backtracking}
+\label{alg:max-sum-app}
+\KwIn{Prior-adjusted log scores $\widetilde\ell_{ij}$; fixed $k$.}
+Set $M_{0,0}=0$ and $M_{0,j>0}=-\infty$\;
+\For{$q=1$ \KwTo $k$}{
+  \For{$j=q$ \KwTo $n$}{
+    $h^\star(q,j)\leftarrow\arg\max_{h=q-1}^{j-1}\{M_{q-1,h}+\widetilde\ell_{h,j}\}$ under the declared tie rule\;
+    $M_{q,j}\leftarrow M_{q-1,h^\star(q,j)}+\widetilde\ell_{h^\star(q,j),j}$\;
+  }
+}
+Set $\widehat t_k=n$ and recursively $\widehat t_{q-1}=h^\star(q,\widehat t_q)$\;
+\KwOut{$\widehat t$ and terminal score $M_{k,n}$.}
+\end{algorithm}
+
+The recommended numerical checks are
+\begin{align*}
+\sum_{k=1}^{k_{\max}}p(k\mid y)&=1,\\
+|\Lambda_{k,n}-\mathcal R_{k,0}|&\le\delta,\\
+\sum_{h=1}^{n-1}p(b_h=1\mid y,k)&=k-1,\\
+\left|M_{k,n}-\sum_{q=1}^{k}
+\widetilde\ell_{\widehat t_{q-1},\widehat t_q}\right|&\le\delta.
+\end{align*}
+with a documented floating-point tolerance $\delta$.
+
+\section{Supplementary agreement diagnostics}
+\label{app:agreement}
+
+The tables below preserve executed comparator values while making the reference semantics explicit. They are not external-accuracy tables.
+
+\begin{table}[H]
+\centering
+\small
+\caption{Well-log boundary agreement with the \BayesBreak MAP boundary set at tolerance three. No independently verified geological boundary annotation was used.}
+\label{tab:welllog-agreement-app}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Method & Agreement $F_1@3$ & Interpretation \\
+\midrule
+Fearnhead-configured reference DP & 0.93 & agreement with BB MAP \\
+Optimal partitioning & 0.91 & agreement with BB MAP \\
+Binary segmentation & 0.86 & agreement with BB MAP \\
+PELT & 0.18 & agreement with BB MAP \\
+Wild binary segmentation & 0.05 & agreement with BB MAP \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\small
+\caption{S\&P 500 and methylation comparator agreement. Segment-count restrictions were matched for the indicated comparisons.}
+\label{tab:spx-methyl-agreement-app}
+\begin{tabularx}{0.96\textwidth}{@{}L{0.20\textwidth}L{0.28\textwidth}R{0.11\textwidth}R{0.13\textwidth}Y@{}}
+\toprule
+Dataset & Method & $\widehat k$ & Agreement $F_1@3$ & Scope \\
+\midrule
+S\&P 500 & optimal partitioning, matched $k$ & 29 & 0.82 & vs BB Gaussian MAP \\
+S\&P 500 & PELT & 79 & 0.53 & vs BB Gaussian MAP \\
+S\&P 500 & binary segmentation, matched $k$ & 29 & 0.43 & vs BB Gaussian MAP \\
+S\&P 500 & wild binary segmentation, matched $k$ & 29 & 0.07 & vs BB Gaussian MAP \\
+S\&P 500 & Fearnhead-configured reference DP & 13 & 0.55 & vs BB Gaussian MAP \\
+Methylation & optimal partitioning, matched $k$ & 15 & 0.79 & vs BB Beta-valued MAP \\
+Methylation & binary segmentation, matched $k$ & 15 & 0.57 & vs BB Beta-valued MAP \\
+Methylation & PELT & 5 & 0.44 & vs BB Beta-valued MAP \\
+Methylation & wild binary segmentation, matched $k$ & 15 & 0.14 & vs BB Beta-valued MAP \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+The incompatible array-CGH comparator output is intentionally absent from these tables. Its flattened 95,245-value axis and the 2,215-probe boundary axis do not define a common matching problem.
+
+\section{Reproducibility}
+\label{app:reproducibility}
+Reproduction of an experiment requires specifying the exact data source and
+coordinate system, the preprocessing and exclusion rules, the observation
+model and its descriptors, the prior, the numerical method, the random seeds,
+and the model-selection and evaluation criteria. The prospective simulations
+and their corresponding figures and tables are specified in
+Section~\ref{sec:experimental-design}; full machine-readable configurations
+and run instructions belong with the accompanying code.

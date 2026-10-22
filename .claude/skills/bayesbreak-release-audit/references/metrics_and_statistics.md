@@ -1,0 +1,25 @@
+# BayesBreak evaluation metrics and uncertainty
+
+## Boundary matching (single sequence)
+Given prediction set Bhat, independent reference set B*, and tolerance tau, construct bipartite edges at absolute index displacement <= tau. Solve maximum-cardinality matching, breaking cardinality ties by minimum total displacement and stable index ordering. TP = matched edges, FP = |Bhat|-TP, FN = |B*|-TP. P = TP/(TP+FP); R=TP/(TP+FN); F1=2TP/(2TP+FP+FN). For a null sequence with both sets empty, report null-specific false-positive metrics separately rather than arbitrarily calling detection F1 perfect. MAE = sum(abs(delta))/TP when TP>0, otherwise NA. Primary tau=3; sensitivity tau=0,1,5.
+
+## Segment count
+Marginal-MAP count k_marg = argmax_k p(k|y). Count accuracy is I(k_marg=k_true); absolute error |k_marg-k_true|. Report posterior probability assigned to true k, posterior mean and 95% credible set, and tail mass p(k=k_max|y). If 95% credible set touches k_max or tail mass >= 0.01, label k-truncation sensitivity and expand k_max when possible. Do not call k_marg the global joint MAP count.
+
+## Calibration
+For each independent sequence r and index i, p_ri = P(b_i=1|y_r) averaged over k unless labeled conditional. Truth z_ri=I(i is a true boundary). Brier = (sum_{r,i}(p_ri-z_ri)^2)/(sum_r(n_r-1)). Log score = -(sum[z log p+(1-z)log(1-p)])/sum(n_r-1) with p clipped to [1e-12,1-1e-12] ONLY for numerical evaluation; track clipping frequency. Reliability curve: 10 equal-mass bins (primary), 10 equal-width (sensitivity), report bin event counts and prevalence. ECE = sum_b N_b/N_total * |mean(p)_b - mean(z)_b|; report Brier/log score beside ECE because boundaries are rare. For uncertainty, bootstrap independent generating SEQUENCES and recompute all bin quantities 2000 times, or use hierarchical bootstrap by generating dataset. Never treat n indices as n independent experimental replicates.
+
+## Predictive scoring
+Compute the observation-family posterior predictive on held-out observations using their actual descriptor (Gaussian test precision; Poisson exposure; Binomial trials; Beta precision). Report total log predictive density and per-observation average on the same observation measure; do not compare across response families. For grouped new points sharing a segment parameter, use the JOINT predictive integral (not product of marginal predictive densities). If using pointwise product, label composite score. Full segmentation-averaged prediction must sum over the training segmentation/count posterior, not just a selected MAP partition. Splits are made before fitting and endpoints are retained when the model does not provide extrapolation. For discrete data use randomized PIT and independent-sequence uncertainty; for continuous use PIT with proper dependence-aware calibration.
+
+## Simulation uncertainty and comparisons
+Default N=100 independent datasets per cell unless the protocol declares different N. Report mean plus percentile 95% interval from 2000 dataset-level bootstrap draws. When comparing methods on identical generated data, compute within-dataset paired differences before bootstrapping. When testing multiple cells, report all cells and avoid post-hoc cherry-picking. For latent groups, report label-permutation-invariant accuracy and ARI; bootstrap independent datasets, not sequence labels within one dataset, for uncertainty about mean simulation recovery. Report empty/duplicate template frequency and objective decreases (expected 0 within numerical tolerance).
+
+## Numerical segment integration
+Block error e_ij = abs(log Aapprox_ij - log Aref_ij). Report maximum over every structurally admissible reachable block (uniform error), median/0.9/0.99 quantiles, failures and reference numerical tolerance. Posterior-inclusion-weighted average error is descriptive and NEVER substitutes for a uniform maximum in the perturbation theorem. Relative posterior error: max absolute difference over count posterior and boundary-event probabilities; add KL or total variation where reference positive. Numerical lower bounds (JJ/PG VB) do not certify an upper evidence-gap bound. A nonconvergent EP run is a failure rather than an imputed score.
+
+## Computational scaling
+Time block construction, forward/backward partition DP, posterior extraction and MAP independently after 3 warmups; perform 7 measurement replicates on fixed pinning of threads. Report median, IQR, peak RSS and hardware. Complexity Θ(kmax n^2) is mathematical, not inferred from finite-range log-log slopes. Define whether large-n sweep uses precomputed blocks, on-demand blocks, streaming k layers or candidate restriction.
+
+## Real-data references
+Distinguish ground-truth/independent annotation, model-derived reference, and no label. A model-derived BayesBreak MAP is not ground truth. Compare boundary accuracy only with genuinely independent annotation and verified coordinate alignment, otherwise report agreement or predictive scores. Report known dataset coordinate shape, data hash and preprocessing version. Never silently substitute simulated data for unavailable real downloads.

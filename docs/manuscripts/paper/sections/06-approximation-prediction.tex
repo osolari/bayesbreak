@@ -1,0 +1,147 @@
+\section{Approximate segment integration, posterior prediction, and evaluation}
+\label{sec:approx-predict}
+
+For a nonconjugate segment model, \BayesBreak requires a numerical approximation to the segment marginal likelihood. Posterior prediction requires the posterior predictive distribution associated with the fitted observation model. This section states the error condition under which segmentwise approximation error can be propagated through the partition recursions and then defines the prediction and boundary-evaluation rules used in the empirical analysis.
+
+\subsection{Propagation of segment marginal-likelihood error}
+Let $\ell_{ij}=\log A^{(0)}_{ij}$ be a reference log segment marginal likelihood and let $\widehat\ell_{ij}$ be the value returned by a numerical method such as Laplace approximation, the Jaakkola--Jordan bound, expectation propagation, P\'olya--Gamma mean-field approximation, or adaptive quadrature.
+
+\begin{assumption}[Uniform error bound over admissible segments]
+\label{ass:block-error}
+There exists $\varepsilon\ge0$ such that
+\begin{equation}
+ |\widehat\ell_{ij}-\ell_{ij}|\le\varepsilon
+\label{eq:block-error}
+\end{equation}
+for every segment $(i,j]$ that can occur in a partition with $k\le k_{\max}$. The numerical analysis must identify the reference value and, when applicable, separate optimization residual, truncation or tail error, quadrature error, and discrepancy from the reference calculation.
+\end{assumption}
+
+
+
+\begin{theorem}[Stability of marginal likelihoods and posterior odds]
+\label{thm:stability-paper}
+Under Assumption~\ref{ass:block-error}, every $k$-segment forward or backward quantity satisfies
+\begin{align}
+e^{-k\varepsilon}L_{k,j}
+&\le\widehat L_{k,j}\le e^{k\varepsilon}L_{k,j},\nonumber\\
+e^{-k\varepsilon}R_{k,i}
+&\le\widehat R_{k,i}\le e^{k\varepsilon}R_{k,i}.
+\label{eq:message-sandwich}
+\end{align}
+Consequently, for $k,k'\le k_{\max}$,
+\begin{equation}
+\left|
+\log\frac{\widehat p(k\mid y)}{\widehat p(k'\mid y)}
+-\log\frac{p(k\mid y)}{p(k'\mid y)}
+\right|\le(k+k')\varepsilon,
+\label{eq:k-odds-stability}
+\end{equation}
+and, for two locations $h,h'$ of the same ordered boundary $t_p$ under fixed $k$,
+\begin{equation}
+\left|
+\log\frac{\widehat p(t_p=h\mid y,k)}{\widehat p(t_p=h'\mid y,k)}
+-\log\frac{p(t_p=h\mid y,k)}{p(t_p=h'\mid y,k)}
+\right|\le2k\varepsilon.
+\label{eq:boundary-odds-stability}
+\end{equation}
+\end{theorem}
+\begin{proof}
+\textbf{Step 1 (pathwise perturbation).}
+For any admissible partition of $k$ blocks, the approximate-to-exact path-weight ratio is $\exp\{\sum_{q=1}^k\delta_{t_{q-1},t_q}\}$, with every summand bounded in absolute value by $\varepsilon$. Consequently that ratio lies between $e^{-k\varepsilon}$ and $e^{k\varepsilon}$.
+\textbf{Step 2 (sum over positive paths).}
+Multiply the exact weight of each path by the same lower and upper bounds and sum. Positivity preserves both inequalities. The prefix and suffix path sets contain exactly $k$ segments each, proving the two message sandwich bounds in Equation~\eqref{eq:message-sandwich}.
+\textbf{Step 3 (count posterior odds).}
+For distinct counts $k,k'$, the ratio $p(k\mid y)/p(k'\mid y)$ equals $[p(k)/C_k]L_{k,n}$ divided by $[p(k')/C_{k'}]L_{k',n}$. The count priors and partition normalizers are unchanged by local numerical approximation. The two summed-path errors therefore add in the log ratio, yielding the bound $(k+k')\varepsilon$.
+\textbf{Step 4 (ordered boundary odds).}
+The unnormalized weight for $t_p=h$ is $L_{p,h}R_{k-p,h}$; it is a sum of paths each with exactly $p+(k-p)=k$ blocks. Its log perturbation is bounded by $k\varepsilon$. Comparing this weight at $h$ and $h'$ doubles the maximum error, proving the $2k\varepsilon$ statement.
+\textbf{Step 5 (scope).}
+The argument compares only positive exact and approximate scores on the same admissible support. A bound on typical blocks, a per-method asymptotic formula, or a large observed maximum score discrepancy does not establish the uniform hypothesis.
+\end{proof}
+
+\begin{corollary}[Consequences for probabilities and modal locations]
+\label{cor:stability-paper}
+If finite unnormalized weights satisfy $|\log\widehat w_a-\log w_a|\le\eta$, then their normalized probabilities satisfy $e^{-2\eta}\le\widehat p_a/p_a\le e^{2\eta}$ and $\|\widehat p-p\|_{\mathrm{TV}}\le\min\{1,e^{2\eta}-1\}$. Moreover, a fixed-$k$ modal boundary separated from every alternative by exact log-odds margin $\Delta$ is unchanged whenever $\varepsilon<\Delta/(2k)$.
+\end{corollary}
+\begin{proof}
+\textbf{Step 1 (bound the perturbed normalizer).}
+Write $\widehat w_a=w_ae^{\delta_a}$ with $|\delta_a|\le\eta$. Let $p_a=w_a/\sum_bw_b$. Then $\sum_bp_be^{\delta_b}\in[e^{-\eta},e^\eta]$.
+\textbf{Step 2 (normalized probability ratios and total variation).}
+Since $\widehat p_a/p_a=e^{\delta_a}/\sum_bp_be^{\delta_b}$, this ratio lies in $[e^{-2\eta},e^{2\eta}]$. Therefore $|\widehat p_a-p_a|\le(e^{2\eta}-1)p_a$. Summing its positive part bounds total variation by $\min\{1,e^{2\eta}-1\}$.
+\textbf{Step 3 (preserve the maximizing boundary).}
+Suppose $h^\star$ exceeds every rival $h$ by exact log-odds margin at least $\Delta$. Theorem~\ref{thm:stability-paper} changes each pairwise log-odds difference by at most $2k\varepsilon$. If $2k\varepsilon<\Delta$, all perturbed differences remain positive, so $h^\star$ remains the unique modal boundary location.
+\end{proof}
+
+\begin{proofobligation}[Error control for individual numerical methods]
+\label{obl:routine-certification-paper}
+This paper does not establish a uniform convergence rate for Laplace approximation, the Jaakkola--Jordan bound, expectation propagation, P\'olya--Gamma mean-field approximation, or adaptive quadrature over all admissible segments. To apply Theorem~\ref{thm:stability-paper}, a nonconjugate analysis must establish Assumption~\ref{ass:block-error} under conditions appropriate to the observation family, parameter domain, segment support, initialization, convergence event, and tail behavior. Without that step, the dynamic program is exact for the supplied approximate score array, but the theorem does not compare the resulting posterior with the posterior under the intended segment model.
+\end{proofobligation}
+
+\input{paper/sections/06a-nonconjugate-calculations.tex}
+
+\subsection{Family-specific posterior prediction}
+A fitted model records the observation family, the segment posterior state, and the coordinate range used for fitting. Prediction must use the posterior predictive distribution of that observation family. Coordinates outside the fitted range are rejected by default; an extrapolation rule is permitted only when it is stated as part of the predictive model before evaluation.
+
+
+
+Consider a fitted segment $B$ with posterior conjugate hyperparameters $(\alpha_B,\beta_B)$. Let $(S_B^{\rm new},W_B^{\rm new},H_B^{\rm new})$ denote the exposure-aware sufficient summaries of new observations assigned to $B$.
+
+\begin{proposition}[Posterior-predictive likelihood for a fixed segment]
+\label{prop:predictive-paper}
+Under the exponential-family formulation of Section~\ref{sec:model},
+\begin{equation}
+ p(y_B^{\rm new}\mid y_B)
+ =e^{H_B^{\rm new}}
+ \frac{Z(\alpha_B+S_B^{\rm new},\beta_B+W_B^{\rm new})}
+      {Z(\alpha_B,\beta_B)}.
+\label{eq:posterior-predictive}
+\end{equation}
+\end{proposition}
+\begin{proof}
+\textbf{Step 1 (begin with the fitted segment posterior).}
+Conditional on the selected fitted segment, the training data update the conjugate hyperparameters from $(\alpha_0,\beta_0)$ to $(\alpha_B,\beta_B)$. This posterior, not the original segment prior, is the integrating measure for future observations.
+\textbf{Step 2 (aggregate new sampling information).}
+Under the same observation family and its declared descriptors, the new data likelihood has the kernel $\exp\{H_B^{\rm new}+\eta(\theta)^\top S_B^{\rm new}-W_B^{\rm new}A(\theta)\}$.
+\textbf{Step 3 (integrate once).}
+Multiplication by the training posterior produces the conjugate kernel with parameters $(\alpha_B+S_B^{\rm new},\beta_B+W_B^{\rm new})$. Integration yields its normalizer divided by $Z(\alpha_B,\beta_B)$, multiplied by $e^{H_B^{\rm new}}$, giving Equation~\eqref{eq:posterior-predictive}.
+\textbf{Step 4 (conditioning).}
+This density is posterior predictive conditional on the fitted segment and its assignment rule. It is not automatically averaged over alternative partitions, nor is it valid for a test family or coordinate support different from the declared predictive model.
+\end{proof}
+
+Prediction may condition on an exported joint-MAP partition or average over partitions and segment counts. The first calculation is conditional on a selected partition; the second integrates segmentation uncertainty. In either case, assignment of prediction coordinates to segments is part of the statistical model. Assigning every out-of-range coordinate to the final segment without an explicit extrapolation assumption is not a valid posterior-predictive calculation.
+
+\input{paper/sections/06b-prediction-extensions.tex}
+
+\subsection{Boundary metrics}
+\begin{definition}[One-to-one tolerance matching]
+\label{def:boundary-matching-paper}
+For estimated boundaries $\widehat{\mathcal B}$, reference boundaries $\mathcal B^\star$, and tolerance $\tau$, form the bipartite graph containing an edge $(\widehat b,b^\star)$ whenever $|\widehat b-b^\star|\le\tau$. Choose a matching of maximum cardinality; among maximum-cardinality matchings, choose one of minimum total absolute distance under a deterministic tie rule. Precision, recall, and $F_1$ use the resulting number of matches. No boundary is used more than once.
+\end{definition}
+
+\begin{definition}[Matched location error]
+\label{def:matched-mae-paper}
+For the matching $\mathcal M_\tau$,
+\[
+\operatorname{MAE}_\tau
+=|\mathcal M_\tau|^{-1}
+ \sum_{(\widehat b,b^\star)\in\mathcal M_\tau}|\widehat b-b^\star|
+\]
+when $|\mathcal M_\tau|>0$. When no pair is matched, the value is reported as \NA, not as zero.
+\end{definition}
+
+\begin{definition}[Admissible held-out predictive score]
+\label{def:heldout-score-paper}
+A held-out log score is used as predictive evidence only when the held-out observations were excluded from fitting, the posterior predictive distribution of the fitted observation family was used, and every prediction coordinate lay in the fitted support or followed a pre-specified extrapolation model. A violation of any condition invalidates the number for that predictive interpretation without changing the fact that the computation was executed.
+\end{definition}
+
+\paragraph{Predictive model checking.}
+A posterior-predictive score is meaningful only for the observation law that
+was fitted and for new coordinates within its stated support. An earlier
+methylation calculation used a Gaussian predictive density for a fitted
+Beta-response model and extrapolated outside the fitted range. That value is
+not included in the predictive results. The admissible Beta-response
+held-out analysis is reported in Section~\ref{sec:results}.
+
+\paragraph{Interpretation of approximate local scores.}
+The forward--backward and max--sum recursions are exact for the block-score array supplied to them. When the array is obtained by numerical approximation, this algorithmic exactness does not establish exactness with respect to the underlying sampling model. A Jaakkola--Jordan tangent gap averaged under a fitted Gaussian variational distribution is not an upper bound on the log-evidence error: the difference in log normalizing constants also depends on the changed posterior measure. Likewise, a truncated Laplace expansion is not a finite-sample error certificate unless its omitted remainder and tails have been bounded. Comparisons with a converged numerical-integration reference are necessary before interpreting either diagnostic as evidence of approximation accuracy.
+\paragraph{Interpretation of nonconjugate method labels.}
+In the implementation studied here, the options \texttt{jj} and \texttt{pg\_vb} both invoke the same Jaakkola--Jordan numerical routine. These labels therefore do not constitute two independent approximation methods. A distinct P\'olya--Gamma variational implementation, if included later, requires a separately specified augmented model, objective, update equations, and numerical verification.
