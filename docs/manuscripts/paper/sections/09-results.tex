@@ -46,25 +46,59 @@ The same global inference code was applied to Gaussian, Poisson, Binomial, and B
 \end{table}
 
 \FloatBarrier
-\subsection{Calibration and latent-group segmentation}
-Repeated Gaussian simulations produced a reliability curve close to the diagonal, with ECE approximately $0.010$ and Brier score approximately $0.011$ (Figure~\ref{fig:calibration-template-paper}a). These values support calibration in the generating design, not robustness to arbitrary misspecification.
+\subsection{Experiment E02: cross-family recovery}
+Experiment E02 evaluated the five declared observation families---Gaussian, Poisson, Binomial, Negative Binomial, and Beta-valued---on a common segmentation design: $k_{\rm true}=3$, exactly equal segment lengths, $n=240$ (conjugate families) or $n=120$ (Beta-obs, quadrature), 100 or 50 independent replicates per cell, two effect magnitudes per family, and the same geometric-decay count prior and $k_{\max}=10$ as E01. Family-specific priors are as declared: $\mu\sim\mathcal{N}(0,4)$ for Gaussian, $\lambda\sim\mathrm{Gamma}(2,1)$ for Poisson, $p\sim\mathrm{Beta}(2,3)$ for Binomial and Negative Binomial, and $\mu\sim\mathrm{Beta}(2,3)$ for Beta-obs. The Negative Binomial dispersion is $r=5$; the segment functional is the count mean $r(1-p)/p$, not $p$.
 
-The latent-group experiment used 24 sequences of length 80 from two known synthetic groups at noise standard deviation $1.0$. It achieved 96\% hard assignment accuracy, with one misassignment and visible ambiguity around the class boundary (Figure~\ref{fig:calibration-template-paper}b). Group-specific boundary marginals concentrate near the generating templates. The result is evidence for the finite score-clustering objective in Equation~\eqref{eq:latent-group-objective}; it is not evidence for normalized-mixture identifiability.
+At the stronger effect setting in each family, F1@3 ranged from $0.88$ (Gaussian, $\Delta=1.5$) to $1.00$ (Beta-obs, $\mu_{\rm mid}=0.8$). At the weaker effect setting, F1@3 ranged from $0.05$ (Gaussian, $\Delta=0.5$) to $0.99$ (Beta-obs, $\mu_{\rm mid}=0.4$). Weak-effect undersegmentation in the Gaussian and Negative Binomial cells ($\mu_{\rm mid}=3$) is again prior-driven: the geometric prior places strong mass on $k<3$ when the likelihood does not decisively separate segments. Binomial and Beta-obs cells showed consistently high recovery even at the lower effect value; this reflects larger effective information per observation when the generating probabilities are well separated from the prior mode. Negative Binomial signal MSE ($0.18$--$0.20$) is substantially larger than in other families, reflecting the higher observation variance of the NegBin model at these parameters. Beta-obs quadrature convergence was confirmed: the maximum Bayes-curve deviation between 64-node and 128-node Gauss--Legendre quadrature was below $0.0011$ across both Beta-obs cells.
+
+\input{shared/tables/results/tab_E02_recovery.tex}
 
 \begin{figure}[!htbp]
-\centering
-\begin{subfigure}[t]{0.42\textwidth}
   \centering
-  \includegraphics[width=\linewidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig3_boundary_calibration.png}
-  \caption{Boundary-event reliability.}
-\end{subfigure}\hfill
-\begin{subfigure}[t]{0.54\textwidth}
+  \includegraphics[width=0.97\textwidth,keepaspectratio]{shared/figures/results/fig_E02_recovery.png}
+  \caption{E02 recovery metrics vs.\ effect magnitude, by family. Points are cell means over 100 (conjugate) or 50 (Beta-obs) independent datasets; bands are 95\% bootstrap CIs.}
+  \label{fig:E02-recovery-paper}
+\end{figure}
+
+Signal MSE is reported on the native family scale and is not directly comparable across families. These results establish mathematical portability of the common inference pipeline across the five declared observation families and expose family-specific difficulty that depends on observation variance and prior placement. They do not establish generalization to other effect sizes, priors, or families not tested in E02.
+
+\FloatBarrier
+\subsection{Calibration and latent-group segmentation}
+Experiment E01 evaluated Gaussian segmentation calibration and recovery across 22 predeclared cells (14 primary, 8 prior-ablation), 100 independent replicates per cell, using two sequence lengths ($n\in\{256,512\}$), two true changepoint counts ($k\in\{3,6\}$), three signal-to-noise ratios ($\Delta/\sigma\in\{0.5,1.0,2.0\}$), and two priors. A null cell ($k=1$, $\Delta=0$) verified false-positive control. Boundary-event probabilities are marginalised over $k$ via the full segment-count posterior $p(k\mid y)$.
+
+Reliability diagrams (Figure~\ref{fig:E01-calibration-paper}) showed curves close to the diagonal in every stratum. ECE ranged from $0.00044$ to $0.0081$ across eight pooling strata, with lower ECE at $n=512$ in every matched stratum. Nine of ten equal-mass calibration bins per stratum had mean predicted probability below $0.006$, reflecting correct near-zero assignment to the $\approx97\%$ non-boundary positions; the low aggregate ECE is dominated by accurate null assignment. Mean per-boundary Brier scores ranged from near zero in the null cell to $0.020$ in the $k=6$, $\Delta/\sigma=0.5$, $n=256$ cell (Table~\ref{tab:E01-recovery-paper}).
+
+Recovery under the geometric-decay prior is shown in Figure~\ref{fig:E01-recovery-paper}. At strong signal ($\Delta/\sigma=2$), mean F1@3 exceeded $0.93$ in all primary cells. At weak signal ($\Delta/\sigma=0.5$ with $k=6$), the geometric prior's strong preference for fewer segments caused substantial undersegmentation: 95 of 100 replicates returned modal segment count 1 at $n=256$ and 55 of 100 at $n=512$. This is prior-induced undersegmentation under weak signal. The uniform-prior ablation recovered more boundaries in these cells at the cost of lower P($k$=true) in strong-signal cells. F1@3 improvement with $n$ is consistent but not strictly monotone across all cells. The boundary-position tolerance $\tau=3$ corresponds to $1.2\%$ of sequence length at $n=256$ and $0.6\%$ at $n=512$.
+
+Confidence intervals throughout are 95\% percentile bootstrap intervals from 2000 resamples of independently generated datasets (not boundary positions within a single dataset). Brier and log scores are computed per boundary position marginalized over $k$.
+
+These values support calibration within the generating simulation design. They do not establish robustness to misspecification, performance on non-Gaussian families, or externally validated boundary accuracy.
+
+\textit{Provenance note:} The E01 results directory records SHA256 hashes for all \texttt{src/bayesbreak/} source files. The runner script \texttt{scripts/run\_e01\_gaussian\_calibration.py} was not tracked in git at execution time and its run-time hash cannot be independently verified. A post-execution fingerprint is recorded in \texttt{provenance\_notes.json} under the results directory; complete script-level reproducibility cannot be asserted from the manifest alone.
+
+\begin{figure}[!htbp]
   \centering
-  \includegraphics[width=\linewidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig4_latent_groups_cropped.png}
-  \caption{Latent-group assignments and group-specific boundary marginals.}
-\end{subfigure}
-\caption{Calibration and latent-template analysis. Panel (a) reports ECE $\approx0.010$ and Brier $\approx0.011$ in the Gaussian calibration experiment. Panel (b) reports 96\% hard recovery for the declared two-template synthetic setting.}
-\label{fig:calibration-template-paper}
+  \includegraphics[width=0.97\textwidth,keepaspectratio]{shared/figures/results/fig_E01_calibration.png}
+  \caption{E01 boundary-event reliability diagrams, one panel per pooling stratum ($n\in\{256,512\}$, $k\in\{3,6\}$, prior $\in\{$geom., unif.$\}$). Each panel pools all $\Delta/\sigma$ values within its stratum. Bars show equal-mass bin frequencies; shaded bands are 95\% bootstrap confidence intervals over 100 replicates; dashed diagonal is perfect calibration.}
+  \label{fig:E01-calibration-paper}
+\end{figure}
+
+\input{shared/tables/results/tab_E01_recovery.tex}
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.97\textwidth,keepaspectratio]{shared/figures/results/fig_E01_recovery.png}
+  \caption{E01 recovery metrics vs.\ signal-to-noise ratio $\Delta/\sigma$. Solid lines: geometric-decay prior; dashed: uniform-prior ablation. Points are cell means over 100 replicates; bands are 95\% bootstrap CIs.}
+  \label{fig:E01-recovery-paper}
+\end{figure}
+
+The latent-group experiment used 24 sequences of length 80 from two known synthetic groups at noise standard deviation $1.0$. It achieved 96\% hard assignment accuracy, with one misassignment and visible ambiguity around the class boundary (Figure~\ref{fig:latent-groups-paper}). Group-specific boundary marginals concentrate near the generating templates. The result is evidence for the finite score-clustering objective in Equation~\eqref{eq:latent-group-objective}; it is not evidence for normalized-mixture identifiability.
+
+\begin{figure}[!htbp]
+  \centering
+  \includegraphics[width=0.97\textwidth,height=0.67\textheight,keepaspectratio]{shared/figures/results/fig4_latent_groups_cropped.png}
+  \caption{Latent-group assignments and group-specific boundary marginals. 96\% hard recovery for the declared two-template synthetic setting.}
+  \label{fig:latent-groups-paper}
 \end{figure}
 
 A separate stress study evaluated 400 seeded datasets across eight predeclared cells. In the reference simulation cell, mean label-invariant hard accuracy was $0.9742$ (95\% interval $0.9536$--$0.9948$) and mean adjusted Rand index was $0.9183$. All 400 objective traces were monotone, every returned final objective equaled the final trace value, and all 1,200 restarts were valid. Recovery degraded under low separation, duplicate templates, higher noise, and shorter sequences, as summarized in Figure~\ref{fig:latent-stress-corrected-paper}. These results support the finite score-clustering criterion in the declared simulations, not normalized-mixture identifiability.
@@ -198,4 +232,4 @@ A family-corrected held-out analysis used the Beta-observation predictive distri
 
 \FloatBarrier
 \subsection{Summary of empirical findings}
-The empirical results demonstrate that common partition recursions can use closed-form conjugate segment marginal likelihoods, one-dimensional quadrature, other numerical segment calculations, shared-changepoint pooling, and finite latent-group templates. It provides calibrated boundary probabilities in one Gaussian simulation design, a corrected finite latent-group stress grid, finite-range runtime measurements, four traceable real-data fits, a corrected common-axis CGH agreement diagnostic, and a corrected family-specific methylation predictive evaluation. It does not yet establish external boundary accuracy, dominance under independently tuned predictive comparisons, robustness across broad misspecification regimes, routine-wide approximation guarantees, or asymptotic speed better than the quadratic dynamic-programming bound.
+The empirical results demonstrate that common partition recursions can use closed-form conjugate segment marginal likelihoods, one-dimensional quadrature, other numerical segment calculations, shared-changepoint pooling, and finite latent-group templates. Experiment E01 provides pre-registered Gaussian calibration and recovery results across 22 cells at two sequence lengths ($n\in\{256,512\}$), confirming ECE below $0.0081$ in all strata and F1@3 above $0.93$ at strong signal ($\Delta/\sigma=2$); weak-signal undersegmentation is prior-induced, not a calibration property. Experiment E02 confirms mathematical portability of the exact inference pipeline across five declared exponential families (Gaussian, Poisson, Binomial, Negative Binomial, Beta-obs): F1@3 exceeded $0.88$ at the stronger effect setting in every family, with family-specific difficulty determined by observation variance and prior placement. The results also include a corrected finite latent-group stress grid, finite-range runtime measurements, four traceable real-data fits, a corrected common-axis CGH agreement diagnostic, and a corrected family-specific methylation predictive evaluation. They do not yet establish external boundary accuracy, dominance under independently tuned predictive comparisons, robustness across broad misspecification regimes, routine-wide approximation guarantees, or asymptotic speed better than the quadratic dynamic-programming bound.

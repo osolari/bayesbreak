@@ -62,11 +62,25 @@ def write_run_record(
         preprocessing hash, fit hyperparameters, random seed).
     """
 
+    # Store a repo-relative path so the sidecar is portable across machines.
+    abs_path = Path(figure_path).resolve()
+    # Walk up to find the repo root (contains pyproject.toml).
+    candidate = abs_path.parent
+    repo_root: Path | None = None
+    for _ in range(10):
+        if (candidate / "pyproject.toml").exists():
+            repo_root = candidate
+            break
+        candidate = candidate.parent
+    figure_path_str = (
+        str(abs_path.relative_to(repo_root)) if repo_root is not None else str(abs_path)
+    )
+
     record = {
         "dataset": dataset,
         "source": source,
         "ran_at": time.time(),
-        "figure_path": str(figure_path),
+        "figure_path": figure_path_str,
     }
     if extra:
         record.update(extra)

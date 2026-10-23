@@ -1,0 +1,18 @@
+{
+  "experiment_id": "E00",
+  "n_checks": 380,
+  "n_passed": 380,
+  "n_failed": 0,
+  "tolerance_probability_abs": 1e-09,
+  "tolerance_log_evidence_abs": 1e-08,
+  "tolerance_moment_rel": 1e-08,
+  "tolerance_quadrature_abs": 1e-06,
+  "max_block_log_ev_error": 1.0658141036401503e-14,
+  "max_forward_L_error": 1.0658141036401503e-14,
+  "max_posterior_k_error": 2.220446049250313e-15,
+  "max_log_evidence_error": 7.105427357601002e-15,
+  "max_boundary_marginal_error": 7.105427357601002e-15,
+  "max_bayes_curve_rel_error": 7.105427357600951e-15,
+  "max_quad_error": 3.907985046680551e-14,
+  "gate_pass": true
+}

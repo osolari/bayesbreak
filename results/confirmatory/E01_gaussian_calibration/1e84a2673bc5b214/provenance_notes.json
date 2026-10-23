@@ -1,0 +1,19 @@
+{
+  "note": "Post-execution provenance supplement for E01 manifest.",
+  "manifest_artifact_sha256": "b3b93567378735cc4e27ebec9d58f39573f041c21c63780ba0223d8446bf7328",
+  "runner_script": {
+    "path": "scripts/run_e01_gaussian_calibration.py",
+    "sha256_post_execution": "0c4c598a8606853306ea11a4916ba48bde0f8191782302d8224d09b7dec0b8d0",
+    "git_tracked_at_run_time": false,
+    "git_revision_at_run_time": "106510ace891663ba3125e6dfd6d07068f2e3be1",
+    "limitation": "The runner script was an untracked working-tree file at the time of the E01 run. The manifest's source_file_sha256 covers only src/bayesbreak/**/*.py. The post-execution SHA256 recorded here reflects the file as it currently exists; it cannot be independently verified to match the exact run-time state. Complete script-level reproducibility cannot be claimed from the manifest alone."
+  },
+  "covered_by_manifest": {
+    "src_tree_sha256": "082fd01ce33fb3037b33410785296eb7d85e7c4afe80cb2c9a9abb567c4e3ae4",
+    "source_file_sha256_count": 70,
+    "artifact_sha256": "b3b93567378735cc4e27ebec9d58f39573f041c21c63780ba0223d8446bf7328"
+  },
+  "bootstrap_definition": "2000 resamples of independently generated datasets (full sequences, not boundary positions within a single dataset). 95% percentile intervals.",
+  "calibration_note": "Boundary-event probabilities are P(b_i=1|y) marginalized over k via the full posterior p(k|y), not conditional on a fixed segment count.",
+  "undersegmentation_note": "At Delta/sigma=0.5, k=6: the geometric-decay prior (p(k) proportional to exp(-log(4)*(k-1))) places strong mass on small k. 95/100 replicates returned modal segment count 1 at n=256; 55/100 at n=512. This is prior-induced undersegmentation, not evidence of calibration or correct model behavior."
+}

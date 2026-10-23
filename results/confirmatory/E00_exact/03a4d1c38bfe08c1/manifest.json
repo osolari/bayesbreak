@@ -1,0 +1,39 @@
+{
+  "experiment_id": "E00",
+  "protocol_revision": "2026-10-21-2",
+  "config_sha256": "03a4d1c38bfe08c1ca1d47164e1746eb3e846b87cfb9e8cd04339b912271e5db",
+  "git_revision": "106510ace891663ba3125e6dfd6d07068f2e3be1",
+  "working_tree_dirty": true,
+  "source_file_sha256": {
+    "src/bayesbreak/dp.py": "6e455402e6bc0aed9cc98ac7c442ac26f434270b84549da74b75cf793df75465",
+    "src/bayesbreak/families/gaussian.py": "0d8100bcb95f6bf66e66b5cb1581a711ff5261bb67502fc926af73e28e4670a0",
+    "src/bayesbreak/families/poisson.py": "13676c352854cfbec59e00556623a4af7ad70b245f8e85996d3db99fbdc30333",
+    "src/bayesbreak/families/binomial.py": "09e18bd07a0abc98b7182403d92f171a6f18f568f6810666e3af54b17ec8ad55",
+    "src/bayesbreak/families/negative_binomial.py": "3e7b631b8bbdb58f3066ca806289c7bad6b15ac8e6ae62de39d72f55580d1e85",
+    "tests/test_confirmatory_E00_oracles.py": "ebaa73fb51d787682923b80a4f8c7289096668a1ba40fcf5f4a4ed195f063381",
+    ".claude/skills/bayesbreak-release-audit/protocols/experiments.json": "f3faa92542a7f9a35a1c1e67dde6c9c569b3c95cc5be3646a198da264838fbc4"
+  },
+  "python_version": "3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 12:55:12) [Clang 14.0.6 ]",
+  "numpy_version": "2.4.4",
+  "scipy_version": "1.17.1",
+  "seed": [
+    20261021,
+    0,
+    0,
+    0
+  ],
+  "input_sha256": "deterministic_no_file",
+  "source_kind": "oracle_enumeration",
+  "family": "all",
+  "family_descriptor": "heterogeneous_per_spec",
+  "prior": "geometric_decay_log4",
+  "k_max": "n",
+  "coordinate_axis": "index_uniform",
+  "reference_type": "brute_force_partition_enumeration",
+  "fit_status": "completed",
+  "metric_schema": "E00_oracle_checks",
+  "artifact_sha256": "a732ff52c859ed3f66252cd92f5338afdedfea1a7ebee058d3b546675dac8943",
+  "utc_start": "2026-10-23T05:45:20.810196+00:00",
+  "utc_end": "2026-10-23T05:46:49.464654+00:00",
+  "platform": "macOS-26.6.1-arm64-arm-64bit"
+}

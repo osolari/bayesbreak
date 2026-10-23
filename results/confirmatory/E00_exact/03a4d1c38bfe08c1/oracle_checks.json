@@ -1,0 +1,3802 @@
+[
+  {
+    "check_id": "block_ev_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.0658141036401503e-14,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.0658141036401503e-14,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.0658141036401503e-14,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.0658141036401503e-14,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 5.329070518200751e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "block_ev_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "block_log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 2.6645352591003757e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 5.329070518200751e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 1.0658141036401503e-14,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "fwd_L_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "forward_L_kn",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 9.992007221626409e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 6.661338147750939e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 1.4094628242311558e-18,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "p_k_given_y",
+    "max_error": 1.1434944787933055e-20,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 1.2212453270876722e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 2.636779683484747e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 2.7755575615628914e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 2.220446049250313e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 5.377642775528102e-17,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "p_k_given_y",
+    "max_error": 4.579669976578771e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 1.6653345369377348e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 8.326672684688674e-17,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 2.7755575615628914e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 3.3306690738754696e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 1.1102230246251565e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 1.3183898417423734e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 5.273559366969494e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 1.5265566588595902e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 7.632783294297951e-17,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 7.632783294297951e-17,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 1.0842021724855044e-17,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 1.0842021724855044e-17,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "post_k_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "p_k_given_y",
+    "max_error": 2.927345865710862e-18,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "log_ev_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "log_evidence",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 9.992007221626409e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 2.1094237467877974e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.9984014443252818e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.885780586188048e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.4432899320127035e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.6653345369377348e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 2.220446049250313e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 4.218847493575595e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "boundary_event_marginals",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 7.771561172376096e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 2.220446049250313e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.9984014443252818e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.6653345369377348e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 2.9976021664879227e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 6.661338147750939e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.885780586188048e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 4.440892098500626e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "bm_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "boundary_event_marginals",
+    "max_error": 3.6637359812630166e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "map_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "map_partition",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 9.251858538542972e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 1.8503717077085944e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 7.9096106020480855e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 9.841941803395223e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 2.107822266502446e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 2.988136942273595e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 2.436729642159337e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "bayes_curve_relative",
+    "max_error": 4.549877018598055e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 1.57401333933733e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 2.292286393572979e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 1.7787962510070345e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 3.444432654557375e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 3.489272363107623e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 5.237824842261668e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "bayes_curve_relative",
+    "max_error": 7.105427357600951e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "quad_gaussian_n4",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-11.6749947095, quad=-11.6749947095"
+  },
+  {
+    "check_id": "quad_gaussian_n2",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-6.7868247028, quad=-6.7868247028"
+  },
+  {
+    "check_id": "quad_poisson_n3",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-11.3715154043, quad=-11.3715154043"
+  },
+  {
+    "check_id": "quad_poisson_n2",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-3.9357395320, quad=-3.9357395320"
+  },
+  {
+    "check_id": "quad_binomial_n4",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 3.907985046680551e-14,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-9.3719363374, quad=-9.3719363374"
+  },
+  {
+    "check_id": "quad_binomial_n2",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 8.881784197001252e-15,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-12.1833224203, quad=-12.1833224203"
+  },
+  {
+    "check_id": "quad_negative_binomial_n3",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-6.7371241695, quad=-6.7371241695"
+  },
+  {
+    "check_id": "quad_negative_binomial_n2",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "analytic_vs_quadrature",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": "analytic=-6.3966915316, quad=-6.3966915316"
+  },
+  {
+    "check_id": "nonunif_hazard_n4",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "forward_L_nonuniform_hazard",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "nonunif_cohesion_n4",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "forward_L_nonuniform_cohesion",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "nonunif_hazard_n6",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "forward_L_nonuniform_hazard",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "nonunif_cohesion_n6",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "forward_L_nonuniform_cohesion",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "nonunif_hazard_n8",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "forward_L_nonuniform_hazard",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "nonunif_cohesion_n8",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "forward_L_nonuniform_cohesion",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 2.6645352591003757e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 5.329070518200751e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.0658141036401503e-14,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "cond_ev_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "conditional_evidence_pyk",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 9.992007221626409e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 5.551115123125783e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.9984014443252818e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.219646771412954e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.4432899320127035e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.3322676295501878e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.5543122344752192e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.774758283725532e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 7.771561172376096e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 2.220446049250313e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.9984014443252818e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.4432899320127035e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 2.9976021664879227e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 0.0,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 6.661338147750939e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.4416913763379853e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "ord_bnd_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "ordered_boundary_posterior",
+    "max_error": 2.1094237467877974e-15,
+    "tolerance": 1e-09,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "jmap_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-4.411279, prod_score=-4.411279"
+  },
+  {
+    "check_id": "jmap_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-5.593530, prod_score=-5.593530"
+  },
+  {
+    "check_id": "jmap_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-9.694874, prod_score=-9.694874"
+  },
+  {
+    "check_id": "jmap_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-11.004670, prod_score=-11.004670"
+  },
+  {
+    "check_id": "jmap_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-12.137338, prod_score=-12.137338"
+  },
+  {
+    "check_id": "jmap_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-13.954527, prod_score=-13.954527"
+  },
+  {
+    "check_id": "jmap_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-15.113110, prod_score=-15.113110"
+  },
+  {
+    "check_id": "jmap_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-15.716340, prod_score=-15.716340"
+  },
+  {
+    "check_id": "jmap_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-17.490623, prod_score=-17.490623"
+  },
+  {
+    "check_id": "jmap_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-7.058392, prod_score=-7.058392"
+  },
+  {
+    "check_id": "jmap_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-10.580658, prod_score=-10.580658"
+  },
+  {
+    "check_id": "jmap_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-13.352893, prod_score=-13.352893"
+  },
+  {
+    "check_id": "jmap_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-14.794299, prod_score=-14.794299"
+  },
+  {
+    "check_id": "jmap_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-17.404430, prod_score=-17.404430"
+  },
+  {
+    "check_id": "jmap_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-18.840410, prod_score=-18.840410"
+  },
+  {
+    "check_id": "jmap_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-26.520835, prod_score=-26.520835"
+  },
+  {
+    "check_id": "jmap_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-28.483324, prod_score=-28.483324"
+  },
+  {
+    "check_id": "jmap_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-31.223919, prod_score=-31.223919"
+  },
+  {
+    "check_id": "jmap_2_binomial",
+    "n": 2,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-3.422400, prod_score=-3.422400"
+  },
+  {
+    "check_id": "jmap_3_binomial",
+    "n": 3,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-6.732456, prod_score=-6.732456"
+  },
+  {
+    "check_id": "jmap_4_binomial",
+    "n": 4,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-10.125561, prod_score=-10.125561"
+  },
+  {
+    "check_id": "jmap_5_binomial",
+    "n": 5,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 1.7763568394002505e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-11.695300, prod_score=-11.695300"
+  },
+  {
+    "check_id": "jmap_6_binomial",
+    "n": 6,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-13.142437, prod_score=-13.142437"
+  },
+  {
+    "check_id": "jmap_7_binomial",
+    "n": 7,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-14.646514, prod_score=-14.646514"
+  },
+  {
+    "check_id": "jmap_8_binomial",
+    "n": 8,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 3.552713678800501e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-16.061409, prod_score=-16.061409"
+  },
+  {
+    "check_id": "jmap_9_binomial",
+    "n": 9,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 7.105427357601002e-15,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-18.371186, prod_score=-18.371186"
+  },
+  {
+    "check_id": "jmap_10_binomial",
+    "n": 10,
+    "family": "binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=2, oracle_score=-19.738424, prod_score=-19.738424"
+  },
+  {
+    "check_id": "jmap_2_negative_binomial",
+    "n": 2,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-5.046765, prod_score=-5.046765"
+  },
+  {
+    "check_id": "jmap_3_negative_binomial",
+    "n": 3,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-7.363622, prod_score=-7.363622"
+  },
+  {
+    "check_id": "jmap_4_negative_binomial",
+    "n": 4,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-9.342629, prod_score=-9.342629"
+  },
+  {
+    "check_id": "jmap_5_negative_binomial",
+    "n": 5,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-11.622230, prod_score=-11.622230"
+  },
+  {
+    "check_id": "jmap_6_negative_binomial",
+    "n": 6,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-13.510643, prod_score=-13.510643"
+  },
+  {
+    "check_id": "jmap_7_negative_binomial",
+    "n": 7,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-15.778964, prod_score=-15.778964"
+  },
+  {
+    "check_id": "jmap_8_negative_binomial",
+    "n": 8,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-17.623706, prod_score=-17.623706"
+  },
+  {
+    "check_id": "jmap_9_negative_binomial",
+    "n": 9,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-19.887025, prod_score=-19.887025"
+  },
+  {
+    "check_id": "jmap_10_negative_binomial",
+    "n": 10,
+    "family": "negative_binomial",
+    "quantity": "joint_MAP_global_score",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": "oracle_k=1, oracle_score=-21.706058, prod_score=-21.706058"
+  },
+  {
+    "check_id": "curve2_2_gaussian",
+    "n": 2,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_3_gaussian",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 2.3875498757837296e-16,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_4_gaussian",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 2.8235960578207097e-16,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_5_gaussian",
+    "n": 5,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 3.5497920392620125e-16,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_6_gaussian",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 4.47558656802016e-16,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_7_gaussian",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 2.1102023043085676e-15,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_8_gaussian",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 1.506451029880069e-15,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_9_gaussian",
+    "n": 9,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 1.091095656512814e-11,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_10_gaussian",
+    "n": 10,
+    "family": "gaussian",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 6.300087135752406e-07,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_2_poisson",
+    "n": 2,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_3_poisson",
+    "n": 3,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_4_poisson",
+    "n": 4,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_5_poisson",
+    "n": 5,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_6_poisson",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_7_poisson",
+    "n": 7,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_8_poisson",
+    "n": 8,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_9_poisson",
+    "n": 9,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "curve2_10_poisson",
+    "n": 10,
+    "family": "poisson",
+    "quantity": "bayes_curve_second_moment_quad",
+    "max_error": 0.0,
+    "tolerance": 1e-06,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "Ck_hazard_n4",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "log_Ck_nonuniform_hazard",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "Ck_cohesion_n4",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "log_Ck_nonuniform_cohesion",
+    "max_error": 2.220446049250313e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "Ck_hazard_n6",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "log_Ck_nonuniform_hazard",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "Ck_cohesion_n6",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "log_Ck_nonuniform_cohesion",
+    "max_error": 0.0,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "Ck_hazard_n8",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "log_Ck_nonuniform_hazard",
+    "max_error": 8.881784197001252e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "Ck_cohesion_n8",
+    "n": 8,
+    "family": "gaussian",
+    "quantity": "log_Ck_nonuniform_cohesion",
+    "max_error": 4.440892098500626e-16,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "descr_binomial_trials",
+    "n": 0,
+    "family": "binomial",
+    "quantity": "descriptor_completeness",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": "trial counts {1,8,32} present for n>=3,6,9"
+  },
+  {
+    "check_id": "descr_negbin_r5",
+    "n": 0,
+    "family": "negative_binomial",
+    "quantity": "descriptor_completeness",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": "r=5 for all n"
+  },
+  {
+    "check_id": "descr_gaussian_w",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "descriptor_completeness",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "descr_poisson_e",
+    "n": 6,
+    "family": "poisson",
+    "quantity": "descriptor_completeness",
+    "max_error": 0.0,
+    "tolerance": 0.0,
+    "passed": true,
+    "details": ""
+  },
+  {
+    "check_id": "adversarial_marginal_neq_joint",
+    "n": 6,
+    "family": "gaussian",
+    "quantity": "marginal_vs_joint_MAP_agree",
+    "max_error": 1.0,
+    "tolerance": 1.0,
+    "passed": true,
+    "details": "joint=[0, 2, 4, 6], marginal_from_modes=[0, 2, 4, 6]"
+  },
+  {
+    "check_id": "adversarial_inadmissible_modes",
+    "n": 7,
+    "family": "gaussian",
+    "quantity": "coordinatewise_modes_admissible",
+    "max_error": 1.0,
+    "tolerance": 1.0,
+    "passed": true,
+    "details": "mode_b1=3, mode_b2=4"
+  },
+  {
+    "check_id": "adversarial_neg_mean",
+    "n": 3,
+    "family": "gaussian",
+    "quantity": "negative_posterior_mean",
+    "max_error": 3.5294117647058822,
+    "tolerance": Infinity,
+    "passed": true,
+    "details": "mu=-3.529412"
+  },
+  {
+    "check_id": "all_masked_block",
+    "n": 4,
+    "family": "gaussian",
+    "quantity": "all_masked_log_ev",
+    "max_error": 2e-300,
+    "tolerance": 1e-08,
+    "passed": true,
+    "details": ""
+  }
+]
