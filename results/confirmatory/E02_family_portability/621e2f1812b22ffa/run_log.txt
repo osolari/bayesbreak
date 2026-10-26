@@ -1,0 +1,145 @@
+2026-10-23 09:18:39,594 INFO ======================================================================
+2026-10-23 09:18:39,594 INFO E02 family portability — CONFIRMATORY run
+2026-10-23 09:18:39,594 INFO Config SHA256: 621e2f1812b22ffa
+2026-10-23 09:18:39,594 INFO n_boot=2000
+2026-10-23 09:18:39,594 INFO ======================================================================
+2026-10-23 09:18:39,594 INFO Total cells: 10
+2026-10-23 09:18:39,594 INFO [Cell 1/10] gaussian,n=240,delta=0.5
+2026-10-23 09:18:42,237 INFO   Rep 10/100 done
+2026-10-23 09:18:44,408 INFO   Rep 20/100 done
+2026-10-23 09:18:46,581 INFO   Rep 30/100 done
+2026-10-23 09:18:48,766 INFO   Rep 40/100 done
+2026-10-23 09:18:50,961 INFO   Rep 50/100 done
+2026-10-23 09:18:53,165 INFO   Rep 60/100 done
+2026-10-23 09:18:55,351 INFO   Rep 70/100 done
+2026-10-23 09:18:57,562 INFO   Rep 80/100 done
+2026-10-23 09:18:59,782 INFO   Rep 90/100 done
+2026-10-23 09:19:01,980 INFO   Rep 100/100 done
+2026-10-23 09:19:01,992 INFO   Cell done | elapsed 22.4s | n_rep=100 | mean_f1=0.047
+2026-10-23 09:19:01,992 INFO [Cell 2/10] gaussian,n=240,delta=1.5
+2026-10-23 09:19:04,266 INFO   Rep 10/100 done
+2026-10-23 09:19:06,495 INFO   Rep 20/100 done
+2026-10-23 09:19:08,745 INFO   Rep 30/100 done
+2026-10-23 09:19:11,066 INFO   Rep 40/100 done
+2026-10-23 09:19:13,439 INFO   Rep 50/100 done
+2026-10-23 09:19:15,792 INFO   Rep 60/100 done
+2026-10-23 09:19:18,082 INFO   Rep 70/100 done
+2026-10-23 09:19:20,355 INFO   Rep 80/100 done
+2026-10-23 09:19:22,705 INFO   Rep 90/100 done
+2026-10-23 09:19:24,985 INFO   Rep 100/100 done
+2026-10-23 09:19:24,998 INFO   Cell done | elapsed 45.4s | n_rep=100 | mean_f1=0.880
+2026-10-23 09:19:24,998 INFO [Cell 3/10] poisson,n=240,q=1.5
+2026-10-23 09:19:27,257 INFO   Rep 10/100 done
+2026-10-23 09:19:29,536 INFO   Rep 20/100 done
+2026-10-23 09:19:31,804 INFO   Rep 30/100 done
+2026-10-23 09:19:34,070 INFO   Rep 40/100 done
+2026-10-23 09:19:36,331 INFO   Rep 50/100 done
+2026-10-23 09:19:38,626 INFO   Rep 60/100 done
+2026-10-23 09:19:40,943 INFO   Rep 70/100 done
+2026-10-23 09:19:43,228 INFO   Rep 80/100 done
+2026-10-23 09:19:45,496 INFO   Rep 90/100 done
+2026-10-23 09:19:47,767 INFO   Rep 100/100 done
+2026-10-23 09:19:47,779 INFO   Cell done | elapsed 68.2s | n_rep=100 | mean_f1=0.354
+2026-10-23 09:19:47,779 INFO [Cell 4/10] poisson,n=240,q=3.0
+2026-10-23 09:19:50,120 INFO   Rep 10/100 done
+2026-10-23 09:19:52,446 INFO   Rep 20/100 done
+2026-10-23 09:19:54,763 INFO   Rep 30/100 done
+2026-10-23 09:19:57,028 INFO   Rep 40/100 done
+2026-10-23 09:19:59,369 INFO   Rep 50/100 done
+2026-10-23 09:20:01,696 INFO   Rep 60/100 done
+2026-10-23 09:20:04,082 INFO   Rep 70/100 done
+2026-10-23 09:20:06,398 INFO   Rep 80/100 done
+2026-10-23 09:20:08,695 INFO   Rep 90/100 done
+2026-10-23 09:20:10,980 INFO   Rep 100/100 done
+2026-10-23 09:20:10,993 INFO   Cell done | elapsed 91.4s | n_rep=100 | mean_f1=0.971
+2026-10-23 09:20:10,993 INFO [Cell 5/10] binomial,n=240,p_mid=0.35
+2026-10-23 09:20:13,393 INFO   Rep 10/100 done
+2026-10-23 09:20:15,651 INFO   Rep 20/100 done
+2026-10-23 09:20:17,942 INFO   Rep 30/100 done
+2026-10-23 09:20:20,274 INFO   Rep 40/100 done
+2026-10-23 09:20:22,588 INFO   Rep 50/100 done
+2026-10-23 09:20:24,880 INFO   Rep 60/100 done
+2026-10-23 09:20:27,256 INFO   Rep 70/100 done
+2026-10-23 09:20:29,556 INFO   Rep 80/100 done
+2026-10-23 09:20:31,854 INFO   Rep 90/100 done
+2026-10-23 09:20:34,154 INFO   Rep 100/100 done
+2026-10-23 09:20:34,166 INFO   Cell done | elapsed 114.6s | n_rep=100 | mean_f1=0.897
+2026-10-23 09:20:34,166 INFO [Cell 6/10] binomial,n=240,p_mid=0.65
+2026-10-23 09:20:36,424 INFO   Rep 10/100 done
+2026-10-23 09:20:38,789 INFO   Rep 20/100 done
+2026-10-23 09:20:41,145 INFO   Rep 30/100 done
+2026-10-23 09:20:43,461 INFO   Rep 40/100 done
+2026-10-23 09:20:45,732 INFO   Rep 50/100 done
+2026-10-23 09:20:48,046 INFO   Rep 60/100 done
+2026-10-23 09:20:50,387 INFO   Rep 70/100 done
+2026-10-23 09:20:52,738 INFO   Rep 80/100 done
+2026-10-23 09:20:55,176 INFO   Rep 90/100 done
+2026-10-23 09:20:57,523 INFO   Rep 100/100 done
+2026-10-23 09:20:57,537 INFO   Cell done | elapsed 137.9s | n_rep=100 | mean_f1=0.992
+2026-10-23 09:20:57,537 INFO [Cell 7/10] negbin,n=240,mu_mid=3.0
+2026-10-23 09:21:00,181 INFO   Rep 10/100 done
+2026-10-23 09:21:02,813 INFO   Rep 20/100 done
+2026-10-23 09:21:05,416 INFO   Rep 30/100 done
+2026-10-23 09:21:08,112 INFO   Rep 40/100 done
+2026-10-23 09:21:10,723 INFO   Rep 50/100 done
+2026-10-23 09:21:13,339 INFO   Rep 60/100 done
+2026-10-23 09:21:15,930 INFO   Rep 70/100 done
+2026-10-23 09:21:18,520 INFO   Rep 80/100 done
+2026-10-23 09:21:21,112 INFO   Rep 90/100 done
+2026-10-23 09:21:23,690 INFO   Rep 100/100 done
+2026-10-23 09:21:23,701 INFO   Cell done | elapsed 164.1s | n_rep=100 | mean_f1=0.060
+2026-10-23 09:21:23,701 INFO [Cell 8/10] negbin,n=240,mu_mid=6.0
+2026-10-23 09:21:26,407 INFO   Rep 10/100 done
+2026-10-23 09:21:29,072 INFO   Rep 20/100 done
+2026-10-23 09:21:31,780 INFO   Rep 30/100 done
+2026-10-23 09:21:34,547 INFO   Rep 40/100 done
+2026-10-23 09:21:37,357 INFO   Rep 50/100 done
+2026-10-23 09:21:40,067 INFO   Rep 60/100 done
+2026-10-23 09:21:42,684 INFO   Rep 70/100 done
+2026-10-23 09:21:45,368 INFO   Rep 80/100 done
+2026-10-23 09:21:48,131 INFO   Rep 90/100 done
+2026-10-23 09:21:50,813 INFO   Rep 100/100 done
+2026-10-23 09:21:50,827 INFO   Cell done | elapsed 191.2s | n_rep=100 | mean_f1=0.920
+2026-10-23 09:21:50,827 INFO [Cell 9/10] beta_obs,n=120,mu_mid=0.4
+2026-10-23 09:21:51,205 INFO   Beta-obs convergence rep=0: log_ev_dev=3.51e-07, curve_dev=4.69e-08
+2026-10-23 09:21:51,581 INFO   Beta-obs convergence rep=1: log_ev_dev=1.53e-07, curve_dev=6.94e-09
+2026-10-23 09:21:51,954 INFO   Beta-obs convergence rep=2: log_ev_dev=6.60e-08, curve_dev=1.40e-08
+2026-10-23 09:21:52,333 INFO   Beta-obs convergence rep=3: log_ev_dev=2.79e-07, curve_dev=1.41e-08
+2026-10-23 09:21:52,716 INFO   Beta-obs convergence rep=4: log_ev_dev=1.57e-07, curve_dev=1.32e-08
+2026-10-23 09:21:53,403 INFO   Rep 10/50 done
+2026-10-23 09:21:54,771 INFO   Rep 20/50 done
+2026-10-23 09:21:56,190 INFO   Rep 30/50 done
+2026-10-23 09:21:57,562 INFO   Rep 40/50 done
+2026-10-23 09:21:58,959 INFO   Rep 50/50 done
+2026-10-23 09:21:58,965 INFO   Cell done | elapsed 199.4s | n_rep=50 | mean_f1=0.990
+2026-10-23 09:21:58,965 INFO [Cell 10/10] beta_obs,n=120,mu_mid=0.8
+2026-10-23 09:21:59,336 INFO   Beta-obs convergence rep=0: log_ev_dev=3.73e-07, curve_dev=1.51e-08
+2026-10-23 09:21:59,700 INFO   Beta-obs convergence rep=1: log_ev_dev=1.36e-07, curve_dev=9.18e-09
+2026-10-23 09:22:00,062 INFO   Beta-obs convergence rep=2: log_ev_dev=1.46e-07, curve_dev=1.41e-08
+2026-10-23 09:22:00,433 INFO   Beta-obs convergence rep=3: log_ev_dev=2.29e-07, curve_dev=1.29e-08
+2026-10-23 09:22:00,796 INFO   Beta-obs convergence rep=4: log_ev_dev=5.50e-08, curve_dev=1.38e-08
+2026-10-23 09:22:01,449 INFO   Rep 10/50 done
+2026-10-23 09:22:02,829 INFO   Rep 20/50 done
+2026-10-23 09:22:04,149 INFO   Rep 30/50 done
+2026-10-23 09:22:05,499 INFO   Rep 40/50 done
+2026-10-23 09:22:06,810 INFO   Rep 50/50 done
+2026-10-23 09:22:06,816 INFO   Cell done | elapsed 207.2s | n_rep=50 | mean_f1=1.000
+2026-10-23 09:22:06,816 INFO Generating figures...
+2026-10-23 09:22:07,332 WARNING findfont: Failed to find font weight medium for Helvetica, now using 400.
+2026-10-23 09:22:07,685 INFO Saved recovery figure to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E02_family_portability/621e2f1812b22ffa/figures/fig_E02_recovery
+2026-10-23 09:22:07,685 INFO Generating LaTeX table...
+2026-10-23 09:22:07,686 INFO Saved LaTeX table to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E02_family_portability/621e2f1812b22ffa/tables/tab_E02_recovery.tex
+2026-10-23 09:22:07,687 INFO No failed replicates.
+2026-10-23 09:22:07,826 INFO ======================================================================
+2026-10-23 09:22:07,826 INFO E02 CONFIRMATORY complete in 208.2s
+2026-10-23 09:22:07,826 INFO Cells: 10 planned, 10 completed, 0 failed
+2026-10-23 09:22:07,826 INFO Replicates: 900 completed, 0 failed
+2026-10-23 09:22:07,826 INFO Config SHA256: 621e2f1812b22ffaf4f480d5e8bd418f3ef9aa70af430666414f15ab833b5b0b
+2026-10-23 09:22:07,826 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E02_family_portability/621e2f1812b22ffa
+2026-10-23 09:22:07,826 INFO ======================================================================
+2026-10-23 09:22:07,826 INFO --- Gate checks ---
+2026-10-23 09:22:07,826 INFO Beta-obs convergence check beta_obs,n=120,mu_mid=0.4: log_ev_dev=3.51e-07, curve_dev=4.69e-08
+2026-10-23 09:22:07,826 INFO Beta-obs convergence check beta_obs,n=120,mu_mid=0.8: log_ev_dev=3.73e-07, curve_dev=1.51e-08
+2026-10-23 09:22:07,826 INFO All gate checks PASSED.
+2026-10-23 09:22:07,826 INFO E02 result: PASS
+2026-10-23 09:22:07,826 INFO gate_pass: True

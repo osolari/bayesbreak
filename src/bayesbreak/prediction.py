@@ -481,8 +481,13 @@ def _segment_pit(
         sigma2 = estimator.hyper_["sigma2"]
         w_train = estimator.sample_weight_[a:b]
         y_train = estimator._y_train_[a:b]
-        Wseg = float(np.sum(w_train))
-        Syseg = float(np.sum(w_train * y_train))
+        # Use effective likelihood powers (includes mask × user_power) so that
+        # masked observations and generalized-Bayes weights both enter the
+        # posterior parameters consistently with _compute_block_evidence.
+        _lp = getattr(estimator, "likelihood_power_", None)
+        lp = _lp[a:b] if _lp is not None else np.ones(b - a, dtype=float)
+        Wseg = float(np.sum(lp * w_train))
+        Syseg = float(np.sum(lp * w_train * y_train))
         mu_post = (rho2 * Syseg + sigma2 * nu) / (rho2 * Wseg + sigma2)
         rho2_post = (rho2 * sigma2) / (rho2 * Wseg + sigma2)
         var_pred = sigma2 / np.maximum(w, 1e-12) + rho2_post
@@ -495,13 +500,18 @@ def _segment_pit(
         beta = estimator.hyper_["beta"]
         w_train = estimator.sample_weight_[a:b]
         y_train = estimator._y_train_[a:b]
-        S = float(np.sum(w_train * y_train))
-        W = float(np.sum(w_train))
+        # Use effective likelihood powers consistently with _compute_block_evidence.
+        _lp = getattr(estimator, "likelihood_power_", None)
+        lp = _lp[a:b] if _lp is not None else np.ones(b - a, dtype=float)
+        S = float(np.sum(lp * y_train))   # power-weighted count sum
+        W = float(np.sum(lp * w_train))   # power-weighted exposure sum
         r = alpha + S
-        # Predictive: NegBin(r, p = beta_post / (beta_post + w_new))
+        # Predictive: NegBin(r, p = beta_post / (beta_post + w_new)).
+        # Note: for generalized-Bayes (likelihood_power != 1) the predictive
+        # is still a valid distribution, but PIT uniformity holds only for
+        # the correctly-specified ordinary Bayesian model (power = 1).
         p = (beta + W) / (beta + W + np.maximum(w, 1e-12))
-        # Continuity correction for discrete CDF: PIT for discrete Y is not
-        # uniformly Uniform(0,1); we use the standard randomized PIT.
+        # Continuity correction for discrete CDF: use the standard randomized PIT.
         cdf = nbinom.cdf(y, n=r, p=p)
         cdf_minus = nbinom.cdf(y - 1, n=r, p=p)
         u = np.random.uniform(size=y.size)
@@ -544,12 +554,16 @@ def _segment_pit(
 
         assert estimator._y_train_ is not None and estimator.sample_weight_ is not None
         phi_train = estimator._phi_arr_
+        # Apply likelihood_power_ so masked (holdout) observations do not
+        # contaminate the segment posterior used for PIT computation.
+        _lp = getattr(estimator, "likelihood_power_", None)
+        lp = _lp if _lp is not None else np.ones(len(estimator._y_train_), dtype=float)
         mu_grid, log_posterior_weights = estimator._segment_posterior_log_weights(
             a,
             b,
             estimator._y_train_,
             estimator.hyper_,
-            estimator.sample_weight_,
+            lp * estimator.sample_weight_,
             phi_train,
         )
         # w is used as the new-observation precision phi_new (documented in
@@ -573,13 +587,18 @@ def _segment_pit(
         w_train = estimator.sample_weight_[a:b]
         y_train = estimator._y_train_[a:b]
         n_train = estimator._n_arr_[a:b]
-        S = float(np.sum(w_train * y_train))
-        N = float(np.sum(w_train * n_train))
+        # Apply likelihood_power_ consistently with posterior_predictive_logpdf_block.
+        _lp = getattr(estimator, "likelihood_power_", None)
+        lp = _lp[a:b] if _lp is not None else np.ones(b - a, dtype=float)
+        S = float(np.sum(lp * w_train * y_train))
+        N = float(np.sum(lp * w_train * n_train))
         a_post = alpha + S
         b_post = beta + (N - S)
-        # Assume n_trials = 1 for new points (matches the family's predictive).
-        cdf = betabinom.cdf(y, n=1, a=a_post, b=b_post)
-        cdf_minus = betabinom.cdf(y - 1, n=1, a=a_post, b=b_post)
+        # w is the per-prediction n_trials (consistent with
+        # posterior_predictive_logpdf_block where w_new = n_trials).
+        n_new = np.round(np.asarray(w, dtype=float)).astype(int)
+        cdf = betabinom.cdf(y, n=n_new, a=a_post, b=b_post)
+        cdf_minus = betabinom.cdf(y - 1, n=n_new, a=a_post, b=b_post)
         u = np.random.uniform(size=y.size)
         return cdf_minus + u * (cdf - cdf_minus)
 

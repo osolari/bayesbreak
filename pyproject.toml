@@ -119,6 +119,7 @@ version = { attr = "bayesbreak._version.__version__" }
 [tool.pytest.ini_options]
 minversion = "7.4"
 testpaths = ["tests"]
+pythonpath = ["."]
 addopts = "-ra -q --cov=src/bayesbreak --cov-report=term-missing"
 markers = [
     "slow: tests that take non-trivial time (deselect with -m 'not slow')",

@@ -1,0 +1,39 @@
+2026-10-25 14:53:11,890 INFO Supplemental E09 boundary marginals starting.
+2026-10-25 14:53:11,890 INFO config_sha256=dc8432589c3fa528aaecea26738151c5e7fc82bd7ff68494b847a1bb4b3cfac0
+2026-10-25 14:53:11,890 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_boundary_marginals/dc8432589c3fa528
+2026-10-25 14:53:13,632 INFO Loaded: welllog n=4050 stride8 n=507 cgh_subject0 n=2215
+2026-10-25 14:53:13,632 INFO Fitting welllog_full n=4050 k_max=100 prior=geometric_decay_log4 min_seg=1 expected_k_map=83...
+2026-10-25 14:53:54,498 INFO   done: k_map=83 marginals_sum=82.00 elapsed=40.9s
+2026-10-25 14:53:54,498 INFO Fitting welllog_stride8 n=507 k_max=60 prior=geometric_decay_log4 min_seg=1 expected_k_map=25...
+2026-10-25 14:53:56,277 INFO   done: k_map=25 marginals_sum=24.00 elapsed=1.8s
+2026-10-25 14:53:56,278 INFO Fitting welllog_stride8 n=507 k_max=60 prior=uniform min_seg=1 expected_k_map=37...
+2026-10-25 14:53:58,058 INFO   done: k_map=37 marginals_sum=36.00 elapsed=1.8s
+2026-10-25 14:53:58,058 INFO Fitting welllog_full n=4050 k_max=100 prior=geometric_decay_log4 min_seg=5 expected_k_map=61...
+2026-10-25 14:54:59,604 INFO   done: k_map=61 marginals_sum=60.00 elapsed=61.5s
+2026-10-25 14:54:59,604 INFO Fitting welllog_full n=4050 k_max=100 prior=geometric_decay_log4 min_seg=10 expected_k_map=56...
+2026-10-25 14:56:01,084 INFO   done: k_map=56 marginals_sum=55.00 elapsed=61.5s
+2026-10-25 14:56:01,086 INFO Fitting cgh_single_subject0 n=2215 k_max=100 prior=geometric_decay_log4 min_seg=1 expected_k_map=71...
+2026-10-25 14:56:18,074 WARNING k_map mismatch: expected 71, got 78. Results correspond to refitted k_map=78.
+2026-10-25 14:56:18,079 INFO   done: k_map=78 marginals_sum=77.00 elapsed=17.0s
+2026-10-25 14:56:18,080 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_boundary_marginals/dc8432589c3fa528/metrics.json
+2026-10-25 14:56:18,144 INFO Wrote manifest. elapsed=186.2s
+2026-10-25 14:56:18,144 INFO Supplemental E09 boundary marginals complete.
+2026-10-25 15:01:02,415 INFO Supplemental E09 boundary marginals starting.
+2026-10-25 15:01:02,416 INFO config_sha256=dc8432589c3fa528aaecea26738151c5e7fc82bd7ff68494b847a1bb4b3cfac0
+2026-10-25 15:01:02,416 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_boundary_marginals/dc8432589c3fa528
+2026-10-25 15:01:04,466 INFO Loaded: welllog n=4050 stride8 n=507 cgh_subject0 n=2215
+2026-10-25 15:01:04,466 INFO Fitting welllog_full n=4050 k_max=100 prior=geometric_decay_log4 min_seg=1 expected_k_map=83...
+2026-10-25 15:01:44,381 INFO   done: k_map=83 marginals_sum=82.00 elapsed=39.9s
+2026-10-25 15:01:44,382 INFO Fitting welllog_stride8 n=507 k_max=60 prior=geometric_decay_log4 min_seg=1 expected_k_map=25...
+2026-10-25 15:01:46,147 INFO   done: k_map=25 marginals_sum=24.00 elapsed=1.8s
+2026-10-25 15:01:46,147 INFO Fitting welllog_stride8 n=507 k_max=60 prior=uniform min_seg=1 expected_k_map=37...
+2026-10-25 15:01:47,950 INFO   done: k_map=37 marginals_sum=36.00 elapsed=1.8s
+2026-10-25 15:01:47,950 INFO Fitting welllog_full n=4050 k_max=100 prior=geometric_decay_log4 min_seg=5 expected_k_map=61...
+2026-10-25 15:02:50,386 INFO   done: k_map=61 marginals_sum=60.00 elapsed=62.4s
+2026-10-25 15:02:50,387 INFO Fitting welllog_full n=4050 k_max=100 prior=geometric_decay_log4 min_seg=10 expected_k_map=56...
+2026-10-25 15:03:52,113 INFO   done: k_map=56 marginals_sum=55.00 elapsed=61.7s
+2026-10-25 15:03:52,113 INFO Fitting cgh_single_subject0 n=2215 k_max=100 prior=geometric_decay_log4 min_seg=1 expected_k_map=71...
+2026-10-25 15:04:09,201 INFO   done: k_map=71 marginals_sum=70.00 elapsed=17.1s
+2026-10-25 15:04:09,204 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_boundary_marginals/dc8432589c3fa528/metrics.json
+2026-10-25 15:04:09,254 INFO Wrote manifest. elapsed=186.8s
+2026-10-25 15:04:09,254 INFO Supplemental E09 boundary marginals complete.

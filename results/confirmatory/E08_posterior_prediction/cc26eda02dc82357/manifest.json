@@ -1,0 +1,61 @@
+{
+  "id": "E08",
+  "protocol_revision": "2026-10-24-1",
+  "config_sha256": "cc26eda02dc823575c1e8348a8bd6725c2868c142fec62339e07a84ff325be63",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "utc_start": "2026-10-25T00:06:09.248036+00:00",
+  "utc_end": "2026-10-25T00:10:16.346098+00:00",
+  "pilot": false,
+  "n_cells": 8,
+  "n_total_rows": 1600,
+  "n_failed": 0,
+  "holdout_windows": {
+    "240": [
+      [
+        24,
+        60
+      ],
+      [
+        72,
+        108
+      ],
+      [
+        132,
+        168
+      ],
+      [
+        180,
+        216
+      ]
+    ],
+    "120": [
+      [
+        12,
+        30
+      ],
+      [
+        36,
+        54
+      ],
+      [
+        66,
+        84
+      ],
+      [
+        90,
+        108
+      ]
+    ]
+  },
+  "environment": {
+    "python": "3.11.17 (main, Oct  1 2026, 20:09:52) [Clang 20.1.8 ]",
+    "numpy": "2.4.6",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2"
+  },
+  "output_files": {
+    "metrics_csv": "metrics.csv",
+    "metrics_json": "metrics.json"
+  },
+  "gate_pass": true
+}

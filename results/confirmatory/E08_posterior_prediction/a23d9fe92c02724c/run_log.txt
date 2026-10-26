@@ -1,0 +1,78 @@
+2026-10-24 18:02:38,843 INFO E08 starting. pilot=True config_sha256=a23d9fe92c02724cfe7af740591dd0526d2e0b1ce6530c81359b527b3ec0ab5f
+2026-10-24 18:02:38,843 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E08_posterior_prediction/a23d9fe92c02724c
+2026-10-24 18:02:38,897 INFO Cell 0 (gaussian delta=0.50) n_reps=5 n_windows=2
+2026-10-24 18:02:39,539 INFO   cell=0 rep=1/5 done
+2026-10-24 18:02:40,744 INFO Cell 1 (gaussian delta=1.50) n_reps=5 n_windows=2
+2026-10-24 18:02:41,056 INFO   cell=1 rep=1/5 done
+2026-10-24 18:02:42,317 INFO Cell 2 (poisson q=1.50) n_reps=5 n_windows=2
+2026-10-24 18:02:42,616 INFO   cell=2 rep=1/5 done
+2026-10-24 18:02:43,872 INFO Cell 3 (poisson q=3.00) n_reps=5 n_windows=2
+2026-10-24 18:02:44,192 INFO   cell=3 rep=1/5 done
+2026-10-24 18:02:45,473 INFO Cell 4 (binomial p_mid=0.35) n_reps=5 n_windows=2
+2026-10-24 18:02:45,798 INFO   cell=4 rep=1/5 done
+2026-10-24 18:02:47,113 INFO Cell 5 (binomial p_mid=0.65) n_reps=5 n_windows=2
+2026-10-24 18:02:47,446 INFO   cell=5 rep=1/5 done
+2026-10-24 18:02:48,740 INFO Cell 6 (beta_obs mu_mid=0.40) n_reps=5 n_windows=2
+2026-10-24 18:02:49,026 INFO   cell=6 rep=1/5 done
+2026-10-24 18:02:50,135 INFO Cell 7 (beta_obs mu_mid=0.80) n_reps=5 n_windows=2
+2026-10-24 18:02:50,414 INFO   cell=7 rep=1/5 done
+2026-10-24 18:02:51,533 INFO All cells done. Elapsed 12.6s. Total rows=80 failed=0
+2026-10-24 18:02:51,534 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E08_posterior_prediction/a23d9fe92c02724c/metrics.csv
+2026-10-24 18:02:52,004 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E08_posterior_prediction/a23d9fe92c02724c/metrics.json
+2026-10-24 18:02:52,004 INFO Wrote manifest: gate_pass=True
+2026-10-24 18:02:52,004 INFO E08 complete. gate_pass=True
+2026-10-24 18:02:56,994 INFO E08 starting. pilot=False config_sha256=a23d9fe92c02724cfe7af740591dd0526d2e0b1ce6530c81359b527b3ec0ab5f
+2026-10-24 18:02:56,995 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E08_posterior_prediction/a23d9fe92c02724c
+2026-10-24 18:02:57,037 INFO Cell 0 (gaussian delta=0.50) n_reps=50 n_windows=4
+2026-10-24 18:02:57,989 INFO   cell=0 rep=1/50 done
+2026-10-24 18:03:04,716 INFO   cell=0 rep=11/50 done
+2026-10-24 18:03:11,327 INFO   cell=0 rep=21/50 done
+2026-10-24 18:03:17,695 INFO   cell=0 rep=31/50 done
+2026-10-24 18:03:24,150 INFO   cell=0 rep=41/50 done
+2026-10-24 18:03:30,039 INFO Cell 1 (gaussian delta=1.50) n_reps=50 n_windows=4
+2026-10-24 18:03:30,693 INFO   cell=1 rep=1/50 done
+2026-10-24 18:03:37,304 INFO   cell=1 rep=11/50 done
+2026-10-24 18:03:43,930 INFO   cell=1 rep=21/50 done
+2026-10-24 18:03:50,620 INFO   cell=1 rep=31/50 done
+2026-10-24 18:03:57,308 INFO   cell=1 rep=41/50 done
+2026-10-24 18:04:03,264 INFO Cell 2 (poisson q=1.50) n_reps=50 n_windows=4
+2026-10-24 18:04:03,906 INFO   cell=2 rep=1/50 done
+2026-10-24 18:04:10,550 INFO   cell=2 rep=11/50 done
+2026-10-24 18:04:17,164 INFO   cell=2 rep=21/50 done
+2026-10-24 18:04:23,743 INFO   cell=2 rep=31/50 done
+2026-10-24 18:04:30,286 INFO   cell=2 rep=41/50 done
+2026-10-24 18:04:36,233 INFO Cell 3 (poisson q=3.00) n_reps=50 n_windows=4
+2026-10-24 18:04:36,896 INFO   cell=3 rep=1/50 done
+2026-10-24 18:04:43,558 INFO   cell=3 rep=11/50 done
+2026-10-24 18:04:50,220 INFO   cell=3 rep=21/50 done
+2026-10-24 18:04:56,890 INFO   cell=3 rep=31/50 done
+2026-10-24 18:05:03,542 INFO   cell=3 rep=41/50 done
+2026-10-24 18:05:09,594 INFO Cell 4 (binomial p_mid=0.35) n_reps=50 n_windows=4
+2026-10-24 18:05:10,262 INFO   cell=4 rep=1/50 done
+2026-10-24 18:05:16,928 INFO   cell=4 rep=11/50 done
+2026-10-24 18:05:23,620 INFO   cell=4 rep=21/50 done
+2026-10-24 18:05:30,299 INFO   cell=4 rep=31/50 done
+2026-10-24 18:05:36,960 INFO   cell=4 rep=41/50 done
+2026-10-24 18:05:43,093 INFO Cell 5 (binomial p_mid=0.65) n_reps=50 n_windows=4
+2026-10-24 18:05:43,800 INFO   cell=5 rep=1/50 done
+2026-10-24 18:05:51,114 INFO   cell=5 rep=11/50 done
+2026-10-24 18:05:58,184 INFO   cell=5 rep=21/50 done
+2026-10-24 18:06:05,150 INFO   cell=5 rep=31/50 done
+2026-10-24 18:06:11,877 INFO   cell=5 rep=41/50 done
+2026-10-24 18:06:17,822 INFO Cell 6 (beta_obs mu_mid=0.40) n_reps=50 n_windows=4
+2026-10-24 18:06:18,408 INFO   cell=6 rep=1/50 done
+2026-10-24 18:06:24,181 INFO   cell=6 rep=11/50 done
+2026-10-24 18:06:29,822 INFO   cell=6 rep=21/50 done
+2026-10-24 18:06:35,496 INFO   cell=6 rep=31/50 done
+2026-10-24 18:06:41,135 INFO   cell=6 rep=41/50 done
+2026-10-24 18:06:46,251 INFO Cell 7 (beta_obs mu_mid=0.80) n_reps=50 n_windows=4
+2026-10-24 18:06:46,818 INFO   cell=7 rep=1/50 done
+2026-10-24 18:06:52,462 INFO   cell=7 rep=11/50 done
+2026-10-24 18:06:58,150 INFO   cell=7 rep=21/50 done
+2026-10-24 18:07:03,777 INFO   cell=7 rep=31/50 done
+2026-10-24 18:07:09,460 INFO   cell=7 rep=41/50 done
+2026-10-24 18:07:14,526 INFO All cells done. Elapsed 257.5s. Total rows=1600 failed=0
+2026-10-24 18:07:14,535 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E08_posterior_prediction/a23d9fe92c02724c/metrics.csv
+2026-10-24 18:07:15,032 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E08_posterior_prediction/a23d9fe92c02724c/metrics.json
+2026-10-24 18:07:15,032 INFO Wrote manifest: gate_pass=True
+2026-10-24 18:07:15,032 INFO E08 complete. gate_pass=True

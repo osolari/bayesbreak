@@ -207,7 +207,21 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
         y: Sequence[ArrayLike] | ArrayLike,
         *,
         sample_weight: Sequence[ArrayLike] | ArrayLike | None = None,
+        likelihood_power: object = None,
+        observation_mask: object = None,
     ) -> SharedBoundaryReplicatesSegmenter:
+        if likelihood_power is not None:
+            raise NotImplementedError(
+                "SharedBoundaryReplicatesSegmenter does not support likelihood_power. "
+                "Use a single-sequence BayesBreakSegmenter.fit(likelihood_power=...) "
+                "or open a feature request."
+            )
+        if observation_mask is not None:
+            raise NotImplementedError(
+                "SharedBoundaryReplicatesSegmenter does not support observation_mask. "
+                "Use a single-sequence BayesBreakSegmenter.fit(observation_mask=...) "
+                "or open a feature request."
+            )
         ys, ws = self._normalize_inputs(y, sample_weight)
         n = ys[0].shape[0]
         S = len(ys)
@@ -229,6 +243,9 @@ class SharedBoundaryReplicatesSegmenter(BaseEstimator, RegressorMixin):
         states: list[_SubjectState] = []
         for s in range(S):
             est_s = clone(self.base_estimator)
+            # Wrappers do not support likelihood_power; set unit powers explicitly
+            # so the getattr fallback in family methods never reads stale state.
+            est_s.likelihood_power_ = np.ones(n, dtype=float)
             hyper_s = est_s._estimate_hyperparameters(ys[s], ws[s])
             lA0_s, A1_s = est_s._compute_block_evidence(ys[s], hyper_s, ws[s])
             states.append(

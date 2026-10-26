@@ -1,0 +1,13 @@
+{
+  "oracle_n": 12,
+  "oracle_G": 2,
+  "oracle_S": 4,
+  "oracle_k_max": 3,
+  "max_log_Ck_deviation": 4.440892098500626e-15,
+  "max_template_score_deviation": 3.552713678800501e-15,
+  "obj_g1_direct": -93.66814612718251,
+  "obj_g1_code": -93.66814612718251,
+  "obj_g1_deviation": 0.0,
+  "oracle_mixture_obj_direct": -106.31761116939984,
+  "gate_pass": true
+}

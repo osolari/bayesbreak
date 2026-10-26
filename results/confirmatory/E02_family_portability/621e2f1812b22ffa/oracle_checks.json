@@ -1,0 +1,12 @@
+{
+  "beta_obs,n=120,mu_mid=0.4": {
+    "max_log_evidence_deviation": 3.511605939365836e-07,
+    "max_bayes_curve_deviation": 4.693175731373955e-08,
+    "n_reps_checked": 5
+  },
+  "beta_obs,n=120,mu_mid=0.8": {
+    "max_log_evidence_deviation": 3.726077295596042e-07,
+    "max_bayes_curve_deviation": 1.5070918513160336e-08,
+    "n_reps_checked": 5
+  }
+}

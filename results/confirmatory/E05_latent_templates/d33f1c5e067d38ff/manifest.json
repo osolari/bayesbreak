@@ -1,0 +1,91 @@
+{
+  "experiment_id": "E05",
+  "name": "latent_templates",
+  "protocol_revision": "2026-10-21-2",
+  "config_sha256": "d33f1c5e067d38ff351bc14df162c11b151337a272a2bdea74910b4d3199b33b",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "utc_start": "2026-10-24T04:11:34.396647+00:00",
+  "utc_stop": "2026-10-24T04:26:02.754269+00:00",
+  "environment": {
+    "python_version": "3.12.9",
+    "numpy_version": "2.5.4",
+    "scipy_version": "1.18.1",
+    "sklearn_version": "1.9.1",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "processor": "arm",
+    "cpu_count": 12,
+    "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2"
+  },
+  "config": {
+    "id": "E05",
+    "name": "latent_templates",
+    "protocol_revision": "2026-10-21-2",
+    "type": "simulation",
+    "n": 180,
+    "G_values": [
+      1,
+      2,
+      3
+    ],
+    "S_values": [
+      24,
+      48
+    ],
+    "delta_values": [
+      0.5,
+      1.5,
+      3.0
+    ],
+    "k_true": 3,
+    "gaussian_sigma2": 1.0,
+    "gaussian_prior": {
+      "nu": 0.0,
+      "rho2": 4.0
+    },
+    "subject_mean_perturbation_sigma": 0.25,
+    "group_templates": [
+      [
+        60,
+        120
+      ],
+      [
+        90,
+        150
+      ],
+      [
+        45,
+        105
+      ]
+    ],
+    "k_max": 8,
+    "replicates": 50,
+    "n_restarts": 5,
+    "max_iter": 100,
+    "tol": 1e-08,
+    "seed_base": [
+      20261021,
+      5
+    ],
+    "prior": "geometric_decay_log4",
+    "bootstrap_resamples": 2000,
+    "boundary_tolerance_primary": 3,
+    "monotonicity_abs_tol_factor": 1e-09,
+    "methods": [
+      "mixture_em"
+    ],
+    "overfit_diagnostic": false
+  },
+  "gate_pass": true,
+  "n_cells": 18,
+  "n_replicates": 900,
+  "n_failed": 0,
+  "total_monotonicity_failures": 0,
+  "wall_seconds": 868.3576219081879,
+  "results_dir": "/Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E05_latent_templates/d33f1c5e067d38ff",
+  "artifact_sha256": {
+    "metrics.json": "bd5cd6983a844a4aaa53acabb8fc39f7594aab5872d95e61ba0f41513e7afd9b",
+    "oracle_checks.json": "8409658fdbbecf569551447817f29ff0e296ff9317c9e465c9bccf4475216458",
+    "replicates.csv": "be2397e5cf6076338d3f5d781b56ee7e52eabc1438b298462067f0ff4acc2f2e"
+  },
+  "notes": "Overfit G+1 diagnostic not run in main confirmatory pass. BayesBreakMixtureClassifier uses geometric-decay prior via prior_k argument. Monotonicity check uses absolute tolerance 1e-9*(1+|F|) per protocol."
+}

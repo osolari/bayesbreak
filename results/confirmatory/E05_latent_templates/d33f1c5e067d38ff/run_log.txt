@@ -1,0 +1,121 @@
+2026-10-23 21:11:34,379 INFO E05 latent-template score clustering
+2026-10-23 21:11:34,379 INFO Config SHA256: d33f1c5e067d38ff351bc14df162c11b151337a272a2bdea74910b4d3199b33b
+2026-10-23 21:11:34,379 INFO Git revision: dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2
+2026-10-23 21:11:34,379 INFO Pilot mode: False; replicates per cell: 50
+2026-10-23 21:11:34,379 INFO Running oracle checks...
+2026-10-23 21:11:34,396 INFO Oracle: max_log_Ck_dev=4.44e-15  max_score_dev=3.55e-15  obj_g1_dev=0.00e+00  gate=True
+2026-10-23 21:11:34,396 INFO Cells: 18
+2026-10-23 21:11:34,396 INFO Cell 00/17: G=1 S=24 Delta=0.5
+2026-10-23 21:11:38,000 INFO   rep 10/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:11:41,421 INFO   rep 20/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:11:44,919 INFO   rep 30/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:11:48,379 INFO   rep 40/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:11:51,829 INFO   rep 50/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:11:51,864 INFO Cell 01/17: G=1 S=24 Delta=1.5
+2026-10-23 21:11:55,292 INFO   rep 10/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:11:58,705 INFO   rep 20/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:02,131 INFO   rep 30/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:05,565 INFO   rep 40/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:08,998 INFO   rep 50/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:09,048 INFO Cell 02/17: G=1 S=24 Delta=3.0
+2026-10-23 21:12:12,508 INFO   rep 10/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:15,949 INFO   rep 20/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:19,385 INFO   rep 30/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:22,803 INFO   rep 40/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:26,277 INFO   rep 50/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:26,312 INFO Cell 03/17: G=1 S=48 Delta=0.5
+2026-10-23 21:12:30,618 INFO   rep 10/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:35,065 INFO   rep 20/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:39,508 INFO   rep 30/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:44,022 INFO   rep 40/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:48,364 INFO   rep 50/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:48,398 INFO Cell 04/17: G=1 S=48 Delta=1.5
+2026-10-23 21:12:52,772 INFO   rep 10/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:12:57,102 INFO   rep 20/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:01,387 INFO   rep 30/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:05,660 INFO   rep 40/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:09,931 INFO   rep 50/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:09,966 INFO Cell 05/17: G=1 S=48 Delta=3.0
+2026-10-23 21:13:14,242 INFO   rep 10/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:18,578 INFO   rep 20/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:22,926 INFO   rep 30/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:27,258 INFO   rep 40/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:31,513 INFO   rep 50/50: acc=1.000 ari=-1.000 mono=1 dup=0
+2026-10-23 21:13:31,548 INFO Cell 06/17: G=2 S=24 Delta=0.5
+2026-10-23 21:13:38,030 INFO   rep 10/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:13:44,428 INFO   rep 20/50: acc=0.625 ari=0.044 mono=1 dup=0
+2026-10-23 21:13:50,899 INFO   rep 30/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:13:57,339 INFO   rep 40/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:14:03,855 INFO   rep 50/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:14:03,896 INFO Cell 07/17: G=2 S=24 Delta=1.5
+2026-10-23 21:14:13,009 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:14:22,167 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:14:32,355 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:14:42,140 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:14:51,092 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:14:51,133 INFO Cell 08/17: G=2 S=24 Delta=3.0
+2026-10-23 21:14:58,971 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:15:05,773 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:15:13,619 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:15:22,399 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:15:30,672 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:15:30,713 INFO Cell 09/17: G=2 S=48 Delta=0.5
+2026-10-23 21:15:38,210 INFO   rep 10/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:15:46,214 INFO   rep 20/50: acc=0.583 ari=0.019 mono=1 dup=0
+2026-10-23 21:15:54,412 INFO   rep 30/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:16:01,905 INFO   rep 40/50: acc=0.500 ari=0.000 mono=1 dup=1
+2026-10-23 21:16:09,824 INFO   rep 50/50: acc=0.625 ari=0.054 mono=1 dup=0
+2026-10-23 21:16:09,865 INFO Cell 10/17: G=2 S=48 Delta=1.5
+2026-10-23 21:16:21,652 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:16:32,419 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:16:43,130 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:16:56,740 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:07,509 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:07,550 INFO Cell 11/17: G=2 S=48 Delta=3.0
+2026-10-23 21:17:15,763 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:23,889 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:32,016 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:42,205 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:50,373 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:17:50,414 INFO Cell 12/17: G=3 S=24 Delta=0.5
+2026-10-23 21:18:01,549 INFO   rep 10/50: acc=0.500 ari=0.104 mono=1 dup=1
+2026-10-23 21:18:13,156 INFO   rep 20/50: acc=0.333 ari=0.000 mono=1 dup=1
+2026-10-23 21:18:24,650 INFO   rep 30/50: acc=0.417 ari=0.016 mono=1 dup=1
+2026-10-23 21:18:34,709 INFO   rep 40/50: acc=0.333 ari=0.000 mono=1 dup=1
+2026-10-23 21:18:45,502 INFO   rep 50/50: acc=0.333 ari=0.000 mono=1 dup=1
+2026-10-23 21:18:45,543 INFO Cell 13/17: G=3 S=24 Delta=1.5
+2026-10-23 21:19:00,611 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:19:18,027 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:19:35,942 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:19:53,647 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:20:09,158 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:20:09,198 INFO Cell 14/17: G=3 S=24 Delta=3.0
+2026-10-23 21:20:27,543 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:20:52,025 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:21:15,696 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:21:39,263 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:22:03,832 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:22:03,872 INFO Cell 15/17: G=3 S=48 Delta=0.5
+2026-10-23 21:22:15,871 INFO   rep 10/50: acc=0.333 ari=0.000 mono=1 dup=1
+2026-10-23 21:22:26,921 INFO   rep 20/50: acc=0.375 ari=0.004 mono=1 dup=1
+2026-10-23 21:22:38,203 INFO   rep 30/50: acc=0.354 ari=0.000 mono=1 dup=1
+2026-10-23 21:22:49,305 INFO   rep 40/50: acc=0.438 ari=0.031 mono=1 dup=1
+2026-10-23 21:23:00,882 INFO   rep 50/50: acc=0.438 ari=0.039 mono=1 dup=1
+2026-10-23 21:23:00,922 INFO Cell 16/17: G=3 S=48 Delta=1.5
+2026-10-23 21:23:17,780 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:23:35,348 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:23:53,331 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:24:10,507 INFO   rep 40/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:24:27,376 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:24:27,417 INFO Cell 17/17: G=3 S=48 Delta=3.0
+2026-10-23 21:24:43,700 INFO   rep 10/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:25:03,358 INFO   rep 20/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:25:25,215 INFO   rep 30/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:25:44,759 INFO   rep 40/50: acc=0.667 ari=0.561 mono=1 dup=1
+2026-10-23 21:26:02,714 INFO   rep 50/50: acc=1.000 ari=1.000 mono=1 dup=0
+2026-10-23 21:26:02,757 INFO Gate: cells=18/18 reps_done=900 reps_failed=0 mono_failures=0 -> PASS
+2026-10-23 21:26:03,835 INFO Saved fig_E05_templates
+2026-10-23 21:26:03,836 INFO Saved tab_E05_latent.tex
+2026-10-23 21:26:03,837 INFO Results written to: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E05_latent_templates/d33f1c5e067d38ff
+2026-10-23 21:26:03,837 INFO Wall time: 868.4 s (14.5 min)
+2026-10-23 21:26:03,837 INFO E05 result: PASS

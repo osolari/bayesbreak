@@ -1,0 +1,67 @@
+{
+  "experiment_id": "E06",
+  "config_sha256": "bbf831c362c40b6ee195e02e013f735d59cd600606d1d10adab62c67116c91cc",
+  "config": {
+    "experiment_id": "E06",
+    "block_sizes": [
+      4,
+      8,
+      16,
+      32,
+      64,
+      128
+    ],
+    "true_success_probs": [
+      0.05,
+      0.5,
+      0.95
+    ],
+    "n_replicates_block": 100,
+    "prior_nu": 0.0,
+    "prior_rho2": 4.0,
+    "methods": [
+      "quadrature",
+      "laplace",
+      "jj",
+      "ep"
+    ],
+    "gh_reference_points": 200,
+    "ep_tol_kl": 1e-07,
+    "ep_damping": 0.7,
+    "ep_max_iter": 300,
+    "ep_n_gh": 80,
+    "laplace_max_iter": 50,
+    "jj_max_iter": 500,
+    "jj_tol": 1e-12,
+    "seed_base": [
+      20261021,
+      6
+    ],
+    "gate_jj_lb_rate": 0.95,
+    "gate_jj_lb_tol": 1e-08,
+    "seg_n": 96,
+    "seg_k_true": 3,
+    "seg_boundaries": [
+      32,
+      64
+    ],
+    "seg_p_levels": [
+      0.2,
+      0.8,
+      0.2
+    ],
+    "seg_n_replicates": 100,
+    "seg_k_max": 8,
+    "seg_seed_offset": 1000,
+    "protocol_version": "1.0.0"
+  },
+  "environment": {
+    "python": "3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 12:55:12) [Clang 14.0.6 ]",
+    "numpy": "2.5.4",
+    "scipy": "1.18.1",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "machine": "arm64",
+    "utc_start": "2026-10-24T20:34:54.961184+00:00"
+  },
+  "protocol_version": "1.0.0"
+}

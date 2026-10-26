@@ -1,0 +1,71 @@
+2026-10-24 15:23:11,447 INFO E07 CONFIRMATORY run started: 2026-10-24T22:23:11.447760+00:00
+2026-10-24 15:23:11,447 INFO Config SHA256: a038ac8e7e4a17b95ec27177819d99457ca53773e2c7b9487d09090b50d99c8c
+2026-10-24 15:23:11,448 INFO Git revision: dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2
+2026-10-24 15:23:11,448 INFO Results dir: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E07_misspecification/a038ac8e7e4a17b9
+2026-10-24 15:23:11,448 INFO Cells: 20, replicates: 100, total fits: 2000
+2026-10-24 15:23:11,448 INFO Oracle checks: gate_pass=True, issues=[]
+2026-10-24 15:23:11,448 INFO Cell 0/19: data=gaussian_reference fit=gaussian miss=none
+2026-10-24 15:23:29,960 INFO   Progress: 100/2000 (18.5s elapsed)
+2026-10-24 15:23:29,961 INFO Cell 1/19: data=gaussian_reference fit=gaussian miss=mcar_10
+2026-10-24 15:23:53,399 INFO   Progress: 200/2000 (42.0s elapsed)
+2026-10-24 15:23:53,400 INFO Cell 2/19: data=gaussian_reference fit=gaussian miss=mcar_30
+2026-10-24 15:24:21,019 INFO   Progress: 300/2000 (69.6s elapsed)
+2026-10-24 15:24:21,020 INFO Cell 3/19: data=gaussian_reference fit=gaussian miss=single_block_15
+2026-10-24 15:24:48,590 INFO   Progress: 400/2000 (97.1s elapsed)
+2026-10-24 15:24:48,590 INFO Cell 4/19: data=student_t3 fit=gaussian miss=none
+2026-10-24 15:25:16,257 INFO   Progress: 500/2000 (124.8s elapsed)
+2026-10-24 15:25:16,257 INFO Cell 5/19: data=student_t3 fit=gaussian miss=mcar_10
+2026-10-24 15:25:43,618 INFO   Progress: 600/2000 (152.2s elapsed)
+2026-10-24 15:25:43,618 INFO Cell 6/19: data=student_t3 fit=gaussian miss=mcar_30
+2026-10-24 15:26:11,397 INFO   Progress: 700/2000 (179.9s elapsed)
+2026-10-24 15:26:11,397 INFO Cell 7/19: data=student_t3 fit=gaussian miss=single_block_15
+2026-10-24 15:26:38,784 INFO   Progress: 800/2000 (207.3s elapsed)
+2026-10-24 15:26:38,784 INFO Cell 8/19: data=overdispersed_poisson fit=poisson miss=none
+2026-10-24 15:27:02,932 INFO   Progress: 900/2000 (231.5s elapsed)
+2026-10-24 15:27:02,932 INFO Cell 9/19: data=overdispersed_poisson fit=poisson miss=mcar_10
+2026-10-24 15:27:27,135 INFO   Progress: 1000/2000 (255.7s elapsed)
+2026-10-24 15:27:27,135 INFO Cell 10/19: data=overdispersed_poisson fit=poisson miss=mcar_30
+2026-10-24 15:27:51,251 INFO   Progress: 1100/2000 (279.8s elapsed)
+2026-10-24 15:27:51,251 INFO Cell 11/19: data=overdispersed_poisson fit=poisson miss=single_block_15
+2026-10-24 15:28:15,454 INFO   Progress: 1200/2000 (304.0s elapsed)
+2026-10-24 15:28:15,454 INFO Cell 12/19: data=overdispersed_poisson fit=negbin miss=none
+2026-10-24 15:28:45,257 INFO   Progress: 1300/2000 (333.8s elapsed)
+2026-10-24 15:28:45,257 INFO Cell 13/19: data=overdispersed_poisson fit=negbin miss=mcar_10
+2026-10-24 15:29:15,026 INFO   Progress: 1400/2000 (363.6s elapsed)
+2026-10-24 15:29:15,026 INFO Cell 14/19: data=overdispersed_poisson fit=negbin miss=mcar_30
+2026-10-24 15:29:44,768 INFO   Progress: 1500/2000 (393.3s elapsed)
+2026-10-24 15:29:44,768 INFO Cell 15/19: data=overdispersed_poisson fit=negbin miss=single_block_15
+2026-10-24 15:30:14,533 INFO   Progress: 1600/2000 (423.1s elapsed)
+2026-10-24 15:30:14,533 INFO Cell 16/19: data=beta_binomial fit=binomial miss=none
+2026-10-24 15:30:39,118 INFO   Progress: 1700/2000 (447.7s elapsed)
+2026-10-24 15:30:39,118 INFO Cell 17/19: data=beta_binomial fit=binomial miss=mcar_10
+2026-10-24 15:31:03,651 INFO   Progress: 1800/2000 (472.2s elapsed)
+2026-10-24 15:31:03,652 INFO Cell 18/19: data=beta_binomial fit=binomial miss=mcar_30
+2026-10-24 15:31:28,167 INFO   Progress: 1900/2000 (496.7s elapsed)
+2026-10-24 15:31:28,167 INFO Cell 19/19: data=beta_binomial fit=binomial miss=single_block_15
+2026-10-24 15:31:52,731 INFO   Progress: 2000/2000 (521.3s elapsed)
+2026-10-24 15:31:52,811 INFO   Cell 0 (gaussian/gaussian/none): n=100 failed=0 F1@3=0.918 [0.881,0.950] cnt_exact=0.960 brier=0.1221
+2026-10-24 15:31:52,868 INFO   Cell 1 (gaussian/gaussian/mcar_10): n=100 failed=0 F1@3=0.909 [0.870,0.946] cnt_exact=0.970 brier=0.1268
+2026-10-24 15:31:52,924 INFO   Cell 2 (gaussian/gaussian/mcar_30): n=100 failed=0 F1@3=0.809 [0.760,0.856] cnt_exact=0.970 brier=0.1259
+2026-10-24 15:31:52,980 INFO   Cell 3 (gaussian/gaussian/single_block_15): n=100 failed=0 F1@3=0.721 [0.659,0.783] cnt_exact=0.970 brier=0.1342
+2026-10-24 15:31:53,034 INFO   Cell 4 (student_/gaussian/none): n=100 failed=0 F1@3=0.767 [0.721,0.814] cnt_exact=0.530 brier=0.6780
+2026-10-24 15:31:53,090 INFO   Cell 5 (student_/gaussian/mcar_10): n=100 failed=0 F1@3=0.804 [0.758,0.848] cnt_exact=0.610 brier=0.5789
+2026-10-24 15:31:53,146 INFO   Cell 6 (student_/gaussian/mcar_30): n=100 failed=0 F1@3=0.737 [0.684,0.788] cnt_exact=0.610 brier=0.5758
+2026-10-24 15:31:53,202 INFO   Cell 7 (student_/gaussian/single_block_15): n=100 failed=0 F1@3=0.685 [0.629,0.744] cnt_exact=0.670 brier=0.5208
+2026-10-24 15:31:53,258 INFO   Cell 8 (overdisp/poisson/none): n=100 failed=0 F1@3=0.525 [0.472,0.580] cnt_exact=0.290 brier=0.8937
+2026-10-24 15:31:53,314 INFO   Cell 9 (overdisp/poisson/mcar_10): n=100 failed=0 F1@3=0.454 [0.401,0.506] cnt_exact=0.320 brier=0.8537
+2026-10-24 15:31:53,370 INFO   Cell 10 (overdisp/poisson/mcar_30): n=100 failed=0 F1@3=0.433 [0.373,0.495] cnt_exact=0.360 brier=0.8318
+2026-10-24 15:31:53,425 INFO   Cell 11 (overdisp/poisson/single_block_15): n=100 failed=0 F1@3=0.443 [0.380,0.505] cnt_exact=0.360 brier=0.8546
+2026-10-24 15:31:53,481 INFO   Cell 12 (overdisp/negbin/none): n=100 failed=0 F1@3=0.709 [0.636,0.774] cnt_exact=0.970 brier=0.1845
+2026-10-24 15:31:53,536 INFO   Cell 13 (overdisp/negbin/mcar_10): n=100 failed=0 F1@3=0.698 [0.638,0.758] cnt_exact=0.980 brier=0.1712
+2026-10-24 15:31:53,591 INFO   Cell 14 (overdisp/negbin/mcar_30): n=100 failed=0 F1@3=0.595 [0.525,0.660] cnt_exact=0.980 brier=0.2143
+2026-10-24 15:31:53,647 INFO   Cell 15 (overdisp/negbin/single_block_15): n=100 failed=0 F1@3=0.582 [0.518,0.645] cnt_exact=0.950 brier=0.2139
+2026-10-24 15:31:53,702 INFO   Cell 16 (beta_bin/binomial/none): n=100 failed=0 F1@3=0.464 [0.431,0.500] cnt_exact=0.060 brier=1.2514
+2026-10-24 15:31:53,757 INFO   Cell 17 (beta_bin/binomial/mcar_10): n=100 failed=0 F1@3=0.458 [0.428,0.492] cnt_exact=0.040 brier=1.2918
+2026-10-24 15:31:53,812 INFO   Cell 18 (beta_bin/binomial/mcar_30): n=100 failed=0 F1@3=0.474 [0.431,0.522] cnt_exact=0.120 brier=1.1790
+2026-10-24 15:31:53,868 INFO   Cell 19 (beta_bin/binomial/single_block_15): n=100 failed=0 F1@3=0.365 [0.327,0.406] cnt_exact=0.070 brier=1.2577
+2026-10-24 15:31:53,870 INFO Table written: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E07_misspecification/a038ac8e7e4a17b9/tables/tab_E07_robustness.tex
+2026-10-24 15:31:54,867 INFO Figure written: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E07_misspecification/a038ac8e7e4a17b9/figures/fig_E07_robustness.pdf
+2026-10-24 15:31:54,867 INFO Figure written: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E07_misspecification/a038ac8e7e4a17b9/figures/fig_E07_robustness.png
+2026-10-24 15:31:54,867 INFO Gate: oracle=True, fail_rate=0.0%, gate_pass=True
+2026-10-24 15:31:54,869 INFO E07 CONFIRMATORY complete in 523.4s. Gate: True

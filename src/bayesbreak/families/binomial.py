@@ -20,6 +20,29 @@ class BayesBreakBinomial(BayesBreakSegmenter):
     .. math::
         y_i \mid p_q \sim \mathrm{Binomial}(n_i, p_q), \quad
         p_q \sim \mathrm{Beta}(\alpha, \beta).
+
+    Masking semantics
+    -----------------
+    ``observation_mask`` and ``likelihood_power_`` are distinct from
+    ``sample_weight``:
+
+    * ``sample_weight`` (``w_i``): per-observation frequency or reliability
+      weight, independent of masking.  Passed directly by the caller.
+    * ``likelihood_power_`` (``a_i``): set by ``base.fit`` to 0 for masked
+      observations and to the caller-supplied ``likelihood_power`` otherwise
+      (default 1).  Zeroing ``a_i`` excludes an observation from block evidence
+      and posterior parameters without requiring the caller to zero ``w_i``.
+
+    The effective contribution of observation ``i`` to any prefix sum is
+    ``a_i * w_i * f(y_i, n_i)``.  For ordinary unmasked data both equal 1
+    and the formula reduces to the standard weighted Beta-Binomial.
+
+    ``_n_arr_`` is always sized to the full sequence length ``n``.  It is set
+    inside ``_compute_block_evidence`` (which receives the full ``y``), not
+    inside ``_estimate_hyperparameters`` (which receives only observed data).
+    This separation prevents the shape mismatch that arises when
+    ``observation_mask`` causes ``_estimate_hyperparameters`` to be called with
+    a shorter ``y_obs`` slice.
     """
 
     def __init__(
@@ -60,9 +83,18 @@ class BayesBreakBinomial(BayesBreakSegmenter):
     def _estimate_hyperparameters(
         self, y: np.ndarray, sample_weight: np.ndarray
     ) -> dict[str, float]:
-        n = y.size
-        n_arr = self._trials_array(n)
-        self._n_arr_ = n_arr  # cached fitted attribute for block evidence
+        # base.fit() sets self.n_ and self.observation_mask_ before calling this
+        # method. Use them to initialize _n_arr_ at the full sequence length and
+        # slice to the observed subset for moment estimation.
+        #
+        # For direct calls (without fit()), self.n_ is absent; fall back to
+        # y.size.  This path only works correctly for scalar n_trials.
+        n_full = int(getattr(self, "n_", y.size))
+        mask = getattr(self, "observation_mask_", None)
+
+        # Build full-length descriptor now so _compute_block_evidence can use
+        # self._n_arr_ directly without re-initialising.
+        self._n_arr_ = self._trials_array(n_full)
 
         if not self.estimate_hyper:
             if self.alpha is None or self.beta is None:
@@ -71,13 +103,19 @@ class BayesBreakBinomial(BayesBreakSegmenter):
                 )
             return {"alpha": float(self.alpha), "beta": float(self.beta)}
 
+        # Get the observed subset of n_arr for moment estimation.
+        # y contains only observed data (sliced by base.fit).
+        if mask is not None and mask.size == n_full:
+            n_arr = self._n_arr_[mask]   # observed subset, length == y.size
+        else:
+            n_arr = self._n_arr_         # no mask; full array equals observed
         w = sample_weight
         S = float(np.sum(w * y))
         T = float(np.sum(w * n_arr))
         mu = S / max(T, 1e-12)
 
         p_i = np.where(n_arr > 0, y / n_arr, mu)
-        if n > 1:
+        if y.size > 1:
             w_sum = float(np.sum(w))
             var_p_obs = float(np.sum(w * (p_i - mu) ** 2) / w_sum) if w_sum > 0 else 1e-4
         else:
@@ -99,21 +137,30 @@ class BayesBreakBinomial(BayesBreakSegmenter):
     def _compute_block_evidence(
         self, y: np.ndarray, hyper: dict[str, float], sample_weight: np.ndarray
     ) -> tuple[np.ndarray, np.ndarray]:
-        if not hasattr(self, "_n_arr_"):
-            self._n_arr_ = self._trials_array(y.size)
+        # Always initialize _n_arr_ from the full sequence length y.size.
+        # Do not rely on any value cached by _estimate_hyperparameters, which
+        # receives a shorter y_obs slice when observation_mask is active.
+        n = y.size
+        self._n_arr_ = self._trials_array(n)
         n_arr = self._n_arr_
         alpha, beta = hyper["alpha"], hyper["beta"]
-        n = y.size
         w = sample_weight
 
+        # Effective per-observation power: 0 for masked observations.
+        # Falls back to all-ones when called outside fit() (e.g., direct tests).
+        _lp = getattr(self, "likelihood_power_", None)
+        a = _lp if (_lp is not None and _lp.size == n) else np.ones(n, dtype=float)
+
+        # Prefix sums weighted by a_i * w_i.  When a_i = 0 (masked) the
+        # observation contributes nothing to posterior parameters or log evidence.
         S = np.zeros(n + 1, dtype=float)
-        S[1:] = np.cumsum(w * y)
+        S[1:] = np.cumsum(a * w * y)
         N = np.zeros(n + 1, dtype=float)
-        N[1:] = np.cumsum(w * n_arr)
+        N[1:] = np.cumsum(a * w * n_arr)
 
         Lcomb = gammaln(n_arr + 1.0) - gammaln(y + 1.0) - gammaln(n_arr - y + 1.0)
         Csum = np.zeros(n + 1, dtype=float)
-        Csum[1:] = np.cumsum(w * Lcomb)
+        Csum[1:] = np.cumsum(a * w * Lcomb)
 
         logB_ab = math.lgamma(alpha) + math.lgamma(beta) - math.lgamma(alpha + beta)
         upper = np.triu(np.ones((n + 1, n + 1), dtype=bool), k=1)
@@ -134,6 +181,8 @@ class BayesBreakBinomial(BayesBreakSegmenter):
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         lA0[upper] = Cij[upper] + (logB_post - logB_ab)
 
+        # A1[i,j] = E[p | y_{i:j}] = posterior mean of the success probability.
+        # This always exists (both posterior parameters are positive).
         A1 = np.zeros((n + 1, n + 1), dtype=float)
         A1[upper] = (alpha + S_up) / (alpha + beta + N_up)
         return lA0, A1
@@ -142,9 +191,11 @@ class BayesBreakBinomial(BayesBreakSegmenter):
         self, a: int, b: int, y: np.ndarray, hyper: dict[str, float], sample_weight: np.ndarray
     ) -> float:
         alpha, beta = hyper["alpha"], hyper["beta"]
-        w = sample_weight
-        Ssum = float(np.sum(w[a:b] * y[a:b]))
-        Nsum = float(np.sum(w[a:b] * self._n_arr_[a:b]))
+        _lp = getattr(self, "likelihood_power_", None)
+        lp = _lp[a:b] if (_lp is not None and _lp.size >= b) else np.ones(b - a, dtype=float)
+        w = lp * sample_weight[a:b]
+        Ssum = float(np.sum(w * y[a:b]))
+        Nsum = float(np.sum(w * self._n_arr_[a:b]))
         return (alpha + Ssum) / (alpha + beta + Nsum)
 
     def posterior_predictive_logpdf_block(
@@ -168,7 +219,9 @@ class BayesBreakBinomial(BayesBreakSegmenter):
             and self._y_train_ is not None
         )
         alpha, beta = self.hyper_["alpha"], self.hyper_["beta"]
-        w_train = self.sample_weight_[a:b]
+        _lp = getattr(self, "likelihood_power_", None)
+        lp = _lp[a:b] if (_lp is not None and _lp.size >= b) else np.ones(b - a, dtype=float)
+        w_train = lp * self.sample_weight_[a:b]
         y_train = self._y_train_[a:b]
         n_train = self._n_arr_[a:b]
         S_post = float(np.sum(w_train * y_train))

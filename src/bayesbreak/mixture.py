@@ -280,6 +280,9 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         out_hyper: list[dict[str, float]] = []
         for s, y in enumerate(ys):
             est_s = clone(self.base_estimator)
+            # Wrappers do not support likelihood_power; set unit powers explicitly
+            # so the getattr fallback in family methods never reads stale state.
+            est_s.likelihood_power_ = np.ones(y.size, dtype=float)
             w = ws[s] if ws[s] is not None else np.ones(y.size, dtype=float)
             hyper = est_s._estimate_hyperparameters(y, w)
             lA0_s, _ = est_s._compute_block_evidence(y, hyper, w)
@@ -503,7 +506,21 @@ class BayesBreakMixtureClassifier(BaseEstimator, ClassifierMixin):
         X: SequenceInput,
         y: SequenceInput | None = None,
         sample_weight: SequenceInput | None = None,
+        likelihood_power: object = None,
+        observation_mask: object = None,
     ) -> BayesBreakMixtureClassifier:
+        if likelihood_power is not None:
+            raise NotImplementedError(
+                "BayesBreakMixtureClassifier does not support likelihood_power. "
+                "Use a single-sequence BayesBreakSegmenter.fit(likelihood_power=...) "
+                "or open a feature request."
+            )
+        if observation_mask is not None:
+            raise NotImplementedError(
+                "BayesBreakMixtureClassifier does not support observation_mask. "
+                "Use a single-sequence BayesBreakSegmenter.fit(observation_mask=...) "
+                "or open a feature request."
+            )
         Y_in = X if y is None else y
         ys = _as_list_of_1d(Y_in, name="y")
         S = len(ys)

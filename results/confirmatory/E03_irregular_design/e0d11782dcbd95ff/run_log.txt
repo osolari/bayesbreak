@@ -1,0 +1,226 @@
+2026-10-23 10:23:27,473 INFO ======================================================================
+2026-10-23 10:23:27,473 INFO E03 irregular design prior — CONFIRMATORY run
+2026-10-23 10:23:27,473 INFO Config SHA256: e0d11782dcbd95ff
+2026-10-23 10:23:27,473 INFO n_reps=100, n_boot=2000
+2026-10-23 10:23:27,473 INFO ======================================================================
+2026-10-23 10:23:27,525 INFO Total cell-prior combinations: 24
+2026-10-23 10:23:27,525 INFO Running prior oracle checks...
+2026-10-23 10:23:27,525 INFO Oracle checks for gap=1:
+2026-10-23 10:23:28,558 INFO   Oracle check prior=uniform, gap=1: max_log_C_k_dev=0.000e+00
+2026-10-23 10:23:28,559 INFO   Oracle check prior=gap_hazard, gap=1: max_log_C_k_dev=0.000e+00
+2026-10-23 10:23:28,560 INFO   Oracle check prior=length_cohesion, gap=1: max_log_C_k_dev=8.882e-16
+2026-10-23 10:23:28,561 INFO   Oracle check prior=combined, gap=1: max_log_C_k_dev=8.882e-16
+2026-10-23 10:23:28,561 INFO Oracle checks for gap=4:
+2026-10-23 10:23:28,562 INFO   Oracle check prior=uniform, gap=4: max_log_C_k_dev=0.000e+00
+2026-10-23 10:23:28,563 INFO   Oracle check prior=gap_hazard, gap=4: max_log_C_k_dev=0.000e+00
+2026-10-23 10:23:28,565 INFO   Oracle check prior=length_cohesion, gap=4: max_log_C_k_dev=0.000e+00
+2026-10-23 10:23:28,566 INFO   Oracle check prior=combined, gap=4: max_log_C_k_dev=1.776e-15
+2026-10-23 10:23:28,566 INFO Oracle checks for gap=16:
+2026-10-23 10:23:28,567 INFO   Oracle check prior=uniform, gap=16: max_log_C_k_dev=0.000e+00
+2026-10-23 10:23:28,568 INFO   Oracle check prior=gap_hazard, gap=16: max_log_C_k_dev=8.882e-16
+2026-10-23 10:23:28,569 INFO   Oracle check prior=length_cohesion, gap=16: max_log_C_k_dev=1.776e-15
+2026-10-23 10:23:28,570 INFO   Oracle check prior=combined, gap=16: max_log_C_k_dev=1.776e-15
+2026-10-23 10:23:28,570 INFO [Cell 1/24] gap=1,template=[60, 120],prior=uniform
+2026-10-23 10:23:33,324 INFO   Rep 20/100 done
+2026-10-23 10:23:38,133 INFO   Rep 40/100 done
+2026-10-23 10:23:43,007 INFO   Rep 60/100 done
+2026-10-23 10:23:47,923 INFO   Rep 80/100 done
+2026-10-23 10:23:52,791 INFO   Rep 100/100 done
+2026-10-23 10:23:52,881 INFO   Cell done | elapsed 24.3s | n_rep=100 | mean_f1=0.883 | mean_p_b_gap=0.326
+2026-10-23 10:23:52,881 INFO [Cell 2/24] gap=1,template=[60, 120],prior=gap_hazard
+2026-10-23 10:23:57,876 INFO   Rep 20/100 done
+2026-10-23 10:24:02,911 INFO   Rep 40/100 done
+2026-10-23 10:24:07,926 INFO   Rep 60/100 done
+2026-10-23 10:24:12,955 INFO   Rep 80/100 done
+2026-10-23 10:24:17,990 INFO   Rep 100/100 done
+2026-10-23 10:24:18,080 INFO   Cell done | elapsed 25.2s | n_rep=100 | mean_f1=0.900 | mean_p_b_gap=0.319
+2026-10-23 10:24:18,080 INFO [Cell 3/24] gap=1,template=[60, 120],prior=length_cohesion
+2026-10-23 10:24:23,204 INFO   Rep 20/100 done
+2026-10-23 10:24:28,294 INFO   Rep 40/100 done
+2026-10-23 10:24:33,358 INFO   Rep 60/100 done
+2026-10-23 10:24:38,445 INFO   Rep 80/100 done
+2026-10-23 10:24:43,549 INFO   Rep 100/100 done
+2026-10-23 10:24:43,639 INFO   Cell done | elapsed 25.6s | n_rep=100 | mean_f1=0.902 | mean_p_b_gap=0.335
+2026-10-23 10:24:43,639 INFO [Cell 4/24] gap=1,template=[60, 120],prior=combined
+2026-10-23 10:24:48,795 INFO   Rep 20/100 done
+2026-10-23 10:24:53,986 INFO   Rep 40/100 done
+2026-10-23 10:24:59,159 INFO   Rep 60/100 done
+2026-10-23 10:25:04,317 INFO   Rep 80/100 done
+2026-10-23 10:25:09,464 INFO   Rep 100/100 done
+2026-10-23 10:25:09,554 INFO   Cell done | elapsed 25.9s | n_rep=100 | mean_f1=0.871 | mean_p_b_gap=0.298
+2026-10-23 10:25:09,554 INFO [Cell 5/24] gap=1,template=[60, 180],prior=uniform
+2026-10-23 10:25:14,523 INFO   Rep 20/100 done
+2026-10-23 10:25:19,512 INFO   Rep 40/100 done
+2026-10-23 10:25:24,531 INFO   Rep 60/100 done
+2026-10-23 10:25:29,613 INFO   Rep 80/100 done
+2026-10-23 10:25:34,627 INFO   Rep 100/100 done
+2026-10-23 10:25:34,717 INFO   Cell done | elapsed 25.2s | n_rep=100 | mean_f1=0.911 | mean_p_b_gap=0.001
+2026-10-23 10:25:34,717 INFO [Cell 6/24] gap=1,template=[60, 180],prior=gap_hazard
+2026-10-23 10:25:39,830 INFO   Rep 20/100 done
+2026-10-23 10:25:44,951 INFO   Rep 40/100 done
+2026-10-23 10:25:50,010 INFO   Rep 60/100 done
+2026-10-23 10:25:55,097 INFO   Rep 80/100 done
+2026-10-23 10:26:00,189 INFO   Rep 100/100 done
+2026-10-23 10:26:00,345 INFO   Cell done | elapsed 25.6s | n_rep=100 | mean_f1=0.879 | mean_p_b_gap=0.001
+2026-10-23 10:26:00,345 INFO [Cell 7/24] gap=1,template=[60, 180],prior=length_cohesion
+2026-10-23 10:26:05,475 INFO   Rep 20/100 done
+2026-10-23 10:26:10,614 INFO   Rep 40/100 done
+2026-10-23 10:26:15,725 INFO   Rep 60/100 done
+2026-10-23 10:26:20,859 INFO   Rep 80/100 done
+2026-10-23 10:26:25,956 INFO   Rep 100/100 done
+2026-10-23 10:26:26,046 INFO   Cell done | elapsed 25.7s | n_rep=100 | mean_f1=0.862 | mean_p_b_gap=0.001
+2026-10-23 10:26:26,046 INFO [Cell 8/24] gap=1,template=[60, 180],prior=combined
+2026-10-23 10:26:31,243 INFO   Rep 20/100 done
+2026-10-23 10:26:36,452 INFO   Rep 40/100 done
+2026-10-23 10:26:41,608 INFO   Rep 60/100 done
+2026-10-23 10:26:46,772 INFO   Rep 80/100 done
+2026-10-23 10:26:51,918 INFO   Rep 100/100 done
+2026-10-23 10:26:52,008 INFO   Cell done | elapsed 26.0s | n_rep=100 | mean_f1=0.853 | mean_p_b_gap=0.001
+2026-10-23 10:26:52,008 INFO [Cell 9/24] gap=4,template=[60, 120],prior=uniform
+2026-10-23 10:26:56,940 INFO   Rep 20/100 done
+2026-10-23 10:27:01,894 INFO   Rep 40/100 done
+2026-10-23 10:27:06,826 INFO   Rep 60/100 done
+2026-10-23 10:27:11,758 INFO   Rep 80/100 done
+2026-10-23 10:27:16,696 INFO   Rep 100/100 done
+2026-10-23 10:27:16,786 INFO   Cell done | elapsed 24.8s | n_rep=100 | mean_f1=0.909 | mean_p_b_gap=0.327
+2026-10-23 10:27:16,786 INFO [Cell 10/24] gap=4,template=[60, 120],prior=gap_hazard
+2026-10-23 10:27:21,842 INFO   Rep 20/100 done
+2026-10-23 10:27:26,858 INFO   Rep 40/100 done
+2026-10-23 10:27:31,937 INFO   Rep 60/100 done
+2026-10-23 10:27:37,007 INFO   Rep 80/100 done
+2026-10-23 10:27:42,055 INFO   Rep 100/100 done
+2026-10-23 10:27:42,145 INFO   Cell done | elapsed 25.4s | n_rep=100 | mean_f1=0.903 | mean_p_b_gap=0.594
+2026-10-23 10:27:42,145 INFO [Cell 11/24] gap=4,template=[60, 120],prior=length_cohesion
+2026-10-23 10:27:47,260 INFO   Rep 20/100 done
+2026-10-23 10:27:52,395 INFO   Rep 40/100 done
+2026-10-23 10:27:57,488 INFO   Rep 60/100 done
+2026-10-23 10:28:02,613 INFO   Rep 80/100 done
+2026-10-23 10:28:07,867 INFO   Rep 100/100 done
+2026-10-23 10:28:07,957 INFO   Cell done | elapsed 25.8s | n_rep=100 | mean_f1=0.901 | mean_p_b_gap=0.342
+2026-10-23 10:28:07,957 INFO [Cell 12/24] gap=4,template=[60, 120],prior=combined
+2026-10-23 10:28:13,211 INFO   Rep 20/100 done
+2026-10-23 10:28:18,581 INFO   Rep 40/100 done
+2026-10-23 10:28:23,964 INFO   Rep 60/100 done
+2026-10-23 10:28:29,058 INFO   Rep 80/100 done
+2026-10-23 10:28:34,222 INFO   Rep 100/100 done
+2026-10-23 10:28:34,313 INFO   Cell done | elapsed 26.4s | n_rep=100 | mean_f1=0.887 | mean_p_b_gap=0.564
+2026-10-23 10:28:34,313 INFO [Cell 13/24] gap=4,template=[60, 180],prior=uniform
+2026-10-23 10:28:39,289 INFO   Rep 20/100 done
+2026-10-23 10:28:44,249 INFO   Rep 40/100 done
+2026-10-23 10:28:49,189 INFO   Rep 60/100 done
+2026-10-23 10:28:54,067 INFO   Rep 80/100 done
+2026-10-23 10:28:58,895 INFO   Rep 100/100 done
+2026-10-23 10:28:58,984 INFO   Cell done | elapsed 24.7s | n_rep=100 | mean_f1=0.865 | mean_p_b_gap=0.000
+2026-10-23 10:28:58,984 INFO [Cell 14/24] gap=4,template=[60, 180],prior=gap_hazard
+2026-10-23 10:29:03,926 INFO   Rep 20/100 done
+2026-10-23 10:29:08,835 INFO   Rep 40/100 done
+2026-10-23 10:29:13,689 INFO   Rep 60/100 done
+2026-10-23 10:29:18,599 INFO   Rep 80/100 done
+2026-10-23 10:29:23,471 INFO   Rep 100/100 done
+2026-10-23 10:29:23,559 INFO   Cell done | elapsed 24.6s | n_rep=100 | mean_f1=0.910 | mean_p_b_gap=0.002
+2026-10-23 10:29:23,559 INFO [Cell 15/24] gap=4,template=[60, 180],prior=length_cohesion
+2026-10-23 10:29:28,493 INFO   Rep 20/100 done
+2026-10-23 10:29:33,455 INFO   Rep 40/100 done
+2026-10-23 10:29:38,396 INFO   Rep 60/100 done
+2026-10-23 10:29:43,309 INFO   Rep 80/100 done
+2026-10-23 10:29:48,243 INFO   Rep 100/100 done
+2026-10-23 10:29:48,330 INFO   Cell done | elapsed 24.8s | n_rep=100 | mean_f1=0.863 | mean_p_b_gap=0.001
+2026-10-23 10:29:48,330 INFO [Cell 16/24] gap=4,template=[60, 180],prior=combined
+2026-10-23 10:29:53,329 INFO   Rep 20/100 done
+2026-10-23 10:29:58,329 INFO   Rep 40/100 done
+2026-10-23 10:30:03,333 INFO   Rep 60/100 done
+2026-10-23 10:30:08,316 INFO   Rep 80/100 done
+2026-10-23 10:30:13,311 INFO   Rep 100/100 done
+2026-10-23 10:30:13,397 INFO   Cell done | elapsed 25.1s | n_rep=100 | mean_f1=0.916 | mean_p_b_gap=0.005
+2026-10-23 10:30:13,397 INFO [Cell 17/24] gap=16,template=[60, 120],prior=uniform
+2026-10-23 10:30:18,230 INFO   Rep 20/100 done
+2026-10-23 10:30:23,019 INFO   Rep 40/100 done
+2026-10-23 10:30:27,815 INFO   Rep 60/100 done
+2026-10-23 10:30:32,602 INFO   Rep 80/100 done
+2026-10-23 10:30:37,443 INFO   Rep 100/100 done
+2026-10-23 10:30:37,531 INFO   Cell done | elapsed 24.1s | n_rep=100 | mean_f1=0.918 | mean_p_b_gap=0.316
+2026-10-23 10:30:37,531 INFO [Cell 18/24] gap=16,template=[60, 120],prior=gap_hazard
+2026-10-23 10:30:42,374 INFO   Rep 20/100 done
+2026-10-23 10:30:47,246 INFO   Rep 40/100 done
+2026-10-23 10:30:52,075 INFO   Rep 60/100 done
+2026-10-23 10:30:56,982 INFO   Rep 80/100 done
+2026-10-23 10:31:01,985 INFO   Rep 100/100 done
+2026-10-23 10:31:02,073 INFO   Cell done | elapsed 24.5s | n_rep=100 | mean_f1=0.934 | mean_p_b_gap=0.793
+2026-10-23 10:31:02,073 INFO [Cell 19/24] gap=16,template=[60, 120],prior=length_cohesion
+2026-10-23 10:31:07,040 INFO   Rep 20/100 done
+2026-10-23 10:31:11,970 INFO   Rep 40/100 done
+2026-10-23 10:31:16,897 INFO   Rep 60/100 done
+2026-10-23 10:31:21,821 INFO   Rep 80/100 done
+2026-10-23 10:31:26,735 INFO   Rep 100/100 done
+2026-10-23 10:31:26,823 INFO   Cell done | elapsed 24.8s | n_rep=100 | mean_f1=0.879 | mean_p_b_gap=0.384
+2026-10-23 10:31:26,823 INFO [Cell 20/24] gap=16,template=[60, 120],prior=combined
+2026-10-23 10:31:31,815 INFO   Rep 20/100 done
+2026-10-23 10:31:36,804 INFO   Rep 40/100 done
+2026-10-23 10:31:41,790 INFO   Rep 60/100 done
+2026-10-23 10:31:46,768 INFO   Rep 80/100 done
+2026-10-23 10:31:51,779 INFO   Rep 100/100 done
+2026-10-23 10:31:51,865 INFO   Cell done | elapsed 25.0s | n_rep=100 | mean_f1=0.913 | mean_p_b_gap=0.778
+2026-10-23 10:31:51,865 INFO [Cell 21/24] gap=16,template=[60, 180],prior=uniform
+2026-10-23 10:31:56,653 INFO   Rep 20/100 done
+2026-10-23 10:32:01,432 INFO   Rep 40/100 done
+2026-10-23 10:32:06,230 INFO   Rep 60/100 done
+2026-10-23 10:32:10,992 INFO   Rep 80/100 done
+2026-10-23 10:32:15,794 INFO   Rep 100/100 done
+2026-10-23 10:32:15,881 INFO   Cell done | elapsed 24.0s | n_rep=100 | mean_f1=0.903 | mean_p_b_gap=0.001
+2026-10-23 10:32:15,881 INFO [Cell 22/24] gap=16,template=[60, 180],prior=gap_hazard
+2026-10-23 10:32:20,817 INFO   Rep 20/100 done
+2026-10-23 10:32:25,789 INFO   Rep 40/100 done
+2026-10-23 10:32:30,685 INFO   Rep 60/100 done
+2026-10-23 10:32:35,553 INFO   Rep 80/100 done
+2026-10-23 10:32:40,420 INFO   Rep 100/100 done
+2026-10-23 10:32:40,508 INFO   Cell done | elapsed 24.6s | n_rep=100 | mean_f1=0.904 | mean_p_b_gap=0.009
+2026-10-23 10:32:40,508 INFO [Cell 23/24] gap=16,template=[60, 180],prior=length_cohesion
+2026-10-23 10:32:45,392 INFO   Rep 20/100 done
+2026-10-23 10:32:50,306 INFO   Rep 40/100 done
+2026-10-23 10:32:55,183 INFO   Rep 60/100 done
+2026-10-23 10:33:00,061 INFO   Rep 80/100 done
+2026-10-23 10:33:04,961 INFO   Rep 100/100 done
+2026-10-23 10:33:05,049 INFO   Cell done | elapsed 24.5s | n_rep=100 | mean_f1=0.914 | mean_p_b_gap=0.001
+2026-10-23 10:33:05,049 INFO [Cell 24/24] gap=16,template=[60, 180],prior=combined
+2026-10-23 10:33:10,011 INFO   Rep 20/100 done
+2026-10-23 10:33:14,981 INFO   Rep 40/100 done
+2026-10-23 10:33:19,932 INFO   Rep 60/100 done
+2026-10-23 10:33:24,871 INFO   Rep 80/100 done
+2026-10-23 10:33:29,813 INFO   Rep 100/100 done
+2026-10-23 10:33:29,901 INFO   Cell done | elapsed 24.9s | n_rep=100 | mean_f1=0.906 | mean_p_b_gap=0.017
+2026-10-23 10:33:29,901 INFO Generating figures...
+2026-10-23 10:33:30,454 INFO Saved figure /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/figures/fig_E03_gap_true
+2026-10-23 10:33:30,614 INFO Saved figure /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/figures/fig_E03_gap_false
+2026-10-23 10:33:30,614 INFO Generating LaTeX table...
+2026-10-23 10:33:30,615 INFO Saved LaTeX table to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/tables/tab_E03_prior_comparison.tex
+2026-10-23 10:33:30,616 INFO Saved metrics CSV to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/metrics.csv
+2026-10-23 10:33:30,628 INFO No failed replicates.
+2026-10-23 10:33:30,629 INFO Saved oracle checks to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/oracle_checks.json
+2026-10-23 10:33:30,629 INFO 
+2026-10-23 10:33:30,629 INFO ======================================================================
+2026-10-23 10:33:30,629 INFO --- Gate checks ---
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=1 / uniform: max_log_C_k_dev=0.00e+00 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=1 / gap_hazard: max_log_C_k_dev=0.00e+00 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=1 / length_cohesion: max_log_C_k_dev=8.88e-16 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=1 / combined: max_log_C_k_dev=8.88e-16 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=4 / uniform: max_log_C_k_dev=0.00e+00 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=4 / gap_hazard: max_log_C_k_dev=0.00e+00 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=4 / length_cohesion: max_log_C_k_dev=0.00e+00 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=4 / combined: max_log_C_k_dev=1.78e-15 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=16 / uniform: max_log_C_k_dev=0.00e+00 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=16 / gap_hazard: max_log_C_k_dev=8.88e-16 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=16 / length_cohesion: max_log_C_k_dev=1.78e-15 [PASS]
+2026-10-23 10:33:30,629 INFO Prior oracle check gap=16 / combined: max_log_C_k_dev=1.78e-15 [PASS]
+2026-10-23 10:33:30,630 INFO Saved metrics to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/metrics.json
+2026-10-23 10:33:30,676 INFO Saved manifest to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff/manifest.json
+2026-10-23 10:33:30,677 INFO 
+2026-10-23 10:33:30,677 INFO ======================================================================
+2026-10-23 10:33:30,677 INFO E03 CONFIRMATORY complete in 602.4s
+2026-10-23 10:33:30,677 INFO Cells: 24 planned, 24 completed, 0 failed
+2026-10-23 10:33:30,677 INFO Replicates: 2400 completed, 0 failed
+2026-10-23 10:33:30,677 INFO Config SHA256: e0d11782dcbd95ff
+2026-10-23 10:33:30,677 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E03_irregular_design/e0d11782dcbd95ff
+2026-10-23 10:33:30,677 INFO ======================================================================
+2026-10-23 10:33:30,677 INFO All gate checks PASSED.
+2026-10-23 10:33:30,677 INFO E03 result: PASS
+2026-10-23 10:33:30,677 INFO gate_pass: True

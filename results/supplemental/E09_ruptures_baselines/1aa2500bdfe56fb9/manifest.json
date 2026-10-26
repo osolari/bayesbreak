@@ -1,0 +1,23 @@
+{
+  "id": "E09_supplemental_ruptures",
+  "type": "supplemental",
+  "parent_e09_sha256_prefix": "0f5281c46ee8976e",
+  "config_sha256": "1aa2500bdfe56fb9b6745edeb54929d6b3a91d50a904c6d34e72057dbc364f08",
+  "ruptures_version": "v1.1.10",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "utc_start": "2026-10-25T21:53:09.276782+00:00",
+  "utc_end": "2026-10-25T21:53:32.753578+00:00",
+  "elapsed_seconds": 23.476794832851738,
+  "n_datasets": 3,
+  "environment": {
+    "python": "3.11.17 (main, Oct  1 2026, 20:09:52) [Clang 20.1.8 ]",
+    "numpy": "2.4.6",
+    "platform": "macOS-26.6.1-arm64-arm-64bit"
+  },
+  "notes": [
+    "R-based baselines (CBS/DNAcopy, SMUCE, Fearnhead) unavailable: no R runtime.",
+    "WBS not available in ruptures v1.1.x; BottomUp used instead.",
+    "BayesBreak MAP boundaries not serialized for welllog in E09 metrics; F1@3 vs. BayesBreak requires a separate refitting step.",
+    "This is a supplemental analysis, not part of the frozen E09 confirmatory protocol."
+  ]
+}

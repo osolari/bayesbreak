@@ -306,6 +306,33 @@ closed-form predictive checks, length-prior plumbing, EM monotonicity,
 Beta-NegBin moment scale, replicates pooling, stability-bound bounds, PIT
 uniformity, and the diagnostics module.
 
-## Prospective experiments and publication source
+## Experiment status and publication source
 
-The authoritative one-column LaTeX paper is `docs/manuscripts/paper/main.tex`. The companion book is at `docs/manuscripts/book/main.tex`, and the current scientific result policy is `.claude/RESULT_POLICY.md`. The book is currently a prior checkpoint awaiting the next full scientific synchronization. The proposed studies E00-E10 are specified in `.claude/skills/bayesbreak-release-audit/SKILL.md`, `protocols/experiments.json` and `references/experiment_protocols.md` under that skill folder. Their planned figures and tables are deliberately unfilled. Earlier completed numerical results are retained under their actual observation models and must be rerun if affected by family-descriptor corrections. See `.claude/CURRENT_WORK.md`.
+The authoritative one-column LaTeX paper is `docs/manuscripts/paper/main.tex`. The companion book is at `docs/manuscripts/book/main.tex`. The current scientific result policy is `.claude/RESULT_POLICY.md`. Outstanding work is tracked in `.claude/CURRENT_WORK.md`.
+
+All E00-E10 confirmatory experiments have been executed (gate_pass=True for all):
+
+| Experiment | Artifact SHA | Status |
+|---|---|---|
+| E00 exact oracle | `03a4d1c38bfe08c1` | COMPLETE -- 380/380 oracle checks |
+| E01 Gaussian calibration | `1e84a2673bc5b214` | COMPLETE |
+| E02 family portability | `621e2f1812b22ffa` | COMPLETE |
+| E03 irregular design | `e0d11782dcbd95ff` | COMPLETE |
+| E04 shared boundary | `0d135a601bdf32b1` | COMPLETE |
+| E05 latent templates | `d33f1c5e067d38ff` | COMPLETE |
+| E06 nonconjugate | `9739f69c790aae6f` | gate_pass=True; pg_vb aliases jj -- methodological audit pending |
+| E07 misspecification | `a038ac8e7e4a17b9` | COMPLETE |
+| E08 posterior prediction | `a23d9fe92c02724c` | COMPLETE |
+| E09 real data | `0f5281c46ee8976e` | Execution COMPLETE; scientific completeness INCOMPLETE (CGH pooled and methylation truncated; R baselines unavailable) |
+| E10 scaling | `bece422c9d90093f` | COMPLETE -- memory O(n^2) slope 1.98; E2E 3.25s at n=2048, k_max=20 |
+
+### Execution environment
+
+The recommended execution environment is the `bayesbreak` conda environment (Python 3.11.17, numpy 2.4.6, ruptures 1.1.10):
+
+```bash
+conda activate bayesbreak
+python scripts/run_e10_scaling.py
+```
+
+The `.venv` (Python 3.12) has bayesbreak installed but lacks ruptures and pip, and is not suitable for scripts requiring ruptures baselines.

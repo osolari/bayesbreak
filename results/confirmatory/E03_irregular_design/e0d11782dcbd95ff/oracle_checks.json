@@ -1,0 +1,56 @@
+{
+  "gap=1": {
+    "uniform": {
+      "max_log_C_k_deviation": 0.0,
+      "n_k_checked": 4
+    },
+    "gap_hazard": {
+      "max_log_C_k_deviation": 0.0,
+      "n_k_checked": 4
+    },
+    "length_cohesion": {
+      "max_log_C_k_deviation": 8.881784197001252e-16,
+      "n_k_checked": 4
+    },
+    "combined": {
+      "max_log_C_k_deviation": 8.881784197001252e-16,
+      "n_k_checked": 4
+    }
+  },
+  "gap=4": {
+    "uniform": {
+      "max_log_C_k_deviation": 0.0,
+      "n_k_checked": 4
+    },
+    "gap_hazard": {
+      "max_log_C_k_deviation": 0.0,
+      "n_k_checked": 4
+    },
+    "length_cohesion": {
+      "max_log_C_k_deviation": 0.0,
+      "n_k_checked": 4
+    },
+    "combined": {
+      "max_log_C_k_deviation": 1.7763568394002505e-15,
+      "n_k_checked": 4
+    }
+  },
+  "gap=16": {
+    "uniform": {
+      "max_log_C_k_deviation": 0.0,
+      "n_k_checked": 4
+    },
+    "gap_hazard": {
+      "max_log_C_k_deviation": 8.881784197001252e-16,
+      "n_k_checked": 4
+    },
+    "length_cohesion": {
+      "max_log_C_k_deviation": 1.7763568394002505e-15,
+      "n_k_checked": 4
+    },
+    "combined": {
+      "max_log_C_k_deviation": 1.7763568394002505e-15,
+      "n_k_checked": 4
+    }
+  }
+}

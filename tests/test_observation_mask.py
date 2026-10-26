@@ -43,7 +43,7 @@ import numpy as np
 import pytest
 from scipy.stats import nbinom, norm
 
-from bayesbreak import BayesBreakGaussian, BayesBreakPoisson
+from bayesbreak import BayesBreakBetaObs, BayesBreakBinomial, BayesBreakGaussian, BayesBreakPoisson
 from bayesbreak.multivariate import (
     IndependentMultivariateSegmenter,
     SharedBoundaryMultivariateSegmenter,
@@ -521,3 +521,156 @@ class TestRepeatFit:
         np.testing.assert_allclose(est.likelihood_power_, 1.0, atol=1e-15)
         expected_full = _poisson_logev([3.0, 4.0], [1.0, 1.0])
         assert float(est.log_block_evidence_[0, 2]) == pytest.approx(expected_full, abs=1e-10)
+
+
+# ---------------------------------------------------------------------------
+# 8.  BetaObs likelihood_power_ regression tests
+# ---------------------------------------------------------------------------
+
+
+class TestBetaObsLikelihoodPower:
+    """BetaObs _compute_block_evidence, posterior_predictive_logpdf_block, and
+    _segment_pit must all apply likelihood_power_ so that masked observations
+    do not enter any posterior or predictive computation."""
+
+    PHI, ALPHA0, BETA0 = 50.0, 1.5, 2.5
+    # Five observations; last two are held out / masked.
+    Y_FULL = np.array([0.1, 0.2, 0.3, 0.7, 0.8])
+    MASK = np.array([True, True, True, False, False])
+
+    def _fit_masked(self):
+        X5 = np.arange(5).reshape(-1, 1)
+        return BayesBreakBetaObs(
+            k_max=1, estimate_hyper=False, phi=self.PHI, alpha=self.ALPHA0, beta=self.BETA0
+        ).fit(X5, self.Y_FULL, sample_weight=np.ones(5), observation_mask=self.MASK)
+
+    def _fit_direct(self):
+        """Reference fit on observed-only subset (no mask, no likelihood_power_)."""
+        X3 = np.arange(3).reshape(-1, 1)
+        return BayesBreakBetaObs(
+            k_max=1, estimate_hyper=False, phi=self.PHI, alpha=self.ALPHA0, beta=self.BETA0
+        ).fit(X3, self.Y_FULL[:3], sample_weight=np.ones(3))
+
+    def test_block_evidence_masked_equals_observed_only(self):
+        """log_block_evidence_[0,5] with last 2 masked matches [0,3] from a direct fit."""
+        est_m = self._fit_masked()
+        est_d = self._fit_direct()
+        assert float(est_m.log_block_evidence_[0, 5]) == pytest.approx(
+            float(est_d.log_block_evidence_[0, 3]), abs=1e-7
+        )
+
+    def test_block_evidence_differs_from_unmasked_full_fit(self):
+        """Including the two extra obs (0.7, 0.8) changes the block evidence."""
+        X5 = np.arange(5).reshape(-1, 1)
+        est_full = BayesBreakBetaObs(
+            k_max=1, estimate_hyper=False, phi=self.PHI, alpha=self.ALPHA0, beta=self.BETA0
+        ).fit(X5, self.Y_FULL, sample_weight=np.ones(5))
+        est_m = self._fit_masked()
+        # With the fix the masked evidence must NOT equal the full-data evidence.
+        assert float(est_m.log_block_evidence_[0, 5]) != pytest.approx(
+            float(est_full.log_block_evidence_[0, 5]), abs=1e-5
+        )
+
+    def test_predictive_logpdf_masked_matches_observed_only(self):
+        """posterior_predictive_logpdf_block uses lp * sample_weight_ for the posterior."""
+        est_m = self._fit_masked()
+        est_d = self._fit_direct()
+        y_new = np.array([0.4])
+        phi_new = np.array([self.PHI])
+        lp_m = est_m.posterior_predictive_logpdf_block(a=0, b=5, y_new=y_new, w_new=phi_new)
+        lp_d = est_d.posterior_predictive_logpdf_block(a=0, b=3, y_new=y_new, w_new=phi_new)
+        np.testing.assert_allclose(lp_m, lp_d, atol=1e-7)
+
+    def test_pit_masked_matches_observed_only(self):
+        """BetaObs PIT is deterministic; masked fit must match direct fit on observed obs."""
+        from bayesbreak.prediction import pit_residuals
+
+        est_m = self._fit_masked()
+        est_d = self._fit_direct()
+        X_new = np.array([[0]])
+        y_new = np.array([0.25])
+        phi_new = np.array([self.PHI])
+        # BetaObs CDF is a continuous quadrature mixture; no randomized PIT.
+        pit_m = pit_residuals(est_m, X_new, y_new, sample_weight=phi_new)
+        pit_d = pit_residuals(est_d, X_new, y_new, sample_weight=phi_new)
+        np.testing.assert_allclose(pit_m, pit_d, atol=1e-7)
+
+
+# ---------------------------------------------------------------------------
+# 9.  Binomial PIT likelihood_power_ regression tests
+# ---------------------------------------------------------------------------
+
+
+class TestBinomialPITLikelihoodPower:
+    """Binomial _segment_pit must apply lp to S and N so masked obs are excluded."""
+
+    N_TRIALS = 10
+    ALPHA0, BETA0 = 1.0, 1.0
+
+    def test_masked_pit_matches_direct_fit_on_observed_subset(self):
+        """PIT for masked Binomial fit (lp=[1,1,1,0]) matches direct fit on first 3 obs."""
+        from bayesbreak.prediction import pit_residuals
+
+        y_full = np.array([3.0, 7.0, 2.0, 5.0])
+        mask = np.array([True, True, True, False])
+        X4 = np.arange(4).reshape(-1, 1)
+        X3 = np.arange(3).reshape(-1, 1)
+
+        est_m = BayesBreakBinomial(
+            k_max=1, estimate_hyper=False,
+            alpha=self.ALPHA0, beta=self.BETA0, n_trials=self.N_TRIALS,
+        ).fit(X4, y_full, sample_weight=np.ones(4), observation_mask=mask)
+
+        est_d = BayesBreakBinomial(
+            k_max=1, estimate_hyper=False,
+            alpha=self.ALPHA0, beta=self.BETA0, n_trials=self.N_TRIALS,
+        ).fit(X3, y_full[:3], sample_weight=np.ones(3))
+
+        X_new = np.array([[0]])
+        y_new = np.array([4.0])
+        n_new = np.array([float(self.N_TRIALS)])
+
+        np.random.seed(99)
+        pit_m = pit_residuals(est_m, X_new, y_new, sample_weight=n_new)
+        np.random.seed(99)
+        pit_d = pit_residuals(est_d, X_new, y_new, sample_weight=n_new)
+        np.testing.assert_allclose(pit_m, pit_d, atol=1e-12)
+
+    def test_posterior_parameters_exclude_masked_obs(self):
+        """Binomial PIT uses a_post, b_post computed without masked obs contribution."""
+        from bayesbreak.prediction import pit_residuals
+        from scipy.stats import betabinom
+
+        # Train on 2 obs: y=[3, 9], n_trials=10, mask=[T, F].
+        # Correct posterior: S=3, N=10 → a_post=4, b_post=8.
+        # Incorrect (bug) posterior: S=12, N=20 → a_post=13, b_post=9.
+        y = np.array([3.0, 9.0])
+        X2 = np.arange(2).reshape(-1, 1)
+        est = BayesBreakBinomial(
+            k_max=1, estimate_hyper=False, alpha=1.0, beta=1.0, n_trials=10
+        ).fit(X2, y, sample_weight=np.ones(2), observation_mask=np.array([True, False]))
+
+        y_new_val, n_new_val = 2, 10
+        a_correct, b_correct = 4.0, 8.0
+        cdf_hi = float(betabinom.cdf(y_new_val, n=n_new_val, a=a_correct, b=b_correct))
+        cdf_lo = float(betabinom.cdf(y_new_val - 1, n=n_new_val, a=a_correct, b=b_correct))
+
+        # Verify wrong params (a_post=13, b_post=9) fall outside this interval.
+        a_wrong, b_wrong = 13.0, 9.0
+        cdf_wrong = float(betabinom.cdf(y_new_val, n=n_new_val, a=a_wrong, b=b_wrong))
+        assert not (cdf_lo <= cdf_wrong <= cdf_hi), (
+            "Test setup error: wrong params must produce a CDF outside [cdf_lo, cdf_hi]."
+        )
+
+        # Randomized PIT: fix seed; value must lie in [cdf_lo, cdf_hi].
+        np.random.seed(77)
+        pit = pit_residuals(
+            est,
+            np.array([[0]]),
+            np.array([float(y_new_val)]),
+            sample_weight=np.array([float(n_new_val)]),
+        )
+        assert cdf_lo <= float(pit[0]) <= cdf_hi, (
+            f"PIT {pit[0]:.6f} not in [{cdf_lo:.6f}, {cdf_hi:.6f}]; "
+            "likelihood_power_ may not be applied in _segment_pit."
+        )

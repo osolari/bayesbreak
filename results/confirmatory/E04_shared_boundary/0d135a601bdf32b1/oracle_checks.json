@@ -1,0 +1,8 @@
+{
+  "n_small": 8,
+  "S_small": 2,
+  "k_max_check": 3,
+  "max_bm_deviation": 4.996003610813204e-16,
+  "log_evidence_deviation": 0.0,
+  "gate_pass": true
+}

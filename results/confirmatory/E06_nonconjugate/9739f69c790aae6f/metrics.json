@@ -1,0 +1,65 @@
+{
+  "experiment_id": "E06",
+  "n_blocks_total": 1800,
+  "jj_lb_ok_count": 1800,
+  "jj_lb_rate": 1.0,
+  "gate_jj_lb_rate": 0.95,
+  "gate_jj_lb_pass": true,
+  "n_nan_laplace": 0,
+  "n_nan_jj": 0,
+  "n_nan_ep": 0,
+  "gate_no_nan_pass": true,
+  "block_metrics": {
+    "laplace": {
+      "median_abs_err": 0.02075693870879758,
+      "max_abs_err": 0.03771617692525098,
+      "median_signed_err": -0.02075693870879758,
+      "median_runtime_s": 4.9584079533815384e-05
+    },
+    "jj": {
+      "median_abs_err": 0.22246902797643298,
+      "max_abs_err": 0.9768905110535595,
+      "median_signed_err": -0.22246902797643298,
+      "median_runtime_s": 0.000235104002058506
+    },
+    "ep": {
+      "median_abs_err": 3.7787655522008996,
+      "max_abs_err": 30.000876368482974,
+      "median_signed_err": 3.7787655522008996,
+      "median_runtime_s": 0.002093083574436605,
+      "n_above_reference": 1409,
+      "n_convergence_ok": 1800
+    }
+  },
+  "segmentation_propagation": {
+    "laplace": {
+      "mean_max_pk_diff": 0.013141826560808036,
+      "max_pk_diff": 0.06711119587719638,
+      "mean_max_bm_diff": 0.0008855326586369647,
+      "max_bm_diff": 0.019698929764910722,
+      "map_mismatches": 1,
+      "n_seqs": 100,
+      "mean_f1_at_3": 0.5297619047619048
+    },
+    "jj": {
+      "mean_max_pk_diff": 0.056040498469856155,
+      "max_pk_diff": 0.07739300740694091,
+      "mean_max_bm_diff": 0.015079005177222831,
+      "max_bm_diff": 0.11783455866733139,
+      "map_mismatches": 19,
+      "n_seqs": 100,
+      "mean_f1_at_3": 0.545
+    },
+    "ep": {
+      "mean_max_pk_diff": 0.23618889228393314,
+      "max_pk_diff": 0.48334011148027733,
+      "mean_max_bm_diff": 0.22443076060468944,
+      "max_bm_diff": 0.838271611455687,
+      "map_mismatches": 89,
+      "n_seqs": 100,
+      "mean_f1_at_3": 0.4228145743145743
+    }
+  },
+  "note_pg_vb": "pg_vb aliases jj in the estimator code path; it is NOT benchmarked as an independent method. No distinct Polya-Gamma VB is implemented.",
+  "utc_complete": "2026-10-24T21:04:49.498718+00:00"
+}

@@ -105,11 +105,20 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
     def _estimate_hyperparameters(
         self, y: np.ndarray, sample_weight: np.ndarray | None = None
     ) -> dict[str, float]:
-        n = int(y.size)
-        phi_arr = self._phi_array(n)
-        self._phi_arr_ = phi_arr
+        # base.fit() sets self.n_ and self.observation_mask_ before calling this
+        # method. Use them to build _phi_arr_ at the full sequence length and
+        # slice to the observed subset for moment estimation.
+        n_full = int(getattr(self, "n_", y.size))
+        mask = getattr(self, "observation_mask_", None)
+        self._phi_arr_ = self._phi_array(n_full)
+
         if (not self.estimate_hyper) and (self.alpha is not None) and (self.beta is not None):
             return {"alpha": float(self.alpha), "beta": float(self.beta)}
+
+        if mask is not None and mask.size == n_full:
+            phi_arr = self._phi_arr_[mask]  # observed subset, length == y.size
+        else:
+            phi_arr = self._phi_arr_
 
         y = np.asarray(y, dtype=float)
         if sample_weight is None:
@@ -147,7 +156,7 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
         alpha0 = float(hyper["alpha"])
         beta0 = float(hyper["beta"])
         n = int(y.size)
-        if not hasattr(self, "_phi_arr_"):
+        if not hasattr(self, "_phi_arr_") or self._phi_arr_.size != n:
             self._phi_arr_ = self._phi_array(n)
         phi_arr = self._phi_arr_
 
@@ -157,6 +166,11 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
             w = np.asarray(sample_weight, dtype=float)
             if w.shape != y.shape:
                 raise ValueError("sample_weight must match y shape.")
+
+        # Apply likelihood_power_: a_i=0 for masked observations (set by base.fit).
+        _lp = getattr(self, "likelihood_power_", None)
+        a_lp = _lp if (_lp is not None and _lp.size == n) else np.ones(n, dtype=float)
+        w = a_lp * w
 
         # Quadrature grid + prior log-density.
         n_quad = int(self.quadrature_points)
@@ -254,7 +268,7 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
         sample_weight: np.ndarray | None = None,
     ) -> float:
         n = int(y.size)
-        if not hasattr(self, "_phi_arr_"):
+        if not hasattr(self, "_phi_arr_") or self._phi_arr_.size != n:
             self._phi_arr_ = self._phi_array(n)
         phi_arr = self._phi_arr_
 
@@ -263,12 +277,14 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
         else:
             w = np.asarray(sample_weight, dtype=float)
 
+        _lp = getattr(self, "likelihood_power_", None)
+        lp = _lp if _lp is not None else np.ones(n, dtype=float)
         mu_grid, log_posterior_weights = self._segment_posterior_log_weights(
             a,
             b,
             y,
             hyper,
-            w,
+            lp * w,
             phi_arr,
         )
         return float(np.sum(np.exp(log_posterior_weights) * mu_grid))
@@ -349,12 +365,16 @@ class BayesBreakBetaObs(BayesBreakSegmenter):
             raise ValueError("Beta prediction precision must be finite and positive")
 
         phi_train = self._phi_arr_
+        # Apply likelihood_power_ so that masked (holdout) training observations
+        # do not contaminate the segment posterior used for predictive evaluation.
+        _lp = getattr(self, "likelihood_power_", None)
+        lp = _lp if _lp is not None else np.ones(len(self._y_train_), dtype=float)
         mu_grid, log_posterior_weights = self._segment_posterior_log_weights(
             a,
             b,
             self._y_train_,
             self.hyper_,
-            self.sample_weight_,
+            lp * self.sample_weight_,
             phi_train,
         )
         output = np.full(y_new.shape, -np.inf, dtype=float)

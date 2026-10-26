@@ -97,7 +97,21 @@ class SharedBoundaryMultivariateSegmenter(BaseEstimator, RegressorMixin):
         y: ArrayLike,
         *,
         sample_weight: ArrayLike | None = None,
+        likelihood_power: ArrayLike | None = None,
+        observation_mask: ArrayLike | None = None,
     ) -> SharedBoundaryMultivariateSegmenter:
+        if likelihood_power is not None:
+            raise NotImplementedError(
+                "SharedBoundaryMultivariateSegmenter does not support likelihood_power. "
+                "Use a single-channel BayesBreakSegmenter with likelihood_power, "
+                "or open a feature request."
+            )
+        if observation_mask is not None:
+            raise NotImplementedError(
+                "SharedBoundaryMultivariateSegmenter does not support observation_mask. "
+                "Use a single-channel BayesBreakSegmenter with observation_mask, "
+                "or open a feature request."
+            )
         x_design, y_arr, _ = check_segmentation_input(X, y, multivariate=True)
         n, d = y_arr.shape
         self.n_, self.d_ = int(n), int(d)
@@ -111,6 +125,9 @@ class SharedBoundaryMultivariateSegmenter(BaseEstimator, RegressorMixin):
         lA0_joint: FloatArray | None = None
         for c in range(d):
             est_c = clone(self.base_estimator)
+            # Wrappers do not support likelihood_power; set unit powers explicitly
+            # so the getattr fallback in family methods never reads stale state.
+            est_c.likelihood_power_ = np.ones(n, dtype=float)
             hyper_c = est_c._estimate_hyperparameters(y_arr[:, c], w_mat[:, c])
             lA0_c, A1_c = est_c._compute_block_evidence(y_arr[:, c], hyper_c, w_mat[:, c])
             channel_states.append(_ChannelState(est=est_c, hyper=hyper_c, lA0=lA0_c, A1=A1_c))
@@ -228,7 +245,19 @@ class IndependentMultivariateSegmenter(BaseEstimator, RegressorMixin):
         y: ArrayLike,
         *,
         sample_weight: ArrayLike | None = None,
+        likelihood_power: ArrayLike | None = None,
+        observation_mask: ArrayLike | None = None,
     ) -> IndependentMultivariateSegmenter:
+        if likelihood_power is not None:
+            raise NotImplementedError(
+                "IndependentMultivariateSegmenter does not support likelihood_power. "
+                "Use per-channel BayesBreakSegmenter.fit(likelihood_power=...) directly."
+            )
+        if observation_mask is not None:
+            raise NotImplementedError(
+                "IndependentMultivariateSegmenter does not support observation_mask. "
+                "Use per-channel BayesBreakSegmenter.fit(observation_mask=...) directly."
+            )
         x_design, y_arr, _ = check_segmentation_input(X, y, multivariate=True)
         n, d = y_arr.shape
         self.n_, self.d_ = int(n), int(d)

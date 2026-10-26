@@ -45,8 +45,14 @@ from scipy.stats import nbinom as scipy_nbinom
 E02_CONFIG: dict[str, Any] = {
     "id": "E02",
     "name": "family_portability",
-    "protocol_revision": "2026-10-21-2",
+    "protocol_revision": "2026-10-21-3",
     "type": "simulation",
+    # Amendment 2026-10-23: confirmatory quadrature order raised from 64 to 128
+    # after diagnostic confirmed 64-node result was marginally over threshold for
+    # mu_mid=0.4 rep 2 (curve_dev=1.006e-3 vs threshold 1e-3). 128-node vs 256-node
+    # deviations are ~1e-8, well within threshold. Gate comparison is now 128 vs 256.
+    "beta_obs_quadrature_points": 128,
+    "beta_obs_gate_comparison_points": 256,
     "k_true": 3,
     "k_max": 10,
     "n_conjugate": 240,
@@ -443,7 +449,7 @@ def run_inference(
             k_max=k_max, estimate_hyper=False,
             alpha=p["alpha"], beta=p["beta"],
             phi=phi_arr,
-            quadrature_points=64,
+            quadrature_points=E02_CONFIG["beta_obs_quadrature_points"],
             prior_k=_geom_prior,
         )
         est.fit(x.reshape(-1, 1), y)
@@ -493,9 +499,12 @@ def _beta_obs_convergence_check(
     n_check: int = 5,
     rng_seed: int = 20261021,
 ) -> dict:
-    """Compare quadrature_points=64 vs 128 on n_check replicates.
+    """Compare confirmatory quadrature order vs 2x nodes on one replicate.
 
-    Returns max_log_evidence_deviation and max_bayes_curve_deviation.
+    Confirmatory order: E02_CONFIG["beta_obs_quadrature_points"] (128).
+    Gate comparison: E02_CONFIG["beta_obs_gate_comparison_points"] (256).
+
+    Returns max_log_evidence_deviation and max_bayes_curve_deviation (128 vs 256).
     """
     from bayesbreak.families.beta_obs import BayesBreakBetaObs
 
@@ -505,46 +514,42 @@ def _beta_obs_convergence_check(
     x = dataset["x"]
     y = dataset["y"]
     k_max = E02_CONFIG["k_max"]
+    q_confirmatory = E02_CONFIG["beta_obs_quadrature_points"]
+    q_gate = E02_CONFIG["beta_obs_gate_comparison_points"]
 
-    devs_log_ev: list[float] = []
-    devs_curve: list[float] = []
+    est_conf = BayesBreakBetaObs(
+        k_max=k_max, estimate_hyper=False,
+        alpha=p["alpha"], beta=p["beta"],
+        phi=phi_arr, quadrature_points=q_confirmatory,
+        prior_k=_geom_prior,
+    )
+    est_gate = BayesBreakBetaObs(
+        k_max=k_max, estimate_hyper=False,
+        alpha=p["alpha"], beta=p["beta"],
+        phi=phi_arr, quadrature_points=q_gate,
+        prior_k=_geom_prior,
+    )
+    est_conf.fit(x.reshape(-1, 1), y)
+    est_gate.fit(x.reshape(-1, 1), y)
 
-    for q_pts in [(64, 128)]:
-        q64, q128 = q_pts
-        est64 = BayesBreakBetaObs(
-            k_max=k_max, estimate_hyper=False,
-            alpha=p["alpha"], beta=p["beta"],
-            phi=phi_arr, quadrature_points=q64,
-            prior_k=_geom_prior,
-        )
-        est128 = BayesBreakBetaObs(
-            k_max=k_max, estimate_hyper=False,
-            alpha=p["alpha"], beta=p["beta"],
-            phi=phi_arr, quadrature_points=q128,
-            prior_k=_geom_prior,
-        )
-        est64.fit(x.reshape(-1, 1), y)
-        est128.fit(x.reshape(-1, 1), y)
-
-        dev_ev = abs(float(est64.log_evidence_) - float(est128.log_evidence_))
-        c64 = _bayes_curve_mix_k_vectorized(
-            est64.log_left_, est64.log_right_,
-            est64.log_block_evidence_, est64.block_first_moment_,
-            n, k_max, est64.k_posterior_,
-        )
-        c128 = _bayes_curve_mix_k_vectorized(
-            est128.log_left_, est128.log_right_,
-            est128.log_block_evidence_, est128.block_first_moment_,
-            n, k_max, est128.k_posterior_,
-        )
-        dev_curve = float(np.max(np.abs(c64 - c128)))
-        devs_log_ev.append(dev_ev)
-        devs_curve.append(dev_curve)
+    dev_ev = abs(float(est_conf.log_evidence_) - float(est_gate.log_evidence_))
+    c_conf = _bayes_curve_mix_k_vectorized(
+        est_conf.log_left_, est_conf.log_right_,
+        est_conf.log_block_evidence_, est_conf.block_first_moment_,
+        n, k_max, est_conf.k_posterior_,
+    )
+    c_gate = _bayes_curve_mix_k_vectorized(
+        est_gate.log_left_, est_gate.log_right_,
+        est_gate.log_block_evidence_, est_gate.block_first_moment_,
+        n, k_max, est_gate.k_posterior_,
+    )
+    dev_curve = float(np.max(np.abs(c_conf - c_gate)))
 
     return {
-        "max_log_evidence_deviation": float(max(devs_log_ev)),
-        "max_bayes_curve_deviation": float(max(devs_curve)),
+        "max_log_evidence_deviation": float(dev_ev),
+        "max_bayes_curve_deviation": float(dev_curve),
         "n_reps_checked": 1,
+        "quadrature_comparison": f"{q_confirmatory}_vs_{q_gate}",
     }
 
 
@@ -1159,6 +1164,9 @@ def run_e02(pilot: bool = False) -> None:
     n_reps_completed = len(all_replicate_records)
     n_reps_failed = len(failed_runs)
 
+    # gate_pass is initially set to False; _run_gate_checks will compute the
+    # true value after all oracle checks are evaluated.
+    replicate_gate_pass = (n_reps_failed == 0 and n_cells_completed == n_cells_planned)
     metrics_json = {
         "experiment_id": "E02",
         "n_cells_planned": n_cells_planned,
@@ -1167,7 +1175,7 @@ def run_e02(pilot: bool = False) -> None:
         "n_replicates_completed": n_reps_completed,
         "n_replicates_failed": n_reps_failed,
         "pilot_mode": pilot,
-        "gate_pass": (n_reps_failed == 0 and n_cells_completed == n_cells_planned),
+        "gate_pass": False,  # will be updated after gate checks; not yet evaluated
         "cell_summaries": cell_summaries,
         "oracle_checks": oracle_checks,
     }
@@ -1272,24 +1280,43 @@ def run_e02(pilot: bool = False) -> None:
         n_cells_planned, n_cells_completed, n_cells_planned - n_cells_completed,
     )
     logger.info("Replicates: %d completed, %d failed", n_reps_completed, n_reps_failed)
-    logger.info("gate_pass: %s", metrics_json["gate_pass"])
     logger.info("Config SHA256: %s", E02_CONFIG_SHA256)
     logger.info("Results: %s", RESULTS_BASE)
     logger.info("=" * 70)
 
-    # Gate checks
+    # Gate checks — must run BEFORE final gate_pass is written to metrics.json.
     if not pilot:
-        _run_gate_checks(cell_summaries, oracle_checks)
+        oracle_gate_pass = _run_gate_checks(cell_summaries, oracle_checks)
+    else:
+        oracle_gate_pass = True
+
+    final_gate_pass = replicate_gate_pass and oracle_gate_pass
+    metrics_json["gate_pass"] = final_gate_pass
+    logger.info("gate_pass: %s", final_gate_pass)
+
+    # Rewrite metrics.json with the corrected gate_pass value.
+    with open(metrics_json_path, "w") as _f:
+        json.dump(
+            metrics_json, _f, indent=2,
+            default=lambda x: float(x) if isinstance(x, np.floating) else x,
+        )
+
+    if not pilot and not final_gate_pass:
+        sys.exit(1)
 
 
-def _run_gate_checks(cell_summaries: list[dict], oracle_checks: dict) -> None:
+def _run_gate_checks(cell_summaries: list[dict], oracle_checks: dict) -> bool:
     """Log gate-check results after confirmatory run.
 
-    Gate thresholds:
-      - Bayes curve deviation (64 vs 128 quadrature points): < 5e-3
-        (protocol requires checking 64/128 nodes; 5e-3 on the signal scale is
-         comfortably within numerical noise for the Beta-obs quadrature family)
-      - All critical metrics (mean_f1, signal_mse) must be finite
+    Gate thresholds (prespecified, must not be relaxed without protocol amendment):
+      - Bayes curve deviation (confirmatory quadrature order vs 2x nodes): < 1e-3
+        on the (0,1) signal scale.
+      - All critical metrics (mean_f1, signal_mse) must be finite.
+
+    Returns
+    -------
+    bool
+        True if all gate checks pass, False otherwise.
     """
     logger.info("--- Gate checks ---")
     issues: list[str] = []
@@ -1307,10 +1334,9 @@ def _run_gate_checks(cell_summaries: list[dict], oracle_checks: dict) -> None:
             )
 
     if oracle_checks:
-        # Convergence threshold: 5e-3 on signal scale (64 vs 128 nodes).
-        # The protocol checks convergence; 5e-3 is conservative for a (0,1)-valued
-        # Bayes curve with quadrature_points=64 vs 128.
-        _curve_threshold = 5e-3
+        # Prespecified convergence threshold: 1e-3 on signal scale.
+        # Compares confirmatory quadrature order vs 2x nodes.
+        _curve_threshold = 1e-3
         for label, dev in oracle_checks.items():
             max_dev_ev = dev.get("max_log_evidence_deviation", float("nan"))
             max_dev_curve = dev.get("max_bayes_curve_deviation", float("nan"))
@@ -1329,9 +1355,11 @@ def _run_gate_checks(cell_summaries: list[dict], oracle_checks: dict) -> None:
         for issue in issues:
             logger.error("  %s", issue)
         logger.error("E02 result: FAIL (gate check)")
+        return False
     else:
         logger.info("All gate checks PASSED.")
         logger.info("E02 result: PASS")
+        return True
 
 
 def regenerate_figures(

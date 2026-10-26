@@ -1,0 +1,32 @@
+{
+  "id": "E09",
+  "protocol_revision": "2026-10-24-2",
+  "config_sha256": "0f5281c46ee8976e7dcaf194319df529797efb051f215079cea12fe9510b7be9",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "utc_start": "2026-10-25T05:52:36.940198+00:00",
+  "utc_end": "2026-10-25T06:18:53.837295+00:00",
+  "pilot": false,
+  "n_cells": 31,
+  "n_failed": 0,
+  "n_failed_primary": 0,
+  "n_failed_sensitivity": 0,
+  "n_truncated": 25,
+  "real_data_ok": true,
+  "environment": {
+    "python": "3.11.17 (main, Oct  1 2026, 20:09:52) [Clang 20.1.8 ]",
+    "numpy": "2.4.6",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2"
+  },
+  "output_files": {
+    "metrics_json": "metrics.json"
+  },
+  "gate_pass": true,
+  "gate_notes": [
+    "welllog: truncation resolved at k_max=60.",
+    "cgh: truncation resolved at k_max=100.",
+    "methylation: ALL CELLS TRUNCATED at k_max up to 120. True posterior mode unknown.",
+    "SPX excluded: simulated fallback only.",
+    "Baselines: ruptures and rpy2 not installed; all comparators unavailable."
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "record_type": "post_hoc_correction",
+  "created": "2026-10-23",
+  "experiment_id": "E02",
+  "run_directory": "results/confirmatory/E02_family_portability/a64d0fde6f74fd39",
+  "gate_pass": false,
+  "reason": "metrics.json incorrectly records gate_pass=true. The gate_pass field in metrics.json was computed before _run_gate_checks() executed (line 1170 of run_e02_family_portability.py: gate_pass = n_reps_failed==0 and n_cells_completed==n_cells_planned), which reflects only whether replicates completed, not whether the Beta-obs quadrature convergence gate passed. The run_log.txt correctly ends with 'E02 result: FAIL (gate check)'. The gate failure is: beta_obs,n=120,mu_mid=0.4 max_bayes_curve_deviation=1.006e-3 exceeded threshold=1.000e-3 (64 vs 128 Gauss-Legendre nodes). Additionally, after the run the gate threshold in the script was loosened from 1e-3 to 5e-3, which is inconsistent with the prespecified protocol requirement of 1e-3.",
+  "gate_failures": [
+    {
+      "check": "Beta-obs quadrature convergence (64 vs 128 GL nodes)",
+      "cell": "beta_obs,n=120,mu_mid=0.4",
+      "observed_max_bayes_curve_deviation": 0.0010055491406829042,
+      "threshold": 0.001,
+      "status": "FAIL"
+    },
+    {
+      "check": "Beta-obs quadrature convergence (64 vs 128 GL nodes)",
+      "cell": "beta_obs,n=120,mu_mid=0.8",
+      "observed_max_bayes_curve_deviation": 0.0009257591938929277,
+      "threshold": 0.001,
+      "status": "PASS"
+    }
+  ],
+  "corrected_status": "FAIL",
+  "original_artifact_sha256": {
+    "metrics.json": "d9c5601b6193ffdd4d53dbe1e3d8a5d290d4b3f96b7feff683e5fca8d2cd2e02",
+    "oracle_checks.json": "cd1bb4d93b30c07c328fca6e06745e9e978b1b46e3edaab029cb20e4b64a30eb",
+    "manifest.json": "8a097993a55f6cbb5ed16be1a838b31df2c4f4a41fc0a13c7738105425ad201b"
+  },
+  "note": "This file is a post-hoc correction record. The original artifacts in this directory have NOT been modified to preserve their SHA256 integrity. This file documents the discrepancy between metrics.json (gate_pass=true, incorrect) and run_log.txt (gate check FAIL, correct). See docs/manuscripts/revision_artifacts/E02_GATE_RESOLUTION.md for the full investigation and resolution.",
+  "resolution": "Protocol amended to use 128-node GL (raised from 64) as confirmatory method; gate comparison changed to 128 vs 256 nodes. Corrected run PASSED: results/confirmatory/E02_family_portability/621e2f1812b22ffa/",
+  "corrected_run_sha256_prefix": "621e2f1812b22ffa",
+  "corrected_run_gate_pass": true
+}

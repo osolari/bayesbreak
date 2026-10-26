@@ -1,0 +1,29 @@
+{
+  "experiment_id": "E07",
+  "protocol_revision": "2026-10-21-2",
+  "config_sha256": "a038ac8e7e4a17b95ec27177819d99457ca53773e2c7b9487d09090b50d99c8c",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "run_tag": "CONFIRMATORY",
+  "utc_start": "2026-10-24T22:31:54.868903+00:00",
+  "wall_seconds": 523.4,
+  "python_version": "3.12.9",
+  "numpy_version": "2.5.4",
+  "scipy_version": "1.18.1",
+  "n_cells": 20,
+  "n_replicates": 100,
+  "n_total_runs": 2000,
+  "n_total_failed": 0,
+  "gate_pass": true,
+  "results_dir": "/Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E07_misspecification/a038ac8e7e4a17b9",
+  "artifact_sha256": {
+    "failed_runs.csv": "0e5e6456e2c7b236c5954620a68c69765de06d4e972adb8103d87cf030d85179",
+    "fig_E07_robustness.pdf": "2184ce463ad8468072c3718253c998e6787f91e3b96decb59b99b006b432d893",
+    "fig_E07_robustness.png": "7a1bb79dda0fc7ba33c19676af19c9bc68227acb018da8f15ee5c81542d29431",
+    "metrics.csv": "c811b1af1908ba3bc7f1e9bf21977f98eda7ca379ffd8a916398dfe34311e4d7",
+    "metrics.json": "aec93178f07c9d0f4c3b9c9a229aa398ff22765a482e464a7be4cdc080da0f90",
+    "oracle_checks.json": "77a781d9be23481a616c38c08daad00d34b534b6e51f4523395354f56cece2dd",
+    "replicates.csv": "0c6ecab8023d444d9678e2f4e6b811d1863152a164b39eb9aab776313ce9c1a8",
+    "run_log.txt": "1185ed30b690a96232054b5fe2c88c514b498c0be97f43d899cc4d6db8c25d58",
+    "tab_E07_robustness.tex": "56b860a96337815dfae36d65530af9700e55ce82cb3ecffd9aafae8d47dee50d"
+  }
+}

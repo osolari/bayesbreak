@@ -1,0 +1,24 @@
+{
+  "id": "E09_supplemental_boundary_marginals",
+  "type": "supplemental",
+  "parent_e09_sha256_prefix": "0f5281c46ee8976e",
+  "config_sha256": "dc8432589c3fa528aaecea26738151c5e7fc82bd7ff68494b847a1bb4b3cfac0",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "utc_start": "2026-10-25T22:01:02.416206+00:00",
+  "utc_end": "2026-10-25T22:04:09.202748+00:00",
+  "elapsed_seconds": 186.7864022089634,
+  "n_configurations": 6,
+  "n_failed": 0,
+  "environment": {
+    "python": "3.11.17 (main, Oct  1 2026, 20:09:52) [Clang 20.1.8 ]",
+    "numpy": "2.4.6",
+    "platform": "macOS-26.6.1-arm64-arm-64bit"
+  },
+  "notes": [
+    "Boundary marginals P(b_i=1|y,k_map) computed exactly via the BayesBreak DP.",
+    "No MCMC or variational approximation is used.",
+    "All marginals conditioned on k_map (MAP segment count).",
+    "For resolved configurations, k_map is the MAP under the full tested range.",
+    "This is a supplemental analysis, not part of the frozen E09 confirmatory protocol."
+  ]
+}

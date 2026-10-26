@@ -284,7 +284,34 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         y: ArrayLike,
         *,
         sample_weight: ArrayLike | None = None,
+        likelihood_power: ArrayLike | None = None,
+        observation_mask: ArrayLike | None = None,
     ) -> BayesBreakSegmenter:
+        # ---- 0. Pre-process mask ------------------------------------------------
+        # Masked (missing) observations may carry arbitrary stored values,
+        # including NaN or inf, since they never enter any computation.
+        # Sanitize non-finite y / invalid w at masked positions so that
+        # check_segmentation_input (which rejects non-finite values globally)
+        # does not reject valid datasets with masked nonfinite entries.
+        _pre_mask: np.ndarray | None = None
+        if observation_mask is not None:
+            _pre_mask = np.asarray(observation_mask, dtype=bool).ravel()
+            _y_in = np.asarray(y, dtype=float)
+            if _y_in.ndim == 1 and _y_in.size == _pre_mask.size:
+                _bad_y = ~_pre_mask & ~np.isfinite(_y_in)
+                if np.any(_bad_y):
+                    _y_in = _y_in.copy()
+                    _y_in[_bad_y] = 0.0
+                    y = _y_in
+            if sample_weight is not None:
+                _w_in = np.asarray(sample_weight, dtype=float)
+                if _w_in.ndim == 1 and _w_in.size == _pre_mask.size:
+                    _bad_w = ~_pre_mask & (~np.isfinite(_w_in) | (_w_in < 0))
+                    if np.any(_bad_w):
+                        _w_in = _w_in.copy()
+                        _w_in[_bad_w] = 1.0
+                        sample_weight = _w_in
+
         # ---- 1. Validate inputs -------------------------------------------------
         if not isinstance(self.k_max, int | np.integer) or int(self.k_max) < 1:
             raise ValueError("k_max must be a positive integer.")
@@ -302,8 +329,49 @@ class BayesBreakSegmenter(BaseEstimator, RegressorMixin, TransformerMixin, ABC):
         self.sample_weight_ = w_arr
         self._y_train_ = y_arr.copy()
 
-        # ---- 2. Hyperparameters ------------------------------------------------
-        hyper = self._estimate_hyperparameters(y_arr, w_arr)
+        # ---- Observation mask --------------------------------------------------
+        # True = observed (enters likelihood); False = missing (excluded).
+        # Distinct from likelihood_power: masked obs are not observed at all
+        # and do not enter hyperparameter estimation or sufficient statistics.
+        if _pre_mask is None:
+            mask_arr = np.ones(n, dtype=bool)
+        else:
+            mask_arr = _pre_mask
+            if mask_arr.size != n:
+                raise ValueError(
+                    f"observation_mask must have length n={n}; got {mask_arr.size}."
+                )
+        self.observation_mask_ = mask_arr
+
+        # ---- Generalized-Bayes power weights a_r --------------------------------
+        # Distinct from the observation descriptor sample_weight and from
+        # observation_mask.  Default is all-ones (ordinary sampling).
+        if likelihood_power is None:
+            a_raw = np.ones(n, dtype=float)
+        else:
+            a_raw = np.asarray(likelihood_power, dtype=float).ravel()
+            if a_raw.size != n:
+                raise ValueError(
+                    f"likelihood_power must have length n={n}; got {a_raw.size}."
+                )
+            if not np.all(a_raw >= 0):
+                raise ValueError("All likelihood_power values must be non-negative.")
+        # Effective power: masked observations receive 0 regardless of a_raw,
+        # so they contribute nothing to block evidence or posterior parameters.
+        self.likelihood_power_ = np.where(mask_arr, a_raw, 0.0)
+
+        # ---- 2. Hyperparameters (observed data only) ----------------------------
+        # Masked observations must not enter hyperparameter estimation.
+        n_observed = int(np.sum(mask_arr))
+        if n_observed == 0 and self.estimate_hyper:
+            raise ValueError(
+                f"observation_mask excludes all {n} observations. Cannot estimate "
+                "hyperparameters from entirely missing data. Provide at least one "
+                "observed data point or set estimate_hyper=False with fixed hyperparameters."
+            )
+        y_obs = y_arr[mask_arr]
+        w_obs = w_arr[mask_arr]
+        hyper = self._estimate_hyperparameters(y_obs, w_obs)
         if not isinstance(hyper, dict):
             raise TypeError("_estimate_hyperparameters must return a dict")
         self.hyper_ = {str(k): float(v) for k, v in hyper.items()}

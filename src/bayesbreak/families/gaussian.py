@@ -21,8 +21,19 @@ class BayesBreakGaussian(BayesBreakSegmenter):
     For segment ``q`` with constant mean :math:`\mu_q`:
 
     .. math::
-        y_i \mid \mu_q \sim \mathcal{N}(\mu_q, \sigma^2 / w_i), \quad
+        y_i \mid \mu_q, w_i \sim \mathcal{N}(\mu_q,\; \sigma^2 / w_i), \quad
         \mu_q \sim \mathcal{N}(\nu, \rho^2).
+
+    Here :math:`w_i > 0` is the **known observation precision** (inverse
+    variance scale factor): the sampling variance of :math:`y_i` is
+    :math:`\sigma^2 / w_i`.  This is a property of the sampling distribution,
+    not a generalized-Bayes likelihood power.  For an optional power weight
+    :math:`a_i \neq 1` that raises the entire log-likelihood contribution to a
+    power, supply a separate mechanism; do not pass it as ``sample_weight``.
+
+    ``sample_weight`` in :meth:`fit` carries the per-observation precisions
+    :math:`w_i`.  When omitted, all precisions default to 1 (unit precision,
+    variance :math:`\sigma^2`).
 
     Hyperparameters :math:`(\nu, \rho^2, \sigma^2)` are either estimated via a
     light-weight empirical-Bayes routine or fixed by the user.
@@ -134,37 +145,53 @@ class BayesBreakGaussian(BayesBreakSegmenter):
         nu, rho2, sigma2 = hyper["nu"], hyper["rho2"], hyper["sigma2"]
         n = y.size
         w = sample_weight
+        # Generalized-Bayes power weights a_r (default ones = ordinary sampling).
+        # Fallback to ones when the attribute is absent (wrappers that call
+        # _compute_block_evidence directly without going through fit()).
+        _lp = getattr(self, 'likelihood_power_', None)
+        a = _lp if (_lp is not None and _lp.size == n) else np.ones(n, dtype=float)
 
-        W = np.zeros(n + 1, dtype=float)
-        W[1:] = np.cumsum(w)
-        Sy = np.zeros(n + 1, dtype=float)
-        Sy[1:] = np.cumsum(w * y)
-        Sy2 = np.zeros(n + 1, dtype=float)
-        Sy2[1:] = np.cumsum(w * (y * y))
+        # Prefix tables for the general combined formula.
+        # With a_r = 1 these reduce exactly to the Proposition 1 formula.
+        SA = np.zeros(n + 1, dtype=float)
+        SA[1:] = np.cumsum(a)                                           # Σa_r
+        SAW = np.zeros(n + 1, dtype=float)
+        SAW[1:] = np.cumsum(a * w)                                      # Σa_r·w_r
+        SAWy = np.zeros(n + 1, dtype=float)
+        SAWy[1:] = np.cumsum(a * w * y)                                 # Σa_r·w_r·y_r
+        SAWy2 = np.zeros(n + 1, dtype=float)
+        SAWy2[1:] = np.cumsum(a * w * (y * y))                         # Σa_r·w_r·y_r²
+        SAlogW = np.zeros(n + 1, dtype=float)
+        SAlogW[1:] = np.cumsum(a * np.log(np.maximum(w, 1e-300)))      # Σa_r·log(w_r)
 
         # Vectorised outer-difference construction of the (n+1, n+1) block
         # tables. Upper triangle j > i is admissible; the strict lower
         # triangle and the diagonal receive the sentinel -inf.
         upper = np.triu(np.ones((n + 1, n + 1), dtype=bool), k=1)
 
-        Wij = W[None, :] - W[:, None]
-        Syij = Sy[None, :] - Sy[:, None]
-        Sy2ij = Sy2[None, :] - Sy2[:, None]
+        SAWij = SAW[None, :] - SAW[:, None]
+        SAWyij = SAWy[None, :] - SAWy[:, None]
+        SAWy2ij = SAWy2[None, :] - SAWy2[:, None]
+        SAlogWij = SAlogW[None, :] - SAlogW[:, None]
+        SAij = SA[None, :] - SA[:, None]       # effective observation count Σa_r
 
         log2pi_sigma = math.log(2.0 * math.pi * sigma2)
-        ysum_c = Syij - nu * Wij
-        y2sum = Sy2ij - 2.0 * nu * Syij + (nu * nu) * Wij
-        # Guard log1p / division on inadmissible cells where Wij <= 0.
-        Wij_safe = np.where(upper, np.maximum(Wij, 1e-300), 1.0)
-        term1 = -0.5 * Wij_safe * log2pi_sigma
-        term2 = -0.5 * np.log1p(Wij_safe * (rho2 / sigma2))
-        denom = Wij_safe + (sigma2 / rho2)
+        ysum_c = SAWyij - nu * SAWij
+        y2sum = SAWy2ij - 2.0 * nu * SAWyij + (nu * nu) * SAWij
+        # Guard log1p / division on inadmissible cells where SAWij <= 0.
+        SAWij_safe = np.where(upper, np.maximum(SAWij, 1e-300), 1.0)
+        # Combined normalization: Σa_r·(-½·log(2πσ²)) + Σa_r·½·log(w_r).
+        # For a_r=1: reduces to −N_B/2·log(2πσ²) + ½·Σlog(w_r) (Proposition 1).
+        # For w_r=1: reduces to −(Σa_r)/2·log(2πσ²) (generalized-Bayes).
+        term1 = -0.5 * SAij * log2pi_sigma + 0.5 * SAlogWij
+        term2 = -0.5 * np.log1p(SAWij_safe * (rho2 / sigma2))
+        denom = SAWij_safe + (sigma2 / rho2)
         term3 = 0.5 / sigma2 * (ysum_c * ysum_c / denom - y2sum)
 
         lA0 = np.full((n + 1, n + 1), -np.inf, dtype=float)
         lA0[upper] = (term1 + term2 + term3)[upper]
 
-        mu_hat = (rho2 * Syij + sigma2 * nu) / (rho2 * Wij_safe + sigma2)
+        mu_hat = (rho2 * SAWyij + sigma2 * nu) / (rho2 * SAWij_safe + sigma2)
         A1 = np.zeros((n + 1, n + 1), dtype=float)
         A1[upper] = mu_hat[upper]
 
@@ -175,8 +202,10 @@ class BayesBreakGaussian(BayesBreakSegmenter):
     ) -> float:
         nu, rho2, sigma2 = hyper["nu"], hyper["rho2"], hyper["sigma2"]
         w = sample_weight[a:b]
-        Wseg = float(np.sum(w))
-        Syseg = float(np.sum(w * y[a:b]))
+        _lp = getattr(self, 'likelihood_power_', None)
+        lp = _lp[a:b] if _lp is not None else np.ones(b - a, dtype=float)
+        Wseg = float(np.sum(lp * w))
+        Syseg = float(np.sum(lp * w * y[a:b]))
         return (rho2 * Syseg + sigma2 * nu) / (rho2 * Wseg + sigma2)
 
     def posterior_predictive_logpdf_block(
@@ -199,8 +228,10 @@ class BayesBreakGaussian(BayesBreakSegmenter):
         assert self.sample_weight_ is not None and self._y_train_ is not None
         w_train = self.sample_weight_[a:b]
         y_train = self._y_train_[a:b]
-        Wseg = float(np.sum(w_train))
-        Syseg = float(np.sum(w_train * y_train))
+        _lp = getattr(self, 'likelihood_power_', None)
+        lp = _lp[a:b] if _lp is not None else np.ones(b - a, dtype=float)
+        Wseg = float(np.sum(lp * w_train))
+        Syseg = float(np.sum(lp * w_train * y_train))
         mu_post = (rho2 * Syseg + sigma2 * nu) / (rho2 * Wseg + sigma2)
         rho2_post = (rho2 * sigma2) / (rho2 * Wseg + sigma2)
 

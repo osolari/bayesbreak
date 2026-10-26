@@ -1,0 +1,118 @@
+2026-10-23 19:03:07,762 INFO ======================================================================
+2026-10-23 19:03:07,762 INFO E04 shared-boundary pooling — CONFIRMATORY run
+2026-10-23 19:03:07,763 INFO Config SHA256: 0d135a601bdf32b1
+2026-10-23 19:03:07,763 INFO n_reps=100, n_boot=2000
+2026-10-23 19:03:07,763 INFO ======================================================================
+2026-10-23 19:03:07,809 INFO Total cells: 12 (4 S values × 3 nonshared_fraction values)
+2026-10-23 19:03:07,810 INFO Running oracle checks...
+2026-10-23 19:03:09,266 INFO Oracle check (n=8, S=2, k_max=3): max_bm_dev=4.996e-16, log_ev_dev=0.000e+00
+2026-10-23 19:03:09,266 INFO Oracle gate: PASS (max_bm_dev=4.996e-16)
+2026-10-23 19:03:09,266 INFO [Cell 1/12] S=1,nf=0
+2026-10-23 19:03:23,153 INFO   Rep 20/100 done
+2026-10-23 19:03:37,037 INFO   Rep 40/100 done
+2026-10-23 19:03:50,942 INFO   Rep 60/100 done
+2026-10-23 19:04:04,713 INFO   Rep 80/100 done
+2026-10-23 19:04:18,455 INFO   Rep 100/100 done
+2026-10-23 19:04:18,574 INFO   Cell done | elapsed 69.3s | n_rep=100 | pooled_f1=0.893 | indep_f1=0.893
+2026-10-23 19:04:18,574 INFO [Cell 2/12] S=1,nf=0.25
+2026-10-23 19:04:32,307 INFO   Rep 20/100 done
+2026-10-23 19:04:46,017 INFO   Rep 40/100 done
+2026-10-23 19:04:59,749 INFO   Rep 60/100 done
+2026-10-23 19:05:13,519 INFO   Rep 80/100 done
+2026-10-23 19:05:27,291 INFO   Rep 100/100 done
+2026-10-23 19:05:27,413 INFO   Cell done | elapsed 68.8s | n_rep=100 | pooled_f1=0.886 | indep_f1=0.886
+2026-10-23 19:05:27,413 INFO [Cell 3/12] S=1,nf=0.5
+2026-10-23 19:05:41,306 INFO   Rep 20/100 done
+2026-10-23 19:05:55,620 INFO   Rep 40/100 done
+2026-10-23 19:06:09,476 INFO   Rep 60/100 done
+2026-10-23 19:06:23,276 INFO   Rep 80/100 done
+2026-10-23 19:06:37,078 INFO   Rep 100/100 done
+2026-10-23 19:06:37,199 INFO   Cell done | elapsed 69.8s | n_rep=100 | pooled_f1=0.005 | indep_f1=0.877
+2026-10-23 19:06:37,199 INFO [Cell 4/12] S=4,nf=0
+2026-10-23 19:07:06,602 INFO   Rep 20/100 done
+2026-10-23 19:07:36,015 INFO   Rep 40/100 done
+2026-10-23 19:08:05,447 INFO   Rep 60/100 done
+2026-10-23 19:08:34,825 INFO   Rep 80/100 done
+2026-10-23 19:09:04,528 INFO   Rep 100/100 done
+2026-10-23 19:09:04,648 INFO   Cell done | elapsed 147.4s | n_rep=100 | pooled_f1=0.990 | indep_f1=0.890
+2026-10-23 19:09:04,648 INFO [Cell 5/12] S=4,nf=0.25
+2026-10-23 19:09:34,306 INFO   Rep 20/100 done
+2026-10-23 19:10:04,089 INFO   Rep 40/100 done
+2026-10-23 19:10:33,824 INFO   Rep 60/100 done
+2026-10-23 19:11:03,658 INFO   Rep 80/100 done
+2026-10-23 19:11:33,727 INFO   Rep 100/100 done
+2026-10-23 19:11:33,854 INFO   Cell done | elapsed 149.2s | n_rep=100 | pooled_f1=0.717 | indep_f1=0.906
+2026-10-23 19:11:33,855 INFO [Cell 6/12] S=4,nf=0.5
+2026-10-23 19:12:03,534 INFO   Rep 20/100 done
+2026-10-23 19:12:33,384 INFO   Rep 40/100 done
+2026-10-23 19:13:03,299 INFO   Rep 60/100 done
+2026-10-23 19:13:32,917 INFO   Rep 80/100 done
+2026-10-23 19:14:03,163 INFO   Rep 100/100 done
+2026-10-23 19:14:03,286 INFO   Cell done | elapsed 149.4s | n_rep=100 | pooled_f1=0.648 | indep_f1=0.899
+2026-10-23 19:14:03,286 INFO [Cell 7/12] S=16,nf=0
+2026-10-23 19:15:37,803 INFO   Rep 20/100 done
+2026-10-23 19:17:11,295 INFO   Rep 40/100 done
+2026-10-23 19:18:44,422 INFO   Rep 60/100 done
+2026-10-23 19:20:19,443 INFO   Rep 80/100 done
+2026-10-23 19:21:52,585 INFO   Rep 100/100 done
+2026-10-23 19:21:52,710 INFO   Cell done | elapsed 469.4s | n_rep=100 | pooled_f1=1.000 | indep_f1=0.892
+2026-10-23 19:21:52,710 INFO [Cell 8/12] S=16,nf=0.25
+2026-10-23 19:23:25,753 INFO   Rep 20/100 done
+2026-10-23 19:24:58,114 INFO   Rep 40/100 done
+2026-10-23 19:26:30,453 INFO   Rep 60/100 done
+2026-10-23 19:28:03,116 INFO   Rep 80/100 done
+2026-10-23 19:29:35,871 INFO   Rep 100/100 done
+2026-10-23 19:29:35,996 INFO   Cell done | elapsed 463.3s | n_rep=100 | pooled_f1=0.667 | indep_f1=0.892
+2026-10-23 19:29:35,996 INFO [Cell 9/12] S=16,nf=0.5
+2026-10-23 19:30:40,984 INFO   Rep 20/100 done
+2026-10-23 19:31:42,228 INFO   Rep 40/100 done
+2026-10-23 19:32:42,649 INFO   Rep 60/100 done
+2026-10-23 19:33:43,712 INFO   Rep 80/100 done
+2026-10-23 19:34:45,349 INFO   Rep 100/100 done
+2026-10-23 19:34:45,429 INFO   Cell done | elapsed 309.4s | n_rep=100 | pooled_f1=0.666 | indep_f1=0.896
+2026-10-23 19:34:45,429 INFO [Cell 10/12] S=64,nf=0
+2026-10-23 19:38:26,760 INFO   Rep 20/100 done
+2026-10-23 19:42:07,824 INFO   Rep 40/100 done
+2026-10-23 19:45:48,558 INFO   Rep 60/100 done
+2026-10-23 19:49:29,238 INFO   Rep 80/100 done
+2026-10-23 19:53:09,799 INFO   Rep 100/100 done
+2026-10-23 19:53:09,879 INFO   Cell done | elapsed 1104.4s | n_rep=100 | pooled_f1=1.000 | indep_f1=0.893
+2026-10-23 19:53:09,879 INFO [Cell 11/12] S=64,nf=0.25
+2026-10-23 19:56:51,386 INFO   Rep 20/100 done
+2026-10-23 20:00:33,433 INFO   Rep 40/100 done
+2026-10-23 20:04:15,473 INFO   Rep 60/100 done
+2026-10-23 20:07:58,217 INFO   Rep 80/100 done
+2026-10-23 20:11:41,143 INFO   Rep 100/100 done
+2026-10-23 20:11:41,223 INFO   Cell done | elapsed 1111.3s | n_rep=100 | pooled_f1=0.667 | indep_f1=0.891
+2026-10-23 20:11:41,223 INFO [Cell 12/12] S=64,nf=0.5
+2026-10-23 20:15:22,953 INFO   Rep 20/100 done
+2026-10-23 20:19:05,045 INFO   Rep 40/100 done
+2026-10-23 20:22:46,521 INFO   Rep 60/100 done
+2026-10-23 20:26:28,812 INFO   Rep 80/100 done
+2026-10-23 20:30:10,888 INFO   Rep 100/100 done
+2026-10-23 20:30:10,969 INFO   Cell done | elapsed 1109.8s | n_rep=100 | pooled_f1=0.667 | indep_f1=0.896
+2026-10-23 20:30:10,970 INFO Generating figures...
+2026-10-23 20:30:11,540 INFO Saved figures to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1/figures/fig_E04_pooled
+2026-10-23 20:30:11,540 INFO Generating LaTeX table...
+2026-10-23 20:30:11,541 INFO Saved LaTeX table to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1/tables/tab_E04_comparison.tex
+2026-10-23 20:30:11,541 INFO Saved metrics CSV to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1/metrics.csv
+2026-10-23 20:30:11,548 INFO No failed replicates.
+2026-10-23 20:30:11,548 INFO Saved oracle checks to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1/oracle_checks.json
+2026-10-23 20:30:11,548 INFO 
+2026-10-23 20:30:11,548 INFO ======================================================================
+2026-10-23 20:30:11,548 INFO --- Gate checks ---
+2026-10-23 20:30:11,548 INFO Oracle max_bm_dev: 4.996e-16 [PASS]
+2026-10-23 20:30:11,548 INFO Cells completed: 12/12 [PASS]
+2026-10-23 20:30:11,549 INFO Saved metrics to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1/metrics.json
+2026-10-23 20:30:11,601 INFO Saved manifest to /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1/manifest.json
+2026-10-23 20:30:11,601 INFO 
+2026-10-23 20:30:11,601 INFO ======================================================================
+2026-10-23 20:30:11,601 INFO E04 CONFIRMATORY complete in 5223.2s
+2026-10-23 20:30:11,601 INFO Cells: 12 planned, 12 completed, 0 failed
+2026-10-23 20:30:11,601 INFO Replicates: 1200 completed, 0 failed
+2026-10-23 20:30:11,601 INFO Config SHA256: 0d135a601bdf32b1
+2026-10-23 20:30:11,601 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E04_shared_boundary/0d135a601bdf32b1
+2026-10-23 20:30:11,601 INFO ======================================================================
+2026-10-23 20:30:11,601 INFO All gate checks PASSED.
+2026-10-23 20:30:11,601 INFO E04 result: PASS
+2026-10-23 20:30:11,601 INFO gate_pass: True

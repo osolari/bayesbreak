@@ -1,0 +1,35 @@
+2026-10-25 14:53:09,276 INFO Supplemental E09 ruptures baselines starting.
+2026-10-25 14:53:09,276 INFO config_sha256=1aa2500bdfe56fb9b6745edeb54929d6b3a91d50a904c6d34e72057dbc364f08
+2026-10-25 14:53:09,276 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_ruptures_baselines/1aa2500bdfe56fb9
+2026-10-25 14:53:09,276 INFO canonical_e09_sha256_prefix=0f5281c46ee8976e
+2026-10-25 14:53:09,644 INFO Loading datasets...
+2026-10-25 14:53:09,652 INFO welllog: n_full=4050 n_stride8=507
+2026-10-25 14:53:10,700 INFO cgh: n_probes=2215 subject0 shape=(2215,)
+2026-10-25 14:53:10,700 INFO BayesBreak k_map: welllog_full=83 welllog_stride8=25 cgh_subject0=71
+2026-10-25 14:53:10,700 INFO welllog_full: n=4050 sigma2=4674808.1900 BIC penalty=77662328.17
+2026-10-25 14:53:10,809 INFO welllog_full PELT BIC: n_segments=58 elapsed=0.11s F1@3_vs_bb=0.000
+2026-10-25 14:53:14,033 INFO welllog_full Dynp n_bkps=5: n_segments=6 elapsed=3.22s
+2026-10-25 14:53:19,399 INFO welllog_full Dynp n_bkps=10: n_segments=11 elapsed=5.37s
+2026-10-25 14:53:27,300 INFO welllog_full Dynp n_bkps=15: n_segments=16 elapsed=7.90s
+2026-10-25 14:53:27,619 INFO welllog_full BinSeg: 7 configurations computed
+2026-10-25 14:53:27,619 INFO welllog_stride8: n=507 sigma2=5466698.1200 BIC penalty=68098778.79
+2026-10-25 14:53:27,623 INFO welllog_stride8 PELT BIC: n_segments=19 elapsed=0.00s F1@3_vs_bb=0.000
+2026-10-25 14:53:27,680 INFO welllog_stride8 Dynp n_bkps=5: n_segments=6 elapsed=0.06s
+2026-10-25 14:53:27,731 INFO welllog_stride8 Dynp n_bkps=10: n_segments=11 elapsed=0.05s
+2026-10-25 14:53:27,814 INFO welllog_stride8 Dynp n_bkps=15: n_segments=16 elapsed=0.08s
+2026-10-25 14:53:27,888 INFO welllog_stride8 Dynp n_bkps=18: n_segments=19 elapsed=0.07s
+2026-10-25 14:53:27,987 INFO welllog_stride8 Dynp n_bkps=20: n_segments=21 elapsed=0.10s
+2026-10-25 14:53:28,102 INFO welllog_stride8 Dynp n_bkps=25: n_segments=26 elapsed=0.11s
+2026-10-25 14:53:28,205 INFO welllog_stride8 Dynp n_bkps=30: n_segments=31 elapsed=0.10s
+2026-10-25 14:53:28,239 INFO welllog_stride8 BinSeg: 7 configurations computed
+2026-10-25 14:53:28,254 INFO welllog_stride8 BottomUp: 7 configurations computed
+2026-10-25 14:53:28,254 INFO cgh_single_subject0: n=2215 sigma2=0.0057 BIC penalty=0.09
+2026-10-25 14:53:28,314 INFO cgh_single_subject0 PELT BIC: n_segments=43 elapsed=0.06s F1@3_vs_bb=0.000
+2026-10-25 14:53:29,170 INFO cgh_single_subject0 Dynp n_bkps=5: n_segments=6 elapsed=0.86s
+2026-10-25 14:53:30,520 INFO cgh_single_subject0 Dynp n_bkps=10: n_segments=11 elapsed=1.35s
+2026-10-25 14:53:32,516 INFO cgh_single_subject0 Dynp n_bkps=15: n_segments=16 elapsed=2.00s
+2026-10-25 14:53:32,679 INFO cgh_single_subject0 BinSeg: 7 configurations computed
+2026-10-25 14:53:32,753 INFO cgh_single_subject0 BottomUp: 7 configurations computed
+2026-10-25 14:53:32,754 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_ruptures_baselines/1aa2500bdfe56fb9/metrics.json
+2026-10-25 14:53:32,827 INFO Wrote manifest: /Users/Omid.Solari/workspace/projects/bayesbreak/results/supplemental/E09_ruptures_baselines/1aa2500bdfe56fb9/manifest.json
+2026-10-25 14:53:32,827 INFO Supplemental E09 ruptures complete. elapsed=23.5s

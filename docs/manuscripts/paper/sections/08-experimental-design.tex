@@ -361,14 +361,23 @@ worst-case complexity as different quantities.
 
 \begin{figure}[!htbp]
 \centering
-\BBPlannedPanel{(a) Component wall time}{Elapsed seconds}{Sequence length $n$}
-\hfill
-\BBPlannedPanel{(b) Peak memory}{Peak resident memory}{Sequence length $n$}
-\caption{\textbf{Planned Figure P5 (E10).} Component timing and peak memory
-with run-to-run dispersion; proposed guide curves represent theoretical
-complexity and are not fitted performance claims.}
+\includegraphics[width=\textwidth,keepaspectratio]{shared/figures/results/fig_E10_scaling.png}
+\caption{\textbf{E10: Gaussian scaling benchmark.}
+End-to-end wall-clock time (left) and peak memory (right) across the protocol grid
+$n\in\{128,256,512,1024,2048\}$, $k_{\max}\in\{5,10,20\}$, with BLAS threads pinned to 1,
+three warmup runs, and seven timed repeats per cell.
+The dashed curve is a $\propto n^2$ guide anchored at $n=128$, $k_{\max}=20$;
+it represents the theoretical worst-case complexity, not a fitted claim.
+Medians over 7 repeats are shown; within-cell variation was below $2\%$ for all cells.
+Memory scales as $O(n^2)$ (empirical slope $1.98$).
+End-to-end and forward-backward time scale as approximately $O(k_{\max}\cdot n^{1.14})$
+in practice on the measured hardware (Apple Silicon, NumPy 2.4.6); see
+Table~\ref{tab:E10-scaling-paper} and the gate resolution document for a full account.
+Results from run config SHA256 \texttt{bece422c9d90093f}.}
 \label{fig:planned-scaling-paper}
 \end{figure}
+
+\input{shared/tables/defs/tab_E10_scaling.tex}
 
 \subsection{Criteria for replacing planned outputs}
 A planned slot is populated only when the generating configuration, data or

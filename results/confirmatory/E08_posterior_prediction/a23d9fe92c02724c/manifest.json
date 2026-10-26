@@ -1,0 +1,61 @@
+{
+  "id": "E08",
+  "protocol_revision": "2026-10-24-2",
+  "config_sha256": "a23d9fe92c02724cfe7af740591dd0526d2e0b1ce6530c81359b527b3ec0ab5f",
+  "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2",
+  "utc_start": "2026-10-25T01:02:57.037258+00:00",
+  "utc_end": "2026-10-25T01:07:14.526178+00:00",
+  "pilot": false,
+  "n_cells": 8,
+  "n_total_rows": 1600,
+  "n_failed": 0,
+  "holdout_windows": {
+    "240": [
+      [
+        24,
+        60
+      ],
+      [
+        72,
+        108
+      ],
+      [
+        132,
+        168
+      ],
+      [
+        180,
+        216
+      ]
+    ],
+    "120": [
+      [
+        12,
+        30
+      ],
+      [
+        36,
+        54
+      ],
+      [
+        66,
+        84
+      ],
+      [
+        90,
+        108
+      ]
+    ]
+  },
+  "environment": {
+    "python": "3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 12:55:12) [Clang 14.0.6 ]",
+    "numpy": "2.5.4",
+    "platform": "macOS-26.6.1-arm64-arm-64bit",
+    "git_revision": "dfcc529c97810f0a3c4541e5cb7ccc9a61d5b9b2"
+  },
+  "output_files": {
+    "metrics_csv": "metrics.csv",
+    "metrics_json": "metrics.json"
+  },
+  "gate_pass": true
+}

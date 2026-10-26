@@ -1,0 +1,76 @@
+2026-10-24 13:45:05,050 INFO run_e06: ======================================================================
+2026-10-24 13:45:05,050 INFO run_e06: E06: nonconjugate block-evidence approximations
+2026-10-24 13:45:05,050 INFO run_e06: Config SHA256: 9739f69c790aae6fc6d5598b7edc1fc4ae36751fb605c05bd832d8948b1f0b96
+2026-10-24 13:45:05,050 INFO run_e06: Output directory: results/confirmatory/E06_nonconjugate/9739f69c790aae6f
+2026-10-24 13:45:05,050 INFO run_e06: ======================================================================
+2026-10-24 13:45:05,075 INFO run_e06: Manifest written to results/confirmatory/E06_nonconjugate/9739f69c790aae6f/manifest.json
+2026-10-24 13:45:05,075 INFO run_e06: Block oracle: B=4, p=0.05 (100 replicates)
+2026-10-24 13:45:05,886 INFO run_e06:   Done in 0.8s | la_med=0.0219 jj_med=0.2071 ep_med=2.2263 jj_lb_viol=0/100
+2026-10-24 13:45:05,886 INFO run_e06: Block oracle: B=4, p=0.50 (100 replicates)
+2026-10-24 13:45:06,064 INFO run_e06:   Done in 0.2s | la_med=0.0373 jj_med=0.0679 ep_med=0.5718 jj_lb_viol=0/100
+2026-10-24 13:45:06,064 INFO run_e06: Block oracle: B=4, p=0.95 (100 replicates)
+2026-10-24 13:45:06,255 INFO run_e06:   Done in 0.2s | la_med=0.0219 jj_med=0.2071 ep_med=2.2263 jj_lb_viol=0/100
+2026-10-24 13:45:06,255 INFO run_e06: Block oracle: B=8, p=0.05 (100 replicates)
+2026-10-24 13:45:06,488 INFO run_e06:   Done in 0.2s | la_med=0.0208 jj_med=0.3464 ep_med=4.1012 jj_lb_viol=0/100
+2026-10-24 13:45:06,488 INFO run_e06: Block oracle: B=8, p=0.50 (100 replicates)
+2026-10-24 13:45:06,679 INFO run_e06:   Done in 0.2s | la_med=0.0250 jj_med=0.0315 ep_med=0.5485 jj_lb_viol=0/100
+2026-10-24 13:45:06,680 INFO run_e06: Block oracle: B=8, p=0.95 (100 replicates)
+2026-10-24 13:45:06,908 INFO run_e06:   Done in 0.2s | la_med=0.0208 jj_med=0.3464 ep_med=4.1012 jj_lb_viol=0/100
+2026-10-24 13:45:06,908 INFO run_e06: Block oracle: B=16, p=0.05 (100 replicates)
+2026-10-24 13:45:07,171 INFO run_e06:   Done in 0.3s | la_med=0.0212 jj_med=0.5179 ep_med=6.7775 jj_lb_viol=0/100
+2026-10-24 13:45:07,171 INFO run_e06: Block oracle: B=16, p=0.50 (100 replicates)
+2026-10-24 13:45:07,371 INFO run_e06:   Done in 0.2s | la_med=0.0140 jj_med=0.0137 ep_med=0.3950 jj_lb_viol=0/100
+2026-10-24 13:45:07,371 INFO run_e06: Block oracle: B=16, p=0.95 (100 replicates)
+2026-10-24 13:45:07,634 INFO run_e06:   Done in 0.3s | la_med=0.0212 jj_med=0.5179 ep_med=6.7775 jj_lb_viol=0/100
+2026-10-24 13:45:07,634 INFO run_e06: Block oracle: B=32, p=0.05 (100 replicates)
+2026-10-24 13:45:07,944 INFO run_e06:   Done in 0.3s | la_med=0.0215 jj_med=0.4694 ep_med=9.2992 jj_lb_viol=0/100
+2026-10-24 13:45:07,945 INFO run_e06: Block oracle: B=32, p=0.50 (100 replicates)
+2026-10-24 13:45:08,192 INFO run_e06:   Done in 0.2s | la_med=0.0075 jj_med=0.0098 ep_med=0.4503 jj_lb_viol=0/100
+2026-10-24 13:45:08,192 INFO run_e06: Block oracle: B=32, p=0.95 (100 replicates)
+2026-10-24 13:45:08,504 INFO run_e06:   Done in 0.3s | la_med=0.0208 jj_med=0.4073 ep_med=8.9505 jj_lb_viol=0/100
+2026-10-24 13:45:08,505 INFO run_e06: Block oracle: B=64, p=0.05 (100 replicates)
+2026-10-24 13:45:08,932 INFO run_e06:   Done in 0.4s | la_med=0.0166 jj_med=0.5254 ep_med=16.0711 jj_lb_viol=0/100
+2026-10-24 13:45:08,932 INFO run_e06: Block oracle: B=64, p=0.50 (100 replicates)
+2026-10-24 13:45:09,241 INFO run_e06:   Done in 0.3s | la_med=0.0038 jj_med=0.0046 ep_med=0.3808 jj_lb_viol=0/100
+2026-10-24 13:45:09,241 INFO run_e06: Block oracle: B=64, p=0.95 (100 replicates)
+2026-10-24 13:45:09,661 INFO run_e06:   Done in 0.4s | la_med=0.0166 jj_med=0.5254 ep_med=16.0711 jj_lb_viol=0/100
+2026-10-24 13:45:09,661 INFO run_e06: Block oracle: B=128, p=0.05 (100 replicates)
+2026-10-24 13:45:10,254 INFO run_e06:   Done in 0.6s | la_med=0.0105 jj_med=0.5631 ep_med=29.4264 jj_lb_viol=0/100
+2026-10-24 13:45:10,254 INFO run_e06: Block oracle: B=128, p=0.50 (100 replicates)
+2026-10-24 13:45:10,700 INFO run_e06:   Done in 0.4s | la_med=0.0019 jj_med=0.0026 ep_med=0.4409 jj_lb_viol=0/100
+2026-10-24 13:45:10,700 INFO run_e06: Block oracle: B=128, p=0.95 (100 replicates)
+2026-10-24 13:45:11,292 INFO run_e06:   Done in 0.6s | la_med=0.0100 jj_med=0.5404 ep_med=29.4264 jj_lb_viol=0/100
+2026-10-24 13:45:11,311 INFO run_e06: Block metrics written (1800 rows)
+2026-10-24 13:45:11,313 INFO run_e06: Oracle all-failure B=4: mc_ref=-1.4865 la=-1.5084 jj=-1.6936 ep=0.7399 | JJ<=-0.20713 EP_ok=True
+2026-10-24 13:45:11,316 INFO run_e06: Oracle all-success B=4: mc_ref=-1.4865 la=-1.5084 jj=-1.6936 ep=0.7399 | JJ<=-0.20713 EP_ok=True
+2026-10-24 13:45:11,318 INFO run_e06: Oracle all-failure B=8: mc_ref=-1.9862 la=-2.0070 jj=-2.3326 ep=2.1150 | JJ<=-0.34640 EP_ok=True
+2026-10-24 13:45:11,320 INFO run_e06: Oracle all-success B=8: mc_ref=-1.9862 la=-2.0070 jj=-2.3326 ep=2.1150 | JJ<=-0.34640 EP_ok=True
+2026-10-24 13:45:11,323 INFO run_e06: Oracle all-failure B=16: mc_ref=-2.5574 la=-2.5787 jj=-3.0753 ep=4.2201 | JJ<=-0.51787 EP_ok=True
+2026-10-24 13:45:11,326 INFO run_e06: Oracle all-success B=16: mc_ref=-2.5574 la=-2.5787 jj=-3.0753 ep=4.2201 | JJ<=-0.51787 EP_ok=True
+2026-10-24 13:45:11,330 INFO run_e06: Oracle all-failure B=32: mc_ref=-3.2065 la=-3.2287 jj=-3.9200 ep=7.1880 | JJ<=-0.71349 EP_ok=True
+2026-10-24 13:45:11,335 INFO run_e06: Oracle all-success B=32: mc_ref=-3.2065 la=-3.2287 jj=-3.9200 ep=7.1880 | JJ<=-0.71349 EP_ok=True
+2026-10-24 13:45:11,340 INFO run_e06: Oracle all-failure B=64: mc_ref=-3.9396 la=-3.9626 jj=-4.8669 ep=11.1549 | JJ<=-0.92731 EP_ok=True
+2026-10-24 13:45:11,346 INFO run_e06: Oracle all-success B=64: mc_ref=-3.9396 la=-3.9626 jj=-4.8669 ep=11.1549 | JJ<=-0.92731 EP_ok=True
+2026-10-24 13:45:11,347 INFO run_e06: Oracle checks written
+2026-10-24 13:45:11,347 INFO run_e06: No failed runs (reference NaN/inf)
+2026-10-24 13:45:11,347 INFO run_e06: Running segmentation propagation experiment (100 sequences)...
+2026-10-24 13:45:23,660 INFO run_e06: Segmentation rep 1/100 done
+2026-10-24 13:49:26,167 INFO run_e06: Segmentation rep 21/100 done
+2026-10-24 13:53:22,909 INFO run_e06: Segmentation rep 41/100 done
+2026-10-24 13:57:15,310 INFO run_e06: Segmentation rep 61/100 done
+2026-10-24 14:01:07,555 INFO run_e06: Segmentation rep 81/100 done
+2026-10-24 14:04:49,498 INFO run_e06: Summary metrics written
+2026-10-24 14:04:49,500 INFO run_e06: Table written
+2026-10-24 14:04:50,270 INFO run_e06: Figure fig_E06_local_error written
+2026-10-24 14:04:50,388 INFO run_e06: Figure fig_E06_global_error written
+2026-10-24 14:04:50,388 INFO run_e06: 
+2026-10-24 14:04:50,388 INFO run_e06: ======================================================================
+2026-10-24 14:04:50,388 INFO run_e06: E06 GATE EVALUATION
+2026-10-24 14:04:50,388 INFO run_e06: ======================================================================
+2026-10-24 14:04:50,388 INFO run_e06: Gate 1: All cells complete (1800/1800): PASS
+2026-10-24 14:04:50,388 INFO run_e06: Gate 2: JJ lower-bound >=95% blocks (100.0%): PASS
+2026-10-24 14:04:50,388 INFO run_e06: Gate 3: No NaN in Laplace/JJ: PASS
+2026-10-24 14:04:50,388 INFO run_e06: Gate 4: Degenerate block checks exist: PASS
+2026-10-24 14:04:50,388 INFO run_e06: 
+2026-10-24 14:04:50,388 INFO run_e06: E06 PASS
+2026-10-24 14:04:50,389 INFO run_e06: Output directory: results/confirmatory/E06_nonconjugate/9739f69c790aae6f

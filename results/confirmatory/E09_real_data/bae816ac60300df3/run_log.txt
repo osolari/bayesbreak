@@ -1,0 +1,142 @@
+2026-10-24 20:40:37,347 INFO E09 starting. pilot=True config_sha256=bae816ac60300df3bc73f70ca9c8ccb65be8f1b6bc741875f62e007fe2474125
+2026-10-24 20:40:37,347 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E09_real_data/bae816ac60300df3
+2026-10-24 20:40:37,347 INFO INCOMPLETE: SPX=yfinance not installed; load_spx() returns simulated fallback. SPX excluded from E09 per protocol: never label simulated data as real.
+2026-10-24 20:40:37,347 INFO INCOMPLETE: baselines=ruptures package not installed. PELT, OP, BS, WBS UNAVAILABLE.
+2026-10-24 20:40:37,347 INFO INCOMPLETE: baselines=rpy2 package not installed. CBS (DNAcopy), SMUCE, Fearnhead UNAVAILABLE.
+2026-10-24 20:40:37,441 INFO Loading datasets...
+2026-10-24 20:40:38,447 INFO welllog: source=downloaded n=4050
+2026-10-24 20:40:38,447 INFO welllog_stride8: n=507
+2026-10-24 20:40:39,451 INFO cgh: source=downloaded shape=(2215, 43)
+2026-10-24 20:40:39,454 INFO methylation: source=downloaded n=1904
+2026-10-24 20:40:39,454 INFO spx: source=simulated -- EXCLUDED (simulated fallback only)
+2026-10-24 20:40:39,454 INFO === Welllog ===
+2026-10-24 20:40:39,454 INFO welllog robust sigma2: full=4674808.19 stride8=5466698.12
+2026-10-24 20:40:39,454 INFO welllog/full k_max=15 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:40:45,284 INFO welllog/full k_max=15 prior=uniform min_seg=1
+2026-10-24 20:40:50,967 INFO welllog/stride8 k_max=15 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:40:51,410 INFO welllog/stride8 k_max=15 prior=uniform min_seg=1
+2026-10-24 20:40:51,865 INFO Welllog: 4 cells
+2026-10-24 20:40:51,865 INFO === CGH ===
+2026-10-24 20:40:51,867 INFO cgh: pooled robust sigma2=0.0057 across 43 subjects
+2026-10-24 20:40:51,867 INFO cgh/pooled k_max=15 n_subjects=43
+2026-10-24 20:42:44,518 INFO E09 starting. pilot=True config_sha256=bae816ac60300df3bc73f70ca9c8ccb65be8f1b6bc741875f62e007fe2474125
+2026-10-24 20:42:44,518 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E09_real_data/bae816ac60300df3
+2026-10-24 20:42:44,518 INFO INCOMPLETE: SPX=yfinance not installed; load_spx() returns simulated fallback. SPX excluded from E09 per protocol: never label simulated data as real.
+2026-10-24 20:42:44,518 INFO INCOMPLETE: baselines=ruptures package not installed. PELT, OP, BS, WBS UNAVAILABLE.
+2026-10-24 20:42:44,518 INFO INCOMPLETE: baselines=rpy2 package not installed. CBS (DNAcopy), SMUCE, Fearnhead UNAVAILABLE.
+2026-10-24 20:42:44,555 INFO Loading datasets...
+2026-10-24 20:42:45,453 INFO welllog: source=downloaded n=4050
+2026-10-24 20:42:45,453 INFO welllog_stride8: n=507
+2026-10-24 20:42:46,496 INFO cgh: source=downloaded shape=(2215, 43)
+2026-10-24 20:42:46,499 INFO methylation: source=downloaded n=1904
+2026-10-24 20:42:46,499 INFO spx: source=simulated -- EXCLUDED (simulated fallback only)
+2026-10-24 20:42:46,499 INFO === Welllog ===
+2026-10-24 20:42:46,499 INFO welllog robust sigma2: full=4674808.19 stride8=5466698.12
+2026-10-24 20:42:46,499 INFO welllog/full k_max=15 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:42:52,809 INFO welllog/full k_max=15 prior=uniform min_seg=1
+2026-10-24 20:42:58,711 INFO welllog/stride8 k_max=15 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:42:59,173 INFO welllog/stride8 k_max=15 prior=uniform min_seg=1
+2026-10-24 20:42:59,642 INFO Welllog: 4 cells
+2026-10-24 20:42:59,642 INFO === CGH ===
+2026-10-24 20:42:59,645 INFO cgh: pooled robust sigma2=0.0057 across 43 subjects
+2026-10-24 20:42:59,645 INFO cgh/pooled k_max=15 n_subjects=43
+2026-10-24 20:47:07,442 INFO cgh/single_subject0 k_max=15
+2026-10-24 20:47:10,242 INFO CGH: 2 cells
+2026-10-24 20:47:10,242 INFO === Methylation ===
+2026-10-24 20:47:10,242 INFO methylation k_max=15 prior=geometric_decay_log4
+2026-10-24 20:47:16,602 INFO methylation k_max=15 prior=uniform
+2026-10-24 20:47:22,774 INFO Methylation: 2 cells
+2026-10-24 20:47:22,774 INFO All cells done. elapsed=405.3s cells=8 failed=0 truncated=4
+2026-10-24 20:47:22,775 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E09_real_data/bae816ac60300df3/metrics.json
+2026-10-24 20:47:22,775 INFO Wrote manifest: gate_pass=True
+2026-10-24 20:47:22,775 INFO E09 complete. gate_pass=True
+2026-10-24 20:48:35,272 INFO E09 starting. pilot=False config_sha256=bae816ac60300df3bc73f70ca9c8ccb65be8f1b6bc741875f62e007fe2474125
+2026-10-24 20:48:35,272 INFO Results: /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E09_real_data/bae816ac60300df3
+2026-10-24 20:48:35,272 INFO INCOMPLETE: SPX=yfinance not installed; load_spx() returns simulated fallback. SPX excluded from E09 per protocol: never label simulated data as real.
+2026-10-24 20:48:35,272 INFO INCOMPLETE: baselines=ruptures package not installed. PELT, OP, BS, WBS UNAVAILABLE.
+2026-10-24 20:48:35,272 INFO INCOMPLETE: baselines=rpy2 package not installed. CBS (DNAcopy), SMUCE, Fearnhead UNAVAILABLE.
+2026-10-24 20:48:35,326 INFO Loading datasets...
+2026-10-24 20:48:36,156 INFO welllog: source=downloaded n=4050
+2026-10-24 20:48:36,156 INFO welllog_stride8: n=507
+2026-10-24 20:48:37,194 INFO cgh: source=downloaded shape=(2215, 43)
+2026-10-24 20:48:37,197 INFO methylation: source=downloaded n=1904
+2026-10-24 20:48:37,198 INFO spx: source=simulated -- EXCLUDED (simulated fallback only)
+2026-10-24 20:48:37,198 INFO === Welllog ===
+2026-10-24 20:48:37,198 INFO welllog robust sigma2: full=4674808.19 stride8=5466698.12
+2026-10-24 20:48:37,198 INFO welllog/full k_max=15 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:48:43,409 INFO welllog/full k_max=30 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:48:54,732 INFO welllog/full k_max=60 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:49:13,077 INFO cgh/single_subject0 k_max=15
+2026-10-24 20:49:15,923 INFO CGH: 2 cells
+2026-10-24 20:49:15,923 INFO === Methylation ===
+2026-10-24 20:49:15,923 INFO methylation k_max=15 prior=geometric_decay_log4
+2026-10-24 20:49:16,769 INFO welllog/full k_max=100 prior=geometric_decay_log4 (truncation extension)
+2026-10-24 20:49:22,020 INFO methylation k_max=15 prior=uniform
+2026-10-24 20:49:28,131 INFO Methylation: 2 cells
+2026-10-24 20:49:28,131 INFO All cells done. elapsed=403.6s cells=8 failed=0 truncated=4
+2026-10-24 20:49:28,133 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E09_real_data/bae816ac60300df3/metrics.json
+2026-10-24 20:49:28,133 INFO Wrote manifest: gate_pass=True
+2026-10-24 20:49:28,133 INFO E09 complete. gate_pass=True
+2026-10-24 20:49:52,642 INFO welllog/full k_max=15 prior=uniform min_seg=1
+2026-10-24 20:49:58,684 INFO welllog/full k_max=30 prior=uniform min_seg=1
+2026-10-24 20:50:10,055 INFO welllog/full k_max=60 prior=uniform min_seg=1
+2026-10-24 20:50:31,743 INFO welllog/full k_max=100 prior=uniform (truncation extension)
+2026-10-24 20:51:07,625 INFO welllog/full k_max=100 min_seg=5 prior=geom
+2026-10-24 20:52:03,151 ERROR welllog min_seg=5 failed
+Traceback (most recent call last):
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/scripts/run_e09_real_data.py", line 427, in _run_welllog_cells
+    result = _fit_gaussian(X_full, y_full, k_ext, sigma2_full, prior_fn,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/scripts/run_e09_real_data.py", line 273, in _fit_gaussian
+    est.fit(X, y, sample_weight=sample_weight)
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/src/bayesbreak/base.py", line 409, in fit
+    log_post_k, post_k, log_evidence = _dp.posterior_over_k(
+                                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/src/bayesbreak/dp.py", line 238, in posterior_over_k
+    raise RuntimeError("No segment count has finite posterior evidence")
+RuntimeError: No segment count has finite posterior evidence
+2026-10-24 20:52:03,161 INFO welllog/full k_max=100 min_seg=10 prior=geom
+2026-10-24 20:52:58,921 ERROR welllog min_seg=10 failed
+Traceback (most recent call last):
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/scripts/run_e09_real_data.py", line 427, in _run_welllog_cells
+    result = _fit_gaussian(X_full, y_full, k_ext, sigma2_full, prior_fn,
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/scripts/run_e09_real_data.py", line 273, in _fit_gaussian
+    est.fit(X, y, sample_weight=sample_weight)
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/src/bayesbreak/base.py", line 409, in fit
+    log_post_k, post_k, log_evidence = _dp.posterior_over_k(
+                                       ^^^^^^^^^^^^^^^^^^^^^
+  File "/Users/Omid.Solari/workspace/projects/bayesbreak/src/bayesbreak/dp.py", line 238, in posterior_over_k
+    raise RuntimeError("No segment count has finite posterior evidence")
+RuntimeError: No segment count has finite posterior evidence
+2026-10-24 20:52:58,928 INFO welllog/stride8 k_max=15 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:52:59,363 INFO welllog/stride8 k_max=30 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:53:00,236 INFO welllog/stride8 k_max=60 prior=geometric_decay_log4 min_seg=1
+2026-10-24 20:53:01,919 INFO welllog/stride8 k_max=15 prior=uniform min_seg=1
+2026-10-24 20:53:02,373 INFO welllog/stride8 k_max=30 prior=uniform min_seg=1
+2026-10-24 20:53:03,238 INFO welllog/stride8 k_max=60 prior=uniform min_seg=1
+2026-10-24 20:53:04,933 INFO Welllog: 16 cells
+2026-10-24 20:53:04,933 INFO === CGH ===
+2026-10-24 20:53:04,936 INFO cgh: pooled robust sigma2=0.0057 across 43 subjects
+2026-10-24 20:53:04,936 INFO cgh/pooled k_max=15 n_subjects=43
+2026-10-24 20:59:16,332 INFO cgh/pooled k_max=30 n_subjects=43
+2026-10-24 21:05:27,801 INFO cgh/pooled k_max=60 n_subjects=43
+2026-10-24 21:11:44,896 INFO cgh/single_subject0 k_max=15
+2026-10-24 21:11:47,743 INFO cgh/single_subject0 k_max=30
+2026-10-24 21:11:53,205 INFO cgh/single_subject0 k_max=60
+2026-10-24 21:12:03,748 INFO cgh/single_subject0 k_max=100
+2026-10-24 21:12:20,657 INFO CGH: 7 cells
+2026-10-24 21:12:20,657 INFO === Methylation ===
+2026-10-24 21:12:20,657 INFO methylation k_max=15 prior=geometric_decay_log4
+2026-10-24 21:12:27,072 INFO methylation k_max=30 prior=geometric_decay_log4
+2026-10-24 21:12:35,774 INFO methylation k_max=60 prior=geometric_decay_log4
+2026-10-24 21:12:48,473 INFO methylation k_max=120 prior=geometric_decay_log4 (truncation extension)
+2026-10-24 21:13:10,085 INFO methylation k_max=15 prior=uniform
+2026-10-24 21:13:16,270 INFO methylation k_max=30 prior=uniform
+2026-10-24 21:13:24,733 INFO methylation k_max=60 prior=uniform
+2026-10-24 21:13:37,500 INFO methylation k_max=120 prior=uniform (truncation extension)
+2026-10-24 21:13:58,941 INFO Methylation: 8 cells
+2026-10-24 21:13:58,942 INFO All cells done. elapsed=1523.6s cells=31 failed=2 truncated=14
+2026-10-24 21:13:58,943 INFO Wrote /Users/Omid.Solari/workspace/projects/bayesbreak/results/confirmatory/E09_real_data/bae816ac60300df3/metrics.json
+2026-10-24 21:13:58,944 INFO Wrote manifest: gate_pass=False
+2026-10-24 21:13:58,944 ERROR E09 GATE FAIL: 2 failed cells.
