@@ -9,7 +9,7 @@ PAIRS = [
 
 def test_current_result_figures_match_reader_facing_copies():
     for name in PAIRS:
-        paper = ROOT / 'docs/manuscripts/shared/figures/results' / name
+        paper = ROOT / 'docs/manuscripts/paper/figures' / name
         website = ROOT / 'docs/assets/figures' / name
         assert paper.is_file() and website.is_file()
         assert paper.read_bytes() == website.read_bytes()

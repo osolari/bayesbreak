@@ -26,7 +26,7 @@ logger = logging.getLogger(__name__)
 
 _ROOT = Path(__file__).resolve().parents[2]
 _DATA_DIR = _ROOT / "docs" / "manuscripts" / "shared" / "figures" / "data"
-_OUT_DIR = _ROOT / "docs" / "manuscripts" / "shared" / "figures" / "results"
+_OUT_DIR = _ROOT / "docs" / "manuscripts" / "paper" / "figures"
 
 sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
@@ -316,7 +316,7 @@ def render_fig4(out_dir: Path) -> None:
 
     axes[1, 2].set_visible(False)
     fig.tight_layout()
-    save_figure(fig, out_dir / "fig4_latent_groups", formats=("pdf", "png"))
+    save_figure(fig, out_dir / "fig4_latent_groups_cropped", formats=("pdf", "png"))
     plt.close(fig)
 
 

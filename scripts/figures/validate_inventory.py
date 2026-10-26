@@ -34,7 +34,7 @@ _ROOT = Path(__file__).resolve().parents[2]
 _MANUSCRIPTS = _ROOT / "docs" / "manuscripts"
 _SHARED = _MANUSCRIPTS / "shared"
 _FIG_DATA = _SHARED / "figures" / "data"
-_FIG_RESULTS = _SHARED / "figures" / "results"
+_FIG_RESULTS = _MANUSCRIPTS / "paper" / "figures"   # canonical output directory
 _TAB_DATA = _SHARED / "tables" / "data"
 _TAB_RESULTS = _SHARED / "tables" / "results"
 _RENDER_PY = _ROOT / "scripts" / "figures" / "render.py"
@@ -62,7 +62,15 @@ class _Asset(NamedTuple):
 
 
 _FIGURE_MANIFEST: dict[str, _Asset] = {
-    # --- showcase figures ---
+    # --- showcase figures (paper + book) ---
+    "fig3_boundary_calibration": _Asset(
+        "data_driven",
+        ("fig3_boundary_calibration.csv",),
+        "fig3_boundary_calibration.json",
+        ("fig3_boundary_calibration.pdf", "fig3_boundary_calibration.png"),
+        "fig3",
+        note="Referenced in book chapter 13 only; no paper defs wrapper",
+    ),
     "fig1_synthetic_gaussian": _Asset(
         "data_driven",
         ("fig1_synthetic_gaussian.csv",),
@@ -205,7 +213,16 @@ _FIGURE_MANIFEST: dict[str, _Asset] = {
         ("fig_latent_template_stress.pdf", "fig_latent_template_stress.png"),
         "fig_latent_stress",
     ),
-    # --- unverified E09 figures ---
+    # --- unverified / static committed assets ---
+    "fig8_spx": _Asset(
+        "unverified",
+        (),
+        "fig8_spx.json",
+        ("fig8_spx.pdf", "fig8_spx.png"),
+        None,
+        note="Simulated SPX placeholder (status=PLANNED); no panel-data CSV. "
+             "Referenced in book chapter 14 only.",
+    ),
     "fig_methylation_heldout": _Asset(
         "unverified",
         (),
@@ -374,10 +391,11 @@ def _collect_inputs(tex_path: Path, visited: set[Path]) -> list[Path]:
 
 
 def _discover_figures(all_tex: list[Path]) -> dict[str, str]:
-    """Return {stem: source_tex} for every \\includegraphics pointing to shared/figures/results/."""
+    """Return {stem: source_tex} for every \\includegraphics pointing to paper/figures/."""
     found: dict[str, str] = {}
+    # Match the canonical output path paper/figures/ used after Phase 2 migration
     pattern = re.compile(
-        r"\\includegraphics[^{]*\{shared/figures/results/([^}]+)\}"
+        r"\\includegraphics[^{]*\{paper/figures/([^}]+)\}"
     )
     for tex in all_tex:
         try:
@@ -596,20 +614,43 @@ def main(argv: list[str] | None = None) -> int:
     verbose: bool = args.verbose
     check = _Check()
 
-    # --- discover manuscript assets ---
+    # --- discover manuscript assets (paper + book) ---
     main_tex = _MANUSCRIPTS / "paper" / "main.tex"
+    book_tex = _MANUSCRIPTS / "book" / "main.tex"
     if not main_tex.exists():
         print(f"ERROR: main.tex not found at {main_tex}", file=sys.stderr)
         return 1
 
-    all_tex = _collect_inputs(main_tex, set())
+    visited: set[Path] = set()
+    all_tex = _collect_inputs(main_tex, visited)
+    if book_tex.exists():
+        all_tex += _collect_inputs(book_tex, visited)
+
     discovered_figures = _discover_figures(all_tex)
     discovered_tables = _discover_generated_tables(all_tex)
 
     render_keys = _load_render_registry()
 
+    # --- check for stale references to old output path ---
+    old_path_pattern = re.compile(r"shared/figures/results/")
+    stale_refs: list[str] = []
+    for tex in all_tex:
+        try:
+            src = tex.read_text(encoding="utf-8", errors="replace")
+        except OSError:
+            continue
+        for m in old_path_pattern.finditer(src):
+            stale_refs.append(str(tex.relative_to(_ROOT)))
+            break  # one report per file is enough
+    if stale_refs:
+        for ref in stale_refs:
+            check.fail(
+                f"[path] stale reference to 'shared/figures/results/' in {ref} "
+                f"-- update to 'paper/figures/'"
+            )
+
     # --- check figures ---
-    print(f"Discovered {len(discovered_figures)} figure asset(s) in manuscript")
+    print(f"Discovered {len(discovered_figures)} figure asset(s) in paper + book")
     for stem, source in sorted(discovered_figures.items()):
         if stem in _FIGURE_MANIFEST:
             _check_figure(stem, _FIGURE_MANIFEST[stem], render_keys, check, verbose)

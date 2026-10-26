@@ -203,7 +203,7 @@ python scripts/figures/render.py --only fig_E07 fig6 tab_E01_recovery
 ```
 
 Outputs go to:
-- `docs/manuscripts/shared/figures/results/` (PDF + PNG)
+- `docs/manuscripts/paper/figures/` (PDF + PNG — canonical output directory)
 - `docs/manuscripts/shared/tables/results/` (LaTeX .tex bodies)
 
 ### Inventory validator
@@ -316,7 +316,7 @@ python scripts/figures/fig9_methylation.py --simulated
 
 Output goes to `results/figures/` for showcase figures and to
 `results/e0X/figures/` for experiment figures. Copy final PDFs to
-`docs/manuscripts/shared/figures/results/` before committing.
+`docs/manuscripts/paper/figures/` before committing.
 
 ---
 

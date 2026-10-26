@@ -1,16 +1,20 @@
 \begin{table}[!htbp]
 \centering
 \small
-\caption{Real-data segmentations. The log evidences belong to different data models and are not compared across rows.}
+\caption{E09 real-data segmentations (artifact \texttt{0f5281c46ee8976e}). Prior: geometric-decay log4 for resolved fits; uniform prior shown where resolved. Log evidences belong to different data models and are not comparable across rows. $\dagger$ truncated: posterior mass at $k_{\max}$; unrestricted MAP unknown.}
 \label{tab:real-summary-paper}
 \begin{tabularx}{\columnwidth}{@{}Y C{0.19\columnwidth} C{0.12\columnwidth} C{0.28\columnwidth}@{}}
 \toprule
 Case & $n$ or shape & $\widehat k$ & Log evidence \\
 \midrule
-Well-log & 507 & 23 & $-4989.2835$ \\
-Array-CGH & $43\times2215$ & 15 & $76359.7996$ \\
-S\&P 500 & 566 & 29 & $-1296.6537$ \\
-Methylation & 1904 & 15 & $-9518.6675$ \\
+Well-log full (geometric) & 4050 & 83 & $-37906.09$ \\
+Well-log full (uniform) & 4050 & $100^{\dagger}$ & $-37784.74$ \\
+Well-log stride-8 (geometric) & 507 & 25 & $-4901.80$ \\
+Well-log stride-8 (uniform) & 507 & 37 & $-4864.93$ \\
+CGH single subject (geometric) & 2215 & 71 & $1700.43$ \\
+CGH pooled 43 subjects (geometric) & $2215\times43$ & $60^{\dagger}$ & $41222.49$ \\
+Methylation (geometric) & 1904 & $120^{\dagger}$ & $1453.78$ \\
+Methylation (uniform) & 1904 & $120^{\dagger}$ & $1614.25$ \\
 \bottomrule
 \end{tabularx}
 \end{table}

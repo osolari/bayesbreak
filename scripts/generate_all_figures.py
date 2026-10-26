@@ -1,6 +1,6 @@
 """Generate all manuscript figures and tables in one pass.
 
-All figures are written to ``docs/manuscripts/shared/figures/results/``.
+All figures are written to ``docs/manuscripts/paper/figures/`` (canonical).
 All tables are written to ``docs/manuscripts/shared/tables/results/``.
 
 Covers two categories:
@@ -43,7 +43,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
-MANUSCRIPT_FIGS = ROOT / "docs" / "manuscripts" / "shared" / "figures" / "results"
+MANUSCRIPT_FIGS = ROOT / "docs" / "manuscripts" / "paper" / "figures"
 MANUSCRIPT_TABLES = ROOT / "docs" / "manuscripts" / "shared" / "tables" / "results"
 
 _CONFIRMATORY_RUNNERS = [
