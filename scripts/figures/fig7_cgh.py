@@ -163,6 +163,27 @@ def _multi_subject_figure(
 
     save_figure(fig, outdir / fig_name, formats=("png", "pdf"))
 
+    # Panel-level data for style-only regeneration.
+    import json as _json
+    _panel: dict[str, Any] = {
+        "source": bundle.source,
+        "n": int(n),
+        "n_subjects": int(S),
+        "y": bundle.y.tolist(),
+        "map_curves": rep.map_curve_.tolist() if hasattr(rep, "map_curve_") else None,
+        "map_boundaries": list(rep.map_boundaries_),
+        "boundary_marginals": (
+            rep.boundary_marginals_.tolist()
+            if rep.boundary_marginals_ is not None else None
+        ),
+        "k_posterior": rep.k_posterior_.tolist(),
+        "k_map": int(rep.k_map_),
+        "per_subj_logE": per_subj_logE,
+        "log_evidence_pooled": float(rep.log_evidence_),
+    }
+    with open(outdir / f"{fig_name}_panel_data.json", "w") as _f:
+        _json.dump(_panel, _f)
+
     # Sidecar JSON: provenance + DP diagnostics.
     diag = run_dp_diagnostics(rep)
     record_extra: dict[str, Any] = {

@@ -620,6 +620,8 @@ def _make_figures(
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from _style import setup_style, PRIOR_COLORS
+        setup_style()
     except ImportError:
         logger.warning("matplotlib not available; skipping figures")
         return
@@ -631,8 +633,7 @@ def _make_figures(
         "length_cohesion": "C: Length cohesion",
         "combined": "D: Combined",
     }
-    colors = {"uniform": "#1f77b4", "gap_hazard": "#ff7f0e",
-              "length_cohesion": "#2ca02c", "combined": "#d62728"}
+    colors = PRIOR_COLORS
     markers = {"uniform": "o", "gap_hazard": "s", "length_cohesion": "^", "combined": "D"}
     gaps = E03_CONFIG["grid_gaps"]
     gap_labels = [f"G={g}" for g in gaps]
@@ -642,13 +643,11 @@ def _make_figures(
         ("[60, 180]", "gap_false", "Template (60,180): no boundary at gap"),
     ]:
         fig, axes = plt.subplots(1, 2, figsize=(11, 4))
-        fig.suptitle(f"E03 Irregular Design Prior — {tmpl_desc}", fontsize=10)
 
         # Panel 1: F1@3 by gap and prior
         ax1 = axes[0]
-        ax1.set_title("Mean F1@3 by gap and prior")
         ax1.set_xlabel("Gap G")
-        ax1.set_ylabel("Mean F1@3")
+        ax1.set_ylabel(f"Mean F1@3 — {tmpl_desc}")
         x_ticks = np.arange(len(gaps))
 
         for prior in priors:
@@ -693,9 +692,8 @@ def _make_figures(
 
         # Panel 2: P(b_120=1|y) by gap and prior
         ax2 = axes[1]
-        ax2.set_title(r"Mean $P(b_{120}=1|y)$ by gap and prior")
         ax2.set_xlabel("Gap G")
-        ax2.set_ylabel(r"Mean $P(b_{120}=1|y)$")
+        ax2.set_ylabel(r"Mean $P(b_{120}=1|y)$ by gap and prior")
 
         for prior in priors:
             y_vals = []

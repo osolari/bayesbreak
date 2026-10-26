@@ -162,7 +162,6 @@ def main(outdir: Path, seed: int) -> None:
             color=COLORS["blue"],
             zorder=3,
         )
-        ax.set_title(title, fontweight="bold")
         ax.set_ylabel(ylabel)
         ax.set_xlim(0, len(y_data))
         add_panel_label(ax, label)
@@ -197,9 +196,45 @@ def main(outdir: Path, seed: int) -> None:
         frameon=True,
     )
 
-    # Save in multiple formats
     save_figure(fig, outdir / "fig2_family_showcase", formats=("png", "pdf"))
     plt.close(fig)
+
+    import json as _json
+    _data = {
+        "seed": seed,
+        "gaussian": {"y": y_gauss.tolist(), "true_signal": mu.tolist(), "fit": pc_gauss.tolist(),
+                     "map_boundaries": list(m_gauss.map_boundaries_)},
+        "poisson": {"y": y_pois.tolist(), "true_signal": lam.tolist(), "fit": pc_pois.tolist(),
+                    "map_boundaries": list(m_pois.map_boundaries_)},
+        "binomial": {"y": (y_binom / n_trials).tolist(), "true_signal": p.tolist(),
+                     "fit": pc_binom.tolist(), "map_boundaries": list(m_binom.map_boundaries_)},
+        "beta": {"y": y_beta.tolist(), "true_signal": p_beta.tolist(), "fit": pc_beta.tolist(),
+                 "map_boundaries": list(m_beta.map_boundaries_)},
+    }
+    with open(outdir / "fig2_family_showcase_data.json", "w") as _f:
+        _json.dump(_data, _f)
+
+    # Write canonical plot-ready CSV to shared data dir.
+    import csv as _csv
+    _canonical = _ROOT / "docs" / "manuscripts" / "shared" / "figures" / "data"
+    _canonical.mkdir(parents=True, exist_ok=True)
+    with open(_canonical / "fig2_family_showcase_data.json", "w") as _f2:
+        _json.dump(_data, _f2)
+    _fam_order = ["gaussian", "poisson", "binomial", "beta"]
+    _csv_rows = []
+    for _fam in _fam_order:
+        _fd = _data[_fam]
+        _mb_set = set(list(_fd["map_boundaries"])[1:-1])
+        for _x in range(len(_fd["y"])):
+            _csv_rows.append({
+                "family": _fam, "x": _x, "y": _fd["y"][_x],
+                "true_signal": _fd["true_signal"][_x], "fit": _fd["fit"][_x],
+                "is_map_boundary": 1 if _x in _mb_set else 0,
+            })
+    with open(_canonical / "fig2_family_showcase.csv", "w", newline="") as _cf:
+        _w = _csv.DictWriter(_cf, fieldnames=list(_csv_rows[0].keys()))
+        _w.writeheader()
+        _w.writerows(_csv_rows)
 
 
 if __name__ == "__main__":

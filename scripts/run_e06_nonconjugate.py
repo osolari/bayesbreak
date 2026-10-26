@@ -659,11 +659,14 @@ def _write_figures(
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from _style import setup_style, METHOD_COLORS, METHOD_MARKERS, METHOD_LINESTYLES
+        setup_style()
     except ImportError:
         logger.warning("matplotlib not available; figures skipped")
         return
 
     fig_dir = output_dir / "figures"
+    fig_dir.mkdir(parents=True, exist_ok=True)
 
     # Figure 1: absolute log-evidence error by B and p, for each method.
     B_values = sorted(set(m.B for m in block_metrics))
@@ -674,7 +677,7 @@ def _write_figures(
         ("ep", "EP", lambda m: m.ep_abs_err),
     ]
 
-    fig, axes = plt.subplots(1, len(p_values), figsize=(12, 4), sharey=False)
+    fig, axes = plt.subplots(1, len(p_values), figsize=(10, 3.5), sharey=False)
     for ax_i, p in enumerate(p_values):
         ax = axes[ax_i]
         for key, label, err_fn in methods_plot:
@@ -682,13 +685,18 @@ def _write_figures(
             for B in B_values:
                 errs = [err_fn(m) for m in block_metrics if m.B == B and abs(m.p - p) < 0.01]
                 meds.append(np.median(errs) if errs else float("nan"))
-            ax.semilogy(B_values, meds, marker="o", label=label)
-        ax.set_xlabel("Block size B")
-        ax.set_title(f"p = {p}")
+            ax.semilogy(
+                B_values, meds,
+                marker=METHOD_MARKERS.get(key, "o"),
+                linestyle=METHOD_LINESTYLES.get(key, "-"),
+                color=METHOD_COLORS.get(key, "#444444"),
+                label=label,
+            )
+        ax.set_xlabel("Block size $B$")
+        ax.annotate(f"$p = {p}$", xy=(0.97, 0.96), xycoords='axes fraction', fontsize=8, va='top', ha='right')
         ax.legend(fontsize=8)
         if ax_i == 0:
             ax.set_ylabel("Median absolute log-evidence error")
-    fig.suptitle("E06: block-level log-evidence approximation errors")
     fig.tight_layout()
     fig.savefig(fig_dir / "fig_E06_local_error.pdf", bbox_inches="tight")
     fig.savefig(fig_dir / "fig_E06_local_error.png", bbox_inches="tight", dpi=150)
@@ -728,15 +736,12 @@ def _write_figures(
 
     ax1.set_xticks(range(len(seg_labels)))
     ax1.set_xticklabels(seg_labels)
-    ax1.set_ylabel("Max |p(k|y) difference|")
-    ax1.set_title("Count posterior discrepancy vs reference")
+    ax1.set_ylabel("Max |p(k|y) difference| vs quadrature reference")
 
     ax2.set_xticks(range(len(seg_labels)))
     ax2.set_xticklabels(seg_labels)
-    ax2.set_ylabel("Max |boundary marginal difference| at true boundaries")
-    ax2.set_title("Boundary marginal discrepancy vs reference")
+    ax2.set_ylabel("Max |boundary marginal difference| at true boundaries vs reference")
 
-    fig.suptitle("E06: segmentation propagation discrepancies vs quadrature reference")
     fig.tight_layout()
     fig.savefig(fig_dir / "fig_E06_global_error.pdf", bbox_inches="tight")
     fig.savefig(fig_dir / "fig_E06_global_error.png", bbox_inches="tight", dpi=150)

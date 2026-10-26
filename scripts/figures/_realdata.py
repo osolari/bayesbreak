@@ -207,6 +207,70 @@ def make_realdata_figure(
 
     save_figure(fig, outdir / fig_name, formats=("png", "pdf"))
 
+    # Panel-level data sidecar: numerical inputs for each panel so figure
+    # style can be changed without refitting the model.
+    _panel_data: dict[str, Any] = {
+        "source": bundle.source,
+        "n": int(n),
+        "y": bundle.y.tolist(),
+        "map_prediction": estimator.predict(bundle.X).tolist(),
+        "map_boundaries": list(estimator.map_boundaries_),
+        "true_boundaries": list(bundle.true_boundaries),
+        "boundary_marginals": (
+            estimator.boundary_marginals_.tolist()
+            if estimator.boundary_marginals_ is not None else None
+        ),
+        "bayes_curve_mean": (
+            estimator.bayes_curve_mean_.tolist()
+            if estimator.bayes_curve_mean_ is not None else None
+        ),
+        "k_posterior": estimator.k_posterior_.tolist(),
+        "k_map": int(estimator.k_map_),
+        "held_out_trace": trace.tolist(),
+    }
+    data_dest = outdir / f"{fig_name}_panel_data.json"
+    with open(data_dest, "w") as _f:
+        import json as _json
+        _json.dump(_panel_data, _f)
+
+    # Write canonical CSV + JSON to shared data dir so render.py can work from cache.
+    import csv as _csv
+    _canonical = Path(__file__).resolve().parents[2] / "docs" / "manuscripts" / "shared" / "figures" / "data"
+    _canonical.mkdir(parents=True, exist_ok=True)
+    with open(_canonical / f"{fig_name}_panel_data.json", "w") as _fj:
+        _json.dump(_panel_data, _fj)
+    _n_pd = _panel_data["n"]
+    _bm_list = _panel_data.get("boundary_marginals") or []
+    _bc_list = _panel_data.get("bayes_curve_mean") or []
+    _ht_list = _panel_data.get("held_out_trace") or []
+    _mb_set = set(list(_panel_data.get("map_boundaries", []))[1:-1])
+    _tb_set = set(list(_panel_data.get("true_boundaries", []))[1:-1])
+    _ts_rows = []
+    for _x in range(_n_pd):
+        _ts_rows.append({
+            "x": _x,
+            "y": _panel_data["y"][_x] if _x < len(_panel_data["y"]) else float("nan"),
+            "map_prediction": _panel_data["map_prediction"][_x] if _x < len(_panel_data["map_prediction"]) else float("nan"),
+            "boundary_marginal": _bm_list[_x - 1] if _x > 0 and _bm_list else float("nan"),
+            "bayes_curve_mean": _bc_list[_x] if _bc_list and _x < len(_bc_list) else float("nan"),
+            "held_out_trace": _ht_list[_x] if _ht_list and _x < len(_ht_list) else float("nan"),
+            "null_trace": float("nan"),
+            "is_map_boundary": 1 if _x in _mb_set else 0,
+            "is_true_boundary": 1 if _x in _tb_set else 0,
+        })
+    _csv_stem = fig_name.replace("_panel_data", "")
+    _csv_name = f"{_csv_stem}.csv"
+    with open(_canonical / _csv_name, "w", newline="") as _cf:
+        _w = _csv.DictWriter(_cf, fieldnames=list(_ts_rows[0].keys()))
+        _w.writeheader()
+        _w.writerows(_ts_rows)
+    _kp = _panel_data.get("k_posterior", [])
+    if _kp:
+        with open(_canonical / f"{_csv_stem}_kposterior.csv", "w", newline="") as _kf:
+            _kw = _csv.DictWriter(_kf, fieldnames=["k", "prob"])
+            _kw.writeheader()
+            _kw.writerows([{"k": _k + 1, "prob": _p} for _k, _p in enumerate(_kp)])
+
     # Sidecar JSON: provenance + DP diagnostics.
     diag = run_dp_diagnostics(estimator)
     record_extra: dict[str, Any] = {

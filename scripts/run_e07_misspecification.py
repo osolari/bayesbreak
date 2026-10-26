@@ -809,10 +809,16 @@ def _plot_results(
     figures_dir: Path,
 ) -> list[Path]:
     try:
+        import sys as _sys
+        _style_dir = str(Path(__file__).parent / "figures")
+        if _style_dir not in _sys.path:
+            _sys.path.insert(0, _style_dir)
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
-    except ImportError:
+        from _style import setup_style, SPEC_COLORS
+        setup_style()
+    except (ImportError, Exception):
         logger.warning("matplotlib not available; skipping plots")
         return []
 
@@ -827,10 +833,8 @@ def _plot_results(
     miss_order = list(E07_CONFIG["missingness_settings"])
     noise_order = list(E07_CONFIG["noise_classes"])
 
-    # Gaussian fit cells only for the Gaussian MSE panel
     # Main F1 plot: noise_class x missingness heatmap of mean F1
-    fig, axes = plt.subplots(1, len(miss_order), figsize=(14, 5), sharey=True)
-    fig.suptitle(f"E07 MAP boundary F1@{tau} by condition", fontsize=12)
+    fig, axes = plt.subplots(1, len(miss_order), figsize=(12, 4.5), sharey=True)
 
     for ax, miss in zip(axes, miss_order):
         means: list[float] = []
@@ -849,62 +853,32 @@ def _plot_results(
                 means.append(float("nan"))
             fam_label = f"{cell['data_family'][:6]}\n{cell['fit_family']}"
             labels.append(fam_label)
-            colors.append("steelblue" if cell["is_correct"] else "coral")
+            colors.append(SPEC_COLORS["correct"] if cell["is_correct"] else SPEC_COLORS["misspecified"])
 
         x = np.arange(len(means))
-        bars = ax.bar(x, [m if np.isfinite(m) else 0.0 for m in means], color=colors, width=0.7)
-        ax.set_title(miss.replace("_", " "), fontsize=9)
+        ax.bar(x, [m if np.isfinite(m) else 0.0 for m in means], color=colors, width=0.7)
+        ax.annotate(miss.replace("_", " "), xy=(0.03, 0.97), xycoords='axes fraction', fontsize=8, va='top')
         ax.set_xticks(x)
         ax.set_xticklabels(labels, fontsize=6, rotation=45, ha="right")
         ax.set_ylim(0, 1.05)
         if ax == axes[0]:
-            ax.set_ylabel(f"Mean F1@{tau}")
-        ax.axhline(1.0, color="gray", lw=0.5, ls="--")
+            ax.set_ylabel(f"Mean $F_1@{tau}$")
+        ax.axhline(1.0, color="#888888", lw=0.5, ls="--")
 
     from matplotlib.patches import Patch
     legend_elements = [
-        Patch(facecolor="steelblue", label="Correct fit"),
-        Patch(facecolor="coral", label="Misspecified fit"),
+        Patch(facecolor=SPEC_COLORS["correct"], label="Correct fit"),
+        Patch(facecolor=SPEC_COLORS["misspecified"], label="Misspecified fit"),
     ]
     fig.legend(handles=legend_elements, loc="lower center", ncol=2, fontsize=9)
     fig.tight_layout(rect=[0, 0.06, 1, 1])
 
     fp = figures_dir / "fig_E07_robustness.pdf"
     fig.savefig(fp, bbox_inches="tight")
-    plt.close(fig)
-    fig_paths.append(fp)
-
-    # PNG version
     fp_png = figures_dir / "fig_E07_robustness.png"
-    fig2, axes2 = plt.subplots(1, len(miss_order), figsize=(14, 5), sharey=True)
-    fig2.suptitle(f"E07 MAP boundary F1@{tau} by condition", fontsize=12)
-    for ax, miss in zip(axes2, miss_order):
-        means2: list[float] = []
-        labels2: list[str] = []
-        colors2: list[str] = []
-        for cell in CELLS:
-            if cell["missingness"] != miss:
-                continue
-            cell_df2 = df_ok[(df_ok["cell_index"] == cell["cell_index"])]
-            vals2 = cell_df2[f"f1_tau{tau}"].dropna().tolist()
-            means2.append(float(np.mean(vals2)) if vals2 else float("nan"))
-            fam_label2 = f"{cell['data_family'][:6]}\n{cell['fit_family']}"
-            labels2.append(fam_label2)
-            colors2.append("steelblue" if cell["is_correct"] else "coral")
-        x2 = np.arange(len(means2))
-        ax.bar(x2, [m if np.isfinite(m) else 0.0 for m in means2], color=colors2, width=0.7)
-        ax.set_title(miss.replace("_", " "), fontsize=9)
-        ax.set_xticks(x2)
-        ax.set_xticklabels(labels2, fontsize=6, rotation=45, ha="right")
-        ax.set_ylim(0, 1.05)
-        if ax == axes2[0]:
-            ax.set_ylabel(f"Mean F1@{tau}")
-        ax.axhline(1.0, color="gray", lw=0.5, ls="--")
-    fig2.legend(handles=legend_elements, loc="lower center", ncol=2, fontsize=9)
-    fig2.tight_layout(rect=[0, 0.06, 1, 1])
-    fig2.savefig(fp_png, bbox_inches="tight", dpi=150)
-    plt.close(fig2)
-    fig_paths.append(fp_png)
+    fig.savefig(fp_png, bbox_inches="tight", dpi=150)
+    plt.close(fig)
+    fig_paths.extend([fp, fp_png])
 
     return fig_paths
 

@@ -67,6 +67,66 @@ COLORS = {
     "saim_soft": "#D6CFE4",
 }
 
+# Semantic palette — stable identities for recurring scientific concepts.
+# These map concept → hex color and must match the LaTeX definitions in
+# docs/manuscripts/shared/components/colors.tex.
+METHOD_COLORS: dict[str, str] = {
+    "quadrature": _MUTED_PALETTE[0],   # blue   — reference method
+    "laplace":    _MUTED_PALETTE[2],   # teal   — analytic approximation
+    "jj":         _MUTED_PALETTE[3],   # sand   — variational lower bound
+    "pg_vb":      _MUTED_PALETTE[3],   # sand   — aliases jj
+    "ep":         _MUTED_PALETTE[1],   # rose   — expectation propagation
+    "exact":      _MUTED_PALETTE[0],   # blue   — exact inference
+    "approx":     _MUTED_PALETTE[3],   # sand   — approximation
+}
+
+FAMILY_COLORS: dict[str, str] = {
+    "gaussian":  _MUTED_PALETTE[0],   # blue
+    "poisson":   _MUTED_PALETTE[2],   # teal
+    "binomial":  _MUTED_PALETTE[3],   # sand
+    "negbin":    "#EE7733",           # orange
+    "beta":      _MUTED_PALETTE[5],   # purple
+    "beta_obs":  _MUTED_PALETTE[5],   # purple
+}
+
+PRIOR_COLORS: dict[str, str] = {
+    "uniform":         "#888888",       # grey
+    "geometric":       _MUTED_PALETTE[0],  # blue
+    "gap_hazard":      _MUTED_PALETTE[2],  # teal
+    "length_cohesion": "#EE7733",          # orange
+    "combined":        _MUTED_PALETTE[1],  # rose
+}
+
+SPEC_COLORS: dict[str, str] = {
+    "correct":     _MUTED_PALETTE[0],  # blue
+    "misspecified": _MUTED_PALETTE[1],  # rose/coral
+}
+
+POOL_COLORS: dict[str, str] = {
+    "pooled":      _MUTED_PALETTE[0],  # blue
+    "independent": _MUTED_PALETTE[1],  # rose
+}
+
+METHOD_MARKERS: dict[str, str] = {
+    "quadrature": "o",
+    "laplace":    "s",
+    "jj":         "D",
+    "pg_vb":      "D",
+    "ep":         "^",
+    "exact":      "o",
+    "approx":     "s",
+}
+
+METHOD_LINESTYLES: dict[str, str] = {
+    "quadrature": "-",
+    "laplace":    "--",
+    "jj":         "-.",
+    "pg_vb":      "-.",
+    "ep":         ":",
+    "exact":      "-",
+    "approx":     "--",
+}
+
 COLOR_CYCLE = _MUTED_PALETTE[:7]
 
 
@@ -216,15 +276,28 @@ def save_figure(
     plt.close(fig)
 
 
+def apply_paper_style(**kwargs) -> None:
+    """Alias for setup_style() used in older scripts."""
+    setup_style(**kwargs)
+
+
 __all__ = [
     "COLORS",
     "COLOR_CYCLE",
     "DPI_PRINT",
     "DPI_SCREEN",
     "DOUBLE_COL_WIDTH",
+    "FAMILY_COLORS",
     "FULL_PAGE_WIDTH",
+    "METHOD_COLORS",
+    "METHOD_LINESTYLES",
+    "METHOD_MARKERS",
+    "POOL_COLORS",
+    "PRIOR_COLORS",
     "SINGLE_COL_WIDTH",
+    "SPEC_COLORS",
     "add_panel_label",
+    "apply_paper_style",
     "get_figsize",
     "save_figure",
     "setup_style",

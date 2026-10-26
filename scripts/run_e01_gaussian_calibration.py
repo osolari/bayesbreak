@@ -797,7 +797,7 @@ def _make_calibration_figure(
         ax.fill_between(x, lo, hi, alpha=0.20, color=blue)
         ax.set_xlabel("Predicted P(boundary | y)", fontsize=12)
         ax.set_ylabel("Observed frequency", fontsize=12)
-        ax.set_title(label, fontsize=12)
+        ax.annotate(label, xy=(0.02, 0.97), xycoords='axes fraction', fontsize=8, va='top')
         ax.set_xlim(0, xy_max)
         ax.set_ylim(0, xy_max)
         ax.tick_params(labelsize=10)
@@ -805,10 +805,6 @@ def _make_calibration_figure(
         ax.text(0.04, 0.88, f"ECE = {calib['ece']:.4f}",
                 transform=ax.transAxes, fontsize=11)
 
-    fig.suptitle(
-        "E01: Boundary-event reliability (predicted vs. observed, marginalized over k)",
-        fontsize=14,
-    )
     save_figure(fig, out_path, formats=("pdf", "png"))
     logger.info("Saved calibration figure to %s", out_path)
 
@@ -853,14 +849,12 @@ def _make_recovery_figure(
                 label=f"k={k}",
                 capsize=3,
             )
-        ax.set_xlabel("Δ/σ (signal-to-noise)")
+        ax.set_xlabel(f"Δ/σ (signal-to-noise),  n = {n}")
         ax.set_ylabel("F1 @ τ=3")
-        ax.set_title(f"n = {n}")
         ax.set_ylim(0, 1.05)
         ax.axhline(1.0, color=COLORS["grey"], lw=0.8, ls="--")
         ax.legend()
 
-    fig.suptitle("E01: Recovery vs signal-to-noise (geometric-decay prior)")
     save_figure(fig, out_path, formats=("pdf", "png"))
     logger.info("Saved recovery figure to %s", out_path)
 

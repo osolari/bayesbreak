@@ -243,9 +243,39 @@ def main(
         bbox={"boxstyle": "round,pad=0.4", "facecolor": "white", "edgecolor": "0.7"},
     )
 
-    # Save in multiple formats
     save_figure(fig, outdir / "fig3_boundary_calibration", formats=("png", "pdf"))
     plt.close(fig)
+
+    import json as _json
+    _data = {
+        "seed": seed, "n": n, "n_seq": n_seq, "k_max": k_max,
+        "sigma": sigma, "n_bins": n_bins,
+        "p_bin": p_bin, "y_bin": y_bin, "n_bin": n_bin,
+        "ece": float(ece), "brier": float(brier),
+    }
+    with open(outdir / "fig3_boundary_calibration_data.json", "w") as _f:
+        _json.dump(_data, _f)
+
+    # Write canonical plot-ready CSV to shared data dir.
+    import csv as _csv
+    import math as _math
+    _canonical = _ROOT / "docs" / "manuscripts" / "shared" / "figures" / "data"
+    _canonical.mkdir(parents=True, exist_ok=True)
+    with open(_canonical / "fig3_boundary_calibration_data.json", "w") as _f2:
+        _json.dump(_data, _f2)
+    _z = 1.96
+    _csv_rows = []
+    for _i, (_pb, _yb, _nb) in enumerate(zip(p_bin, y_bin, n_bin)):
+        _ci = _z * _math.sqrt(_yb * (1 - _yb) / max(_nb, 1)) if _math.isfinite(_yb) else float("nan")
+        _csv_rows.append({
+            "bin_idx": _i, "p_bin": _pb, "y_bin": _yb, "n_bin": _nb,
+            "ci_lo": max(0.0, _yb - _ci) if _math.isfinite(_ci) else float("nan"),
+            "ci_hi": min(1.0, _yb + _ci) if _math.isfinite(_ci) else float("nan"),
+        })
+    with open(_canonical / "fig3_boundary_calibration.csv", "w", newline="") as _cf:
+        _w = _csv.DictWriter(_cf, fieldnames=list(_csv_rows[0].keys()))
+        _w.writeheader()
+        _w.writerows(_csv_rows)
 
 
 if __name__ == "__main__":

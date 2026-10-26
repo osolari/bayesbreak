@@ -850,7 +850,7 @@ def _make_recovery_figure(
             rotation=25, ha="right", fontsize=13,
         )
         ax.set_ylabel(ylabel, fontsize=14)
-        ax.set_title(title, fontsize=14, pad=8)
+        ax.annotate(title, xy=(0.02, 0.97), xycoords='axes fraction', fontsize=10, va='top')
         ax.set_ylim(-0.03, 1.08)
         ax.axhline(1.0, color=COLORS["grey"], lw=1.0, ls="--", zorder=0)
         ax.tick_params(axis="y", labelsize=12)
@@ -868,11 +868,6 @@ def _make_recovery_figure(
         "P(k = 3 | y)",
         "Segment-count selection by family",
         collect_legend=False,
-    )
-
-    fig.suptitle(
-        "E02: Observation-family portability — geometric-decay prior, $k_{\\max}=10$",
-        fontsize=15, y=0.97,
     )
 
     # Figure-level legend: 5 columns × 2 rows, one entry per cell.

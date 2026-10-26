@@ -698,15 +698,10 @@ def _generate_figures(cell_summaries: list[dict]) -> None:
             ax.set_xticks(xs)
             ax.set_xlabel(r"$\Delta$", fontsize=9)
             ax.set_ylabel("Accuracy / ARI", fontsize=8)
-            ax.set_title(f"G={G}, S={S}", fontsize=9)
+            ax.annotate(f"G={G}, S={S}", xy=(0.03, 0.96), xycoords='axes fraction', fontsize=8, va='top')
             if i == 0 and j == 0:
                 ax.legend(fontsize=7, loc="lower right")
 
-    fig.suptitle(
-        "E05 Latent-template recovery: accuracy, ARI, and duplicate-template frequency",
-        fontsize=10,
-        y=1.01,
-    )
     plt.tight_layout()
     for ext in ("pdf", "png"):
         fig.savefig(FIGURES_DIR / f"fig_E05_templates.{ext}", dpi=150, bbox_inches="tight")

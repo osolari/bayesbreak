@@ -750,6 +750,8 @@ def _make_figures(cell_summaries: list[dict], figures_dir: Path) -> None:
         import matplotlib
         matplotlib.use("Agg")
         import matplotlib.pyplot as plt
+        from _style import setup_style, _MUTED_PALETTE
+        setup_style()
     except ImportError:
         logger.warning("matplotlib not available; skipping figures")
         return
@@ -757,10 +759,9 @@ def _make_figures(cell_summaries: list[dict], figures_dir: Path) -> None:
     S_values = E04_CONFIG["S_values"]
     nfs = E04_CONFIG["nonshared_fractions"]
     nf_labels = {0: "0% non-shared", 0.25: "25% non-shared", 0.5: "50% non-shared"}
-    colors = {0: "#1f77b4", 0.25: "#ff7f0e", 0.5: "#2ca02c"}
+    colors = {0: _MUTED_PALETTE[0], 0.25: _MUTED_PALETTE[2], 0.5: _MUTED_PALETTE[1]}
 
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
-    fig.suptitle("E04 Shared-Boundary Pooling vs Independent Fits", fontsize=10)
 
     x_ticks = np.arange(len(S_values))
     x_labels = [f"S={s}" for s in S_values]
@@ -811,7 +812,6 @@ def _make_figures(cell_summaries: list[dict], figures_dir: Path) -> None:
                 label=f"Indep ({label})", color=color, marker="s", linestyle="--", capsize=3,
             )
 
-    axes[0].set_title("Mean F1@3 by S and non-shared fraction")
     axes[0].set_xlabel("Number of sequences S")
     axes[0].set_ylabel("Mean F1@3")
     axes[0].set_xticks(x_ticks)
@@ -848,7 +848,6 @@ def _make_figures(cell_summaries: list[dict], figures_dir: Path) -> None:
                 color=colors.get(nf, "black"), marker="o", capsize=3,
             )
 
-    axes[1].set_title("Pooled signal MSE by S and non-shared fraction")
     axes[1].set_xlabel("Number of sequences S")
     axes[1].set_ylabel("Mean signal MSE")
     axes[1].set_xticks(x_ticks)

@@ -191,9 +191,46 @@ def main(outdir: Path, seed: int, n1: int, n2: int, n3: int, sigma: float) -> No
     ax1.legend(loc="upper right", ncol=2)
     add_panel_label(ax1, "B")
 
-    # Save in multiple formats
     save_figure(fig, outdir / "fig1_synthetic_gaussian", formats=("png", "pdf"))
     plt.close(fig)
+
+    import json as _json
+    _data = {
+        "seed": seed, "n1": n1, "n2": n2, "n3": n3, "sigma": sigma,
+        "y": y.tolist(), "mu": mu.tolist(),
+        "map_prediction": pc.tolist(),
+        "boundary_marginals": d1.tolist(),
+        "map_boundaries": list(boundaries),
+        "ci_lo": lo.tolist(), "ci_hi": hi.tolist(),
+    }
+    with open(outdir / "fig1_synthetic_gaussian_data.json", "w") as _f:
+        _json.dump(_data, _f)
+
+    # Write canonical plot-ready CSV to shared data dir.
+    import csv as _csv
+    _canonical = _ROOT / "docs" / "manuscripts" / "shared" / "figures" / "data"
+    _canonical.mkdir(parents=True, exist_ok=True)
+    _shutil_dest = _canonical / "fig1_synthetic_gaussian_data.json"
+    with open(_shutil_dest, "w") as _f2:
+        _json.dump(_data, _f2)
+    _mb_set = set(list(boundaries)[1:-1])
+    _csv_rows = [
+        {
+            "x": _x,
+            "y": _data["y"][_x],
+            "true_signal": _data["mu"][_x],
+            "map_prediction": _data["map_prediction"][_x],
+            "ci_lo": _data["ci_lo"][_x],
+            "ci_hi": _data["ci_hi"][_x],
+            "boundary_marginal": _data["boundary_marginals"][_x - 1] if _x > 0 else float("nan"),
+            "is_map_boundary": 1 if _x in _mb_set else 0,
+        }
+        for _x in range(len(_data["y"]))
+    ]
+    with open(_canonical / "fig1_synthetic_gaussian.csv", "w", newline="") as _cf:
+        _w = _csv.DictWriter(_cf, fieldnames=list(_csv_rows[0].keys()))
+        _w.writeheader()
+        _w.writerows(_csv_rows)
 
 
 if __name__ == "__main__":

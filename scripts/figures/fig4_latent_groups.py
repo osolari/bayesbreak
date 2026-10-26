@@ -415,6 +415,26 @@ def main(
     save_figure(fig2, outdir / "fig4_latent_groups_cropped", formats=("png", "pdf"))
     plt.close(fig2)
 
+    import json as _json
+    _data = {
+        "seed": seed, "n": n, "n_seq": n_seq, "sigma": sigma, "k_max": k_max,
+        "r_plot": r_plot.tolist(),
+        "y_true_plot": y_true_plot.tolist(),
+        "y_true": y_true.tolist(),
+        "hard_assignments": hard.tolist(),
+        "responsibilities": r.tolist(),
+        "boundary_post_per_group": [bm.tolist() for bm in boundary_post_per_group],
+        "true_b_per_group": [b0, b1],
+        "example_seq_0": ys[idx0].tolist(),
+        "example_seq_1": ys[idx1].tolist(),
+        "fit_0": fit0.tolist(),
+        "fit_1": fit1.tolist(),
+        "mu0": mu0.tolist(),
+        "mu1": mu1.tolist(),
+    }
+    with open(outdir / "fig4_latent_groups_data.json", "w") as _f:
+        _json.dump(_data, _f)
+
     logger.info(
         "fig4: n=%d, n_seq=%d, sigma=%.2f, k_max=%d, max_iter=%d -> %s",
         n,
