@@ -6,12 +6,7 @@ The ordered-partition recursions remain valid when prior factors or multiple-seq
 \subsection{Irregular designs: segment cohesion and boundary hazard}
 Irregular coordinates can enter the partition prior in two statistically distinct ways. A complete-segment cohesion $c_u(i,j)$ assigns prior mass according to the physical span of $(i,j]$; an interior-boundary hazard $h_u(j)$ assigns prior mass to a candidate split at $u_j$. They can appear together in Equation~\eqref{eq:partition-prior}, but one does not imply the other.
 
-\begin{figure}[!htbp]
-  \centering
-  \resizebox{0.96\columnwidth}{!}{\input{shared/figures/tikz/models/cohesion_boundary_hazard.tex}}
-  \caption{Design-dependent partition prior. Segment cohesion and interior-boundary hazard represent different prior assumptions. The terminal endpoint receives no boundary-hazard factor.}
-  \label{fig:cohesion-hazard-paper}
-\end{figure}
+\input{shared/figures/defs/fig_cohesion_boundary_hazard.tex}
 
 \begin{theorem}[Local prior factors preserve exact inference]
 \label{thm:local-prior-paper}
@@ -46,12 +41,7 @@ Constant intensity and equal-width intervals recover an index-uniform fixed-coun
 \subsection{Shared changepoints across multiple sequences}
 Suppose $S$ aligned sequences share a boundary vector while retaining sequence-specific segment parameters and priors. Conditional independence gives a pooled segment marginal likelihood.
 
-\begin{figure}[!htbp]
-  \centering
-  \resizebox{0.96\columnwidth}{!}{\input{shared/figures/tikz/models/shared_boundary_plate.tex}}
-  \caption{Hierarchical common-changepoint model with sequence-specific segment parameters. Conditional independence makes the sequence-specific segment marginal likelihoods multiply.}
-  \label{fig:shared-boundary-paper}
-\end{figure}
+\input{shared/figures/defs/fig_shared_boundary_plate.tex}
 
 \begin{assumption}[Common candidate set]
 \label{ass:shared-support}

@@ -232,33 +232,7 @@ probability error, ranking changes, and runtime. The maximum over reachable
 segments must be used when interpreting the uniform-error theorem; a
 posterior-weighted error is a distinct diagnostic.
 
-\begin{figure}[!htbp]
-\centering
-\BBPlannedPanel{(a) Segment evidence error}{Absolute log error}{Block length}
-\hfill
-\BBPlannedPanel{(b) Posterior discrepancy}{Maximum probability error}{Approximation method}
-\caption{\textbf{Planned Figure P3 (E06).} Numerical integration error and its
-propagation to segmentation posteriors, with failure rates and runtime
-reported separately. This figure is not a numerical certificate.}
-\label{fig:planned-nonconjugate-paper}
-\end{figure}
-
-\begin{table}[!htbp]
-\centering\small
-\caption{\textbf{Planned Table P2 (E06).} Quadrature-validated numerical
-approximation study. Report failed or nonconvergent calls in the denominator.}
-\label{tab:planned-nonconjugate-paper}
-\begin{tabularx}{0.94\textwidth}{@{}L{0.23\textwidth}L{0.18\textwidth}L{0.18\textwidth}L{0.17\textwidth}Y@{}}
-\toprule
-Method & Median $|\Delta\log A|$ & Maximum $|\Delta\log A|$ & Failure fraction & Time [95\% CI] \\
-\midrule
-Adaptive quadrature (reference) & TBD & TBD & TBD & TBD \\
-Laplace & TBD & TBD & TBD & TBD \\
-Jaakkola--Jordan & TBD & TBD & TBD & TBD \\
-EP, conditional on validation & TBD & TBD & TBD & TBD \\
-\bottomrule
-\end{tabularx}
-\end{table}
+Results for this experiment are reported in Section~\ref{sec:results} (Figure~\ref{fig:planned-nonconjugate-paper}, Table~\ref{tab:planned-nonconjugate-paper}), artifact \texttt{9739f69c790aae6f}.
 
 \subsection{E07 and E08: robustness and held-out prediction}
 E07 repeats the $n=256$, three-segment recovery experiment with Student
@@ -359,25 +333,7 @@ the ordinary $\Theta(n^2)$ storage path and a documented streaming variant if
 it is implemented. Report observed finite-range slopes and theoretical
 worst-case complexity as different quantities.
 
-\begin{figure}[!htbp]
-\centering
-\includegraphics[width=\textwidth,keepaspectratio]{shared/figures/results/fig_E10_scaling.png}
-\caption{\textbf{E10: Gaussian scaling benchmark.}
-End-to-end wall-clock time (left) and peak memory (right) across the protocol grid
-$n\in\{128,256,512,1024,2048\}$, $k_{\max}\in\{5,10,20\}$, with BLAS threads pinned to 1,
-three warmup runs, and seven timed repeats per cell.
-The dashed curve is a $\propto n^2$ guide anchored at $n=128$, $k_{\max}=20$;
-it represents the theoretical worst-case complexity, not a fitted claim.
-Medians over 7 repeats are shown; within-cell variation was below $2\%$ for all cells.
-Memory scales as $O(n^2)$ (empirical slope $1.98$).
-End-to-end and forward-backward time scale as approximately $O(k_{\max}\cdot n^{1.14})$
-in practice on the measured hardware (Apple Silicon, NumPy 2.4.6); see
-Table~\ref{tab:E10-scaling-paper} and the gate resolution document for a full account.
-Results from run config SHA256 \texttt{bece422c9d90093f}.}
-\label{fig:planned-scaling-paper}
-\end{figure}
-
-\input{shared/tables/defs/tab_E10_scaling.tex}
+Results for this experiment are reported in Section~\ref{sec:e10} (Figure~\ref{fig:E10-scaling-paper}, Table~\ref{tab:E10-scaling-paper}), artifact \texttt{bece422c9d90093f}.
 
 \subsection{Criteria for replacing planned outputs}
 A planned slot is populated only when the generating configuration, data or

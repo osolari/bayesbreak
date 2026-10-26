@@ -9,10 +9,11 @@ score below $0.020$ across all cells), applications of common partition
 recursions to Gaussian, Poisson, Binomial, and Beta-valued responses, and
 96\% hard allocation accuracy in one two-group template experiment. A separate
 400-dataset stress study evaluates template recovery and objective monotonicity.
-Observed Gaussian computation times range from $0.0750$ seconds at $n=50$ to
-$0.7721$ seconds at $n=400$ for $k_{\max}=20$. Analyses of well-log, array-CGH,
-financial-return, and methylation data provide executed fits under the stated
-models; the lack of independently scored changepoints limits conclusions about
-external segmentation accuracy. Additional simulation and comparison protocols
+Observed Gaussian computation times range from $0.037$ seconds at $n=128$ to
+$3.25$ seconds at $n=2048$ for $k_{\max}=20$; peak memory reached 500~MB at
+$n=2048$, consistent with $O(n^2)$ storage. Analyses of well-log, array-CGH, and
+methylation data provide executed fits under the stated models; the lack of
+independently scored changepoints limits conclusions about external segmentation
+accuracy. Additional simulation and comparison protocols
 are specified as planned work and do not contribute numerical findings to this
 report.}

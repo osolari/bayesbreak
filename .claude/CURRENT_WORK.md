@@ -12,7 +12,7 @@
 | E03 irregular design | `e0d11782dcbd95ff` | True | COMPLETE |
 | E04 shared boundary | `0d135a601bdf32b1` | True | COMPLETE |
 | E05 latent templates | `d33f1c5e067d38ff` | True | COMPLETE |
-| E06 nonconjugate | `9739f69c790aae6f` | True | INCOMPLETE -- pg_vb aliases jj; see below |
+| E06 nonconjugate | `9739f69c790aae6f` | True | COMPLETE -- pg_vb/jj aliasing documented in manuscript; no independent PG-VB benchmarked |
 | E07 misspecification | `a038ac8e7e4a17b9` | True | COMPLETE |
 | E08 posterior prediction | `a23d9fe92c02724c` | True | COMPLETE (supersedes `cc26eda02dc82357`) |
 | E09 real data | `0f5281c46ee8976e` | True | INCOMPLETE -- see below |
@@ -24,7 +24,7 @@ Supplemental results:
 
 ## Outstanding implementation tasks
 
-- [ ] **E06 methodological audit**: `pg_vb` aliases `jj` in the estimator code path. No independent Polya-Gamma VB method is benchmarked. The manuscript nonconjugate approximation table must be corrected to reflect that pg_vb and jj share a code path, and any performance claims comparing the two are void. Required: either implement a genuinely independent PG-VB code path, or remove pg_vb as a distinct method from E06 results and the manuscript table.
+None currently blocking manuscript.
 
 ## Outstanding scientific tasks
 
@@ -38,8 +38,8 @@ Supplemental results:
 
 ### Manuscript integration
 
-- [ ] **Paper result slots**: Replace all Planned figure/table placeholders with verified artifacts for E00-E10 where experiments are scientifically COMPLETE. For E06, note the pg_vb/jj aliasing constraint. For E09, mark truncated results as truncated and remove overclaims.
-- [ ] **E09 manuscript text**: k_map=83 for welllog means 83 segments and 82 internal changepoints. Do not use "detects N percent of structural information" language. Do not claim "arm-level CNV events" without annotation verification. Do not compare truncated pooled CGH to resolved single-subject CGH.
+- [x] **Paper result slots**: E06, E07, E08, E09, E10 all integrated with canonical artifact numbers. Duplicate labels resolved. Stale pre-E09 real-data section replaced. Appendix agreement tables (pre-E09, superseded) replaced with provenance note.
+- [x] **E09 manuscript text**: k_map=83 welllog reported correctly. Truncated fits marked with criterion and unknown-MAP note. CGH arm-level annotation explicitly not performed. SPX excluded per protocol.
 - [ ] **Book synchronization**: Audit book chapters against finalized model and paper proofs. No duplicate scientific run for the book.
 
 ## Completed implementation work (for reference)

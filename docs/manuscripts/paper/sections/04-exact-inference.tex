@@ -4,12 +4,7 @@
 Once the prior-adjusted block array
 $\widetilde A^{(r)}_{ij}=A^{(r)}_{ij}\gamma_u(i,j)$ has been constructed, the observation family no longer enters the partition recursions. This section gives the two distinct inference routes used by \BayesBreak: sum-product for posterior quantities and max-sum for a joint maximizing partition.
 
-\begin{figure}[!htbp]
-  \centering
-  \resizebox{0.91\textwidth}{!}{\input{shared/figures/tikz/workflows/semiring_inference_routes.tex}}
-  \caption{The same local scores support two algebraically related but inferentially different routes. Sum-product integrates over paths; max-sum selects one globally maximizing path. Coordinatewise modes of marginal boundary distributions need not form that path.}
-  \label{fig:semiring-routes}
-\end{figure}
+\input{shared/figures/defs/fig_semiring_inference_routes.tex}
 
 \subsection{Forward and backward partition sums}
 For $k\in\{0,\ldots,k_{\max}\}$ and $j\in\{0,\ldots,n\}$, let $L_{k,j}$ be the integrated score of all $k$-block partitions of the prefix $(0,j]$. Let $R_{k,i}$ be the corresponding score for all $k$-block partitions of the suffix $(i,n]$. Set

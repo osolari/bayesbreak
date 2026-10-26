@@ -101,49 +101,7 @@ with a documented floating-point tolerance $\delta$.
 \section{Supplementary agreement diagnostics}
 \label{app:agreement}
 
-The tables below preserve executed comparator values while making the reference semantics explicit. They are not external-accuracy tables.
-
-\begin{table}[H]
-\centering
-\small
-\caption{Well-log boundary agreement with the \BayesBreak MAP boundary set at tolerance three. No independently verified geological boundary annotation was used.}
-\label{tab:welllog-agreement-app}
-\begin{tabular}{@{}lrr@{}}
-\toprule
-Method & Agreement $F_1@3$ & Interpretation \\
-\midrule
-Fearnhead-configured reference DP & 0.93 & agreement with BB MAP \\
-Optimal partitioning & 0.91 & agreement with BB MAP \\
-Binary segmentation & 0.86 & agreement with BB MAP \\
-PELT & 0.18 & agreement with BB MAP \\
-Wild binary segmentation & 0.05 & agreement with BB MAP \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{table}[H]
-\centering
-\small
-\caption{S\&P 500 and methylation comparator agreement. Segment-count restrictions were matched for the indicated comparisons.}
-\label{tab:spx-methyl-agreement-app}
-\begin{tabularx}{0.96\textwidth}{@{}L{0.20\textwidth}L{0.28\textwidth}R{0.11\textwidth}R{0.13\textwidth}Y@{}}
-\toprule
-Dataset & Method & $\widehat k$ & Agreement $F_1@3$ & Scope \\
-\midrule
-S\&P 500 & optimal partitioning, matched $k$ & 29 & 0.82 & vs BB Gaussian MAP \\
-S\&P 500 & PELT & 79 & 0.53 & vs BB Gaussian MAP \\
-S\&P 500 & binary segmentation, matched $k$ & 29 & 0.43 & vs BB Gaussian MAP \\
-S\&P 500 & wild binary segmentation, matched $k$ & 29 & 0.07 & vs BB Gaussian MAP \\
-S\&P 500 & Fearnhead-configured reference DP & 13 & 0.55 & vs BB Gaussian MAP \\
-Methylation & optimal partitioning, matched $k$ & 15 & 0.79 & vs BB Beta-valued MAP \\
-Methylation & binary segmentation, matched $k$ & 15 & 0.57 & vs BB Beta-valued MAP \\
-Methylation & PELT & 5 & 0.44 & vs BB Beta-valued MAP \\
-Methylation & wild binary segmentation, matched $k$ & 15 & 0.14 & vs BB Beta-valued MAP \\
-\bottomrule
-\end{tabularx}
-\end{table}
-
-The incompatible array-CGH comparator output is intentionally absent from these tables. Its flattened 95,245-value axis and the 2,215-probe boundary axis do not define a common matching problem.
+The pre-E09 comparator agreement tables for well-log, S\&P 500, and methylation are superseded. Those runs used exploratory MAP partitions (well-log $\hat{k}\approx23$, methylation $\hat{k}=15$, S\&P 500 $\hat{k}=29$) that differ from the E09 canonical fits (well-log $\hat{k}=83$, methylation persistently truncated at $k_{\max}=120$, S\&P 500 excluded because \texttt{yfinance} is not installed). Agreement values computed against a superseded reference boundary set are not informative about the canonical E09 results. The PELT comparison for well-log under the E09 canonical partition is reported in Section~\ref{sec:e09}.
 
 \section{Reproducibility}
 \label{app:reproducibility}
