@@ -9,7 +9,7 @@ make -C docs/manuscripts book
 
 ## Experiment execution status
 
-All controlled E00-E10 experiments have been executed and verified. Status, artifact hashes, and scientific-completeness notes are in `.claude/CURRENT_WORK.md`. Scientific limitations and outstanding E09 gaps are documented there and in `.claude/RESULT_POLICY.md`.
+All E00-E10 experiments have been executed and passed their execution gate (gate_pass=True). E00-E08 and E10 are scientifically complete. E09 passed its execution gate but has incomplete scientific evaluation: CGH pooled and methylation posteriors are truncated at the tested k_max, R baselines are unavailable, and SPX was excluded from the authentic real-data experiment. Artifact hashes and scientific-completeness notes are in `.claude/CURRENT_WORK.md`; acceptance decisions per result are in `.claude/RESULT_POLICY.md`.
 
 The experiment protocols were written prospectively in `.claude/skills/bayesbreak-release-audit/protocols/experiments.json` and `references/experiment_protocols.md`. Those files define exact design and integrity requirements; they must not be changed after a run begins. Run the validators before any new execution:
 

@@ -39,8 +39,16 @@ def test_stage_b_does_not_modify_confirmatory_manifests(tmp_path) -> None:
     hashes_before = _collect_manifest_hashes()
     assert hashes_before, "No confirmatory manifests found — check CONFIRMATORY_ROOT."
 
+    # Use --outdir so render.py writes figures to a temp directory rather than
+    # mutating docs/manuscripts/paper/figures/ in the working tree.
     result = subprocess.run(
-        [sys.executable, str(ROOT / "scripts" / "figures" / "render.py"), "--all"],
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "figures" / "render.py"),
+            "--all",
+            "--outdir",
+            str(tmp_path),
+        ],
         capture_output=True,
         text=True,
     )

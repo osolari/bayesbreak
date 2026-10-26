@@ -524,8 +524,7 @@ def _check_figure(
         defs_path = _SHARED / "figures" / "defs" / f"fig_{stem}.tex"
         alt_path = _SHARED / "figures" / "defs" / f"{stem}.tex"
         if defs_path.exists() or alt_path.exists():
-            if verbose:
-                check.ok(f"{label} TikZ source def exists")
+            check.ok(f"{label} TikZ source def exists")
         else:
             check.warn(f"{label} TikZ def file not found (non-critical for rendering)")
         return
@@ -539,15 +538,13 @@ def _check_figure(
                 with open(p) as f:
                     j = json.load(f)
                 status = j.get("provenance_status", "")
-                if verbose:
-                    check.ok(f"{label} provenance JSON exists (status={status})")
+                check.ok(f"{label} provenance JSON exists (status={status})")
             else:
                 check.warn(f"{label} provenance JSON missing: {asset.json}")
         for out in asset.outputs:
             p = _FIG_RESULTS / out
             if p.exists():
-                if verbose:
-                    check.ok(f"{label} output exists: {out}")
+                check.ok(f"{label} output exists: {out}")
             else:
                 check.warn(
                     f"{label} output missing: {out}  "
@@ -559,31 +556,27 @@ def _check_figure(
     for csv_name in asset.csvs:
         p = _FIG_DATA / csv_name
         if p.exists():
-            if verbose:
-                check.ok(f"{label} CSV: {csv_name}")
+            check.ok(f"{label} CSV: {csv_name}")
         else:
             check.fail(f"{label} MISSING CSV: {csv_name}")
 
     if asset.json:
         p = _FIG_DATA / asset.json
         if p.exists():
-            if verbose:
-                check.ok(f"{label} JSON: {asset.json}")
+            check.ok(f"{label} JSON: {asset.json}")
         else:
             check.fail(f"{label} MISSING JSON: {asset.json}")
 
     for out in asset.outputs:
         p = _FIG_RESULTS / out
         if p.exists():
-            if verbose:
-                check.ok(f"{label} output: {out}")
+            check.ok(f"{label} output: {out}")
         else:
             check.fail(f"{label} MISSING output: {out}")
 
     if asset.render_key is not None:
         if asset.render_key in render_keys:
-            if verbose:
-                check.ok(f"{label} render key '{asset.render_key}' registered")
+            check.ok(f"{label} render key '{asset.render_key}' registered")
         else:
             check.fail(
                 f"{label} render key '{asset.render_key}' NOT in render.py _REGISTRY"
@@ -603,8 +596,7 @@ def _check_table(
         for out in asset.outputs:
             p = _TAB_RESULTS / out
             if p.exists():
-                if verbose:
-                    check.ok(f"{label} static .tex exists: {out}")
+                check.ok(f"{label} static .tex exists: {out}")
             else:
                 check.fail(f"{label} MISSING static .tex: {out}")
         return
@@ -613,31 +605,27 @@ def _check_table(
     for csv_name in asset.csvs:
         p = _TAB_DATA / csv_name
         if p.exists():
-            if verbose:
-                check.ok(f"{label} CSV: {csv_name}")
+            check.ok(f"{label} CSV: {csv_name}")
         else:
             check.fail(f"{label} MISSING CSV: {csv_name}")
 
     if asset.json:
         p = _TAB_DATA / asset.json
         if p.exists():
-            if verbose:
-                check.ok(f"{label} JSON: {asset.json}")
+            check.ok(f"{label} JSON: {asset.json}")
         else:
             check.fail(f"{label} MISSING JSON: {asset.json}")
 
     for out in asset.outputs:
         p = _TAB_RESULTS / out
         if p.exists():
-            if verbose:
-                check.ok(f"{label} .tex: {out}")
+            check.ok(f"{label} .tex: {out}")
         else:
             check.fail(f"{label} MISSING .tex: {out}")
 
     if asset.render_key is not None:
         if asset.render_key in render_keys:
-            if verbose:
-                check.ok(f"{label} render key '{asset.render_key}' registered")
+            check.ok(f"{label} render key '{asset.render_key}' registered")
         else:
             check.fail(
                 f"{label} render key '{asset.render_key}' NOT in render.py _REGISTRY"
@@ -752,6 +740,12 @@ def main(argv: list[str] | None = None) -> int:
         asset = _FIGURE_MANIFEST[stem]
         print(f"  UNVERIFIED  {stem}: {asset.note}")
     print()
+
+    # --- optionally print individual passes ---
+    if verbose and check.passes:
+        for p_msg in check.passes:
+            print(f"  OK  {p_msg}")
+        print()
 
     # --- report warnings ---
     if check.warnings:

@@ -47,6 +47,7 @@ htmlcov/
 # Generated documentation
 site/
 docs/_build/
+docs/results/
 
 # Jupyter
 .ipynb_checkpoints/
