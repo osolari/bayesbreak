@@ -102,10 +102,10 @@ Python dictionaries exactly.
 Figures must not carry embedded titles (`fig.suptitle`, centered
 `ax.set_title`). Panel identity is conveyed by:
 
-1. A bold letter outside the axes box via `add_panel_label(ax, "A")`.
-2. A left-aligned panel descriptor via `add_panel_label(ax, "A", "descriptor text")`.
-3. Annotations inside the panel via `ax.annotate(text, xy=(0.02, 0.97), xycoords='axes fraction', va='top')`.
+1. A bold label outside the axes box via `add_panel_label(ax, "(a)")`.
+2. Annotations inside the panel via `ax.annotate(text, xy=(0.02, 0.97), xycoords='axes fraction', va='top')`.
 
+Panel labels use lowercase with parentheses: `"(a)"`, `"(b)"`, `"(c)"`, etc.
 Captions and figure numbers are in the LaTeX wrapper, not the plot.
 
 ---
@@ -244,85 +244,30 @@ Same flow as figures but:
 
 ## Committed figure-input data
 
-Every figure has its numerical input data committed in
-`docs/manuscripts/shared/figures/data/`. These files are the source of truth
-for figure regeneration. Style changes never require re-running experiments.
+Every figure's numerical input data is committed in
+`docs/manuscripts/shared/figures/data/`. These files are the canonical
+source for `render.py` — style changes never require re-running
+experiments. Authoritative filenames are the `csvs` entries in
+`scripts/figures/validate_inventory.py`'s `_FIGURE_MANIFEST`.
 
-| Data file | Figure(s) | Format |
-|-----------|-----------|--------|
-| `fig1_synthetic_gaussian_data.json` | fig1 | JSON: y, map_prediction, boundary_marginals, ci_lo/hi |
-| `fig2_family_showcase_data.json` | fig2 | JSON: per-family y, true_signal, fit, map_boundaries |
-| `fig3_boundary_calibration_data.json` | fig3 | JSON: p_bin, y_bin, n_bin, ece, brier |
-| `fig4_latent_groups_data.json` | fig4 | JSON: responsibilities, boundary_post_per_group, example sequences |
-| `fig5_runtime_scaling_data.csv` | fig5 | CSV: n, k_max, runtime columns |
-| `fig6_welllog_panel_data.json` | fig6 | JSON: y, map_prediction, boundary_marginals, k_posterior, trace |
-| `fig7_cgh_panel_data.json` | fig7 | JSON: same panel structure |
-| `fig9_methylation_panel_data.json` | fig9 | JSON: same panel structure |
-| `fig_E01_data.csv` | E01 figs | CSV: cell_summaries from canonical artifact |
-| `fig_E02_data.csv` | E02 figs | CSV: cell_summaries |
-| `fig_E03_data.csv` | E03 figs | CSV: gap, prior, true_template, mean_f1, mean_p_b_gap |
-| `fig_E04_data.csv` | E04 figs | CSV: S, nonshared_fraction, pooled/indep metrics |
-| `fig_E05_data.csv` | E05 figs | CSV: G, S, delta, template recovery metrics |
-| `fig_E06_metrics.csv` | E06 figs | CSV: per-block BlockMetric fields |
-| `fig_E06_seg_results.csv` | E06 figs | CSV: per-replicate SegResult fields |
-| `fig_E07_data.csv` | E07 figs | CSV: per-replicate misspecification results |
-| `fig_E08_data.csv` | E08 figs | CSV: posterior prediction metrics |
-| `fig_E10_data.csv` | E10 figs | CSV: timing/memory cells from metrics.json |
-
-### Re-generating figures from committed data
-
-Use the canonical regeneration script for experiment figures:
+To list all currently committed data files:
 
 ```bash
-python scripts/figures/regenerate_from_data.py              # all E01-E07
-python scripts/figures/regenerate_from_data.py --experiments E03 E06
+ls docs/manuscripts/shared/figures/data/
+ls docs/manuscripts/shared/tables/data/
 ```
 
-For showcase and real-data figures, data is saved automatically when scripts
-run. To regenerate the PDFs only (no refit, no re-simulation needed -- TODO):
-once each script has a `--from-data` flag, run:
+### Modifying the shared palette
 
-```bash
-python scripts/figures/fig1_synthetic_gaussian.py --from-data
-python scripts/figures/fig6_welllog.py --simulated --from-data
-```
+1. Edit `scripts/figures/_style.py` (Python) and
+   `docs/manuscripts/shared/components/colors.tex` (LaTeX) in tandem.
+2. Run `python scripts/figures/render.py --all` to regenerate all PDFs and PNGs.
+3. Verify with `python scripts/figures/validate_inventory.py`.
 
-Until `--from-data` is implemented, these scripts re-run quickly (<2 min each
-in simulated mode) and re-save the data file as a byproduct.
+PDF and PNG are always generated together by `save_figure()`.
 
-## Figure generation commands
+### Paper and book sharing
 
-Statistical figures are regenerated from committed artifact CSV/JSON files
-(in `results/`). Run from the repo root:
-
-```bash
-# Individual experiment figures
-python scripts/run_e01_gaussian_calibration.py --regenerate-figures
-python scripts/run_e02_family_portability.py   --regenerate-figures
-python scripts/run_e03_irregular_design.py     --regenerate-figures
-python scripts/run_e04_shared_boundary.py      --regenerate-figures
-python scripts/run_e05_latent_templates.py     --regenerate-figures
-python scripts/run_e06_nonconjugate.py         --regenerate-figures
-python scripts/run_e07_misspecification.py     --regenerate-figures
-
-# Showcase figures (freestanding scripts)
-python scripts/figures/fig1_synthetic_gaussian.py
-python scripts/figures/fig2_family_showcase.py
-python scripts/figures/fig3_boundary_calibration.py
-python scripts/figures/fig6_welllog.py --simulated
-python scripts/figures/fig7_cgh.py     --simulated
-python scripts/figures/fig9_methylation.py --simulated
-```
-
-Output goes to `results/figures/` for showcase figures and to
-`results/e0X/figures/` for experiment figures. Copy final PDFs to
-`docs/manuscripts/paper/figures/` before committing.
-
----
-
-## Architectural requirement
-
-Raw numerical input data (CSV, JSON) for every figure must be committed
-to the repository so that style changes can be applied by running only the
-figure-generation functions -- without re-running experiments. This is the
-prerequisite for fast style iteration.
+Both `docs/manuscripts/paper/main.tex` and `docs/manuscripts/book/main.tex`
+reference figures from `paper/figures/` (the canonical output directory).
+Regenerating with `render.py --all` updates both publications simultaneously.

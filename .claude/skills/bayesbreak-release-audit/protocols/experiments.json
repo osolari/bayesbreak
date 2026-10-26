@@ -369,7 +369,7 @@
       "warmup": 3,
       "repeats": 7,
       "blas_threads": 1,
-      "paper_figure_label": "fig:planned-scaling-paper",
+      "paper_figure_label": "fig:E10-scaling-paper",
       "paper_table_label": null
     }
   ]

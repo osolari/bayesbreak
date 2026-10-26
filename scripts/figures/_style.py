@@ -2,14 +2,14 @@
 
 Every figure script calls :func:`setup_style` once at the top. This module
 enforces consistent typography, colour palette, line weights, and figure sizes
-across all figures shipped with the report.
+across all figures shipped with the manuscript.
 
-Aesthetic conventions (matching the report):
-
-- **Full spines** on all four sides of every axes (no despining).
-- **Large fonts** — body text ≈ 14 pt, ticks ≈ 12 pt, panel labels ≈ 16 pt.
-- **Muted, colour-blind-safe palette** — Paul Tol's "muted" set.
-- Tighter linewidths than seaborn defaults to keep dense panels readable.
+Aesthetic conventions:
+- Two spines (bottom and left) on all axes; top and right are hidden.
+- Body text 9 pt, tick labels 8 pt, panel labels 11 pt.
+- Muted, colour-blind-safe palette (Paul Tol's "muted" set).
+- No embedded figure titles; all descriptions go in LaTeX captions.
+- constrained_layout used globally; never call tight_layout().
 """
 
 from __future__ import annotations
@@ -37,9 +37,9 @@ DPI_PRINT = 300
 
 
 # Paul Tol's "muted" palette — colour-blind safe and visually softer than
-# "bright". Order tuned for the figures in the report (blue, red, green, ...).
+# "bright". Order tuned for the figures in the report (blue, rose, teal, ...).
 _MUTED_PALETTE = [
-    "#4477AA",  # blue (Tol "muted")
+    "#4477AA",  # blue
     "#CC6677",  # rose
     "#44AA99",  # teal
     "#DDCC77",  # sand
@@ -51,25 +51,23 @@ _MUTED_PALETTE = [
 ]
 
 COLORS = {
-    "blue": _MUTED_PALETTE[0],
-    "red": _MUTED_PALETTE[1],
-    "green": _MUTED_PALETTE[2],
-    "yellow": _MUTED_PALETTE[3],
-    "cyan": _MUTED_PALETTE[4],
-    "purple": _MUTED_PALETTE[5],
-    "grey": "#888888",
-    "black": "#222222",
+    "blue":      _MUTED_PALETTE[0],
+    "red":       _MUTED_PALETTE[1],
+    "green":     _MUTED_PALETTE[2],
+    "yellow":    _MUTED_PALETTE[3],
+    "cyan":      _MUTED_PALETTE[4],
+    "purple":    _MUTED_PALETTE[5],
+    "grey":      "#888888",
+    "black":     "#222222",
     "lightgrey": "#DDDDDD",
-    "orange": "#EE7733",
-    # Saim brand indigo — reserved for accents that should read as "BayesBreak".
-    "saim": "#32127A",
+    "orange":    "#EE7733",
+    "saim":        "#32127A",
     "saim_accent": "#5B36B7",
-    "saim_soft": "#D6CFE4",
+    "saim_soft":   "#D6CFE4",
 }
 
 # Semantic palette — stable identities for recurring scientific concepts.
-# These map concept → hex color and must match the LaTeX definitions in
-# docs/manuscripts/shared/components/colors.tex.
+# These names must match the LaTeX definitions in colors.tex.
 METHOD_COLORS: dict[str, str] = {
     "quadrature": _MUTED_PALETTE[0],   # blue   — reference method
     "laplace":    _MUTED_PALETTE[2],   # teal   — analytic approximation
@@ -90,21 +88,21 @@ FAMILY_COLORS: dict[str, str] = {
 }
 
 PRIOR_COLORS: dict[str, str] = {
-    "uniform":         "#888888",       # grey
-    "geometric":       _MUTED_PALETTE[0],  # blue
-    "gap_hazard":      _MUTED_PALETTE[2],  # teal
-    "length_cohesion": "#EE7733",          # orange
-    "combined":        _MUTED_PALETTE[1],  # rose
+    "uniform":          "#888888",
+    "geometric":        _MUTED_PALETTE[0],
+    "gap_hazard":       _MUTED_PALETTE[2],
+    "length_cohesion":  "#EE7733",
+    "combined":         _MUTED_PALETTE[1],
 }
 
 SPEC_COLORS: dict[str, str] = {
-    "correct":     _MUTED_PALETTE[0],  # blue
-    "misspecified": _MUTED_PALETTE[1],  # rose/coral
+    "correct":      _MUTED_PALETTE[0],
+    "misspecified": _MUTED_PALETTE[1],
 }
 
 POOL_COLORS: dict[str, str] = {
-    "pooled":      _MUTED_PALETTE[0],  # blue
-    "independent": _MUTED_PALETTE[1],  # rose
+    "pooled":      _MUTED_PALETTE[0],
+    "independent": _MUTED_PALETTE[1],
 }
 
 METHOD_MARKERS: dict[str, str] = {
@@ -141,7 +139,7 @@ def setup_style(
     Parameters
     ----------
     font_scale : float
-        Multiplier applied to all font sizes (default 1.0 → ~14 pt body).
+        Multiplier applied to all font sizes (1.0 → 9 pt body at paper scale).
     use_tex : bool
         If True, render text via LaTeX (slower, crisper math).
     context : str
@@ -159,7 +157,7 @@ def setup_style(
         },
     )
 
-    base = 13.0 * font_scale
+    base = 9.0 * font_scale
     params: dict = {
         "figure.dpi": DPI_SCREEN,
         "figure.facecolor": "white",
@@ -168,14 +166,14 @@ def setup_style(
         "axes.labelsize": base + 0.5,
         "axes.titlesize": base + 1.5,
         "axes.titleweight": "medium",
-        "axes.titlepad": 12.0,
+        "axes.titlepad": 6.0,
         "axes.labelweight": "regular",
-        "axes.linewidth": 1.0,
-        "axes.edgecolor": "#222222",
-        # Full spines on every side.
-        "axes.spines.top": True,
-        "axes.spines.right": True,
-        "axes.spines.left": True,
+        "axes.linewidth": 0.8,
+        "axes.edgecolor": "#333333",
+        # Two-spine style: bottom and left only.
+        "axes.spines.top":    False,
+        "axes.spines.right":  False,
+        "axes.spines.left":   True,
         "axes.spines.bottom": True,
         "axes.grid": False,
         "axes.prop_cycle": mpl.cycler(color=COLOR_CYCLE),
@@ -183,26 +181,26 @@ def setup_style(
         "ytick.labelsize": base - 1.0,
         "xtick.direction": "out",
         "ytick.direction": "out",
-        "xtick.major.width": 1.0,
-        "ytick.major.width": 1.0,
-        "xtick.major.size": 4.0,
-        "ytick.major.size": 4.0,
-        "xtick.minor.width": 0.7,
-        "ytick.minor.width": 0.7,
-        "xtick.minor.size": 2.5,
-        "ytick.minor.size": 2.5,
-        "lines.linewidth": 1.7,
-        "lines.markersize": 4.5,
-        "legend.fontsize": base - 1.0,
-        "legend.frameon": False,
+        "xtick.major.width": 0.8,
+        "ytick.major.width": 0.8,
+        "xtick.major.size":  3.5,
+        "ytick.major.size":  3.5,
+        "xtick.minor.width": 0.6,
+        "ytick.minor.width": 0.6,
+        "xtick.minor.size":  2.0,
+        "ytick.minor.size":  2.0,
+        "lines.linewidth":   1.5,
+        "lines.markersize":  4.0,
+        "legend.fontsize":   base - 1.0,
+        "legend.frameon":    False,
         "legend.borderaxespad": 0.3,
         "legend.handlelength": 1.5,
-        "savefig.dpi": DPI_PRINT,
-        "savefig.bbox": "tight",
-        "savefig.pad_inches": 0.05,
+        "savefig.dpi":        DPI_PRINT,
+        "savefig.bbox":       "tight",
+        "savefig.pad_inches": 0.04,
         "savefig.transparent": False,
         "pdf.fonttype": 42,
-        "ps.fonttype": 42,
+        "ps.fonttype":  42,
         "pdf.compression": 9,
     }
     if use_tex:
@@ -222,7 +220,8 @@ def get_figsize(
     """Compute (width, height) in inches for a grid of subplots."""
 
     if isinstance(width, str):
-        w = {"single": SINGLE_COL_WIDTH, "double": DOUBLE_COL_WIDTH, "full": FULL_PAGE_WIDTH}[width]
+        w = {"single": SINGLE_COL_WIDTH, "double": DOUBLE_COL_WIDTH,
+             "full": FULL_PAGE_WIDTH}[width]
     else:
         w = float(width)
     h = w * aspect * (nrows / ncols)
@@ -235,13 +234,22 @@ def add_panel_label(
     title: str | None = None,
     *,
     fontsize: float | None = None,
-    offset: tuple[float, float] = (-0.22, 1.04),
+    offset: tuple[float, float] = (-0.14, 1.04),
 ) -> None:
-    """Add a bold panel label (``A``, ``B``, …) outside the axes frame.
+    """Add a bold panel label outside the top-left of the axes frame.
 
-    The label is anchored to the top-left, *outside* the axes box so that it
-    never collides with a centred title. If a ``title`` is given it is set with
-    ``loc="left"`` so that title and label share the same baseline.
+    Parameters
+    ----------
+    ax : Axes
+        Target axes.
+    label : str
+        Label text — use lowercase with parentheses, e.g. ``"(a)"``.
+    title : str | None
+        Deprecated and ignored. Titles belong in LaTeX captions.
+    fontsize : float | None
+        Override font size. Default: axes.titlesize + 2.
+    offset : tuple[float, float]
+        Position in axes-fraction coordinates (x, y).
     """
 
     fs = fontsize if fontsize is not None else mpl.rcParams["axes.titlesize"] + 2
@@ -255,8 +263,6 @@ def add_panel_label(
         va="baseline",
         ha="left",
     )
-    if title:
-        ax.set_title(title, loc="left", fontsize=mpl.rcParams["axes.titlesize"])
 
 
 def save_figure(

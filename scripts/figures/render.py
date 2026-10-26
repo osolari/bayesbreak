@@ -30,6 +30,9 @@ _OUT_DIR = _ROOT / "docs" / "manuscripts" / "paper" / "figures"
 
 sys.path.insert(0, str(_ROOT / "scripts" / "figures"))
 
+import matplotlib
+matplotlib.use("Agg")
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -75,11 +78,9 @@ import numpy as np  # noqa: E402
 # ---------------------------------------------------------------------------
 
 def render_fig1(out_dir: Path) -> None:
-    from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, add_panel_label, get_figsize, save_figure, setup_style
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.1)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig1_synthetic_gaussian.csv"))
     x = np.array([int(r["x"]) for r in rows])
@@ -92,7 +93,8 @@ def render_fig1(out_dir: Path) -> None:
     is_mb = np.array([int(r["is_map_boundary"]) for r in rows])
     mb_xs = x[is_mb == 1]
 
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 5.5), sharex=True,
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=get_figsize("double", aspect=0.65, nrows=2),
+                                    sharex=True, constrained_layout=True,
                                     gridspec_kw={"height_ratios": [2, 1]})
 
     ax1.scatter(x, y, s=10, alpha=0.4, color=COLORS["grey"], edgecolors="none",
@@ -104,7 +106,7 @@ def render_fig1(out_dir: Path) -> None:
         ax1.axvline(float(bx), color=COLORS["red"], ls="--", lw=0.8, alpha=0.7)
     ax1.set_ylabel("y")
     ax1.legend(fontsize=9, frameon=False, ncol=3)
-    add_panel_label(ax1, "A")
+    add_panel_label(ax1, "(a)")
 
     valid_bm = np.isfinite(bm)
     ax2.fill_between(x[valid_bm], 0, bm[valid_bm], alpha=0.35, color=COLORS["blue"])
@@ -114,9 +116,8 @@ def render_fig1(out_dir: Path) -> None:
     ax2.set_ylim(0, 1.05)
     ax2.set_xlabel("Observation index")
     ax2.set_ylabel(r"$P(b_i=1\mid y)$")
-    add_panel_label(ax2, "B")
+    add_panel_label(ax2, "(b)")
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig1_synthetic_gaussian", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -127,11 +128,9 @@ def render_fig1(out_dir: Path) -> None:
 
 def render_fig2(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, get_figsize, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.lines import Line2D
-    setup_style(font_scale=1.1)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig2_family_showcase.csv"))
     families = ["gaussian", "poisson", "binomial", "beta"]
@@ -139,7 +138,7 @@ def render_fig2(out_dir: Path) -> None:
                   "binomial": "Binomial", "beta": "Beta-valued"}
     ylabels = {"gaussian": "Signal", "poisson": "Count",
                "binomial": "Proportion", "beta": "Proportion"}
-    panel_letters = {"gaussian": "A", "poisson": "B", "binomial": "C", "beta": "D"}
+    panel_letters = {"gaussian": "(a)", "poisson": "(b)", "binomial": "(c)", "beta": "(d)"}
 
     by_fam: dict[str, dict] = {f: {"x": [], "y": [], "true_signal": [], "fit": [], "mb": []} for f in families}
     for r in rows:
@@ -179,7 +178,7 @@ def render_fig2(out_dir: Path) -> None:
         Line2D([0], [0], color=COLORS["blue"], lw=2.5, label="BayesBreak fit"),
     ]
     fig.legend(handles=legend_elements, loc="lower center", ncol=3,
-               bbox_to_anchor=(0.5, -0.02), frameon=True)
+               bbox_to_anchor=(0.5, -0.01), frameon=True)
     save_figure(fig, out_dir / "fig2_family_showcase", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -190,10 +189,8 @@ def render_fig2(out_dir: Path) -> None:
 
 def render_fig3(out_dir: Path) -> None:
     from _style import COLORS, get_figsize, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.1)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig3_boundary_calibration.csv"))
     p_bin = np.array([_nan(r["p_bin"]) for r in rows])
@@ -224,8 +221,9 @@ def render_fig3(out_dir: Path) -> None:
     ax.set_aspect("equal", adjustable="box")
     ax.legend(loc="lower right")
     textstr = f"ECE = {ece:.3f}\nBrier = {brier:.3f}"
-    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, va="top", ha="left", fontsize=10,
-            bbox={"boxstyle": "round,pad=0.4", "facecolor": "white", "edgecolor": "0.7"})
+    ax.text(0.05, 0.95, textstr, transform=ax.transAxes, va="top", ha="left",
+            bbox={"boxstyle": "square,pad=0.3", "facecolor": "white",
+                  "edgecolor": COLORS["lightgrey"]})
     save_figure(fig, out_dir / "fig3_boundary_calibration", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -236,10 +234,8 @@ def render_fig3(out_dir: Path) -> None:
 
 def render_fig4(out_dir: Path) -> None:
     from _style import COLORS, _MUTED_PALETTE, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.0)
+    setup_style()
 
     assign_path = _require_csv("fig4_assignments.csv")
     bound_path = _require_csv("fig4_boundary.csv")
@@ -266,7 +262,7 @@ def render_fig4(out_dir: Path) -> None:
         grp_data[g]["fit"].append(_nan(r["fit"]))
         grp_data[g]["true_signal"].append(_nan(r["true_signal"]))
 
-    fig, axes = plt.subplots(2, 3, figsize=(12, 7))
+    fig, axes = plt.subplots(2, 3, figsize=(9.5, 5.5))
 
     # Row 0: assignment probabilities
     ax = axes[0, 0]
@@ -277,7 +273,7 @@ def render_fig4(out_dir: Path) -> None:
     ax.set_ylabel("Responsibility")
     ax.set_ylim(0, 1)
     ax.legend(fontsize=8)
-    add_panel_label(ax, "A")
+    add_panel_label(ax, "(a)")
 
     # Row 0: group 0 boundary posteriors
     ax = axes[0, 1]
@@ -285,8 +281,8 @@ def render_fig4(out_dir: Path) -> None:
     ax.fill_between(bx, 0, g0_post, alpha=0.3, color=_MUTED_PALETTE[0])
     ax.set_ylabel(r"$P(b_i=1\mid y)$")
     ax.set_xlabel("Position")
-    ax.annotate("Group 0", xy=(0.02, 0.97), xycoords="axes fraction", va="top", fontsize=9)
-    add_panel_label(ax, "B")
+    ax.annotate("Group 0", xy=(0.02, 0.97), xycoords="axes fraction", va="top")
+    add_panel_label(ax, "(b)")
 
     # Row 0: group 1 boundary posteriors
     ax = axes[0, 2]
@@ -294,11 +290,11 @@ def render_fig4(out_dir: Path) -> None:
     ax.fill_between(bx, 0, g1_post, alpha=0.3, color=_MUTED_PALETTE[1])
     ax.set_ylabel(r"$P(b_i=1\mid y)$")
     ax.set_xlabel("Position")
-    ax.annotate("Group 1", xy=(0.02, 0.97), xycoords="axes fraction", va="top", fontsize=9)
-    add_panel_label(ax, "C")
+    ax.annotate("Group 1", xy=(0.02, 0.97), xycoords="axes fraction", va="top")
+    add_panel_label(ax, "(c)")
 
     # Row 1: example time series per group
-    for g_idx, letter in enumerate(["D", "E"]):
+    for g_idx, letter in enumerate(["(d)", "(e)"]):
         ax = axes[1, g_idx]
         gd = grp_data[g_idx]
         x = np.array(gd["x"])
@@ -311,11 +307,10 @@ def render_fig4(out_dir: Path) -> None:
         ax.set_xlabel("Index")
         ax.set_ylabel("y")
         ax.annotate(f"Group {g_idx} example", xy=(0.02, 0.97),
-                    xycoords="axes fraction", va="top", fontsize=9)
+                    xycoords="axes fraction", va="top")
         add_panel_label(ax, letter)
 
     axes[1, 2].set_visible(False)
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig4_latent_groups_cropped", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -325,11 +320,9 @@ def render_fig4(out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def render_fig5(out_dir: Path) -> None:
-    from _style import COLORS, _MUTED_PALETTE, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, _MUTED_PALETTE, add_panel_label, get_figsize, save_figure, setup_style
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.0)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig5_runtime_scaling_data.csv"))
 
@@ -338,7 +331,7 @@ def render_fig5(out_dir: Path) -> None:
     k_sweep = [(int(r["n"]), int(r["k_max"]), _nan(r["mean_seconds"]), _nan(r["std_seconds"]))
                for r in rows if r.get("sweep") == "k"]
 
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(9, 4))
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=get_figsize("double", aspect=0.5))
 
     # Panel A: n sweep (log-log)
     if n_sweep:
@@ -357,7 +350,7 @@ def render_fig5(out_dir: Path) -> None:
         ax1.set_ylabel("Wall-clock time (s)")
         ax1.legend(fontsize=9, frameon=False)
         ax1.grid(True, alpha=0.25)
-        add_panel_label(ax1, "A")
+        add_panel_label(ax1, "(a)")
 
     # Panel B: k_max sweep (semilogy)
     if k_sweep:
@@ -373,11 +366,10 @@ def render_fig5(out_dir: Path) -> None:
         ax2.set_ylabel("Wall-clock time (s)")
         ax2.legend(fontsize=9, frameon=False)
         ax2.grid(True, alpha=0.25)
-        add_panel_label(ax2, "B")
+        add_panel_label(ax2, "(b)")
     else:
         ax2.set_visible(False)
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig5_runtime_scaling", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -388,10 +380,8 @@ def render_fig5(out_dir: Path) -> None:
 
 def _render_realdata(csv_stem: str, fig_name: str, y_label: str, out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=0.95)
+    setup_style()
 
     ts_rows = _load_csv(_require_csv(f"{csv_stem}.csv"))
     kp_path = _DATA_DIR / f"{csv_stem}_kposterior.csv"
@@ -408,8 +398,8 @@ def _render_realdata(csv_stem: str, fig_name: str, y_label: str, out_dir: Path) 
     mb_xs = x[is_mb == 1]
     tb_xs = x[is_tb == 1]
 
-    fig = plt.figure(figsize=(7.8, 8.4))
-    gs = fig.add_gridspec(4, 1, height_ratios=[1.5, 1.0, 1.0, 1.1], hspace=0.32)
+    fig = plt.figure(figsize=(7.0, 7.5), constrained_layout=True)
+    gs = fig.add_gridspec(4, 1, height_ratios=[1.5, 1.0, 1.0, 1.1])
     axA = fig.add_subplot(gs[0])
     axB = fig.add_subplot(gs[1], sharex=axA)
     axC = fig.add_subplot(gs[2])
@@ -428,7 +418,7 @@ def _render_realdata(csv_stem: str, fig_name: str, y_label: str, out_dir: Path) 
     axA.set_ylabel(y_label)
     axA.set_xlim(0, len(x))
     axA.legend(loc="best", ncol=3, fontsize=10, frameon=False)
-    add_panel_label(axA, "A")
+    add_panel_label(axA, "(a)")
     plt.setp(axA.get_xticklabels(), visible=False)
 
     # Panel B: boundary marginals
@@ -443,7 +433,7 @@ def _render_realdata(csv_stem: str, fig_name: str, y_label: str, out_dir: Path) 
     axB.set_xlim(0, len(x))
     axB.set_xlabel("index")
     axB.set_ylabel(r"$P(b_i = 1 \mid y)$")
-    add_panel_label(axB, "B")
+    add_panel_label(axB, "(b)")
 
     # Panel C: k posterior
     if kp_path.exists():
@@ -458,7 +448,7 @@ def _render_realdata(csv_stem: str, fig_name: str, y_label: str, out_dir: Path) 
         axC.set_xlabel("k")
         axC.set_ylabel(r"$P(k \mid y)$")
         axC.legend(loc="best", fontsize=10, frameon=False)
-    add_panel_label(axC, "C")
+    add_panel_label(axC, "(c)")
 
     # Panel D: held-out trace
     if np.any(np.isfinite(ht)):
@@ -469,7 +459,7 @@ def _render_realdata(csv_stem: str, fig_name: str, y_label: str, out_dir: Path) 
     axD.set_xlabel("index")
     axD.set_ylabel(r"$\sum_{t' \leq t}\log p(y_{t'}\mid \mathcal{M})$")
     axD.legend(loc="best", fontsize=10, frameon=False)
-    add_panel_label(axD, "D")
+    add_panel_label(axD, "(d)")
 
     save_figure(fig, out_dir / fig_name, formats=("png", "pdf"))
     plt.close(fig)
@@ -493,8 +483,6 @@ def render_fig9(out_dir: Path) -> None:
 
 def render_e01_calibration(out_dir: Path) -> None:
     from _style import COLORS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import math as _math
     setup_style()
@@ -514,7 +502,7 @@ def render_e01_calibration(out_dir: Path) -> None:
     n_panels = len(strata)
     n_cols = min(n_panels, 4)
     n_rows = _math.ceil(n_panels / n_cols)
-    fig, axes = plt.subplots(n_rows, n_cols, figsize=(4.5 * n_cols, 4.2 * n_rows),
+    fig, axes = plt.subplots(n_rows, n_cols, figsize=(3.5 * n_cols, 3.5 * n_rows),
                               constrained_layout=True, squeeze=False)
     ax_flat = axes.flatten()
     for ax in ax_flat[n_panels:]:
@@ -534,14 +522,13 @@ def render_e01_calibration(out_dir: Path) -> None:
                 label="Perfect cal.")
         ax.plot(x, y, "o-", color=COLORS["blue"], ms=7, lw=2.0, label="Observed")
         ax.fill_between(x, lo, hi, alpha=0.20, color=COLORS["blue"])
-        ax.set_xlabel("Predicted P(boundary | y)", fontsize=12)
-        ax.set_ylabel("Observed frequency", fontsize=12)
-        ax.annotate(stratum, xy=(0.02, 0.97), xycoords="axes fraction", fontsize=8, va="top")
+        ax.set_xlabel("Predicted P(boundary | y)")
+        ax.set_ylabel("Observed frequency")
+        ax.annotate(stratum, xy=(0.02, 0.97), xycoords="axes fraction", va="top")
         ax.set_xlim(0, xy_max)
         ax.set_ylim(0, xy_max)
-        ax.tick_params(labelsize=10)
         ax.legend(fontsize=10)
-        ax.text(0.04, 0.88, f"ECE = {ece:.4f}", transform=ax.transAxes, fontsize=11)
+        ax.text(0.04, 0.88, f"ECE = {ece:.4f}", transform=ax.transAxes)
 
     save_figure(fig, out_dir / "fig_E01_calibration", formats=("pdf", "png"))
     plt.close(fig)
@@ -549,8 +536,6 @@ def render_e01_calibration(out_dir: Path) -> None:
 
 def render_e01_recovery(out_dir: Path) -> None:
     from _style import COLORS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     setup_style()
 
@@ -566,7 +551,7 @@ def render_e01_recovery(out_dir: Path) -> None:
     k_colors = {k: c for k, c in zip(k_values, [COLORS["blue"], COLORS["red"]])}
     markers = {n: m for n, m in zip(sorted(n_values), ["o", "s"])}
 
-    fig, axes = plt.subplots(1, len(n_values), figsize=(6.5 * len(n_values), 5.5),
+    fig, axes = plt.subplots(1, len(n_values), figsize=(5.0 * len(n_values), 4.0),
                               constrained_layout=True, squeeze=False)
     for ax, n in zip(axes[0], n_values):
         for k in k_values:
@@ -598,12 +583,10 @@ def render_e01_recovery(out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def render_e02_recovery(out_dir: Path) -> None:
-    from _style import COLOR_CYCLE, COLORS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLOR_CYCLE, COLORS, get_figsize, save_figure, setup_style
     import matplotlib.pyplot as plt
     import math as _math
-    setup_style(font_scale=1.1)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig_E02_data.csv"))
     families = ["gaussian", "poisson", "binomial", "negbin", "beta_obs"]
@@ -612,10 +595,7 @@ def render_e02_recovery(out_dir: Path) -> None:
     fam_colors = {fam: COLOR_CYCLE[i] for i, fam in enumerate(families)}
     effect_markers = ["o", "^"]
 
-    import matplotlib as _mpl
-    _mpl.rcParams["figure.constrained_layout.use"] = False
-    fig, axes = plt.subplots(1, 2, figsize=(14, 6.5))
-    fig.subplots_adjust(left=0.08, right=0.97, top=0.88, bottom=0.28, wspace=0.32)
+    fig, axes = plt.subplots(1, 2, figsize=get_figsize("double", aspect=0.55))
     x_pos = np.arange(len(families))
 
     def _plot_metric(ax, metric_key, ci_lo_key, ci_hi_key, ylabel):
@@ -637,11 +617,10 @@ def render_e02_recovery(out_dir: Path) -> None:
                             markersize=9, markeredgewidth=0.8)
         ax.set_xticks(x_pos)
         ax.set_xticklabels([fam_labels.get(f, f) for f in families],
-                           rotation=25, ha="right", fontsize=13)
-        ax.set_ylabel(ylabel, fontsize=14)
+                           rotation=25, ha="right")
+        ax.set_ylabel(ylabel)
         ax.set_ylim(-0.03, 1.08)
         ax.axhline(1.0, color=COLORS["grey"], lw=1.0, ls="--", zorder=0)
-        ax.tick_params(axis="y", labelsize=12)
         ax.set_xlim(-0.5, len(families) - 0.5)
 
     _plot_metric(axes[0], "mean_f1", "f1_ci_lo", "f1_ci_hi", "F1 @ τ=3")
@@ -657,9 +636,7 @@ def render_e02_recovery(out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def render_e03(fig_type: str, out_dir: Path) -> None:
-    from _style import PRIOR_COLORS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, PRIOR_COLORS, save_figure, setup_style
     import matplotlib.pyplot as plt
     setup_style()
 
@@ -681,7 +658,7 @@ def render_e03(fig_type: str, out_dir: Path) -> None:
     fig, axes = plt.subplots(1, 2, figsize=(11, 4))
 
     for ax_idx, (metric, ci_lo_k, ci_hi_k, ylabel) in enumerate([
-        ("mean_f1", "f1_ci_lo", "f1_ci_hi", f"Mean F1@3 — {tmpl_str}"),
+        ("mean_f1", "f1_ci_lo", "f1_ci_hi", "Mean F1@3"),
         ("mean_p_b_gap", "p_b_gap_ci_lo", "p_b_gap_ci_hi", "P(boundary at gap)"),
     ]):
         ax = axes[ax_idx]
@@ -710,9 +687,8 @@ def render_e03(fig_type: str, out_dir: Path) -> None:
         ax.set_xlabel("Gap G")
         ax.set_ylim(-0.05, 1.05)
         ax.legend(fontsize=7)
-        ax.grid(True, alpha=0.3)
+        ax.grid(True, ls=":", alpha=0.25, color=COLORS["lightgrey"])
 
-    fig.tight_layout()
     save_figure(fig, out_dir / f"fig_E03_{fig_type}", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -730,9 +706,7 @@ def render_e03_gap_false(out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def render_e04_pooled(out_dir: Path) -> None:
-    from _style import _MUTED_PALETTE, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import _MUTED_PALETTE, get_figsize, save_figure, setup_style
     import matplotlib.pyplot as plt
     setup_style()
 
@@ -742,7 +716,7 @@ def render_e04_pooled(out_dir: Path) -> None:
     nf_labels = {0: "0% non-shared", 0.25: "25% non-shared", 0.5: "50% non-shared"}
     colors = {0: _MUTED_PALETTE[0], 0.25: _MUTED_PALETTE[2], 0.5: _MUTED_PALETTE[1]}
 
-    fig, axes = plt.subplots(1, 2, figsize=(11, 4))
+    fig, ax = plt.subplots(1, 1, figsize=get_figsize("double", aspect=0.62))
     x_ticks = np.arange(len(S_vals))
     x_labels = [f"S={s}" for s in S_vals]
 
@@ -764,26 +738,23 @@ def render_e04_pooled(out_dir: Path) -> None:
         vp = np.isfinite(pf1)
         vi = np.isfinite(if1)
         if np.any(vp):
-            axes[0].errorbar(x_ticks[vp] - 0.1, pf1[vp],
-                             yerr=[pf1[vp] - pl[vp], ph[vp] - pf1[vp]],
-                             label=f"Pooled ({label})", color=color, marker="o", capsize=3)
+            ax.errorbar(x_ticks[vp] - 0.1, pf1[vp],
+                        yerr=[pf1[vp] - pl[vp], ph[vp] - pf1[vp]],
+                        label=f"Pooled ({label})", color=color, marker="o", capsize=3)
         if np.any(vi):
-            axes[0].errorbar(x_ticks[vi] + 0.1, if1[vi],
-                             yerr=[if1[vi] - il[vi], ih[vi] - if1[vi]],
-                             label=f"Indep ({label})", color=color, marker="s",
-                             linestyle="--", capsize=3)
+            ax.errorbar(x_ticks[vi] + 0.1, if1[vi],
+                        yerr=[if1[vi] - il[vi], ih[vi] - if1[vi]],
+                        label=f"Indep ({label})", color=color, marker="s",
+                        linestyle="--", capsize=3)
 
-    for ax in axes:
-        ax.set_xlabel("Number of sequences S")
-        ax.set_xticks(x_ticks)
-        ax.set_xticklabels(x_labels)
-        ax.set_ylim(-0.05, 1.05)
-        ax.grid(True, alpha=0.3)
-    axes[0].set_ylabel("Mean F1@3")
-    axes[0].legend(fontsize=6)
-    axes[1].set_visible(False)
+    ax.set_xlabel("Number of sequences S")
+    ax.set_xticks(x_ticks)
+    ax.set_xticklabels(x_labels)
+    ax.set_ylim(-0.05, 1.05)
+    ax.grid(True, alpha=0.3)
+    ax.set_ylabel("Mean F1@3")
+    ax.legend()
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig_E04_pooled", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -793,9 +764,7 @@ def render_e04_pooled(out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def render_e05_templates(out_dir: Path) -> None:
-    from _style import save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, save_figure, setup_style
     import matplotlib.pyplot as plt
     setup_style()
 
@@ -829,26 +798,25 @@ def render_e05_templates(out_dir: Path) -> None:
             ari_hi = _vals("ari_ci_hi")
             dups = _vals("mean_has_duplicate_templates")
 
-            ax.plot(xs, accs, "o-", color="C0", label="Accuracy")
-            ax.fill_between(xs, acc_lo, acc_hi, alpha=0.2, color="C0")
+            ax.plot(xs, accs, "o-", color=COLORS["blue"], label="Accuracy")
+            ax.fill_between(xs, acc_lo, acc_hi, alpha=0.2, color=COLORS["blue"])
             if G > 1:
-                ax.plot(xs, aris, "s--", color="C1", label="ARI")
-                ax.fill_between(xs, ari_lo, ari_hi, alpha=0.2, color="C1")
-            ax2.bar(xs, dups, width=0.15, alpha=0.4, color="C3", label="Dup. freq.")
+                ax.plot(xs, aris, "s--", color=COLORS["red"], label="ARI")
+                ax.fill_between(xs, ari_lo, ari_hi, alpha=0.2, color=COLORS["red"])
+            ax2.bar(xs, dups, width=0.15, alpha=0.4, color=COLORS["orange"], label="Dup. freq.")
             ax2.set_ylim(-0.05, 1.05)
-            ax2.set_ylabel("Dup. template freq.", fontsize=8, color="C3")
-            ax2.tick_params(axis="y", colors="C3", labelsize=7)
+            ax2.set_ylabel("Dup. template freq.")
+            ax2.spines["right"].set_visible(True)  # twinx needs right spine
             ax.set_xlim(min(xs) - 0.2, max(xs) + 0.2)
             ax.set_ylim(-0.05, 1.05)
             ax.set_xticks(xs)
-            ax.set_xlabel(r"$\Delta$", fontsize=9)
-            ax.set_ylabel("Accuracy / ARI", fontsize=8)
+            ax.set_xlabel(r"$\Delta$")
+            ax.set_ylabel("Accuracy / ARI")
             ax.annotate(f"G={G}, S={S}", xy=(0.03, 0.96), xycoords="axes fraction",
-                        fontsize=8, va="top")
+                        va="top")
             if i == 0 and j == 0:
-                ax.legend(fontsize=7, loc="lower right")
+                ax.legend(loc="lower right")
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig_E05_templates", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -858,9 +826,7 @@ def render_e05_templates(out_dir: Path) -> None:
 # ---------------------------------------------------------------------------
 
 def render_e06_local_error(out_dir: Path) -> None:
-    from _style import METHOD_COLORS, METHOD_LINESTYLES, METHOD_MARKERS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, METHOD_COLORS, METHOD_LINESTYLES, METHOD_MARKERS, save_figure, setup_style
     import matplotlib.pyplot as plt
     setup_style()
 
@@ -892,20 +858,18 @@ def render_e06_local_error(out_dir: Path) -> None:
                             label=label)
         ax.set_xlabel("Block size $B$")
         ax.annotate(f"$p = {p}$", xy=(0.97, 0.96), xycoords="axes fraction",
-                    fontsize=8, va="top", ha="right")
+                    va="top", ha="right")
         ax.legend(fontsize=8)
         if ax_i == 0:
             ax.set_ylabel("Median absolute log-evidence error")
+        ax.grid(True, ls=":", alpha=0.25, color=COLORS["lightgrey"])
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig_E06_local_error", formats=("pdf", "png"))
     plt.close(fig)
 
 
 def render_e06_global_error(out_dir: Path) -> None:
-    from _style import METHOD_COLORS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, METHOD_COLORS, save_figure, setup_style
     import matplotlib.pyplot as plt
     setup_style()
 
@@ -924,12 +888,15 @@ def render_e06_global_error(out_dir: Path) -> None:
     for i, (method, label) in enumerate(zip(methods, method_labels)):
         vals = by_method[method]
         if vals:
-            ax1.violinplot([vals], positions=[i], showmedians=True, widths=0.6)
+            parts = ax1.violinplot([vals], positions=[i], showmedians=True, widths=0.6)
+            for pc in parts.get('bodies', []):
+                pc.set_facecolor(METHOD_COLORS.get(method, COLORS["grey"]))
+                pc.set_edgecolor("none")
+                pc.set_alpha(0.75)
     ax1.set_xticks(range(len(methods)))
     ax1.set_xticklabels(method_labels)
     ax1.set_ylabel("Max |p(k|y) difference| vs quadrature reference")
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig_E06_global_error", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -940,8 +907,6 @@ def render_e06_global_error(out_dir: Path) -> None:
 
 def render_e07_robustness(out_dir: Path) -> None:
     from _style import SPEC_COLORS, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
     setup_style()
@@ -949,7 +914,8 @@ def render_e07_robustness(out_dir: Path) -> None:
     rows = _load_csv(_require_csv("fig_E07_robustness.csv"))
     miss_order = sorted(set(r["missingness"] for r in rows))
 
-    fig, axes = plt.subplots(1, len(miss_order), figsize=(12, 4.5), sharey=True)
+    fig, axes = plt.subplots(1, len(miss_order),
+                             figsize=(max(5.5, 2.8 * len(miss_order)), 3.8), sharey=True)
     if len(miss_order) == 1:
         axes = [axes]
 
@@ -964,9 +930,9 @@ def render_e07_robustness(out_dir: Path) -> None:
         x = np.arange(len(means))
         ax.bar(x, [m if math.isfinite(m) else 0.0 for m in means], color=colors, width=0.7)
         ax.annotate(miss.replace("_", " "), xy=(0.03, 0.97), xycoords="axes fraction",
-                    fontsize=8, va="top")
+                    va="top")
         ax.set_xticks(x)
-        ax.set_xticklabels(labels, fontsize=6, rotation=45, ha="right")
+        ax.set_xticklabels(labels, rotation=40, ha="right")
         ax.set_ylim(0, 1.05)
         if ax == axes[0]:
             ax.set_ylabel("Mean F1@3")
@@ -976,8 +942,7 @@ def render_e07_robustness(out_dir: Path) -> None:
         Patch(facecolor=SPEC_COLORS["correct"], label="Correct fit"),
         Patch(facecolor=SPEC_COLORS["misspecified"], label="Misspecified fit"),
     ]
-    fig.legend(handles=legend_elements, loc="lower center", ncol=2, fontsize=9)
-    fig.tight_layout(rect=[0, 0.06, 1, 1])
+    fig.legend(handles=legend_elements, loc="lower center", ncol=2)
     save_figure(fig, out_dir / "fig_E07_robustness", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -988,10 +953,8 @@ def render_e07_robustness(out_dir: Path) -> None:
 
 def render_e10_scaling(out_dir: Path) -> None:
     from _style import COLORS, _MUTED_PALETTE, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=0.95)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig_E10_data.csv"))
     ok_rows = [r for r in rows if str(r.get("failed", "")).lower() != "true"]
@@ -1024,19 +987,16 @@ def render_e10_scaling(out_dir: Path) -> None:
         ax.set_xscale("log", base=2)
         ax.set_yscale("log")
         ax.legend(fontsize=8, frameon=False)
-        ax.grid(True, alpha=0.25)
+        ax.grid(True, ls=":", alpha=0.25, color=COLORS["lightgrey"])
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig_E10_scaling", formats=("pdf", "png"))
     plt.close(fig)
 
 
 def render_e10_stage_breakdown(out_dir: Path) -> None:
-    from _style import _MUTED_PALETTE, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
+    from _style import COLORS, _MUTED_PALETTE, save_figure, setup_style
     import matplotlib.pyplot as plt
-    setup_style(font_scale=0.95)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig_E10_data.csv"))
     ok_rows = [r for r in rows if str(r.get("failed", "")).lower() != "true"]
@@ -1067,8 +1027,7 @@ def render_e10_stage_breakdown(out_dir: Path) -> None:
     ax.set_xscale("log", base=2)
     ax.set_yscale("log")
     ax.legend(fontsize=8, frameon=False, ncol=2)
-    ax.grid(True, alpha=0.25)
-    fig.tight_layout()
+    ax.grid(True, ls=":", alpha=0.25, color=COLORS["lightgrey"])
     save_figure(fig, out_dir / "fig_E10_stage_breakdown", formats=("pdf", "png"))
     plt.close(fig)
 
@@ -1079,8 +1038,6 @@ def render_e10_stage_breakdown(out_dir: Path) -> None:
 
 def render_figA1(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     from matplotlib.patches import Patch
     setup_style()
@@ -1116,7 +1073,7 @@ def render_figA1(out_dir: Path) -> None:
                         label=f"Group {'A' if g == 0 else 'B'} mean")
     ax.set_xlabel("Time"); ax.set_ylabel("Value"); ax.set_xlim(0, n)
     ax.legend(loc="lower right", fontsize=9)
-    add_panel_label(ax, "A", "Example sequences")
+    add_panel_label(ax, "(a)")
 
     # Panel B: responsibility matrix
     ax = axes[0, 1]
@@ -1131,7 +1088,7 @@ def render_figA1(out_dir: Path) -> None:
     ax.set_xlabel("Sequence (sorted)"); ax.set_ylabel("Group")
     ax.set_yticks([0, 1]); ax.set_yticklabels(["A", "B"])
     fig.colorbar(im, ax=ax, shrink=0.6, label="Responsibility")
-    add_panel_label(ax, "B", f"Assignments (acc={accuracy:.0%})")
+    add_panel_label(ax, "(b)")
 
     # Panel C: confusion matrix
     ax = axes[0, 2]
@@ -1147,7 +1104,7 @@ def render_figA1(out_dir: Path) -> None:
             col = "white" if cm[i, j] > cm.max() / 2 else "black"
             ax.text(j, i, str(cm[i, j]), ha="center", va="center",
                     color=col, fontsize=12, fontweight="bold")
-    add_panel_label(ax, "C", "Confusion matrix")
+    add_panel_label(ax, "(c)")
 
     # Panel D: boundary posterior A
     ax = axes[1, 0]
@@ -1158,7 +1115,7 @@ def render_figA1(out_dir: Path) -> None:
         ax.axvline(b, color="black", lw=1.5, ls="--")
     ax.set_xlim(0, n); ax.set_ylim(0, 1)
     ax.set_xlabel("Position"); ax.set_ylabel("Posterior prob.")
-    add_panel_label(ax, "D", f"Group A boundaries (k={cfg['k_A']})")
+    add_panel_label(ax, "(d)")
 
     # Panel E: boundary posterior B
     ax = axes[1, 1]
@@ -1169,7 +1126,7 @@ def render_figA1(out_dir: Path) -> None:
         ax.axvline(b, color="black", lw=1.5, ls="--")
     ax.set_xlim(0, n); ax.set_ylim(0, 1)
     ax.set_xlabel("Position"); ax.set_ylabel("Posterior prob.")
-    add_panel_label(ax, "E", f"Group B boundaries (k={cfg['k_B']})")
+    add_panel_label(ax, "(e)")
 
     # Panel F: pooling benefit
     ax = axes[1, 2]
@@ -1189,7 +1146,7 @@ def render_figA1(out_dir: Path) -> None:
                   Patch(facecolor=COLORS["blue"], label="Pooled (A)"),
                   Patch(facecolor=COLORS["red"], label="Pooled (B)")]
     ax.legend(handles=legend_els, loc="upper right", fontsize=9)
-    add_panel_label(ax, "F", "Pooling benefit")
+    add_panel_label(ax, "(f)")
 
     save_figure(fig, out_dir / "figA1_mixture_discovery", formats=("pdf", "png"))
     plt.close(fig)
@@ -1197,10 +1154,8 @@ def render_figA1(out_dir: Path) -> None:
 
 def render_figA2(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.05)
+    setup_style()
 
     cfg = _load_json(_DATA_DIR / "figA2_snr_sensitivity.json")
     curves = _load_csv(_require_csv("figA2_snr_curves.csv"))
@@ -1238,12 +1193,12 @@ def render_figA2(out_dir: Path) -> None:
         axA.axvline(sigma_c, ls="--", color=COLORS["red"], lw=1.5, alpha=0.85)
         axA.annotate(
             rf"$\sigma_{{c}}\approx{sigma_c:.2f}$" + "\n" + rf"SNR$\approx${delta_min/sigma_c:.1f}",
-            xy=(sigma_c, 0.5), xytext=(sigma_c * 1.8, 0.72), fontsize=9,
+            xy=(sigma_c, 0.5), xytext=(sigma_c * 1.8, 0.72),
             color=COLORS["red"], arrowprops={"arrowstyle": "->", "color": COLORS["red"], "lw": 1.2})
     axA.set_xscale("log"); axA.set_xlabel(r"Noise $\sigma$")
     axA.set_ylabel(r"Boundary F1@$\tau$"); axA.set_ylim(-0.04, 1.08)
-    axA.grid(True, which="major", ls="-", alpha=0.2, color=COLORS["grey"])
-    add_panel_label(axA, "A", "Detection vs noise")
+    axA.grid(True, which="major", ls=":", alpha=0.25, color=COLORS["lightgrey"])
+    add_panel_label(axA, "(a)")
 
     axB = axes[1]
     log_sigmas = np.log10(sigmas)
@@ -1252,7 +1207,7 @@ def render_figA2(out_dir: Path) -> None:
                     origin="lower", extent=extent, vmin=0.0, vmax=1.0)
     axB.axhline(3.0, ls="--", color="#FFFFFF", lw=1.6, alpha=0.95)
     axB.text(log_sigmas[0] + 0.05, 3.0, r"$k^{\star}=3$", color="#FFFFFF",
-             fontsize=9, va="bottom")
+             va="bottom")
     tick_sigmas = np.array([0.05, 0.1, 0.3, 1.0, 3.0])
     axB.set_xticks(np.log10(tick_sigmas))
     axB.set_xticklabels([f"{s:g}" for s in tick_sigmas])
@@ -1260,7 +1215,7 @@ def render_figA2(out_dir: Path) -> None:
     axB.set_xlabel(r"Noise $\sigma$"); axB.set_ylabel(r"Selected $\hat{k}$")
     cb = fig.colorbar(im, ax=axB, fraction=0.06, pad=0.04)
     cb.set_label(r"Fraction (per $\sigma$)"); cb.set_ticks([0.0, 0.5, 1.0])
-    add_panel_label(axB, "B", r"Distribution of $\hat{k}$")
+    add_panel_label(axB, "(b)")
 
     axC = axes[2]
     axC.fill_between(sigmas, mse_q1, mse_q3, alpha=0.25, color=COLORS["red"], linewidth=0)
@@ -1270,9 +1225,9 @@ def render_figA2(out_dir: Path) -> None:
              label=r"oracle $\sigma^2/\bar{m}$")
     axC.set_xscale("log"); axC.set_yscale("log")
     axC.set_xlabel(r"Noise $\sigma$"); axC.set_ylabel("Signal MSE")
-    axC.grid(True, which="major", ls="-", alpha=0.2, color=COLORS["grey"])
+    axC.grid(True, which="major", ls=":", alpha=0.25, color=COLORS["lightgrey"])
     axC.legend(loc="lower right", fontsize=9)
-    add_panel_label(axC, "C", "Reconstruction error")
+    add_panel_label(axC, "(c)")
 
     save_figure(fig, out_dir / "figA2_snr_sensitivity", formats=("pdf", "png"))
     plt.close(fig)
@@ -1280,10 +1235,8 @@ def render_figA2(out_dir: Path) -> None:
 
 def render_figA3(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.0)
+    setup_style()
 
     cfg = _load_json(_DATA_DIR / "figA3_multivariate_shared.json")
     ch_rows = _load_csv(_require_csv("figA3_channels.csv"))
@@ -1303,7 +1256,7 @@ def render_figA3(out_dir: Path) -> None:
     ch_labels = [rf"Channel 1 ($\sigma$={channel_sigmas[0]})",
                  rf"Channel 2 ($\sigma$={channel_sigmas[1]})",
                  rf"Channel 3 ($\sigma$={channel_sigmas[2]})"]
-    panel_labels = ["A", "B", "C", "D"]
+    panel_labels = ["(a)", "(b)", "(c)", "(d)"]
 
     ch_data: dict[int, dict[str, list]] = {c: {"x": [], "y": [], "mu": [], "sh": [], "ind": []}
                                             for c in range(d)}
@@ -1326,7 +1279,7 @@ def render_figA3(out_dir: Path) -> None:
                 label="Shared" if c == 0 else None, zorder=3)
         ax.plot(t, ch_data[c]["ind"], lw=1.5, color=COLORS["red"], ls=":",
                 label="Independent" if c == 0 else None, zorder=3)
-        ax.set_ylabel(ch_labels[c], fontsize=9)
+        ax.set_ylabel(ch_labels[c])
         ax.set_xlim(0, n)
         for tb in true_boundaries[1:-1]:
             ax.axvline(tb, color=COLORS["grey"], ls=":", lw=0.8, alpha=0.5)
@@ -1357,10 +1310,8 @@ def render_figA3(out_dir: Path) -> None:
 
 def render_figA4(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.0)
+    setup_style()
 
     cfg = _load_json(_DATA_DIR / "figA4_model_selection.json")
     rows = _load_csv(_require_csv("figA4_posteriors.csv"))
@@ -1394,7 +1345,7 @@ def render_figA4(out_dir: Path) -> None:
         ax.scatter([k_mode], [p_mode + 0.02 * y_top], marker="v", s=60,
                    color=COLORS["black"], zorder=5)
         ax.text(k_mode, p_mode + 0.08 * y_top, rf"$\hat k = {k_mode}$",
-                ha="center", va="bottom", fontsize=9)
+                ha="center", va="bottom")
         ax.set_xlabel("Number of segments $k$")
         if idx == 0:
             ax.set_ylabel(r"$P(k \mid y)$")
@@ -1403,13 +1354,13 @@ def render_figA4(out_dir: Path) -> None:
         ax.grid(True, axis="y", ls="-", alpha=0.18, color=COLORS["grey"])
         sigma = sc["sigma"]
         ax.text(0.97, 0.92, rf"$\sigma = {sigma}$", transform=ax.transAxes,
-                ha="right", va="top", fontsize=9,
+                ha="right", va="top",
                 bbox={"boxstyle": "round,pad=0.25", "facecolor": "white",
                       "edgecolor": COLORS["lightgrey"], "linewidth": 0.8})
-        add_panel_label(ax, chr(65 + idx), title=f"  {sc['label']}")
+        add_panel_label(ax, f"({chr(97 + idx)})")
         if idx == 0:
             ax.text(k_true + 0.18, y_top * 0.04, r"true $k^{\star}=3$",
-                    fontsize=9, color=COLORS["black"], rotation=90,
+                    color=COLORS["black"], rotation=90,
                     va="bottom", ha="left", alpha=0.85)
 
     save_figure(fig, out_dir / "figA4_model_selection", formats=("pdf", "png"))
@@ -1418,10 +1369,8 @@ def render_figA4(out_dir: Path) -> None:
 
 def render_figA5(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, get_figsize, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=0.95)
+    setup_style()
 
     cfg = _load_json(_DATA_DIR / "figA5_missing_data.json")
     sig_rows = _load_csv(_require_csv("figA5_signal.csv"))
@@ -1442,7 +1391,7 @@ def render_figA5(out_dir: Path) -> None:
 
     figsize = get_figsize("double", aspect=0.65, nrows=3, ncols=2)
     fig, axes = plt.subplots(3, 2, figsize=figsize, sharex="col")
-    panel_left = ["A", "C", "E"]; panel_right = ["B", "D", "F"]
+    panel_left = ["(a)", "(c)", "(e)"]; panel_right = ["(b)", "(d)", "(f)"]
 
     for row, (pname, miss_col, pc_col, d1_col, label) in enumerate(patterns):
         miss_mask = np.array([int(_nan(r[miss_col])) == 1 for r in sig_rows])
@@ -1457,7 +1406,7 @@ def render_figA5(out_dir: Path) -> None:
                    color=COLORS["red"], zorder=1, label="Missing" if row == 0 else None)
         ax.plot(x, mu_true, ls="--", lw=1.5, color=COLORS["black"], zorder=2)
         ax.plot(x, pc_w, lw=2, color=COLORS["blue"], zorder=3)
-        ax.set_ylabel(label, fontsize=9); ax.set_xlim(0, n)
+        ax.set_ylabel(label); ax.set_xlim(0, n)
         if row == 0:
             ax.legend(loc="upper right", fontsize=9, ncol=2)
         if row == 2:
@@ -1489,10 +1438,8 @@ def render_figA5(out_dir: Path) -> None:
 
 def render_latent_stress(out_dir: Path) -> None:
     from _style import COLORS, add_panel_label, save_figure, setup_style
-    import matplotlib
-    matplotlib.use("Agg")
     import matplotlib.pyplot as plt
-    setup_style(font_scale=1.0)
+    setup_style()
 
     rows = _load_csv(_require_csv("fig_latent_template_stress.csv"))
     G_vals = sorted({int(r["G"]) for r in rows})
@@ -1533,9 +1480,8 @@ def render_latent_stress(out_dir: Path) -> None:
         ax.set_xlabel(r"$\Delta$ (template separation)")
         ax.set_ylabel(ylabel)
         ax.legend(fontsize=7, frameon=False, ncol=2)
-        add_panel_label(ax, chr(65 + ax_idx))
+        add_panel_label(ax, f"({chr(97 + ax_idx)})")
 
-    fig.tight_layout()
     save_figure(fig, out_dir / "fig_latent_template_stress", formats=("pdf", "png"))
     plt.close(fig)
 

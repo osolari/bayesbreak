@@ -1,13 +1,17 @@
 # Reproducibility and experiments
 
-This page documents the **current execution path**. The single-column paper source is `docs/manuscripts/paper/main.tex` and the technical book is `docs/manuscripts/book/main.tex`. Their build commands are:
+The single-column paper source is `docs/manuscripts/paper/main.tex` and the companion technical book is `docs/manuscripts/book/main.tex`. Build commands:
 
 ```bash
 make -C docs/manuscripts paper
 make -C docs/manuscripts book
 ```
 
-The controlled, prospective experiments are E00-E10, specified by `.claude/skills/bayesbreak-release-audit/protocols/experiments.json` and its `references/experiment_protocols.md`. Run the validators before execution:
+## Experiment execution status
+
+All controlled E00-E10 experiments have been executed and verified. Status, artifact hashes, and scientific-completeness notes are in `.claude/CURRENT_WORK.md`. Scientific limitations and outstanding E09 gaps are documented there and in `.claude/RESULT_POLICY.md`.
+
+The experiment protocols were written prospectively in `.claude/skills/bayesbreak-release-audit/protocols/experiments.json` and `references/experiment_protocols.md`. Those files define exact design and integrity requirements; they must not be changed after a run begins. Run the validators before any new execution:
 
 ```bash
 python .claude/skills/bayesbreak-release-audit/scripts/check_active_repository.py
@@ -15,8 +19,20 @@ python .claude/skills/bayesbreak-release-audit/scripts/validate_protocols.py
 pytest -q
 ```
 
-Experiment manifests must record model family, descriptor semantics, dataset/source and split hashes, coordinate axis, priors, tuning policy, software version, seeds, numerical method, convergence/failure states, time and output hashes. Use the independent sequence or biologically appropriate group as the unit of replication, as declared in the protocol. Write new outputs under `results/confirmatory/<experiment_id>/<config_sha256>/`, never into an existing paper figure or table by hand. Only a completed, validated output may replace a Planned slot.
+## Adding new results
 
-For real-data evaluation, disable simulated fallbacks and confirm data source provenance. The experiment protocol is the authority for which comparisons use external truth, held-out predictive scores or mere segmentation agreement. Missing validation must remain explicitly outstanding.
+New outputs belong under `results/confirmatory/<experiment_id>/<config_sha256>/` with `manifest.json`, per-replicate metrics, failure logs, figure data, and LaTeX fragments. Every manifest must record model family, descriptor semantics, dataset and split hashes, coordinate axis, priors, tuning policy, software version, seeds, numerical method, convergence states, and output hashes.
 
-Existing figures in `docs/manuscripts/shared/figures/results/` remain reader-facing assets from earlier completed experiments, subject to `.claude/RESULT_POLICY.md`. This repo does not ship obsolete runs or historical test profiles as current evidence.
+For real-data evaluation, disable simulated fallbacks and confirm source provenance. Missing validation remains explicitly outstanding and must not be labeled complete.
+
+## Figure and table pipeline
+
+Publication figures reside in `docs/manuscripts/paper/figures/`. Regenerate them from cached CSV data with:
+
+```bash
+python scripts/figures/render.py --all
+```
+
+This runs in approximately 10 seconds and performs no scientific computation. See `docs/manuscripts/shared/FIGURES.md` for the full figure-cache architecture.
+
+Accepted results and regeneration rules are in `.claude/RESULT_POLICY.md`. Do not modify a reported number manually; rerun with corrected code and verified data.

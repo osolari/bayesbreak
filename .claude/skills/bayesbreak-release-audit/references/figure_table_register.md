@@ -1,25 +1,50 @@
-# Figure and table registry, current and planned
+# Figure and table registry
 
-## Current scientific results, preserve until verified rerun
-Figures `fig:gaussian-result-paper`, `fig:family-result-paper`, `fig:calibration-template-paper`, `fig:latent-stress-corrected-paper`, `fig:runtime-result-paper`, `fig:welllog-paper`, `fig:cgh-paper`, `fig:cgh-agreement-corrected-paper`, `fig:spx-paper`, `fig:methylation-paper`, `fig:methyl-predictive-corrected-paper`. These correspond to previously executed results. Do not relabel them planned, nor treat a historical benchmark agreement score as external truth. Main paper does not display result lineage; see `.claude/RESULT_POLICY.md` and full run manifests.
+## Current scientific results
 
-## Planned figure slots
-| Figure label | Protocols | Required panels | Files to generate |
-|---|---|---|---|
-| `fig:planned-calibration-paper` | E01 | (a) boundary reliability by k/SNR with bin counts and sequence bootstrap, (b) F1 vs jump size with 95% CIs | `fig_E01_calibration.pdf/png`, `fig_E01_recovery.pdf/png` |
-| `fig:planned-irregular-paper` | E03 | (a) posterior boundary mass at the true long-gap boundary, (b) false-positive boundary mass when the true changepoint is elsewhere | `fig_E03_gap_true.pdf/png`, `fig_E03_gap_false.pdf/png` |
-| `fig:planned-hierarchical-paper` | E04,E05 | (a) pooled F1 vs S with misspecification strata, (b) ARI and collapsed template rate vs separation | `fig_E04_pooling.pdf/png`, `fig_E05_templates.pdf/png` |
-| `fig:planned-nonconjugate-paper` | E06 | (a) log evidence errors by block length and success probability, (b) count/boundary posterior discrepancy by method | `fig_E06_local_error.pdf/png`, `fig_E06_global_error.pdf/png` |
-| `fig:planned-external-paper` | E09 | (a) boundary accuracy vs independent reference OR agreement explicitly labeled, (b) count-posterior tail vs kmax | `fig_E09_comparators.pdf/png`, `fig_E09_kmax.pdf/png` |
-| `fig:planned-scaling-paper` | E10 | (a) component time curves with IQR, (b) peak RSS memory | `fig_E10_times.pdf/png`, `fig_E10_memory.pdf/png` |
+All E00-E10 experiments have been executed with gate_pass=True. The tables below distinguish the originally planned output filenames (from the prospective protocol) from the actual output filenames committed to the repository. Where the paper-facing filename differs from the protocol's planned name, the actual file takes precedence.
 
-## Planned table slots
-| Table label | Protocols | Required data columns | File to generate |
-|---|---|---|---|
-| `tab:planned-oracles-paper` | E00 | number of enumerated cases, max discrepancy in partition sums, moments and family evidence, reference tolerance | `tab_P0_oracles.tex` |
-| `tab:planned-recovery-paper` | E01,E02 | cell, family, n, ktrue, seed count, mean F1 + CI, count accuracy, Brier/log score | `tab_P1_recovery.tex` |
-| `tab:planned-nonconjugate-paper` | E06 | method, block sizes, median/max absolute log evidence error, failure rate, timing 95% CI | `tab_P2_nonconjugate.tex` |
-| `tab:planned-robustness-paper` | E07,E08 | condition, F1 + CI, mean heldout log predictive, prediction interval coverage | `tab_P3_robustness.tex` |
-| `tab:planned-external-paper` | E09 | dataset hash, model, kmax, tail, independent/reference type, F1 CI if meaningful, heldout log score | `tab_P4_external.tex` |
+Accepted results and regeneration rules are in `.claude/RESULT_POLICY.md`.
 
-The paper intentionally contains the literal `TBD` in body cells for planned tables. Replace only when a versioned run produces *all* required values, including failure counts. Captions must then be revised to remove “Planned”; do not leave stale figure text or placeholder rows. Keep provisional plots separate from main-paper figures until validated.
+### Executed figure outputs
+
+| Protocol | Actual output files | Notes |
+|---|---|---|
+| E01 | `fig_E01_calibration.pdf/png`, `fig_E01_recovery.pdf/png` | Complete |
+| E02 | `fig_E02_recovery.pdf/png` | Complete; Beta-obs quadrature corrected |
+| E03 | `fig_E03_gap_true.pdf/png`, `fig_E03_gap_false.pdf/png` | Complete |
+| E04 | `fig_E04_pooled.pdf/png` | Complete |
+| E05 | `fig_E05_templates.pdf/png`, `fig_latent_template_stress.pdf/png` | Complete |
+| E06 | `fig_E06_local_error.pdf/png`, `fig_E06_global_error.pdf/png` | Complete; pg_vb/jj aliasing documented |
+| E07 | `fig_E07_robustness.pdf/png` | Complete |
+| E08 | Incorporated in real-data figures | Complete; supersedes cc26eda02dc82357 |
+| E09 | `fig6_welllog.pdf/png`, `fig7_cgh.pdf/png`, `fig9_methylation.pdf/png` | Partially complete; see CURRENT_WORK.md for E09 gaps |
+| E10 | `fig_E10_scaling.pdf/png`, `fig_E10_stage_breakdown.pdf/png` | Complete |
+
+### Executed table outputs
+
+| Protocol | Actual output files | Notes |
+|---|---|---|
+| E00 | `tab_E01_recovery.tex` (via E01 runner) | E00 oracle checks passed; 380/380 |
+| E01, E02 | `tab_E01_recovery.tex`, `tab_E02_recovery.tex` | Complete |
+| E05 | `tab_E05_latent.tex` | Complete |
+| E07 | `tab_E07_robustness.tex` | Complete |
+| E10 | `tab_E10_scaling.tex` | Complete |
+
+## Original protocol planned names (historical reference)
+
+The prospective protocols in `experiment_protocols.md` used these planned filenames before execution. They are preserved here for traceability. Do not create new files with these names.
+
+| Original planned label | Protocol | Corresponding executed output |
+|---|---|---|
+| `fig:planned-calibration-paper` | E01 | `fig_E01_calibration`, `fig_E01_recovery` |
+| `fig:planned-irregular-paper` | E03 | `fig_E03_gap_true`, `fig_E03_gap_false` |
+| `fig:planned-hierarchical-paper` | E04, E05 | `fig_E04_pooled`, `fig_E05_templates` |
+| `fig:planned-nonconjugate-paper` | E06 | `fig_E06_local_error`, `fig_E06_global_error` |
+| `fig:planned-external-paper` | E09 | `fig6_welllog`, `fig7_cgh`, `fig9_methylation` (R baselines unavailable) |
+| `fig:planned-scaling-paper` | E10 | `fig_E10_scaling`, `fig_E10_stage_breakdown` |
+| `tab:planned-oracles-paper` | E00 | Included in E01 recovery table |
+| `tab:planned-recovery-paper` | E01, E02 | `tab_E01_recovery.tex`, `tab_E02_recovery.tex` |
+| `tab:planned-nonconjugate-paper` | E06 | `tab_E05_latent.tex` (E06 error data in figure) |
+| `tab:planned-robustness-paper` | E07, E08 | `tab_E07_robustness.tex` |
+| `tab:planned-external-paper` | E09 | Results in manuscript text; independent comparisons unavailable |

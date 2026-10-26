@@ -213,6 +213,48 @@ _FIGURE_MANIFEST: dict[str, _Asset] = {
         ("fig_latent_template_stress.pdf", "fig_latent_template_stress.png"),
         "fig_latent_stress",
     ),
+    # --- supplementary/appendix figures (rendered but not yet in manuscript) ---
+    "figA1_mixture_discovery": _Asset(
+        "data_driven",
+        ("figA1_examples.csv", "figA1_responsibilities.csv", "figA1_confusion.csv",
+         "figA1_boundary_A.csv", "figA1_boundary_B.csv", "figA1_pooling.csv"),
+        "figA1_mixture_discovery.json",
+        ("figA1_mixture_discovery.pdf", "figA1_mixture_discovery.png"),
+        "figA1",
+        note="Supplementary figure; rendered but not yet referenced in manuscript",
+    ),
+    "figA2_snr_sensitivity": _Asset(
+        "data_driven",
+        ("figA2_snr_curves.csv", "figA2_khist.csv"),
+        "figA2_snr_sensitivity.json",
+        ("figA2_snr_sensitivity.pdf", "figA2_snr_sensitivity.png"),
+        "figA2",
+        note="Supplementary figure; rendered but not yet referenced in manuscript",
+    ),
+    "figA3_multivariate_shared": _Asset(
+        "data_driven",
+        ("figA3_channels.csv", "figA3_boundary.csv"),
+        "figA3_multivariate_shared.json",
+        ("figA3_multivariate_shared.pdf", "figA3_multivariate_shared.png"),
+        "figA3",
+        note="Supplementary figure; rendered but not yet referenced in manuscript",
+    ),
+    "figA4_model_selection": _Asset(
+        "data_driven",
+        ("figA4_posteriors.csv",),
+        "figA4_model_selection.json",
+        ("figA4_model_selection.pdf", "figA4_model_selection.png"),
+        "figA4",
+        note="Supplementary figure; rendered but not yet referenced in manuscript",
+    ),
+    "figA5_missing_data": _Asset(
+        "data_driven",
+        ("figA5_signal.csv", "figA5_boundary.csv"),
+        "figA5_missing_data.json",
+        ("figA5_missing_data.pdf", "figA5_missing_data.png"),
+        "figA5",
+        note="Supplementary figure; rendered but not yet referenced in manuscript",
+    ),
     # --- unverified / static committed assets ---
     "fig8_spx": _Asset(
         "unverified",
@@ -692,8 +734,26 @@ def main(argv: list[str] | None = None) -> int:
     for stem in static_stems:
         _check_table(stem, _TABLE_MANIFEST[stem], render_keys, check, verbose)
 
-    # --- report ---
+    # --- check supplementary figures in manifest but not in manuscript ---
+    supplementary_stems = [
+        stem for stem, asset in _FIGURE_MANIFEST.items()
+        if asset.category == "data_driven" and stem not in discovered_figures
+    ]
+    if supplementary_stems:
+        for stem in sorted(supplementary_stems):
+            _check_figure(stem, _FIGURE_MANIFEST[stem], render_keys, check, verbose)
+
+    # --- always report unverified assets ---
+    unverified_stems = [stem for stem, asset in _FIGURE_MANIFEST.items()
+                        if asset.category == "unverified"]
     print()
+    print(f"UNVERIFIED provenance ({len(unverified_stems)}) — data gap, not hard failures:")
+    for stem in sorted(unverified_stems):
+        asset = _FIGURE_MANIFEST[stem]
+        print(f"  UNVERIFIED  {stem}: {asset.note}")
+    print()
+
+    # --- report warnings ---
     if check.warnings:
         print(f"WARNINGS ({len(check.warnings)}):")
         for w in check.warnings:
@@ -708,12 +768,14 @@ def main(argv: list[str] | None = None) -> int:
         n_pass = len(check.passes)
         n_warn = len(check.warnings)
         n_fail = len(check.failures)
-        print(f"Result: {n_pass} passed, {n_warn} warned, {n_fail} FAILED")
+        print(f"Result: {n_pass} passed, {n_warn} warned, {n_fail} FAILED, "
+              f"{len(unverified_stems)} unverified")
         return 1
 
     n_pass = len(check.passes)
     n_warn = len(check.warnings)
-    print(f"Result: {n_pass} passed, {n_warn} warned, 0 failed -- inventory complete")
+    print(f"Result: {n_pass} passed, {n_warn} warned, 0 failed, "
+          f"{len(unverified_stems)} unverified -- inventory complete")
     return 0
 
 

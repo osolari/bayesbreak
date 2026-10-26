@@ -21,13 +21,22 @@ def main() -> int:
     ids = [item["id"] for item in exp]
     assert ids == [f"E{i:02d}" for i in range(11)], ids
     abstract = (paper / "sections/00-abstract.tex").read_text()
-    tex = "\n".join(p.read_text() for p in (paper / "sections").glob("*.tex"))
+    shared = root / "docs/manuscripts/shared"
+    section_files = list((paper / "sections").glob("*.tex"))
+    fig_defs = list((shared / "figures/defs").glob("*.tex"))
+    tab_defs = list((shared / "tables/defs").glob("*.tex"))
+    tab_results = list((shared / "tables/results").glob("*.tex"))
+    tex = "\n".join(
+        p.read_text() for p in section_files + fig_defs + tab_defs + tab_results
+    )
     assert "\\documentclass[11pt,onecolumn]" in (paper / "main.tex").read_text()
     assert "\\section{Problem formulation and notation}" in tex
     assert "\\section{Experimental protocols}" in tex
     assert "TBD" in tex and "Planned Figure" in tex
     assert "\\EstablishedTag" not in tex and "\\ConditionalTag" not in tex
-    assert "\u2014" not in tex and "---" not in tex
+    # Em-dash and triple-dash checks apply only to prose section files, not table bodies.
+    sections_tex = "\n".join(p.read_text() for p in section_files)
+    assert "\u2014" not in sections_tex and "---" not in sections_tex
     assert "\u2014" not in abstract
     for item in exp:
         assert item["type"]

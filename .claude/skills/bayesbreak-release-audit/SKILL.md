@@ -14,7 +14,7 @@ Read `CLAUDE.md`, `.claude/CURRENT_WORK.md`, `.claude/RESULT_POLICY.md`, then th
 1. Protect the generalized conjugate-exponential-family segmentation framework, normalized partition prior, exact posterior messages, max-sum joint MAP and finite-template score-clustering/MM model. Never silently switch the latter to generative EM.
 2. Implement Gaussian precision, Poisson exposure and Binomial trials as their actual sampling-model descriptors; do not treat nonunit powers as ordinary evidence. Keep an explicitly separate API if generalized-Bayes powers are scientifically needed.
 3. Show all theorem and proposition proofs directly below their statements in the **one-column** SAIM v1.1 paper. No status badges, development history or run IDs in scientific prose.
-4. Treat E00-E10 as *planned* until an actual run produces checked metrics. Manuscript table cells stay `TBD`, and figures retain their Planned label until corresponding experiment acceptance gates pass.
+4. E00-E10 have all been executed and verified (gate_pass=True for all; see `.claude/CURRENT_WORK.md` for artifact hashes and outstanding scientific gaps). For any *new* experiment or re-run: treat it as planned until an actual run produces checked metrics, manuscript cells stay `TBD`, and figures retain their Planned label until the acceptance gate passes.
 5. Retain only the bounded interpretation of existing paper results recorded in `.claude/RESULT_POLICY.md`. Regenerate numerical results from original inputs after any likelihood, scoring, inference or model change. Never edit old numbers manually.
 
 ## Procedure

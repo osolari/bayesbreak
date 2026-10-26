@@ -1,6 +1,8 @@
 # BayesBreak prospective experiment protocols E00-E10
 
-**Status:** All E00-E10 in this file are PLANNED. None is presented as newly executed in the current manuscript. Existing paper-facing results are governed by `.claude/RESULT_POLICY.md`. These instructions are intended for a coding agent and may be changed only through a versioned protocol amendment *before looking at confirmatory results*.
+**Protocol definition status:** The specifications below are the *frozen prospective designs* written before any confirmatory results were examined. They must not be changed after a run begins. Execution results live in `results/confirmatory/<id>/` and are governed by `.claude/RESULT_POLICY.md`.
+
+**Execution status (as of 2026-10-26):** All E00-E10 have been executed with gate_pass=True. Artifact hashes and scientific-completeness notes are in `.claude/CURRENT_WORK.md`. Outstanding gaps (E09 posterior truncation, R baselines unavailable) are documented there. These protocol definitions remain the authority for any re-run or extension.
 
 ## 0. Universal execution requirements
 

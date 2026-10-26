@@ -1,22 +1,33 @@
-"""Generate all manuscript figures and tables in one pass.
+"""Data preparation: run all computational figure scripts to refresh CSV caches.
 
-All figures are written to ``docs/manuscripts/paper/figures/`` (canonical).
-All tables are written to ``docs/manuscripts/shared/tables/results/``.
+This script re-executes Stage A inference for every figure and table that
+requires BayesBreak model fitting or experiment data. It writes plot-ready
+CSV and JSON files to the shared data directories so that the cache-only
+renderer can reproduce all publication assets without repeating computation.
 
-Covers two categories:
+PUBLICATION RENDERING
+---------------------
+To regenerate publication figures and tables from cached data use:
 
-1. Exploratory figures (fig1–fig9) and tables (table1–table4): scripts under
-   ``scripts/figures/`` and ``scripts/tables/`` that generate their own data
-   on the fly.  Each script accepts ``--outdir`` and writes there directly.
-   Only the nine main figure scripts (fig1–fig9) are run; supplementary
-   scripts (figA1–figA5) are not referenced in the paper or book and are
-   excluded.
+    python scripts/figures/render.py --all
 
-2. Confirmatory experiment figures and tables (E01, E02): regenerated from
-   frozen metrics.json files under ``results/confirmatory/`` without
-   re-running experiments.  Each confirmatory runner exposes
-   ``--regenerate-figures`` with optional ``--manuscript-dest`` and
-   ``--tables-dest`` flags.
+That command reads only checked-in CSV/JSON and writes PDF + PNG to
+``docs/manuscripts/paper/figures/`` in approximately 8–10 seconds. It is the
+single authoritative entry point for publication assets.
+
+DATA PREPARATION (this script)
+-------------------------------
+Run this script only when experiment results or data sources have changed and
+the CSV caches need to be rebuilt. It invokes scripts that run BayesBreak
+inference and may take minutes.
+
+Categories rebuilt:
+1. Showcase figures (fig1–fig9): scripts under ``scripts/figures/`` that
+   fit BayesBreak on simulated or real data and write CSVs + a local figure.
+   Local figures go to ``results/figures/`` (not the canonical manuscript dir).
+2. Confirmatory figure data (E01, E02): runners under ``scripts/`` that
+   re-read frozen ``results/confirmatory/`` metrics and write table CSVs.
+3. Table data: scripts under ``scripts/tables/`` that produce CSV inputs.
 
 Usage
 -----
@@ -24,11 +35,9 @@ uv run --extra plots --extra datasets python scripts/generate_all_figures.py
 
 Optional flags
 --------------
---skip-exploratory   Skip the scripts/figures/*.py and scripts/tables/*.py
-                     scripts (faster when you only want to refresh E01/E02).
---skip-confirmatory  Skip E01/E02 figure and table regeneration.
---skip-tables        Skip all table generation (exploratory + confirmatory).
---skip-figures       Skip all figure generation (exploratory + confirmatory).
+--skip-exploratory   Skip scripts/figures/*.py and scripts/tables/*.py.
+--skip-confirmatory  Skip E01/E02 data regeneration.
+--skip-tables        Skip all table data generation.
 """
 
 from __future__ import annotations
@@ -43,23 +52,19 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
-MANUSCRIPT_FIGS = ROOT / "docs" / "manuscripts" / "paper" / "figures"
+# Exploratory scripts write figures here (staging area, not publication dir).
+_STAGING_FIGS = ROOT / "results" / "figures"
 MANUSCRIPT_TABLES = ROOT / "docs" / "manuscripts" / "shared" / "tables" / "results"
 
 _CONFIRMATORY_RUNNERS = [
     {
         "script": ROOT / "scripts" / "run_e01_gaussian_calibration.py",
         "exp_dirs": [ROOT / "results" / "confirmatory" / "E01_gaussian_calibration"],
-        "expected_figures": [
-            "fig_E01_calibration.pdf", "fig_E01_calibration.png",
-            "fig_E01_recovery.pdf",    "fig_E01_recovery.png",
-        ],
         "expected_tables": ["tab_E01_recovery.tex"],
     },
     {
         "script": ROOT / "scripts" / "run_e02_family_portability.py",
         "exp_dirs": [ROOT / "results" / "confirmatory" / "E02_family_portability"],
-        "expected_figures": ["fig_E02_recovery.pdf", "fig_E02_recovery.png"],
         "expected_tables": ["tab_E02_recovery.tex"],
     },
 ]
@@ -72,7 +77,7 @@ def _run(cmd: list[str | Path]) -> None:
 
 
 def _latest_results_dir(experiment_dirs: list[Path]) -> Path | None:
-    """Return the most recently modified subdirectory that contains metrics.json."""
+    """Return the most recently modified subdirectory containing metrics.json."""
     candidates: list[Path] = []
     for exp_dir in experiment_dirs:
         if not exp_dir.is_dir():
@@ -86,16 +91,18 @@ def _latest_results_dir(experiment_dirs: list[Path]) -> Path | None:
 
 
 def run_exploratory_figures() -> None:
-    MANUSCRIPT_FIGS.mkdir(parents=True, exist_ok=True)
-    # Main figure scripts (fig1–fig9); skip private helpers (_style.py, _realdata.py)
-    fig_scripts = sorted(p for p in (ROOT / "scripts" / "figures").glob("*.py")
+    """Run showcase figure scripts to refresh CSV data caches.
+
+    Figures are written to results/figures/ (staging only).
+    Run ``python scripts/figures/render.py --all`` afterwards to produce
+    the canonical publication PDF/PNG from the refreshed CSVs.
+    """
+    _STAGING_FIGS.mkdir(parents=True, exist_ok=True)
+    # Run fig1–fig9 generation scripts; skip private helpers (_style, _realdata).
+    fig_scripts = sorted(p for p in (ROOT / "scripts" / "figures").glob("fig*.py")
                          if not p.name.startswith("_"))
     for script in fig_scripts:
-        _run([sys.executable, script, "--outdir", MANUSCRIPT_FIGS])
-    # realdata_tables.py generates realdata_metrics.json validated by test_result_schema
-    realdata = ROOT / "scripts" / "tables" / "realdata_tables.py"
-    if realdata.exists():
-        _run([sys.executable, realdata, "--outdir", MANUSCRIPT_FIGS])
+        _run([sys.executable, script, "--outdir", _STAGING_FIGS])
 
 
 def run_exploratory_tables() -> None:
@@ -105,8 +112,8 @@ def run_exploratory_tables() -> None:
         _run([sys.executable, script, "--outdir", MANUSCRIPT_TABLES])
 
 
-def run_confirmatory(skip_figures: bool = False, skip_tables: bool = False) -> None:
-    MANUSCRIPT_FIGS.mkdir(parents=True, exist_ok=True)
+def run_confirmatory(skip_tables: bool = False) -> None:
+    """Re-read confirmatory results and refresh table CSV caches."""
     MANUSCRIPT_TABLES.mkdir(parents=True, exist_ok=True)
 
     for entry in _CONFIRMATORY_RUNNERS:
@@ -119,26 +126,13 @@ def run_confirmatory(skip_figures: bool = False, skip_tables: bool = False) -> N
             )
             continue
 
-        cmd = [
-            sys.executable, runner_script,
-            "--regenerate-figures",
-        ]
-        if not skip_figures:
-            cmd += ["--manuscript-dest", MANUSCRIPT_FIGS]
+        cmd = [sys.executable, runner_script, "--regenerate-figures"]
         if not skip_tables:
             cmd += ["--tables-dest", MANUSCRIPT_TABLES]
         _run(cmd)
 
-        if not skip_figures:
-            for fname in entry["expected_figures"]:
-                dest = MANUSCRIPT_FIGS / fname
-                if dest.exists():
-                    logger.info("  ✓ %s", fname)
-                else:
-                    logger.warning("  ✗ %s not found at %s", fname, dest)
-
         if not skip_tables:
-            for fname in entry["expected_tables"]:
+            for fname in entry.get("expected_tables", []):
                 dest = MANUSCRIPT_TABLES / fname
                 if dest.exists():
                     logger.info("  ✓ %s", fname)
@@ -146,51 +140,10 @@ def run_confirmatory(skip_figures: bool = False, skip_tables: bool = False) -> N
                     logger.warning("  ✗ %s not found at %s", fname, dest)
 
 
-_MANUSCRIPT_FIGURE_STEMS = {
-    # Exploratory
-    "fig1_synthetic_gaussian", "fig2_family_showcase", "fig3_boundary_calibration",
-    "fig4_latent_groups_cropped", "fig5_runtime_scaling", "fig6_welllog",
-    "fig7_cgh", "fig8_spx", "fig9_methylation",
-    # Static (not generated by scripts)
-    "fig_cgh_probe_agreement", "fig_methylation_heldout", "fig_latent_template_stress",
-    # Confirmatory
-    "fig_E01_calibration", "fig_E01_recovery", "fig_E02_recovery",
-}
-# JSON sidecar provenance files validated by test_result_schema.py
-_FIGURE_SIDECAR_NAMES = {
-    "fig6_welllog.json", "fig7_cgh.json", "fig8_spx.json",
-    "fig9_methylation.json", "realdata_metrics.json",
-}
-_MANUSCRIPT_TABLE_STEMS = {
-    "table1_runtime_scaling", "table2_posterior_summary",
-    "table3_conjugate_summary", "table4_nonconj_tradeoff",
-    "tab_E01_recovery", "tab_E02_recovery",
-}
-
-
-def _prune_output_dirs() -> None:
-    """Remove files from the output directories that are not manuscript artifacts."""
-    # Keep PDF/PNG for manuscript figures and JSON sidecars required by schema tests
-    keep_exts = {".pdf", ".png"}
-    for f in MANUSCRIPT_FIGS.iterdir():
-        if f.suffix in keep_exts and f.stem in _MANUSCRIPT_FIGURE_STEMS:
-            continue
-        if f.name in _FIGURE_SIDECAR_NAMES:
-            continue
-        logger.info("  removing non-manuscript artifact: %s", f.name)
-        f.unlink()
-    # Keep only referenced .tex tables; prune CSV, MD, JSON, and unreferenced tex
-    table_keep_exts = {".tex"}
-    for f in MANUSCRIPT_TABLES.iterdir():
-        if f.suffix in table_keep_exts and f.stem in _MANUSCRIPT_TABLE_STEMS:
-            continue
-        logger.info("  removing non-manuscript artifact (tables): %s", f.name)
-        f.unlink()
-
-
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="Generate all manuscript figures and tables (exploratory + confirmatory)."
+        description="Refresh data caches for all manuscript figures and tables. "
+                    "For publication rendering use: python scripts/figures/render.py --all"
     )
     parser.add_argument(
         "--skip-exploratory", action="store_true",
@@ -198,36 +151,27 @@ def main() -> None:
     )
     parser.add_argument(
         "--skip-confirmatory", action="store_true",
-        help="Skip E01/E02 figure and table regeneration",
+        help="Skip E01/E02 data regeneration",
     )
     parser.add_argument(
         "--skip-tables", action="store_true",
-        help="Skip all table generation (exploratory and confirmatory)",
-    )
-    parser.add_argument(
-        "--skip-figures", action="store_true",
-        help="Skip all figure generation (exploratory and confirmatory)",
+        help="Skip all table data generation",
     )
     args = parser.parse_args()
 
-    if not args.skip_exploratory and not args.skip_figures:
-        logger.info("=== Exploratory figures ===")
+    if not args.skip_exploratory:
+        logger.info("=== Exploratory figure data ===")
         run_exploratory_figures()
     if not args.skip_exploratory and not args.skip_tables:
-        logger.info("=== Exploratory tables ===")
+        logger.info("=== Exploratory table data ===")
         run_exploratory_tables()
     if not args.skip_confirmatory:
-        logger.info("=== Confirmatory figures and tables ===")
-        run_confirmatory(
-            skip_figures=args.skip_figures,
-            skip_tables=args.skip_tables,
-        )
+        logger.info("=== Confirmatory table data ===")
+        run_confirmatory(skip_tables=args.skip_tables)
 
-    logger.info("=== Pruning non-manuscript artifacts ===")
-    _prune_output_dirs()
-    logger.info("Done.")
-    logger.info("  Figures → %s", MANUSCRIPT_FIGS)
-    logger.info("  Tables  → %s", MANUSCRIPT_TABLES)
+    logger.info("Data caches refreshed.")
+    logger.info("Run: python scripts/figures/render.py --all")
+    logger.info("to regenerate publication figures from updated caches.")
 
 
 if __name__ == "__main__":
