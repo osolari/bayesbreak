@@ -1,0 +1,21 @@
+{
+  "figure_id": "fig_E10_stage_breakdown",
+  "csv_inputs": [
+    "fig_E10_data.csv"
+  ],
+  "source_artifact": {
+    "sha": "bece422c9d90093f",
+    "experiment": "E10"
+  },
+  "data_preparation": "prepare_data.prepare_e10",
+  "axes": {
+    "x": "n",
+    "y": "stage_time_s",
+    "group": "stage"
+  },
+  "output": {
+    "formats": [
+      "png"
+    ]
+  }
+}

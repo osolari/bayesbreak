@@ -1,0 +1,30 @@
+{
+  "figure_id": "fig2_family_showcase",
+  "csv_inputs": [
+    "fig2_family_showcase.csv"
+  ],
+  "source_artifact": {
+    "type": "script_output",
+    "script": "scripts/figures/fig2_family_showcase.py",
+    "parameters": {
+      "seed": 0
+    }
+  },
+  "data_preparation": "prepare_data.prepare_fig2",
+  "series": {
+    "x": "x",
+    "group": "family",
+    "columns": [
+      "y",
+      "true_signal",
+      "fit",
+      "is_map_boundary"
+    ]
+  },
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

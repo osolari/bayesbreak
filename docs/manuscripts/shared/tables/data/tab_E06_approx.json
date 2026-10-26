@@ -1,0 +1,10 @@
+{
+  "table_id": "tab_E06_approx",
+  "csv_inputs": [
+    "tab_E06_approx.csv"
+  ],
+  "source_artifact": {
+    "sha": "9739f69c790aae6f",
+    "experiment": "E06"
+  }
+}

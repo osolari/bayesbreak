@@ -1,0 +1,25 @@
+{
+  "figure_id": "fig_E04_pooled",
+  "csv_inputs": [
+    "fig_E04_data.csv"
+  ],
+  "source_artifact": {
+    "sha": "0d135a601bdf32b1",
+    "experiment": "E04"
+  },
+  "data_preparation": "prepare_data.prepare_e04",
+  "axes": {
+    "x": "S",
+    "y": [
+      "mean_pooled_f1",
+      "mean_indep_f1"
+    ],
+    "group": "nonshared_fraction"
+  },
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

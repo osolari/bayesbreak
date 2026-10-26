@@ -1,0 +1,26 @@
+{
+  "figure_id": "fig_E07_robustness",
+  "csv_inputs": [
+    "fig_E07_robustness.csv"
+  ],
+  "source_artifact": {
+    "sha": "a038ac8e7e4a17b9",
+    "experiment": "E07"
+  },
+  "data_preparation": "prepare_data.prepare_e07",
+  "scalar_metrics": {
+    "boundary_tolerance": 3
+  },
+  "axes": {
+    "x": "cell_index",
+    "y": "mean_f1",
+    "panels": "missingness",
+    "color_by": "is_correct"
+  },
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

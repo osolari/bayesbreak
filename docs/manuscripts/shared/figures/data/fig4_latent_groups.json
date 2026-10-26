@@ -1,0 +1,24 @@
+{
+  "figure_id": "fig4_latent_groups",
+  "csv_inputs": [
+    "fig4_assignments.csv",
+    "fig4_boundary.csv",
+    "fig4_timeseries.csv"
+  ],
+  "source_artifact": {
+    "type": "script_output",
+    "script": "scripts/figures/fig4_latent_groups.py",
+    "parameters": {
+      "seed": 0,
+      "n": 80,
+      "n_seq": 24
+    }
+  },
+  "data_preparation": "prepare_data.prepare_fig4",
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

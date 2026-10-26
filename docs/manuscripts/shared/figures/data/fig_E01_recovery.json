@@ -1,0 +1,25 @@
+{
+  "figure_id": "fig_E01_recovery",
+  "csv_inputs": [
+    "fig_E01_data.csv"
+  ],
+  "source_artifact": {
+    "sha": "1e84a2673bc5b214",
+    "experiment": "E01"
+  },
+  "data_preparation": "prepare_data.prepare_e01",
+  "axes": {
+    "x": "delta",
+    "y": "mean_f1",
+    "group": [
+      "n",
+      "k_true"
+    ]
+  },
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

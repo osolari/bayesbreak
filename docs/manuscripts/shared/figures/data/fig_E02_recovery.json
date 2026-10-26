@@ -1,0 +1,22 @@
+{
+  "figure_id": "fig_E02_recovery",
+  "csv_inputs": [
+    "fig_E02_data.csv"
+  ],
+  "source_artifact": {
+    "sha": "a64d0fde6f74fd39",
+    "experiment": "E02"
+  },
+  "data_preparation": "prepare_data.prepare_e02",
+  "axes": {
+    "x": "family",
+    "y": "mean_f1",
+    "group": "param"
+  },
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

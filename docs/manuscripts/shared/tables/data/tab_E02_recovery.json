@@ -1,0 +1,11 @@
+{
+  "table_id": "tab_E02_recovery",
+  "csv_inputs": [
+    "tab_E02_recovery.csv"
+  ],
+  "source_artifact": {
+    "sha": "a64d0fde6f74fd39",
+    "experiment": "E02"
+  },
+  "output": "results/tab_E02_recovery.tex"
+}
