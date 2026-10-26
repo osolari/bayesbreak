@@ -100,14 +100,6 @@ All 900 objective traces were non-decreasing within the declared absolute tolera
 \input{shared/tables/defs/tab_E05_latent.tex}
 
 \FloatBarrier
-\subsection{Nonconjugate block approximations}
-Table~\ref{tab:nonconjugate-result-paper} reports five method labels in the Bernoulli/logistic example, with quadrature as the local reference. The \texttt{jj} and \texttt{pg\_vb} labels currently share one implementation path and are not independent computational methods. Laplace was the fastest listed routine at $0.079$ seconds, while quadrature required $0.146$ seconds. Maximum absolute block-score discrepancies were $1.235$ for Laplace, $1.265$ for Jaakkola--Jordan and P\'olya--Gamma mean field, and $1.631$ for expectation propagation. Expectation propagation selected ten segments with $F_1=0.364$; all other methods selected three segments with $F_1=0.500$. The repeated variational row must not be counted twice in method comparisons.
-
-\input{shared/tables/defs/tab_nonconj_tradeoff.tex}
-
-Segmentation output alone cannot certify a block approximation. The global dynamic program aggregates many local score differences, and a boundary metric can improve despite a worse local approximation. Claim-supporting use of Theorem~\ref{thm:stability-paper} therefore requires a uniform error bound over all admissible segments rather than retrospective agreement in the estimated segmentation.
-
-\FloatBarrier
 \subsection{Experiment E06: nonconjugate block-evidence approximations}
 The logistic-normal model places a Normal prior $\theta\sim\mathcal{N}(0,4)$ on the
 log-odds and integrates out $\theta$ to produce the block log-evidence.
