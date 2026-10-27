@@ -125,7 +125,7 @@ Each predecessor $h^\star(k,j)$ attains the recurrence maximum and satisfies $h^
 The vector formed from $\arg\max_h p(t_p=h\mid y,k)$ for each $p$ optimizes separate marginal decisions. Its entries can be incompatible or can have lower joint posterior probability than another partition. \BayesBreak therefore reports marginal modes as diagnostics and reserves ``joint MAP'' for Theorem~\ref{thm:map-correctness-paper}.
 \end{cautionbox}
 
-\input{paper/sections/04a-decision-rules.tex}
+\input{sections/04a-decision-rules.tex}
 
 \subsection{Complexity and numerical invariants}
 If cumulative sufficient statistics make each local conjugate score constant time, there are $\Theta(n^2)$ blocks to precompute. Sum-product and max-sum each inspect $\Theta(k_{\max}n^2)$ predecessor transitions. Values and backpointers require $\Theta(k_{\max}n)$ working storage, while retaining all block-cover terms can require $\Theta(k_{\max}n^2)$ storage.

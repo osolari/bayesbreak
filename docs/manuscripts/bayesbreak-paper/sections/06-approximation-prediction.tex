@@ -76,7 +76,7 @@ Suppose $h^\star$ exceeds every rival $h$ by exact log-odds margin at least $\De
 This paper does not establish a uniform convergence rate for Laplace approximation, the Jaakkola--Jordan bound, expectation propagation, P\'olya--Gamma mean-field approximation, or adaptive quadrature over all admissible segments. To apply Theorem~\ref{thm:stability-paper}, a nonconjugate analysis must establish Assumption~\ref{ass:block-error} under conditions appropriate to the observation family, parameter domain, segment support, initialization, convergence event, and tail behavior. Without that step, the dynamic program is exact for the supplied approximate score array, but the theorem does not compare the resulting posterior with the posterior under the intended segment model.
 \end{proofobligation}
 
-\input{paper/sections/06a-nonconjugate-calculations.tex}
+\input{sections/06a-nonconjugate-calculations.tex}
 
 \subsection{Family-specific posterior prediction}
 A fitted model records the observation family, the segment posterior state, and the coordinate range used for fitting. Prediction must use the posterior predictive distribution of that observation family. Coordinates outside the fitted range are rejected by default; an extrapolation rule is permitted only when it is stated as part of the predictive model before evaluation.
@@ -109,7 +109,7 @@ This density is posterior predictive conditional on the fitted segment and its a
 
 Prediction may condition on an exported joint-MAP partition or average over partitions and segment counts. The first calculation is conditional on a selected partition; the second integrates segmentation uncertainty. In either case, assignment of prediction coordinates to segments is part of the statistical model. Assigning every out-of-range coordinate to the final segment without an explicit extrapolation assumption is not a valid posterior-predictive calculation.
 
-\input{paper/sections/06b-prediction-extensions.tex}
+\input{sections/06b-prediction-extensions.tex}
 
 \subsection{Boundary metrics}
 \begin{definition}[One-to-one tolerance matching]
