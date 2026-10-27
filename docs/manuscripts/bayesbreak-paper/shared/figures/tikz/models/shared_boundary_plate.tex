@@ -1,0 +1,12 @@
+\begin{tikzpicture}
+\node[latent] (t) {$t$};
+\node[latent,below=12mm of t] (theta) {$\theta^{(s)}_q$};
+\node[obs,below=12mm of theta] (y) {$y^{(s)}_i$};
+\node[const,right=11mm of y] (d) {$d^{(s)}_i$};
+\edge {theta,d} {y}
+\edge {t} {theta}
+\plate {seg} {(theta)} {$q=1{:}k$}
+\plate {subj} {(seg)(y)(d)} {$s=1{:}S$}
+\node[secondarybox,text width=42mm,right=27mm of theta] (prod) {$\log A^{\rm pool}_{ij}=\sum_s\log A^{(s)}_{ij}$};
+\draw[arrSecondary] (subj.east)--(prod.west);
+\end{tikzpicture}

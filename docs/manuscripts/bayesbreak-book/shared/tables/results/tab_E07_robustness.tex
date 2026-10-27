@@ -1,0 +1,33 @@
+\begin{table}[!htbp]
+\centering
+\footnotesize
+\caption{E07 misspecification and missing data: boundary recovery F1@3 (mean $\pm$ 95\% CI), posterior count accuracy, and Brier score for $k=k_\mathrm{true}$.}
+\label{tab:E07-robustness}
+\begin{tabular}{llccccc}
+\hline
+Data family & Fit & Missingness & F1@3 & Count exact & $p(k^\star|y)$ & Brier$_k$ \\
+\hline
+gaussian reference & gaussian & none & nan & nan & nan \\
+gaussian reference & gaussian & mcar 10 & nan & nan & nan \\
+gaussian reference & gaussian & mcar 30 & nan & nan & nan \\
+gaussian reference & gaussian & single block 15 & nan & nan & nan \\
+student t3 & gaussian$\dag$ & none & nan & nan & nan \\
+student t3 & gaussian$\dag$ & mcar 10 & nan & nan & nan \\
+student t3 & gaussian$\dag$ & mcar 30 & nan & nan & nan \\
+student t3 & gaussian$\dag$ & single block 15 & nan & nan & nan \\
+overdispersed poisson & poisson$\dag$ & none & nan & nan & nan \\
+overdispersed poisson & poisson$\dag$ & mcar 10 & nan & nan & nan \\
+overdispersed poisson & poisson$\dag$ & mcar 30 & nan & nan & nan \\
+overdispersed poisson & poisson$\dag$ & single block 15 & nan & nan & nan \\
+overdispersed poisson & negbin & none & nan & nan & nan \\
+overdispersed poisson & negbin & mcar 10 & nan & nan & nan \\
+overdispersed poisson & negbin & mcar 30 & nan & nan & nan \\
+overdispersed poisson & negbin & single block 15 & nan & nan & nan \\
+beta binomial & binomial$\dag$ & none & nan & nan & nan \\
+beta binomial & binomial$\dag$ & mcar 10 & nan & nan & nan \\
+beta binomial & binomial$\dag$ & mcar 30 & nan & nan & nan \\
+beta binomial & binomial$\dag$ & single block 15 & nan & nan & nan \\
+\hline
+\multicolumn{7}{l}{\small$\dag$ misspecified fit.} \\
+\end{tabular}
+\end{table}

@@ -1,0 +1,29 @@
+{
+  "figure_id": "fig3_boundary_calibration",
+  "csv_inputs": [
+    "fig3_boundary_calibration.csv"
+  ],
+  "source_artifact": {
+    "type": "script_output",
+    "script": "scripts/figures/fig3_boundary_calibration.py",
+    "parameters": {
+      "seed": 0,
+      "n": 120,
+      "n_seq": 80,
+      "k_max": 15,
+      "sigma": 0.35,
+      "n_bins": 10
+    }
+  },
+  "scalar_metrics": {
+    "ece": 0.005549419440281472,
+    "brier": 0.010818894805386788
+  },
+  "data_preparation": "prepare_data.prepare_fig3",
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

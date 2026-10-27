@@ -1,0 +1,20 @@
+\begin{tikzpicture}[node distance=6mm and 7mm]
+\node[successbox,text width=25mm] (fixed) {Author-fixed title, statistical narrative, and proofs};
+\node[neutralbox,right=of fixed,text width=25mm] (prior) {S1: prior factors and exact-DP integration};
+\node[neutralbox,right=of prior,text width=25mm] (latent) {S2: latent-group objective and stable pooling};
+\node[neutralbox,right=of latent,text width=25mm] (pred) {S3: prediction, metrics, and comparator schemas};
+\draw[arrPrimary] (fixed)--(prior);
+\draw[arrPrimary] (prior)--(latent);
+\draw[arrPrimary] (latent)--(pred);
+
+\node[neutralbox,below=11mm of prior,text width=25mm] (tests) {S4: pinned test completion and profiling};
+\node[neutralbox,right=of tests,text width=25mm] (rerun) {S5: corrected CGH and methylation runs};
+\node[neutralbox,right=of rerun,text width=25mm] (expand) {S6: repeated calibration, robustness, and scaling};
+\node[primarybox,right=of expand,text width=25mm] (release) {S7: independent review and research release};
+\draw[arrPrimary] (pred.south) |- (tests.east);
+\draw[arrPrimary] (tests)--(rerun);
+\draw[arrPrimary] (rerun)--(expand);
+\draw[arrPrimary] (expand)--(release);
+
+\node[draw=Rule,dashed,rounded corners,fit=(prior)(latent)(pred)(tests)(rerun)(expand),inner sep=3.5mm,label=below:{\scriptsize implementation and validation still required}] {};
+\end{tikzpicture}

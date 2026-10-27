@@ -1,0 +1,58 @@
+% Shared semantic color palette for BayesBreak manuscript.
+% Mirrors the Python definitions in scripts/figures/_style.py.
+% Every name here must match a key in COLORS, METHOD_COLORS, FAMILY_COLORS,
+% PRIOR_COLORS, SPEC_COLORS, or POOL_COLORS in that module.
+%
+% Load this file BEFORE tikz.tex and any figure wrappers.
+
+% --- Base Paul Tol "muted" palette ---
+\definecolor{bbBlue}    {HTML}{4477AA}
+\definecolor{bbRose}    {HTML}{CC6677}
+\definecolor{bbTeal}    {HTML}{44AA99}
+\definecolor{bbSand}    {HTML}{DDCC77}
+\definecolor{bbCyan}    {HTML}{88CCEE}
+\definecolor{bbPurple}  {HTML}{AA4499}
+\definecolor{bbGreen}   {HTML}{117733}
+\definecolor{bbOlive}   {HTML}{999933}
+\definecolor{bbWine}    {HTML}{882255}
+\definecolor{bbOrange}  {HTML}{EE7733}
+\definecolor{bbGrey}    {HTML}{888888}
+\definecolor{bbLightGrey}{HTML}{DDDDDD}
+\definecolor{bbBlack}   {HTML}{222222}
+
+% --- Method colors (E06 and general) ---
+\definecolor{bbMethodQuadrature}{HTML}{4477AA}  % blue  — reference
+\definecolor{bbMethodLaplace}   {HTML}{44AA99}  % teal
+\definecolor{bbMethodJJ}        {HTML}{DDCC77}  % sand
+\definecolor{bbMethodEP}        {HTML}{CC6677}  % rose
+\definecolor{bbMethodExact}     {HTML}{4477AA}  % blue
+\definecolor{bbMethodApprox}    {HTML}{DDCC77}  % sand
+
+% --- Observation family colors ---
+\definecolor{bbFamilyGaussian} {HTML}{4477AA}  % blue
+\definecolor{bbFamilyPoisson}  {HTML}{44AA99}  % teal
+\definecolor{bbFamilyBinomial} {HTML}{DDCC77}  % sand
+\definecolor{bbFamilyNegBin}   {HTML}{EE7733}  % orange
+\definecolor{bbFamilyBeta}     {HTML}{AA4499}  % purple
+
+% --- Prior colors ---
+\definecolor{bbPriorUniform}       {HTML}{888888}  % grey
+\definecolor{bbPriorGeometric}     {HTML}{4477AA}  % blue
+\definecolor{bbPriorGapHazard}     {HTML}{44AA99}  % teal
+\definecolor{bbPriorLengthCohesion}{HTML}{EE7733}  % orange
+\definecolor{bbPriorCombined}      {HTML}{CC6677}  % rose
+
+% --- Specification colors ---
+\definecolor{bbCorrect}      {HTML}{4477AA}  % blue
+\definecolor{bbMisspecified} {HTML}{CC6677}  % rose
+
+% --- Pooling colors ---
+\definecolor{bbPooled}       {HTML}{4477AA}  % blue
+\definecolor{bbIndependent}  {HTML}{CC6677}  % rose
+
+% --- TikZ stage/node colors ---
+\definecolor{bbStageFill}    {HTML}{4477AA}  % blue fill for primary stages
+\definecolor{bbStageText}    {HTML}{FFFFFF}  % white text on dark fill
+\definecolor{bbNodeFill}     {HTML}{E8EFF7}  % light blue for secondary nodes
+\definecolor{bbNodeText}     {HTML}{222222}  % dark text on light fill
+\definecolor{bbAccentFill}   {HTML}{CC6677}  % rose for accent/result nodes

@@ -1,0 +1,13 @@
+\begin{tikzpicture}[node distance=7mm and 8mm]
+\node[primarybox,text width=23mm] (claim) {Statistical claim};
+\node[secondarybox,right=of claim,text width=28mm] (hyp) {Hypothesis and competing explanation};
+\node[primarybox,right=of hyp,text width=25mm] (protocol) {Data-generating process or dataset, estimand, and metric};
+\node[primarybox,right=of protocol,text width=24mm] (run) {Executed calculation and recorded output};
+\node[successbox,right=of run,text width=27mm] (decision) {Permitted scientific interpretation};
+\draw[arrPrimary] (claim)--(hyp);
+\draw[arrPrimary] (hyp)--(protocol);
+\draw[arrPrimary] (protocol)--(run);
+\draw[arrPrimary] (run)--(decision);
+\node[draw=Warning,fill=WarningPale,rounded corners,below=9mm of run,text width=32mm,align=center] (excluded) {Exclude when the observation model, coordinate axis, reference, or metric is incompatible};
+\draw[arr,draw=Warning] (run)--(excluded);
+\end{tikzpicture}

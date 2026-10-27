@@ -1,0 +1,44 @@
+
+% Compatibility and project vocabulary for the reconstructed BayesBreak source.
+\newcommand{\ProofStep}[1]{\par\smallskip\noindent\textbf{#1}\quad}
+\providecommand{\Var}{\operatorname{Var}}
+\providecommand{\Cov}{\operatorname{Cov}}
+\providecommand{\KL}{D_{\mathrm{KL}}}
+\providecommand{\softmax}{\operatorname{softmax}}
+\providecommand{\logsumexp}{\operatorname{logsumexp}}
+\providecommand{\1}{\mathbbm{1}}
+\providecommand{\eps}{\varepsilon}
+\providecommand{\figref}[1]{figure~\ref{#1}}
+\providecommand{\Figref}[1]{Figure~\ref{#1}}
+\providecommand{\secref}[1]{section~\ref{#1}}
+\providecommand{\Secref}[1]{Section~\ref{#1}}
+\providecommand{\algref}[1]{algorithm~\ref{#1}}
+\providecommand{\Algref}[1]{Algorithm~\ref{#1}}
+\providecommand{\Eqref}[1]{Equation~\ref{#1}}
+\providecommand{\ceil}[1]{\lceil #1\rceil}
+\providecommand{\floor}[1]{\lfloor #1\rfloor}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{targettheorem}[theorem]{Target theorem}
+\newtheorem{proofobligation}[theorem]{Proof obligation}
+
+\newcommand{\EstablishedTag}{\CSEvidenceTag{Positive}{PositivePale}{Established}}
+\newcommand{\ExactDerivedTag}{\CSEvidenceTag{Secondary}{SecondaryPale}{Exact derivation}}
+\newcommand{\RealResultTag}{\CSEvidenceTag{Positive}{PositivePale}{Real result}}
+\newcommand{\PartialTag}{\CSEvidenceTag{Warning}{WarningPale}{Partial}}
+\newcommand{\TargetTag}{\CSEvidenceTag{RuleDark}{LightPanel}{Target}}
+\newcommand{\ExcludedTag}{\CSEvidenceTag{PrimaryDark}{PrimaryWash}{Excluded}}
+\newcommand{\ConditionalTag}{\CSEvidenceTag{Warning}{WarningPale}{Conditional}}
+\newcommand{\ExternalVerifiedTag}{\CSEvidenceTag{Secondary}{SecondaryPale}{Verified external}}
+
+\newtcolorbox{statusbox}[1][Evidence status]{
+ enhanced,breakable,colback=PrimaryWash,colframe=Primary,boxrule=0.6pt,arc=2pt,
+ left=10pt,right=10pt,top=8pt,bottom=8pt,before skip=9pt,after skip=10pt,
+ title={\rmfamily\bfseries\fontsize{7.1}{8.4}\selectfont\color{PrimaryDark}\MakeUppercase{#1}},
+ attach title to upper={\par\vspace{5pt}}}
+\newcommand{\taskid}[1]{\texttt{#1}}
+\newcommand{\Real}{\mathbb{R}}
+\newcommand{\bbone}{\mathbbm{1}}
+\newcommand{\NA}{\textsc{na}}
+\newcommand{\pluseq}{\mathrel{+}=}
+\newcommand{\code}[1]{\texttt{#1}}
+\newenvironment{takeawaybox}{\begin{keyidea}}{\end{keyidea}}

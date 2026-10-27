@@ -1,0 +1,11 @@
+{
+  "table_id": "tab_E05_latent",
+  "csv_inputs": [
+    "tab_E05_latent.csv"
+  ],
+  "source_artifact": {
+    "sha": "d33f1c5e067d38ff",
+    "experiment": "E05"
+  },
+  "output": "results/tab_E05_latent.tex"
+}

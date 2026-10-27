@@ -1,0 +1,20 @@
+{
+  "figure_id": "fig_E03_gap_true",
+  "csv_inputs": [
+    "fig_E03_data.csv"
+  ],
+  "source_artifact": {
+    "sha": "e0d11782dcbd95ff",
+    "experiment": "E03"
+  },
+  "filter": {
+    "true_template": "[60, 120]"
+  },
+  "data_preparation": "prepare_data.prepare_e03",
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

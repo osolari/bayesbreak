@@ -1,0 +1,25 @@
+{
+  "figure_id": "figA4_model_selection",
+  "seed": 0,
+  "n": 120,
+  "n_rep": 20,
+  "k_max": 10,
+  "scenarios": [
+    {
+      "sigma": 0.15,
+      "label": "Low noise"
+    },
+    {
+      "sigma": 0.5,
+      "label": "Medium noise"
+    },
+    {
+      "sigma": 1.5,
+      "label": "High noise"
+    }
+  ],
+  "k_true": 3,
+  "csv_inputs": [
+    "figA4_posteriors.csv"
+  ]
+}

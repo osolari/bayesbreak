@@ -1,0 +1,10 @@
+{
+  "table_id": "tab_E04_comparison",
+  "csv_inputs": [
+    "tab_E04_comparison.csv"
+  ],
+  "source_artifact": {
+    "sha": "0d135a601bdf32b1",
+    "experiment": "E04"
+  }
+}

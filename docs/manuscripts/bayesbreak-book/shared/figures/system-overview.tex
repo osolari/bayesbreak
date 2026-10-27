@@ -1,0 +1,19 @@
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[node distance=8mm and 6mm]
+  \node[secondarybox,minimum width=28mm] (data) {Inputs\\[-1pt]\scriptsize data, requirements};
+  \node[primarybox,minimum width=28mm,right=of data] (method) {Method\\[-1pt]\scriptsize model, objective};
+  \node[neutralbox,minimum width=28mm,right=of method] (impl) {Implementation\\[-1pt]\scriptsize training, serving};
+  \node[successbox,minimum width=28mm,right=of impl] (eval) {Evidence\\[-1pt]\scriptsize quality, cost, risk};
+  \draw[arrSecondary] (data) -- (method);
+  \draw[arrPrimary] (method) -- (impl);
+  \draw[arr] (impl) -- (eval);
+  \draw[arr,dashed] (eval.south) -- ++(0,-8mm) -|
+    node[pos=0.52,below=1mm,font=\scriptsize\rmfamily,text=Muted]
+      {diagnose and revise} (method.south);
+\end{tikzpicture}
+\caption{Canonical book workflow. The narrative moves left to right, while
+evaluation feeds back into method revision. Replace the labels with the actual
+components of the book.}
+\label{fig:system-overview}
+\end{figure}

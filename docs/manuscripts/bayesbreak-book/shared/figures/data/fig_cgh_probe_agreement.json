@@ -1,0 +1,6 @@
+{
+  "figure_id": "fig_cgh_probe_agreement",
+  "provenance_status": "UNVERIFIED",
+  "reason": "Requires E09 held-out/ruptures-baseline analysis not present in confirmatory metrics. E09 methylation persistently truncated; CGH pooled truncated. Re-run targeted E09 analysis to populate.",
+  "csv_inputs": []
+}

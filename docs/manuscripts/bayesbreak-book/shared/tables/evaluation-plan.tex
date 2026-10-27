@@ -1,0 +1,22 @@
+\begin{table}[htbp]
+\centering
+\caption{Evaluation matrix. All example outcomes are \textbf{(PLANNED)} and
+must be replaced by measured values before publication.}
+\label{tab:evaluation-plan}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\textwidth}{@{}L{0.17\textwidth}L{0.21\textwidth}L{0.21\textwidth}Y@{}}
+\toprule
+Claim & Metric & Baseline & Decision rule \\
+\midrule
+Higher task quality & Primary task score & Strongest matched system &
+Improvement exceeds the predeclared uncertainty margin \\
+Lower resource cost & Peak memory, latency, energy & Same quality operating point &
+Cost reduction persists under realistic load \\
+Mechanism is necessary & Ablation delta & Full proposed system &
+Removing the component degrades the predicted quantity \\
+Robust under shift & Worst-group or stress score & In-distribution result &
+Degradation remains within the deployment tolerance \\
+\bottomrule
+\end{tabularx}
+\end{table}

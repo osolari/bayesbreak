@@ -30,5 +30,6 @@
 # paper/main.tex or book/main.tex in Overleaf → Menu → Main document.
 # ---------------------------------------------------------------------------
 #
-# name		project id				subpath
-# manuscripts	<FILL IN PROJECT ID>			.
+# name			project id				subpath
+bayesbreak-paper	6a0f8834fe4c96e9090e7f0b		.
+bayesbreak-book		6a00234e4b30ab91cc289f51		.

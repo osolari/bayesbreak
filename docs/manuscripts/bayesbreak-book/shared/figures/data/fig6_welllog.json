@@ -1,0 +1,19 @@
+{
+  "figure_id": "fig6_welllog",
+  "csv_inputs": [
+    "fig6_welllog.csv",
+    "fig6_welllog_kposterior.csv"
+  ],
+  "source_artifact": {
+    "type": "script_output",
+    "script": "scripts/figures/fig6_welllog.py",
+    "dataset": "welllog"
+  },
+  "data_preparation": "prepare_data.prepare_fig6",
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

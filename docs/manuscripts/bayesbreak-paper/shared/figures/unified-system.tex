@@ -1,0 +1,40 @@
+% Reusable TikZ diagram with no surrounding figure environment.
+\newcommand{\CSUnifiedSystemDiagram}{%
+\begin{tikzpicture}[
+  node distance=7mm and 9mm,
+  every node/.style={font=\rmfamily},
+  source/.style={draw=Secondary,fill=SecondaryPale,rounded corners=2pt,
+    minimum width=31mm,minimum height=11mm,align=center,line width=0.7pt},
+  core/.style={draw=Primary,fill=PrimaryWash,rounded corners=2pt,
+    minimum width=34mm,minimum height=13mm,align=center,line width=0.9pt},
+  output/.style={draw=RuleDark,fill=white,rounded corners=2pt,
+    minimum width=29mm,minimum height=10mm,align=center,line width=0.55pt},
+  qa/.style={draw=Positive,fill=PositivePale,rounded corners=2pt,
+    minimum width=41mm,minimum height=9mm,align=center,line width=0.7pt},
+  flow/.style={-{Stealth[length=2.2mm]},draw=Ink,line width=0.75pt},
+  feedback/.style={-{Stealth[length=2.2mm]},draw=Positive,dashed,line width=0.75pt},
+]
+  \node[source] (assets) {\textbf{Canonical research assets}\\[-1pt]
+    \scriptsize metadata, figures, tables, code, references};
+  \node[core,right=of assets] (system) {\textbf{Shared system layer}\\[-1pt]
+    \scriptsize design tokens, notation, evidence labels};
+  \node[output,right=13mm of system,yshift=12mm] (paper) {\textbf{Paper}\\[-1pt]
+    \scriptsize dense, publication-facing};
+  \node[output,right=13mm of system] (slides) {\textbf{Slides + notes}\\[-1pt]
+    \scriptsize visual, claim-led};
+  \node[output,right=13mm of system,yshift=-12mm] (book) {\textbf{Technical book}\\[-1pt]
+    \scriptsize explanatory, pedagogical};
+  \node[qa,below=13mm of system] (qa) {\textbf{Build and visual QA}\\[-1pt]
+    \scriptsize compile, render, inspect, revise};
+
+  \draw[flow] (assets) -- (system);
+  \draw[flow] (system.east) -- ++(5mm,0) |- (paper.west);
+  \draw[flow] (system.east) -- (slides.west);
+  \draw[flow] (system.east) -- ++(5mm,0) |- (book.west);
+  \draw[flow] (paper.south) -- ++(0,-4mm) -| (qa.east);
+  \draw[flow] (slides.south) -- ++(0,-4mm) -| (qa.east);
+  \draw[flow] (book.south) -- ++(0,-4mm) -| (qa.east);
+  \draw[feedback] (qa.west) -| node[pos=0.25,left=1mm,font=\scriptsize\rmfamily,
+    text=Positive]{revise once} (assets.south);
+\end{tikzpicture}%
+}

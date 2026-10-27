@@ -1,0 +1,11 @@
+{
+  "figure_id": "fig_latent_template_stress",
+  "source_artifact": {
+    "sha": "d33f1c5e067d38ff",
+    "experiment": "E05"
+  },
+  "csv_inputs": [
+    "fig_latent_template_stress.csv"
+  ],
+  "note": "Extracted from E05 latent-template experiment metrics."
+}

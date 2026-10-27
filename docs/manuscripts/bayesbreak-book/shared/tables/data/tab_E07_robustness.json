@@ -1,0 +1,10 @@
+{
+  "table_id": "tab_E07_robustness",
+  "csv_inputs": [
+    "tab_E07_robustness.csv"
+  ],
+  "source_artifact": {
+    "sha": "a038ac8e7e4a17b9",
+    "experiment": "E07"
+  }
+}

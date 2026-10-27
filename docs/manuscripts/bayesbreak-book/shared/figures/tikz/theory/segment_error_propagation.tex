@@ -1,0 +1,10 @@
+\begin{tikzpicture}[node distance=7mm and 8mm]
+\node[secondarybox,text width=33mm] (ref) {Reference and approximate log segment marginal likelihoods};
+\node[primarybox,right=of ref,text width=29mm] (eps) {$|\widehat\ell_{ij}-\ell_{ij}|\le\varepsilon$ for every admissible segment};
+\node[primarybox,right=of eps,text width=31mm] (part) {$k$-segment partition log-weight error at most $k\varepsilon$};
+\node[successbox,right=of part,text width=33mm] (global) {Bounds for marginal likelihoods, posterior odds, and modal changepoints};
+\draw[arrPrimary] (ref)--(eps);
+\draw[arrPrimary] (eps)--(part);
+\draw[arrPrimary] (part)--(global);
+\node[below=5mm of part,font=\scriptsize,text width=66mm,align=center] {The implication is conditional: the numerical method must establish the segmentwise bound under its own assumptions.};
+\end{tikzpicture}

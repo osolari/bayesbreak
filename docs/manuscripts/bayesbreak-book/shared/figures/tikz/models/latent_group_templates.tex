@@ -1,0 +1,11 @@
+\begin{tikzpicture}[node distance=8mm and 9mm]
+\node[secondarybox,text width=31mm] (scores) {Sequence-specific template scores\\$S_s(\tau_g)>0$};
+\node[primarybox,right=of scores,text width=29mm] (resp) {Auxiliary allocation weights\\$r_{sg}$};
+\node[primarybox,right=of resp,text width=32mm] (update) {Alternating updates\\$\pi_g$ and $\tau_g$};
+\node[successbox,right=of update,text width=31mm] (obj) {$\mathcal F=\sum_s\log\sum_g\pi_gS_s(\tau_g)$};
+\draw[arrPrimary] (scores)--(resp);
+\draw[arrPrimary] (resp)--(update);
+\draw[arrPrimary] (update)--(obj);
+\draw[arrSecondary] (obj.north) |- ++(0,7mm) -| node[pos=0.52,above,font=\scriptsize]{next iteration} (scores.north);
+\node[neutralbox,below=10mm of resp,text width=101mm] {The updates maximize a Jensen minorizer of the stated finite latent-group criterion. The criterion is not interpreted as a normalized finite-mixture likelihood.};
+\end{tikzpicture}

@@ -1,0 +1,17 @@
+{
+  "figure_id": "fig_E01_calibration",
+  "csv_inputs": [
+    "fig_E01_calibration.csv"
+  ],
+  "source_artifact": {
+    "sha": "1e84a2673bc5b214",
+    "experiment": "E01"
+  },
+  "data_preparation": "prepare_data.prepare_e01",
+  "output": {
+    "formats": [
+      "pdf",
+      "png"
+    ]
+  }
+}

@@ -1,0 +1,283 @@
+\section{Results}
+\label{sec:results}
+
+The following results describe completed numerical calculations for the model configurations specified in this section.
+They are analyzed according to their data-generating mechanisms, observation
+models, and reference sets. Proposed additional evaluations remain unfilled in
+Section~\ref{sec:experimental-design}; their outcomes are not inferred from
+the present experiments.
+
+\FloatBarrier
+\subsection{Single-sequence posterior summaries}
+Figure~\ref{fig:gaussian-result-paper} shows a Gaussian sequence with two true changepoints. The boundary-event posterior concentrates near the generating changes while retaining a smaller shoulder of ambiguity before the first jump. The joint-MAP signal reflects this local uncertainty by inserting a short intermediate segment. Table~\ref{tab:gaussian-summary-paper} shows that the selected and modal segment count is four while the posterior mean is $4.742$, illustrating why an exported partition and posterior uncertainty over $k$ should not be collapsed into one object.
+
+\input{shared/figures/defs/fig1_synthetic_gaussian.tex}
+
+\input{shared/tables/defs/tab_gaussian_summary.tex}
+
+\FloatBarrier
+\subsection{Portability across local observation models}
+The same global inference code was applied to Gaussian, Poisson, Binomial, and Beta-valued responses (Figure~\ref{fig:family-result-paper}). Table~\ref{tab:family-result-paper} reports the corresponding synthetic metrics. Gaussian, Binomial, and Beta-valued settings selected the generating three segments; Poisson selected four and had the weakest boundary score and largest reconstruction error in this small benchmark. The result supports interface portability and exposes relative difficulty in the bundled settings; it is not a population-level ranking of families.
+
+\input{shared/figures/defs/fig2_family_showcase.tex}
+
+\input{shared/tables/defs/tab_family_result.tex}
+
+\FloatBarrier
+\subsection{Experiment E02: cross-family recovery}
+Experiment E02 evaluated the five declared observation families: Gaussian, Poisson, Binomial, Negative Binomial, and Beta-valued, on a common segmentation design: $k_{\rm true}=3$, exactly equal segment lengths, $n=240$ (conjugate families) or $n=120$ (Beta-obs, quadrature), 100 or 50 independent replicates per cell, two effect magnitudes per family, and the same geometric-decay count prior and $k_{\max}=10$ as E01. Family-specific priors are as declared: $\mu\sim\mathcal{N}(0,4)$ for Gaussian, $\lambda\sim\mathrm{Gamma}(2,1)$ for Poisson, $p\sim\mathrm{Beta}(2,3)$ for Binomial and Negative Binomial, and $\mu\sim\mathrm{Beta}(2,3)$ for Beta-obs. The Negative Binomial dispersion is $r=5$; the segment functional is the count mean $r(1-p)/p$, not $p$.
+
+At the stronger effect setting in each family, F1@3 ranged from $0.88$ (Gaussian, $\Delta=1.5$) to $1.00$ (Beta-obs, $\mu_{\rm mid}=0.8$). At the weaker effect setting, F1@3 ranged from $0.05$ (Gaussian, $\Delta=0.5$) to $0.99$ (Beta-obs, $\mu_{\rm mid}=0.4$). Weak-effect undersegmentation in the Gaussian and Negative Binomial cells ($\mu_{\rm mid}=3$) is again prior-driven: the geometric prior places strong mass on $k<3$ when the likelihood does not decisively separate segments. Binomial and Beta-obs cells showed consistently high recovery even at the lower effect value; this reflects larger effective information per observation when the generating probabilities are well separated from the prior mode. Negative Binomial signal MSE ($0.18$--$0.20$) is substantially larger than in other families, reflecting the higher observation variance of the NegBin model at these parameters. Beta-obs quadrature convergence was confirmed using 128-node Gauss--Legendre quadrature: the maximum Bayes-curve deviation between 128-node and 256-node evaluations was below $5\times10^{-8}$ across both Beta-obs cells and all five oracle replicates, five orders of magnitude below the prespecified $10^{-3}$ gate threshold.
+
+\input{shared/tables/results/tab_E02_recovery.tex}
+
+\input{shared/figures/defs/fig_E02_recovery.tex}
+
+Signal MSE is reported on the native family scale and is not directly comparable across families. These results establish mathematical portability of the common inference pipeline across the five declared observation families and expose family-specific difficulty that depends on observation variance and prior placement. They do not establish generalization to other effect sizes, priors, or families not tested in E02.
+
+\FloatBarrier
+\subsection{Experiment E03: irregular physical grid and partition prior}
+Experiment E03 evaluated four partition priors on Gaussian sequences with an unequal physical spacing at position 120: gap size $G\in\{1,4,16\}$ separates observations $x_{120}$ and $x_{121}$. Two changepoint templates were compared: one with a true changepoint at the gap location (interior boundaries 60,\,120) and one without (interior boundaries 60,\,180). All cells used $n=240$, $\Delta=1.5$, $\sigma=1$, $k_{\max}=8$, and 100 independent replicates. Priors A through D are: A uniform local factors, B gap-proportional boundary hazard, C physical-length cohesion, D the product of B and C. Log-normalizers $C_k$ were computed independently for each prior; the maximum numerical deviation from the brute-force sum was below $10^{-15}$ across all oracle combinations.
+
+Figure~\ref{fig:E03-irregular-paper} shows mean posterior boundary probability $P(b_{120}=1\mid y)$ with 95\% bootstrap bands. When a true changepoint is at the large-gap position, gap hazard prior B raised $P(b_{120}=1\mid y)$ from $0.316$ (uniform, $G=16$) to $0.793$. Combined prior D also increased this probability. When no changepoint is present at the gap (template 60,\,180), all four priors correctly assigned near-zero probability to that position across all gap sizes. Mean F1@3 exceeded $0.85$ in every cell (Table~\ref{tab:planned-E03-prior-paper}), with no prior dominating uniformly across gap sizes and templates. This pattern confirms that prior B and D increase posterior sensitivity at the gap when evidence supports it, without inflating false-positive mass when it does not.
+
+At $G=1$ all physical spacings are equal, so the gap hazard prior is numerically equivalent to uniform; observed differences among the four priors at $G=1$ are sampling variability across independently generated datasets (the four cells use distinct dataset seeds).
+
+\input{shared/figures/defs/fig_E03_irregular.tex}
+
+\input{shared/tables/defs/tab_E03_irregular.tex}
+
+\FloatBarrier
+\subsection{Experiment E04: shared-boundary pooling}
+Experiment E04 evaluated exact common-changepoint pooling across $S\in\{1,4,16,64\}$ sequences and nonshared fractions $f\in\{0,0.25,0.5\}$ (12 cells, 100 independent multi-subject datasets per cell). Sequences share true boundaries at (80,\,160); nonshared sequences shift both boundaries by 20 indices. The pooled method fits a single common partition; the independent method fits each sequence separately. Both use $n=240$, $\sigma^2=1$, $\mathcal{N}(0,4)$ segment prior, $k_{\max}=8$, and the geometric-decay count prior.
+
+At full sharing ($f=0$) pooled F1@3 rose from $0.893$ at $S=1$ to $1.000$ at $S\in\{16,64\}$, while independent F1@3 remained near $0.893$ across all $S$ (Figure~\ref{fig:planned-pooled-paper}, Table~\ref{tab:planned-E04-paper}). This confirms the monotone information accumulation property of exact pooling under the common-boundary model. At $f=0.25$ and $f=0.5$, pooled F1@3 degraded substantially for $S\geq4$ because the common-template model is misspecified when some sequences use different boundaries; independent inference was unaffected. The $S=1$, $f=0.5$ cell is a designed boundary case: with one sequence and all boundaries nonshared, pooled and independent inference are equivalent and F1 against the common template is near zero by construction (the recovered boundary at positions 100,\,180 lies 20 indices from the common template, exceeding $\tau=3$). This is not a failure of the estimator; it records the correct behavior of the common-boundary model when given a single sequence with non-template boundaries.
+
+Pooled log evidence and independent per-sequence log evidences arise from different model priors and are not directly comparable as Bayes factors between the pooled and independent models.
+
+\input{shared/figures/defs/fig_E04_pooled.tex}
+
+\input{shared/tables/defs/tab_E04_comparison.tex}
+
+\FloatBarrier
+\subsection{Calibration and latent-group segmentation}
+Experiment E01 evaluated Gaussian segmentation calibration and recovery across 22 predeclared cells (14 primary, 8 prior-ablation), 100 independent replicates per cell, using two sequence lengths ($n\in\{256,512\}$), two true changepoint counts ($k\in\{3,6\}$), three signal-to-noise ratios ($\Delta/\sigma\in\{0.5,1.0,2.0\}$), and two priors. A null cell ($k=1$, $\Delta=0$) verified false-positive control. Boundary-event probabilities are marginalised over $k$ via the full segment-count posterior $p(k\mid y)$.
+
+Reliability diagrams (Figure~\ref{fig:E01-calibration-paper}) showed curves close to the diagonal in every stratum. ECE ranged from $0.00044$ to $0.0081$ across eight pooling strata, with lower ECE at $n=512$ in every matched stratum. Nine of ten equal-mass calibration bins per stratum had mean predicted probability below $0.006$, reflecting correct near-zero assignment to the $\approx97\%$ non-boundary positions; the low aggregate ECE is dominated by accurate null assignment. Mean per-boundary Brier scores ranged from near zero in the null cell to $0.020$ in the $k=6$, $\Delta/\sigma=0.5$, $n=256$ cell (Table~\ref{tab:E01-recovery-paper}).
+
+Recovery under the geometric-decay prior is shown in Figure~\ref{fig:E01-recovery-paper}. At strong signal ($\Delta/\sigma=2$), mean F1@3 exceeded $0.93$ in all primary cells. At weak signal ($\Delta/\sigma=0.5$ with $k=6$), the geometric prior's strong preference for fewer segments caused substantial undersegmentation: 95 of 100 replicates returned modal segment count 1 at $n=256$ and 55 of 100 at $n=512$. This is prior-induced undersegmentation under weak signal. The uniform-prior ablation recovered more boundaries in these cells at the cost of lower P($k$=true) in strong-signal cells. F1@3 improvement with $n$ is consistent but not strictly monotone across all cells. The boundary-position tolerance $\tau=3$ corresponds to $1.2\%$ of sequence length at $n=256$ and $0.6\%$ at $n=512$.
+
+Confidence intervals throughout are 95\% percentile bootstrap intervals from 2000 resamples of independently generated datasets (not boundary positions within a single dataset). Brier and log scores are computed per boundary position marginalized over $k$.
+
+These values support calibration within the generating simulation design. They do not establish robustness to misspecification, performance on non-Gaussian families, or externally validated boundary accuracy.
+
+\textit{Provenance note:} The E01 results directory records SHA256 hashes for all \texttt{src/bayesbreak/} source files. The runner script \texttt{scripts/run\_e01\_gaussian\_calibration.py} was not tracked in git at execution time and its run-time hash cannot be independently verified. A post-execution fingerprint is recorded in \texttt{provenance\_notes.json} under the results directory; complete script-level reproducibility cannot be asserted from the manifest alone.
+
+\input{shared/figures/defs/fig_E01_calibration.tex}
+
+\input{shared/tables/results/tab_E01_recovery.tex}
+
+\input{shared/figures/defs/fig_E01_recovery.tex}
+
+The latent-group experiment used 24 sequences of length 80 from two known synthetic groups at noise standard deviation $1.0$. It achieved 96\% hard assignment accuracy, with one misassignment and visible ambiguity around the class boundary (Figure~\ref{fig:latent-groups-paper}). Group-specific boundary marginals concentrate near the generating templates. The result is evidence for the finite score-clustering objective in Equation~\eqref{eq:latent-group-objective}; it is not evidence for normalized-mixture identifiability.
+
+\input{shared/figures/defs/fig4_latent_groups_cropped.tex}
+
+A separate stress study evaluated 400 seeded datasets across eight predeclared cells. In the reference simulation cell, mean label-invariant hard accuracy was $0.9742$ (95\% interval $0.9536$--$0.9948$) and mean adjusted Rand index was $0.9183$. All 400 objective traces were monotone, every returned final objective equaled the final trace value, and all 1,200 restarts were valid. Recovery degraded under low separation, duplicate templates, higher noise, and shorter sequences, as summarized in Figure~\ref{fig:latent-stress-corrected-paper}. These results support the finite score-clustering criterion in the declared simulations, not normalized-mixture identifiability.
+
+\input{shared/figures/defs/fig_latent_template_stress.tex}
+
+\FloatBarrier
+\subsection{Experiment E05: finite latent-template score clustering}
+Experiment E05 evaluated the template-mixture EM on 18 cells: $G\in\{1,2,3\}$ latent groups, $S\in\{24,48\}$ sequences per dataset, and $\Delta\in\{0.5,1.5,3.0\}$, using 50 independently generated datasets per cell and 5 random restarts per dataset. Group templates are (60,\,120), (90,\,150), and (45,\,105); middle-segment means are $(0,\,(-1)^g\Delta,\,0)$ for group $g$, so labels are not separated by boundary position alone. All sequences use $n=180$, $\sigma=1$, $\mathcal{N}(0,4)$ segment prior, $k_{\max}=8$, and the geometric-decay count prior. Per-subject segment means are independently perturbed by $\mathcal{N}(0,0.25^2)$.
+
+At $\Delta=0.5$, group templates collapsed for $G\geq2$: duplicate-template frequency was $0.72$ for $G=2$ and $0.98$ for $G=3$ at $S=48$. Mean accuracy fell to $0.525$ for $G=2$ and $0.360$ for $G=3$, near the chance levels of $0.5$ and $0.333$ respectively. At $\Delta=1.5$ all cells with $G\leq3$ recovered essentially perfectly: mean accuracy reached $1.000$ and ARI reached $1.000$ for $G=2$; for $G=3$ mean accuracy was $1.000$ [1.000,\,1.000] at $S=24$ and $0.999$ [0.998,\,1.000] at $S=48$ (Figure~\ref{fig:planned-templates-paper}, Table~\ref{tab:E05-latent}). At $\Delta=3.0$ accuracy and ARI were high ($0.940$--$0.970$ for $G=2$, $0.940$--$0.960$ for $G=3$) but occasional degenerate local optima with duplicate templates persisted in a minority of replicates ($0.06$--$0.18$ frequency) despite five restarts, consistent with the non-uniqueness of the template-mixture objective established in the theory section.
+
+All 900 objective traces were non-decreasing within the declared absolute tolerance of $10^{-9}(1+|F|)$, confirming monotone ascent of the finite-template score objective. No replicate failed. Duplicate templates at strong signal reflect local-optima sensitivity and are not a calibration failure; the template-mixture objective is not identifiable when $G$ is overspecified.
+
+\input{shared/figures/defs/fig_E05_templates.tex}
+
+\input{shared/tables/defs/tab_E05_latent.tex}
+
+\FloatBarrier
+\subsection{Experiment E06: nonconjugate block-evidence approximations}
+The logistic-normal model places a Normal prior $\theta\sim\mathcal{N}(0,4)$ on the
+log-odds and integrates out $\theta$ to produce the block log-evidence.
+For Bernoulli observations this integral has no closed form; four numerical methods
+were evaluated under E06: adaptive mode-centred quadrature (reference),
+Laplace, Jaakkola--Jordan (JJ), and expectation propagation (EP).
+The label \texttt{pg\_vb} shares the JJ code path and is not an independent method;
+it is not benchmarked separately.
+
+\paragraph{Block oracle.}
+Block sizes $B\in\{4,8,16,32,64,128\}$, generating probabilities
+$p\in\{0.05,0.5,0.95\}$, and 100 independently drawn Bernoulli blocks per cell
+(1800 blocks total) were evaluated using the seed scheme
+$\mathtt{SeedSequence}([20261021, 6, \textit{cell}, \textit{rep}])$.
+The reference is mode-centred adaptive quadrature with $\texttt{epsabs}=10^{-12}$.
+Laplace approximation had median absolute log-evidence error $0.021$ and maximum $0.038$.
+JJ had median $0.222$ and maximum $0.977$.
+JJ is a rigorous variational lower bound on the log-marginal: it produced zero
+violations of $\mathrm{JJ}\le\mathrm{reference}+10^{-8}$ across all 1800 blocks.
+EP had median absolute error $3.779$ and maximum $30.001$; 1409 of 1800 blocks had
+EP above the reference, confirming that parallel EP is not a guaranteed lower bound.
+No NaN or infinity was produced by any method on non-degenerate blocks.
+
+The prior-centred Gauss--Hermite quadrature at 200 nodes is inaccurate for large
+near-balanced blocks where the posterior is sharply peaked far from the prior centre;
+the runner uses mode-centred adaptive quadrature as the reference throughout.
+
+Degenerate blocks (all-success, all-failure at $B\in\{4,8,16,32,64\}$) were tested
+separately. EP produced large positive errors on degenerate blocks (e.g., EP error
+$11.2$ on $B=64$ all-failure), while Laplace and JJ remained finite and JJ remained
+below the reference.
+
+\paragraph{Segmentation propagation.}
+One hundred independent Bernoulli sequences were generated with $n=96$,
+$k_{\rm true}=3$, boundaries at $(32,64)$, and segment log-odds
+$\theta\in\{\mathrm{logit}(0.2),\mathrm{logit}(0.8),\mathrm{logit}(0.2)\}$.
+For each sequence, the full dynamic program was run with each method's approximate
+block-evidence table, and results were compared to the quadrature reference.
+Laplace caused 1 of 100 MAP mismatches versus reference; JJ caused 19; EP caused 89.
+Mean maximum absolute difference in $p(k|y)$ was $0.013$ for Laplace, $0.056$ for JJ,
+and $0.236$ for EP. Mean $\mathrm{F}_1@3$ was $0.530$ for Laplace, $0.545$ for JJ,
+and $0.423$ for EP, versus $0.503$ for the quadrature reference.
+EP's large block-score errors propagated into substantially wrong posteriors in most
+sequences.
+
+\paragraph{Error bound status.}
+JJ is a variational lower bound on the block log-evidence, not an upper bound on the
+approximation error. Theorem~\ref{thm:stability-paper} provides bounds on the partition
+posterior conditional on a uniform block-score error over all admissible segments. The
+theorem's conditional conclusion holds but does not certify any specific method's errors
+without externally verifying that the method's errors are uniformly bounded. For E06, only
+the reference quadrature and the Laplace approximation have bounded errors on all tested
+cells; EP errors are not uniformly bounded.
+
+\input{shared/figures/defs/fig_E06_nonconjugate.tex}
+
+\input{shared/tables/defs/tab_E06_nonconjugate.tex}
+
+\FloatBarrier
+\subsection{Experiment E07: misspecification and missing data}
+The robustness of boundary recovery to distributional misspecification and missing
+observations was evaluated under E07.
+Data were generated at $n=256$, $k_{\rm true}=3$, true boundaries $(85,170)$,
+with segment means $(0,1.5,0)$ and independent noise.
+Four data-generating classes were used: (a) Gaussian reference with $N(0,1)$ noise
+fit by a known-variance Gaussian model (correct specification);
+(b) Student $t_3/\sqrt{3}$ noise fit by the Gaussian model (misspecified, heavy tail);
+(c) Negative-Binomial counts with dispersion $r=2$ and means $(2,5,2)$ fit by both
+Poisson (misspecified) and NegBin at fixed $r=2$ (correct);
+(d) Beta-Binomial counts with $m=20$ and intra-class correlation $0.1$ at success
+probabilities $(0.2,0.6,0.2)$ fit by Binomial (misspecified, overdispersed).
+Four missingness conditions were crossed with each family: no missingness, MCAR 10\%,
+MCAR 30\%, and a single contiguous missing block of $\lfloor 0.15n\rfloor = 38$
+observations drawn uniformly from the interior.
+Each applicable combination used 100 independent datasets under the
+seed scheme $\mathtt{SeedSequence}([20261021,7,\textit{cell},\textit{rep}])$.
+Prior: geometric-decay count, $\mathcal{N}(0,4)$ Gaussian segment prior,
+$\mathrm{Gamma}(2,1)$ Poisson prior, $\mathrm{Beta}(2,3)$ NegBin/Binomial prior;
+$k_{\max}=10$.
+
+\paragraph{Correct specification.}
+Under correct Gaussian specification and no missingness, mean
+$\mathrm{F}_1@3$ was $0.918$ $[0.881, 0.950]$ and count exact-match was
+$0.960$. MCAR 30\% reduced $\mathrm{F}_1@3$ to $0.809$ $[0.760, 0.856]$;
+the contiguous missing block (38 of 256 observations) further reduced
+$\mathrm{F}_1@3$ to $0.721$ $[0.659, 0.783]$, while count exact-match
+remained at $0.970$ for both conditions.
+The correctly specified NegBin fit on NegBin data achieved $\mathrm{F}_1@3$
+of $0.709$ $[0.636, 0.774]$ under no missingness, with count exact-match
+$0.970$.
+
+\paragraph{Heavy-tail misspecification.}
+Fitting a Gaussian model to Student $t_3/\sqrt{3}$ data produced mean
+$\mathrm{F}_1@3$ of $0.767$ $[0.721, 0.814]$ under no missingness, compared
+to $0.918$ for the correct Gaussian specification.
+Count exact-match fell to $0.530$, indicating that heavy-tailed noise
+shifted the count posterior toward $k>3$.
+MCAR 10\% improved $\mathrm{F}_1@3$ slightly to $0.804$,
+reflecting the reduced influence of outlying observations under light missingness.
+
+\paragraph{Overdispersion misspecification.}
+Fitting a Poisson model to NegBin-generated data achieved $\mathrm{F}_1@3$
+of $0.525$ $[0.472, 0.580]$ under no missingness, versus $0.709$ for the
+correctly specified NegBin fit: a difference of $0.184$ in favor of the
+correctly specified model.
+Count exact-match was $0.290$ for the Poisson fit versus $0.970$ for NegBin,
+with the Poisson model absorbing overdispersion as additional changepoints.
+Fitting a Binomial model to Beta-Binomial data produced the largest
+degradation: $\mathrm{F}_1@3$ of $0.464$ $[0.431, 0.500]$ and count
+exact-match of only $0.060$ under no missingness (most replicates selected
+$k>3$). The contiguous missing block further reduced $\mathrm{F}_1@3$ to
+$0.365$ $[0.327, 0.406]$.
+
+\paragraph{Numerical behavior.}
+No NaN or non-finite log-evidence was observed in any of the 2000 replicates.
+The gate threshold (failure rate below 5\%) was satisfied for all 20 cells.
+
+\input{shared/figures/defs/fig_E07_robustness.tex}
+
+\input{shared/tables/defs/tab_E07_robustness.tex}
+
+\FloatBarrier
+\subsection{Experiment E10: computational scaling}
+\label{sec:e10}
+Experiment E10 measured wall-clock time and peak memory for $n\in\{128,256,512,1024,2048\}$ and $k_{\max}\in\{5,10,20\}$ (15 cells, 0 failures) on a Gaussian sequence with $k_{\rm true}=3$ fixed boundaries. Each cell was timed over 7 repeats after a warmup pass with BLAS pinned to 1 thread. Table~\ref{tab:E10-scaling-paper} reports median timings; Figure~\ref{fig:E10-scaling-paper} shows log-log scaling.
+
+Peak memory at $n=2048$ was $500.7$ MB across all $k_{\max}$ values, consistent with $O(n^2)$ storage of the block-evidence matrix; the log-log slope in $n$ from $n=128$ to $n=2048$ at $k_{\max}=20$ was $1.94$--$2.00$ (converging). Forward-backward runtime had log-log slope $1.10$--$1.24$ in $n$ at $k_{\max}=20$; end-to-end runtime at $n=2048$, $k_{\max}=20$ was $3.25$ seconds ($3.02$ seconds forward-backward, $0.10$ seconds block evidence). These slopes summarize this implementation over the measured finite range; they do not replace the $\Theta(k_{\max}n^2)$ worst-case bound in Proposition~\ref{prop:complexity-paper}.
+
+\input{shared/figures/defs/fig_E10_scaling.tex}
+
+\input{shared/tables/defs/tab_E10_scaling.tex}
+
+\FloatBarrier
+\subsection{Experiment E09: real-data analysis}
+\label{sec:e09}
+Table~\ref{tab:real-summary-paper} summarizes the E09 real-data fits (canonical artifact \texttt{0f5281c46ee8976e}, protocol revision 2026-10-24-2). Each fit used the geometric-decay-log4 count prior and the data sources identified by their SHA256 checksums in the artifact. The DP invariants were verified for all resolved fits. The fitted segmentations establish descriptive posterior behavior; these datasets do not include independently verified external boundary annotations, so boundary recovery accuracy against ground truth cannot be reported.
+
+\textit{Truncation criterion.} A fit is truncated when $\hat k = k_{\max}$ or $P(k = k_{\max} \mid y) \geq 0.01$. A truncated fit has unknown unrestricted MAP segment count; it does not establish the number of segments under an untruncated prior.
+
+\input{shared/tables/defs/tab_real_summary.tex}
+
+\paragraph{Well-log.}
+The full well-log sequence contains 4,050 NMR values. Under the geometric-decay-log4 prior with $k_{\max}=100$, the Gaussian fit selected $k_{\max}=83$ segments with $k_{\max}=82$ internal changepoints (log evidence $-37906.09$, $P(k=83 \mid y) = 1 - 3.2 \times 10^{-6}$; resolved) (Figure~\ref{fig:welllog-paper}). Under the uniform count prior with the same $k_{\max}=100$, the fit selected $100$ segments and was truncated ($P(k=100 \mid y) = 0.344$); the unrestricted MAP under the uniform prior is unknown.
+
+Minimum-segment-length sensitivity: requiring $\min\_seg \geq 5$ gave $k_{\max}=61$ (resolved); $\min\_seg \geq 10$ gave $k_{\max}=56$ (resolved). These fits use a different constrained partition prior whose normalizer $C_k$ differs from the unconstrained case; their log evidences are not directly comparable as Bayes factors against the $\min\_seg=1$ fit.
+
+For the stride-8 subsample ($n=507$, every eighth observation), the geometric prior gave $k_{\max}=25$ (resolved at $k_{\max}=60$, log evidence $-4901.80$) and the uniform prior gave $k_{\max}=37$ (resolved, log evidence $-4864.93$). The two segment counts do not represent a quantifiable fraction of the full-sequence structure because the same prior over partitions is not applied to both sequences.
+
+A supplemental comparison with ruptures v1.1.10 PELT under a BIC penalty ($2 \hat{\sigma}^2_{\rm MAD} \log n$) gave 58 segments on the full sequence versus BayesBreak's 83 (geometric prior). Boundary-set agreement $F_1@3$ between PELT and BayesBreak was $0.0$ at this scale. PELT and BayesBreak optimize different objectives under different model assumptions; their boundary sets are not compared against an external reference.
+
+\input{shared/figures/defs/fig6_welllog.tex}
+
+\paragraph{Array-CGH.}
+The data are the \texttt{ecp} package \texttt{ACGH.RData} matrix ($2{,}215$ probes, 43 subjects). Subject 0 was analyzed independently using the per-probe per-subject sample-weight array (\texttt{sample\_weight} shape $2215 \times 43$; subject-0 column passed as \texttt{sample\_weight}). Under the geometric prior with $k_{\max}=100$, subject 0 returned $k_{\max}=71$ (71 segments, 70 internal changepoints; resolved, log evidence $1700.43$, $P(k=71 \mid y) = 1 - 3.8 \times 10^{-16}$) (Figure~\ref{fig:cgh-paper}).
+
+The pooled shared-boundary analysis used \texttt{SharedBoundaryReplicatesSegmenter} on all 43 subjects simultaneously. The pooled fit was truncated at every tested $k_{\max}$ up to 60 ($P(k=60 \mid y) = 1.0$ at $k_{\max}=60$). The unrestricted pooled MAP segment count is unknown; $k > 60$ is certain. The summed per-subject log evidences under an independent-fits model and the pooled log evidence arise from different partition priors and are not a Bayes factor between the pooled and independent models.
+
+Exact boundary-event marginals $P(b_i = 1 \mid y, k_{\max}=71)$ were computed from the fitted DP for subject 0 (supplemental artifact \texttt{dc8432589c3fa528}). The invariant $\sum_i P(b_i = 1 \mid y, k_{\max}=71) = k_{\max} - 1 = 70$ was verified. These marginals quantify boundary uncertainty conditional on $k_{\max}=71$; they are not marginalised over the count posterior.
+
+No chromosome-coordinate or arm-level genomic annotation was performed. The reported boundaries are probe-index positions, not genomic coordinates.
+
+\input{shared/figures/defs/fig7_cgh.tex}
+
+\paragraph{S\&P 500.}
+The S\&P 500 series was excluded from E09 because the \texttt{yfinance} package is not installed in the execution environment; \texttt{load\_spx()} returns a simulated fallback series. Per protocol, simulated data are never labeled as real observational data. No SPX result is reported from E09.
+
+\paragraph{Methylation.}
+The data are the \texttt{methylKit} \texttt{test1.myCpG} chromosome-21 example with 1,904 CpGs and per-CpG read coverage used as the Beta-observation precision $\phi_t$. Both the geometric and uniform count priors were persistently truncated at every tested $k_{\max}$ up to 120 ($P(k=120 \mid y) \approx 1.0$ for both priors at $k_{\max}=120$) (Figure~\ref{fig:methylation-paper}). The unrestricted MAP segment count is unknown; the high per-CpG read coverage makes even small methylation differences evidence for a changepoint, producing many short differential methylation regions. Extending $k_{\max}$ substantially beyond 120 is required to resolve the posterior.
+
+No methylation atlas annotation was performed and no external boundary accuracy is reported.
+
+\input{shared/figures/defs/fig9_methylation.tex}
+
+\paragraph{E08 methylation predictive analysis.}
+A separate posterior prediction evaluation (E08, artifact \texttt{a23d9fe92c02724c}) used the Beta-observation predictive distribution with observed held-out coverage as $\phi_{\mathrm{new}}$ and \texttt{extrapolation=error}. Ten disjoint stratified interior blocks held out 1,520 CpGs while retaining both fitted-support endpoints. Total log predictive score was $-23605.67$ and pooled mean score was $-15.53$ per held-out observation; the mean split score had a 95\% $t$ interval $[-23.14, -7.92]$. Mean boundary-stability $F_1@3$ against the full-data MAP was $0.879$. The blocks are regions of one chromosome, not independent biological samples. No certified PIT or external atlas accuracy is reported for this analysis.
+
+\input{shared/figures/defs/fig_methylation_heldout.tex}
+
+\FloatBarrier
+\subsection{Summary of empirical findings}
+The empirical results confirm that common partition recursions can use closed-form conjugate segment marginal likelihoods, one-dimensional quadrature, other numerical segment calculations, shared-changepoint pooling, and finite latent-group templates. Experiment E01 provides pre-registered Gaussian calibration and recovery results across 22 cells at two sequence lengths ($n\in\{256,512\}$), with ECE below $0.0081$ in all strata and F1@3 above $0.93$ at strong signal ($\Delta/\sigma=2$); weak-signal undersegmentation is prior-induced, not a calibration property. Experiment E02 confirms mathematical portability of the exact inference pipeline across five declared exponential families (Gaussian, Poisson, Binomial, Negative Binomial, Beta-obs): F1@3 exceeded $0.88$ at the stronger effect setting in every family, with family-specific difficulty determined by observation variance and prior placement. Experiment E03 demonstrates that design-aware partition priors (gap hazard, length cohesion) correctly concentrate posterior probability at large-gap boundary locations when evidence supports a change, while preserving near-zero false-positive probability when it does not; F1@3 exceeded $0.85$ in all 24 cells. Experiment E04 confirms that exact common-boundary pooling accumulates information monotonically with $S$: pooled F1@3 reached $1.000$ for $S\geq16$ at full sharing while independent per-sequence fits remained near $0.893$; under complete boundary misspecification, the pooled model correctly degrades rather than silently producing invalid boundaries. Experiment E05 confirms that the template-mixture EM recovers latent group assignments correctly at moderate-to-strong signal ($\Delta\geq1.5$): ARI reached $1.000$ at $\Delta=1.5$ for $G\in\{2,3\}$; at weak signal ($\Delta=0.5$), group templates collapse and accuracy falls to near-chance levels; all 900 objective traces were non-decreasing. Experiment E06 benchmarked four block-evidence methods for the Bernoulli logistic-normal model on 1800 independently drawn blocks ($B\in\{4,8,16,32,64,128\}$, $p\in\{0.05,0.5,0.95\}$, 100 replicates per cell). Laplace approximation achieved median absolute log-evidence error $0.021$ and maximum $0.038$. JJ (Jaakkola--Jordan) is a rigorous variational lower bound: it produced zero violations of $\mathrm{JJ}\le\mathrm{reference}+10^{-8}$ across all 1800 blocks, with median error $0.222$ and maximum $0.977$. EP had median absolute error $3.779$ and maximum $30.001$, exceeding the quadrature reference in 1409 of 1800 blocks; EP is not a lower bound. In end-to-end segmentation propagation ($n=96$, $k_{\rm true}=3$, 100 replicates), Laplace caused 1 MAP mismatch of 100, JJ caused 19, and EP caused 89; mean $\mathrm{F}_1@3$ was $0.530$ for Laplace, $0.545$ for JJ, and $0.423$ for EP, versus $0.503$ for the quadrature reference. Experiment E07 evaluates robustness across 20 cells ($n=256$, $k_{\rm true}=3$, 100 replicates each): correct Gaussian specification achieved $\mathrm{F}_1@3=0.918$ with count exact-match $0.960$ at no missingness; MCAR 30\% and contiguous-block missingness reduced $\mathrm{F}_1@3$ to $0.809$ and $0.721$ respectively. Heavy-tail (Student-$t$) misspecification reduced $\mathrm{F}_1@3$ to $0.767$ and count accuracy to $0.530$ (extra segments absorb tail events). Fitting Poisson to overdispersed NegBin data gave $\mathrm{F}_1@3=0.525$ versus $0.709$ for the correct NegBin fit. Fitting Binomial to Beta-Binomial data gave the largest degradation: $\mathrm{F}_1@3=0.464$ and count exact-match $0.060$ (overdispersion overwhelmingly absorbed as extra segments). No numerical failures occurred across all 2000 replicates. Experiment E09 applied BayesBreak to four real datasets under the E09 protocol (artifact \texttt{0f5281c46ee8976e}): well-log (4050 NMR values, geometric prior, $\hat{k}=83$, resolved), array-CGH subject 0 (2215 probes, $\hat{k}=71$, resolved; pooled 43-subject fit truncated at $k_{\max}=60$), methylation (1904 CpGs, truncated at $k_{\max}=120$ under both priors), and S\&P 500 (excluded; \texttt{yfinance} unavailable in the execution environment). Twenty-five of 31 cells were truncated; the unrestricted MAP segment count is unknown for those fits. Experiment E10 benchmarked memory and runtime from $n=128$ to $n=2048$ at $k_{\max}=20$ across 15 cells: memory peaked at 500 MB at $n=2048$ with log-log slope converging to 2.0, consistent with $O(n^2)$ storage; forward-backward runtime had log-log slope $1.10$--$1.24$ in $n$; end-to-end runtime was $3.25$ seconds at $n=2048$, $k_{\max}=20$. These results do not establish external boundary accuracy, dominance under independently tuned predictive comparisons, routine-wide approximation guarantees, or asymptotic speed better than the quadratic dynamic-programming bound.

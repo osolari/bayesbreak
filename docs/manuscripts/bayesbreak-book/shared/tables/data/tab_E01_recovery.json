@@ -1,0 +1,25 @@
+{
+  "table_id": "tab_E01_recovery",
+  "csv_inputs": [
+    "tab_E01_recovery.csv"
+  ],
+  "source_artifact": {
+    "sha": "1e84a2673bc5b214",
+    "experiment": "E01"
+  },
+  "columns": [
+    "n",
+    "k_true",
+    "delta",
+    "ablation",
+    "mean_f1",
+    "f1_ci_lo",
+    "f1_ci_hi",
+    "mean_p_k_true",
+    "count_abs_error",
+    "mean_brier",
+    "mean_signal_mse"
+  ],
+  "precision": 3,
+  "output": "results/tab_E01_recovery.tex"
+}

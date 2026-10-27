@@ -1,0 +1,44 @@
+\chapter{Computational implementation and validation}
+\label{app:implementation}
+\label{app:code}
+\chapterpromise{Algorithm interfaces and numerical acceptance criteria for exact and approximate
+segment calculations, posterior inference, grouped models and predictions.}
+
+\section{Block routines and their outputs}
+For each admissible $(i,j]$, a block routine returns $\log A_{ij}^{(0)}$ and, when required,
+posterior segment moments or sufficient statistics for posterior predictive calculations. The
+function must be explicit about its family, known descriptors and prior hyperparameters. Where
+$A_{ij}^{(0)}$ is computed numerically, record the approximation, objective and convergence state
+without asserting unverified finite error bounds. Validate the Gaussian, Poisson, Binomial and
+negative-Binomial integrated likelihoods by independent one-dimensional quadrature with both
+unit and nonunit descriptors.
+
+\section{Partition normalizer and posterior calculations}
+For a fixed $k$, the admissible partitions have prior probabilities proportional to products
+of segment and interior-boundary factors. Compute their normalizing constant by the same
+factorized recursion with observation likelihoods set to one. Given the normalized prior,
+compute $p(y\mid k)$, $p(k\mid y)$, ordered changepoint marginals and boundary-event marginals
+by log-space forward and backward messages. Recover the joint MAP by max-sum DP and
+backtracking. For small $n$, exhaustive enumeration must agree on all normalized quantities.
+
+\section{Group structure and predictive inference}
+Shared-boundary pooling multiplies independent subject-specific segment integrals conditional
+on the common partition, which means adding log-block scores across subjects. Finite-template
+clustering updates assignments and templates for its declared score-clustering/MM objective,
+not an unstated generative mixture likelihood. Predictive scores must use the same observation
+family, known descriptors and coordinate support as the fitted model. Score held-out blocks only
+under prespecified training-only conditioning and split policies.
+
+\section{Invariants to verify}
+\begin{enumerate}[leftmargin=1.7em]
+\item Agreement between independent direct integration and analytic segment scores.
+\item Agreement between brute-force partitions and log-space forward, backward and max-sum DP.
+\item Consistent treatment of impossible boundaries, empty/masked blocks and supported coordinates.
+\item Monotone improvement of the declared finite-template optimization objective.
+\item Independent identity and convergence checks for nonconjugate numerical methods.
+\item Exact correspondence between observation axes, external annotations and comparison metrics.
+\item Identical figure, table and manuscript metrics for a common, verified run manifest.
+\end{enumerate}
+The corresponding current experiment definitions and execution criteria are maintained in the
+repository's single coding-agent skill. Publication claims require both a correct mathematical
+argument and matching verification, not merely a passing integration test.

@@ -1,0 +1,21 @@
+\begin{tikzpicture}[node distance=7mm and 16mm]
+\node[primarybox,text width=42mm] (start) {Implementation corrections S1--S4 completed, or affected claims narrowed};
+\node[draw=Warning,fill=WarningPale,diamond,aspect=2.35,below=9mm of start,align=center,font=\scriptsize,text width=36mm] (q1) {Tests and numerical invariants satisfy the pre-specified criteria?};
+\node[primarybox,below=9mm of q1,text width=42mm] (rerun) {Produce corrected runs with new result IDs and parent links};
+\node[draw=Warning,fill=WarningPale,diamond,aspect=2.35,below=9mm of rerun,align=center,font=\scriptsize,text width=36mm] (q2) {Coordinates, observation family, metrics, and provenance valid?};
+\node[primarybox,below=9mm of q2,text width=42mm] (review) {Independent statistical, numerical, and source review};
+\node[draw=Warning,fill=WarningPale,diamond,aspect=2.35,below=9mm of review,align=center,font=\scriptsize,text width=36mm] (q3) {Claims match complete proofs and executed results?};
+\node[successbox,below=9mm of q3,text width=42mm] (release) {Release book, papers, coding handoff, and result records};
+\node[neutralbox,right=25mm of q2,text width=39mm] (correct) {Stop, correct the implementation, rerun, or narrow the affected claim};
+
+\draw[arrPrimary] (start)--(q1);
+\draw[arrPrimary] (q1)--node[right,font=\scriptsize]{yes}(rerun);
+\draw[arrPrimary] (rerun)--(q2);
+\draw[arrPrimary] (q2)--node[right,font=\scriptsize]{yes}(review);
+\draw[arrPrimary] (review)--(q3);
+\draw[arrPrimary] (q3)--node[right,font=\scriptsize]{yes}(release);
+\draw[arr,draw=Warning] (q1.east) -| node[pos=0.25,above,font=\scriptsize]{no}(correct.north);
+\draw[arr,draw=Warning] (q2.east) -- node[above,font=\scriptsize]{no}(correct.west);
+\draw[arr,draw=Warning] (q3.east) -| node[pos=0.25,below,font=\scriptsize]{no}(correct.south);
+\draw[arr,draw=Warning,dashed] (correct.north) |- (start.east);
+\end{tikzpicture}

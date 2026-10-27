@@ -1,0 +1,54 @@
+\chapter{Prospective evaluation protocols}
+\label{app:experiments}
+\chapterpromise{Predefined statistical tests for posterior accuracy, calibration, irregular
+spacing, pooling, finite latent groups, numerical integration, prediction and computational cost.}
+
+The complete executable design matrices, seed construction, primary outcomes, confidence
+interval methods, benchmark tuning and output filenames reside in one current experiment
+specification. The experiments E00--E10 are \emph{planned}. No table or figure in this appendix
+presents a result from those experiments. Earlier executed examples in
+Chapters~\ref{ch:synthetic} and~\ref{ch:realdata} provide context under their original models,
+not substitute confirmatory outcomes.
+
+\section{Common statistical design}
+All simulation comparisons use the same simulated sequence for every method in each replicate.
+The independent generated dataset is the unit of replication. Posterior boundary calibration is
+summarized by proper scoring rules, reliability curves with bin counts and dataset-level
+confidence intervals. Boundary matching uses a maximum-cardinality, minimum-displacement
+one-to-one assignment within the declared tolerance. Distinguish the posterior over segment
+count from a conditional-on-$k$ boundary distribution. For real-data comparisons, coordinate
+axes, train/validation/test splits and the reference label type must be verified before scoring.
+Model selection and tuning do not use the test observations.
+
+\begin{longtable}{@{}p{0.10\textwidth}p{0.26\textwidth}p{0.54\textwidth}@{}}
+\caption{Planned experiments; no outcomes are supplied in this table.}\label{tab:book-planned-design}\\
+\toprule
+\textbf{ID} & \textbf{Research question} & \textbf{Core planned comparison or verification}\\
+\midrule
+\endfirsthead
+\toprule
+\textbf{ID} & \textbf{Research question} & \textbf{Core planned comparison or verification}\\
+\midrule
+\endhead
+E00 & Exactness of inference & Exhaustive enumeration and direct segment integration for short sequences under several proper priors.\\
+E01 & Recovery and calibration & Replicated Gaussian sequences with varied jump sizes, segment counts and posterior uncertainty targets.\\
+E02 & Family generality & Gaussian, Poisson, Binomial, negative-Binomial and Beta-valued block models under appropriate descriptors.\\
+E03 & Irregular design & Compare index-uniform, length-cohesion, gap-hazard and combined priors under controlled gaps.\\
+E04 & Shared boundaries & Evaluate pooled and unpooled segmentation as subject count and boundary heterogeneity vary.\\
+E05 & Finite-template clustering & Assess label-invariant clustering accuracy, objective monotonicity, restarts and template collapse.\\
+E06 & Nonconjugate integration & Compare independent adaptive quadrature with identifiable Laplace, variational and EP approximations.\\
+E07 & Model misspecification & Test heavy tails, count dispersion, missingness and dependence under declared alternative models.\\
+E08 & Posterior prediction & Compare family-correct out-of-sample scores under disjoint held-out regions and fit uncertainty.\\
+E09 & Applied comparisons & Use common coordinates, independently tuned comparators and genuinely external annotations where available.\\
+E10 & Runtime and resource cost & Report stage-separated timings and peak memory as $n$ and $k_{\max}$ vary.\\
+\bottomrule
+\end{longtable}
+
+\section{Primary reporting conventions}
+For every experiment, report the complete design grid, number of planned and executed cells,
+random-seed schedule, data and configuration hashes, failures and exclusion criteria.
+Do not pool performance scores across incompatible response scales or observational
+likelihoods. Numerical approximations must report both local evidence error and the effect on
+global segmentation posteriors. Model-derived boundary agreement and externally labeled
+boundary accuracy are different estimands and belong in separate tables. Only completed and
+independently checked outcomes may replace the planned result slots in the single-column paper.

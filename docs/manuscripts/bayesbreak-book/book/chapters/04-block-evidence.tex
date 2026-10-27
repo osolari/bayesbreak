@@ -1,0 +1,411 @@
+\chapter[Integrated block evidence]{Integrated block evidence\\ and posterior moments}
+\label{ch:block}
+\chapterpromise{One local interface covers exact conjugate families and clearly labeled deterministic quadrature without changing the global partition engine.}
+
+\paragraph{Plate model (single segment).}
+For a block $(i,j]$ and conjugate hyperparameters $(\alpha_0,\beta_0)$, the generative model is
+\begin{equation}
+\theta \sim p(\theta\mid \alpha_0,\beta_0),
+\qquad
+y_t\mid \theta \stackrel{\mathrm{ind}}{\sim} p(y_t\mid\theta,d_t) \text{ as in \eqref{eq:EFbasic}},\quad t\in\{i+1,\dots,j\}.
+\label{eq:plate-ef}
+\end{equation}
+The block evidence $A^{(0)}_{ij}$ is obtained by marginalizing $\theta$ out of \eqref{eq:plate-ef}.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+  \node[obs] (y) {$y_t$};
+  \node[latent, above=0.9cm of y] (theta) {$\theta$};
+  \node[const, left=0.9cm of theta] (ab) {$\alpha_0,\beta_0$};
+  \node[const, right=0.9cm of y] (w) {$d_t,a_t$};
+  \edge {theta} {y}
+  \edge {ab} {theta}
+  \edge {w} {y}
+  \plate {plate1} {(y)} {$t\in(i,j]$}
+\end{tikzpicture}
+\caption[Single conjugate EF block plate model]{Plate model for a single conjugate EF block. Shaded nodes are observed; unshaded are latent; point nodes are fixed hyperparameters and family descriptors or power weights. Marginalizing $\theta$ gives $A^{(0)}_{ij}$.}
+\label{fig:plate-ef}
+\end{figure}
+
+\section{Conjugate block integration}
+\label{app:conjugate}
+\label{sec:ef}
+Assume the segment likelihood in Equation~\eqref{eq:EFbasic} and the conjugate prior
+\[
+ p(\theta\mid\alpha_0,\beta_0)=
+ \exp\{\eta(\theta)^\top\alpha_0-\beta_0A(\theta)-\log Z(\alpha_0,\beta_0)\}.
+\]
+
+\begin{theorem}[Exposure-aware conjugate block integration]
+\label{thm:ef-integral}
+For a candidate block $(i,j]$, if $Z(\alpha_0+S_{ij},\beta_0+W_{ij})<\infty$, then
+\begin{equation}
+ A^{(0)}_{ij}=\exp\{H_{ij}\}
+ \frac{Z(\alpha_0+S_{ij},\beta_0+W_{ij})}{Z(\alpha_0,\beta_0)}.
+\label{eq:A0}
+\end{equation}
+The posterior remains conjugate with hyperparameters
+$(\alpha_0+S_{ij},\beta_0+W_{ij})$. For any measurable observation-scale target $m_\star(\theta)$ whose
+$r$th posterior moment exists,
+\begin{equation}
+ A^{(r)}_{ij}=A^{(0)}_{ij}\,
+ \mathbb E[m_\star(\theta)^r\mid y_{i+1:j},d_{i+1:j},a_{i+1:j}].
+\label{eq:Ar}
+\end{equation}
+\end{theorem}
+\begin{proof}
+Multiplying the powered likelihood contributions gives
+\[
+ \exp\{H_{ij}\}\exp\{\eta(\theta)^\top S_{ij}-W_{ij}A(\theta)\}.
+\]
+After multiplication by the prior, the terms depending on $\theta$ are exactly the conjugate kernel
+with updated hyperparameters $\alpha_0+S_{ij}$ and $\beta_0+W_{ij}$. Integrating this kernel yields
+its normalizer and hence Equation~\eqref{eq:A0}. Division by that evidence gives the updated
+posterior. Finally, inserting $m_\star(\theta)^r$ into the same integral factors it as the evidence times
+the corresponding posterior moment, provided the moment is finite.
+\end{proof}
+
+\begin{remark}[Scope of ``exact'']
+The theorem is exact for the stated powered/exposure-aware model. It does not authorize treating an
+arbitrary sample weight as exposure, a Binomial trial count as a likelihood power, or an
+approximate numerical integral as a conjugate closed form.
+\end{remark}
+\section{Family-specific derivations}
+\label{sec:families}
+
+We now instantiate \eqref{eq:A0}--\eqref{eq:Ar} for three closed-form conjugate families
+(Gaussian, Poisson, and Binomial), an overdispersed count model with a conjugate distributional
+parameter, and one low-dimensional quadrature example for $(0,1)$-valued responses. In each case
+we give (i) the segment model and prior, (ii) posterior hyperparameters, (iii) the block evidence
+$A^{(0)}_{ij}$, and (iv) first two posterior moments on the scale used by the Bayes-curve
+interface. For non-Gaussian families this scale must be stated explicitly: natural-parameter,
+distribution-parameter, and observation-mean moments are not interchangeable.
+Implementation routines are provided immediately after each derivation
+(Algorithms~\ref{alg:gaussian-block}--\ref{alg:betaobs-block}).
+
+\subsection{Gaussian with known variance (heteroscedastic via weights)}
+\label{sec:family-gaussian}
+
+\begin{proposition}[Gaussian-block evidence]
+\label{prop:gaussian-block}
+Suppose $y_t\mid \mu \sim \mathcal{N}(\mu,\sigma^2/w_t)$ with known variance $\sigma^2$ and
+positive weights $w_t>0$, and a Gaussian conjugate prior $\mu\sim\mathcal{N}(\nu,\rho^2)$. Define
+the block summaries
+$n_{ij}=j-i$, $W_{ij}=\sum_{t=i+1}^j w_t$, $S_{ij}=\sum_{t=i+1}^j w_t y_t$,
+$Q_{ij}=\sum_{t=i+1}^j w_t (y_t-\nu)^2$, and $\kappa_{ij}=\rho^2 W_{ij}+\sigma^2$.
+Then
+\[
+\mu\mid y_{(i,j]} \sim \mathcal{N}\!\Big(
+\tfrac{\rho^2 S_{ij} + \sigma^2 \nu}{\kappa_{ij}},
+\ \tfrac{\sigma^2\rho^2}{\kappa_{ij}}
+\Big),
+\]
+and the block evidence admits the closed form
+\[
+A^{(0)}_{ij}
+=(2\pi\sigma^2)^{-n_{ij}/2}
+\Big(\prod_{t=i+1}^j w_t^{1/2}\Big)
+\Big(1+\tfrac{\rho^2}{\sigma^2}W_{ij}\Big)^{-1/2}
+\exp\!\left\{-\frac{Q_{ij}}{2\sigma^2}
++\frac{(S_{ij}-\nu W_{ij})^2}{2(\sigma^2 W_{ij}+\sigma^4/\rho^2)}\right\}.
+\]
+The corresponding first and second moment numerators are
+$A^{(1)}_{ij}=A^{(0)}_{ij}\,\mathbb{E}[\mu\mid y_{(i,j]}]$ and
+$A^{(2)}_{ij}=A^{(0)}_{ij}\,\big(\mathbb{V}[\mu\mid y_{(i,j]}]+\mathbb{E}[\mu\mid y_{(i,j]}]^2\big)$.
+\end{proposition}
+\begin{proof}
+Multiplying the weighted Gaussian likelihood by the Gaussian prior produces a quadratic kernel in
+$\mu$. Completing the square gives posterior precision $\rho^{-2}+W_{ij}/\sigma^2$, posterior mean
+$\nu_B$, and the stated normalizing-factor ratio. Multiplying the evidence by the first two moments
+of $\mathcal N(\nu_B,\rho_B^2)$ yields the moment numerators.
+\end{proof}
+
+The proof specializes Theorem~\ref{thm:ef-integral} to the Gaussian--Gaussian conjugate pair with weighted base measure.
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:gaussian-block} gives a numerically stable implementation of the Gaussian block log-evidence and posterior moments using cumulative weighted sums.
+The routine is written so that the DP layer consumes only $\log \mathcal{L}_{ij}$ and does not depend on Gaussian-specific algebra.
+
+\begin{algorithm}[H]
+\caption{GaussianBlock$(y,w,i,j,\nu,\rho^2,\sigma^2)$}
+\label{alg:gaussian-block}
+\KwIn{Block indices $(i,j]$; observations $y_{i+1:j}$; weights $w_{i+1:j}$}
+$n\leftarrow j-i$;\quad $W\leftarrow \sum_{t=i+1}^j w_t$;\quad $S\leftarrow \sum_{t=i+1}^j w_t y_t$;\quad $Q\leftarrow \sum_{t=i+1}^j w_t (y_t-\nu)^2$\;
+$\kappa \leftarrow \rho^2 W+\sigma^2$\;
+$\log A0 \leftarrow -\tfrac{1}{2}n\log(2\pi)
+-\tfrac{1}{2}\sum_{t=i+1}^j \log(\sigma^2/w_t)
+-\tfrac{Q}{2\sigma^2}
++\tfrac{(S-\nu W)^2}{2(\sigma^2 W+\sigma^4/\rho^2)}
+-\tfrac{1}{2}\log\big(1+\tfrac{\rho^2}{\sigma^2}W\big)$\;
+$A0\leftarrow \exp(\log A0)$\;
+$\mu_{\text{mean}}\leftarrow (\rho^2 S+\sigma^2\nu)/\kappa$;\quad
+$\mu_{\text{var}}\leftarrow \sigma^2\rho^2/\kappa$\;
+\KwOut{$A0$, $\mu_{\text{mean}}$, $\mu_{\text{var}}$}
+\end{algorithm}
+
+\subsection{Poisson with exposure}
+\label{sec:family-poisson}
+
+\begin{proposition}[Poisson-block evidence]
+\label{prop:poisson-block}
+For $y_t\mid\lambda\sim\mathrm{Pois}(\lambda w_t)$ with $w_t>0$ and a Gamma conjugate prior
+$\lambda\sim\mathrm{Gamma}(a_0,b_0)$, the block posterior is
+$\lambda\mid y_{(i,j]}\sim\mathrm{Gamma}(a_0+C_{ij},b_0+W_{ij})$, where
+$C_{ij}=\sum_{t=i+1}^j y_t$ and $W_{ij}=\sum_{t=i+1}^j w_t$. The block evidence is
+\[
+A^{(0)}_{ij}
+= \exp\{H_{ij}\}\,
+\frac{b_0^{a_0}\,\Gamma(a_0+C_{ij})}{\Gamma(a_0)\,(b_0+W_{ij})^{a_0+C_{ij}}},
+\qquad H_{ij}=\sum_{t=i+1}^j\big[y_t\log w_t-\log(y_t!)\big],
+\]
+and moment numerators take the standard form
+$A^{(r)}_{ij}=A^{(0)}_{ij}\,\mathbb{E}[\lambda^r\mid y_{(i,j]}]$ for $r\in\{1,2,\dots\}$.
+\end{proposition}
+\begin{proof}
+The block likelihood is $\{\prod_t e_t^{y_t}/y_t!\}\lambda^{C_{ij}}e^{-W_{ij}\lambda}$.
+Multiplication by the Gamma$(a_0,b_0)$ density gives a Gamma kernel with shape $a_0+C_{ij}$ and
+rate $b_0+W_{ij}$. Integrating the kernel gives the evidence; its ordinary moments give the stated
+moment numerators.
+\end{proof}
+
+The proof specializes Theorem~\ref{thm:ef-integral} to the Gamma--Poisson conjugate pair.
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:poisson-block} summarizes the Poisson-with-exposure block evidence computation (and associated posterior summaries) in a form that matches the BayesBreak block-evidence interface.
+
+\begin{algorithm}[H]
+\caption{PoissonBlock$(y,w,i,j,a_0,b_0)$}
+\label{alg:poisson-block}
+\KwIn{Block $(i,j]$; counts $y_{i+1:j}$; exposures $w_{i+1:j}$}
+$C\leftarrow \sum_{t=i+1}^j y_t$;\quad $W\leftarrow \sum_{t=i+1}^j w_t$\;
+$\log A0 \leftarrow \sum_{t=i+1}^j y_t\log w_t
+- \sum_{t=i+1}^j \log(y_t!)
++ a_0\log b_0
++ \log\Gamma(a_0+C)
+- \log\Gamma(a_0)
+- (a_0+C)\log(b_0+W)$\;
+$A0\leftarrow \exp(\log A0)$\;
+$\lambda_{\text{mean}}\leftarrow (a_0+C)/(b_0+W)$;\quad
+$\lambda_{\text{var}}\leftarrow (a_0+C)/(b_0+W)^2$\;
+\KwOut{$A0$, $\lambda_{\text{mean}}$, $\lambda_{\text{var}}$}
+\end{algorithm}
+
+\subsection{Binomial with Beta prior}
+\label{sec:family-binomial}
+
+\begin{proposition}[Binomial-block evidence]
+\label{prop:binomial-block}
+For $y_t\mid p\sim\mathrm{Binom}(m_t,p)$ with known trial counts $m_t$ and a Beta conjugate prior
+$p\sim\mathrm{Beta}(a_0,b_0)$, the block posterior is
+$p\mid y_{(i,j]}\sim\mathrm{Beta}(a_0+C_{ij},b_0+M_{ij}-C_{ij})$, where
+$C_{ij}=\sum_{t=i+1}^j y_t$ and $M_{ij}=\sum_{t=i+1}^j m_t$. The block evidence is
+\[
+A^{(0)}_{ij}
+= \exp\{H_{ij}\}\,
+\frac{B(a_0+C_{ij},\,b_0+M_{ij}-C_{ij})}{B(a_0,b_0)},
+\qquad H_{ij}=\sum_{t=i+1}^j \log\binom{m_t}{y_t},
+\]
+with moment numerators $A^{(r)}_{ij}=A^{(0)}_{ij}\,\mathbb{E}[p^r\mid y_{(i,j]}]$.
+\end{proposition}
+\begin{proof}
+Collecting success and failure powers gives
+$p^{C_{ij}}(1-p)^{M_{ij}-C_{ij}}$ times the product of binomial coefficients. Multiplication by the
+Beta prior gives a Beta$(a_0+C_{ij},b_0+M_{ij}-C_{ij})$ kernel. The ratio of Beta normalizers is the
+evidence, and Beta moments yield the remaining formulas.
+\end{proof}
+
+The proof specializes Theorem~\ref{thm:ef-integral} to the Beta--Binomial conjugate pair.
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:binomial-block} provides pseudocode for Binomial/Bernoulli block evidence evaluation under Beta conjugacy, along with posterior mean/variance computations used for segment-wise moments and MAP/Bayes curve summaries.
+
+\begin{algorithm}[H]
+\caption{BinomialBlock$(y,m,i,j,a_0,b_0)$}
+\label{alg:binomial-block}
+\KwIn{Block $(i,j]$; successes $y_{i+1:j}$; trials $m_{i+1:j}$}
+$C\leftarrow \sum_{t=i+1}^j y_t$;\quad $M\leftarrow \sum_{t=i+1}^j m_t$\;
+$\log A0 \leftarrow \sum_{t=i+1}^j \log \binom{m_t}{y_t}
++ \log B(a_0+C,b_0+M-C)
+- \log B(a_0,b_0)$\;
+$A0\leftarrow \exp(\log A0)$\;
+$p_{\text{mean}}\leftarrow (a_0+C)/(a_0+b_0+M)$\;
+$p_{\text{var}}\leftarrow \frac{(a_0+C)(b_0+M-C)}
+{(a_0+b_0+M)^2(a_0+b_0+M+1)}$\;
+\KwOut{$A0$, $p_{\text{mean}}$, $p_{\text{var}}$}
+\end{algorithm}
+
+\subsection{Negative-Binomial block (overdispersed counts) with fixed dispersion}
+\label{sec:nb-block}
+
+\begin{proposition}[Negative-Binomial-block evidence]
+\label{prop:negbin-block}
+Fix dispersion $r>0$ and assume $y_t\mid p\sim\mathrm{NegBin}(r,p)$ with Beta conjugate prior
+$p\sim\mathrm{Beta}(a_0,b_0)$. The block posterior is
+$p\mid y_{(i,j]}\sim\mathrm{Beta}(a_0+N_{ij},\,b_0+C_{ij})$, where
+$C_{ij}=\sum_{t=i+1}^j y_t$ and $N_{ij}=\sum_{t=i+1}^j r$. The block evidence is
+\[
+A^{(0)}_{ij}=\exp\{H_{ij}\}\,\frac{B(a_0+N_{ij},\,b_0+C_{ij})}{B(a_0,b_0)},
+\qquad H_{ij}=\sum_{t=i+1}^j\log\binom{y_t+r-1}{y_t},
+\]
+and the moment numerators $A^{(r)}_{ij}$ on the observation-mean scale are obtained from the
+Beta posterior moments via the count-mean transformation $m_*(p)=r_*(1-p)/p$.
+\end{proposition}
+\begin{proof}
+Under the displayed parameterization, the block likelihood is the product of combinatorial terms
+times $p^{N_{ij}}(1-p)^{C_{ij}}$. Multiplication by the Beta prior therefore updates its two shape
+parameters to $a_0+N_{ij}$ and $b_0+C_{ij}$. Integration gives the Beta-normalizer ratio. The
+observation-scale moments follow by integrating $r_*(1-p)/p$ and its square, which requires the
+stated posterior-shape conditions.
+\end{proof}
+
+\begin{remark}[Observation-scale vs.\ parameter-scale moments]
+\label{rem:negbin-obs-scale}
+The Beta posterior moments of $p$ are useful diagnostics, but the Bayes-curve target on the
+observation scale is the count mean $m_*(p)=r_*(1-p)/p$ for a future count with dispersion $r_*$.
+With $a_B=a_0+N_{ij}$ and $b_B=b_0+C_{ij}$,
+\(\mathbb{E}[m_*(p)\mid(i,j]] = r_*\,b_B/(a_B-1)\) when $a_B>1$, and
+\(\mathbb{V}[m_*(p)\mid(i,j]] = r_*^2\,b_B(a_B+b_B-1)/\{(a_B-1)^2(a_B-2)\}\) when $a_B>2$.
+Moment numerators $A^{(r)}_{ij}$ therefore multiply $A^{(0)}_{ij}$ by the observation-mean
+moments, not by raw Beta moments of $p$, unless the exported quantity is explicitly labelled
+parameter-scale. When $r$ is unknown, a semi-conjugate EM or one-dimensional quadrature in $r$
+can be layered on top.
+\end{remark}
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:nb-block} summarizes the Negative-Binomial block computation in the same
+interface as Algorithms~\ref{alg:gaussian-block}--\ref{alg:binomial-block}.
+
+\begin{algorithm}[H]
+\caption{NegBinBlock$(y,r,i,j,a_0,b_0)$}
+\label{alg:nb-block}
+\KwIn{Block $(i,j]$; counts $y_{i+1:j}$; dispersion $r$ (possibly per-$t$)}
+$C\leftarrow\sum_{t=i+1}^j y_t$;\quad $N\leftarrow\sum_{t=i+1}^j r_t$\;
+$\log A0\leftarrow \sum_{t=i+1}^j \log\binom{y_t+r_t-1}{y_t} + \log B(a_0+N, b_0+C) - \log B(a_0,b_0)$\;
+$A0\leftarrow\exp(\log A0)$\;
+$a_B\leftarrow a_0+N$;\quad $b_B\leftarrow b_0+C$\;
+$\texttt{mean\_per\_disp}\leftarrow b_B/(a_B-1)$ if $a_B>1$;\quad
+$\texttt{var\_per\_disp}\leftarrow b_B(a_B+b_B-1)/\{(a_B-1)^2(a_B-2)\}$ if $a_B>2$\;
+\KwOut{$A0$, posterior summaries for $p$, and observation-mean moments $r_\ast\times\texttt{mean\_per\_disp}$ when a prediction dispersion $r_\ast$ is specified}
+\end{algorithm}
+
+\subsection{Beta-distributed observations with known precision}
+\label{sec:family-beta}
+
+\begin{proposition}[Beta-block evidence as a one-dimensional integral]
+\label{prop:beta-block}
+Assume $y_t\in(0,1)$ with latent mean $\mu$ constant within a block, known precisions
+$\phi_t>0$, and prior $\mu\sim\mathrm{Beta}(a_0,b_0)$. Define
+\[
+\begin{aligned}
+\ell_{ij}(\mu)
+&:= \sum_{t=i+1}^j
+   \log\mathrm{BetaPDF}\!\left(y_t\mid\phi_t\mu,\phi_t(1-\mu)\right),\\
+\log\pi(\mu)
+&:= \log\mathrm{BetaPDF}(\mu\mid a_0,b_0).
+\end{aligned}
+\]
+Then the exact block evidence and moment numerators are the one-dimensional integrals
+\[
+A^{(r)}_{ij}
+= \int_0^1 \mu^r\,\exp\!\big\{\ell_{ij}(\mu)+\log\pi(\mu)\big\}\,d\mu,
+\qquad r\in\{0,1,2,\dots\}.
+\]
+A $Q$-node Gauss--Legendre rule on $(0,1)$ gives the deterministic approximation
+\[
+\widehat A^{(r)}_{ij}
+= \sum_{q=1}^Q w_q^{\mathrm{GL}}\,\mu_q^r\,\exp\{\ell_{ij}(\mu_q)+\log\pi(\mu_q)\}.
+\]
+Its convergence and error rate depend on the endpoint behavior and regularity of the transformed
+integrand. No monotonicity in $Q$ and no routine-wide algebraic rate are asserted here.
+\end{proposition}
+\begin{proof}
+The unknown block parameter is one-dimensional and supported on $(0,1)$. Multiplication of the
+Beta-observation likelihood by the Beta prior gives the displayed nonnegative integrand. Its
+integral is exactly the block evidence; multiplication by $\mu^r$ gives the moment numerator. The
+finite weighted sum is the Gauss--Legendre approximation after the standard affine map from
+$(-1,1)$ to $(0,1)$.
+\end{proof}
+
+\begin{remark}[Quadrature error assessment]
+\label{rem:beta-quadrature-stability}
+The block log-posterior $\ell_{ij}(\mu)+\log\pi(\mu)$ is not generally log-concave and may have
+non-smooth endpoint behavior after exponentiation. Implementations therefore compare nested node
+counts or an independently more accurate reference calculation, evaluate in log space, and inspect
+endpoint contributions. A certified error statement must be tied to the chosen transformation,
+node rule, and integrand regularity.
+\end{remark}
+
+\paragraph{Implementation.}
+Algorithm~\ref{alg:betaobs-block} implements this one-dimensional quadrature routine. It is useful for continuous proportions and other $(0,1)$-valued signals, and is a deterministic non-conjugate block integral rather than a conjugate closed form.
+
+\begin{algorithm}[H]
+\caption{BetaObsBlock$(y,\phi,i,j,a_0,b_0,\{\mu_g,w_g\}_{g=1}^G)$}
+\label{alg:betaobs-block}
+\KwIn{Block $(i,j]$; observations $y_{i+1:j}\in(0,1)$; known precisions $\phi_{i+1:j}$; Beta prior $(a_0,b_0)$; quadrature nodes $\{\mu_g,w_g\}$}
+$S_0\leftarrow 0$, $S_1\leftarrow 0$, $S_2\leftarrow 0$\;
+\For{$g=1$ \KwTo $G$}{
+  $\log \ell_g \leftarrow \sum_{t=i+1}^j \log \mathrm{BetaPDF}\big(y_t\mid \phi_t\mu_g,\phi_t(1-\mu_g)\big)$\;
+  $\log \pi_g \leftarrow \log \mathrm{BetaPDF}(\mu_g\mid a_0,b_0)$\;
+  $v_g \leftarrow \exp(\log \ell_g + \log \pi_g)$\;
+  $S_0 \leftarrow S_0 + w_g v_g$;\quad
+  $S_1 \leftarrow S_1 + w_g v_g \mu_g$;\quad
+  $S_2 \leftarrow S_2 + w_g v_g \mu_g^2$\;
+}
+$A0\leftarrow S_0$;\quad
+$\mu_{\text{mean}}\leftarrow S_1/S_0$;\quad
+$\mu_{\text{var}}\leftarrow S_2/S_0 - (\mu_{\text{mean}})^2$\;
+\KwOut{$A0$, $\mu_{\text{mean}}$, $\mu_{\text{var}}$}
+\end{algorithm}
+
+\subsection{Summary of block families}
+\label{sec:families-summary}
+Table~\ref{tab:family-summary} collects the block families derived in this section in a single
+reference view. The conjugate rows expose closed-form ratios of normalizers, while the
+Beta-observation row supplies deterministic quadrature values. In both cases the DP layer of
+Section~\ref{sec:dp} only requires a compatible block-evidence array and is invariant to the
+family used to fill that array. Numerical-implementation guidance common to all families
+(log-space arithmetic, \texttt{logsumexp} normalization, prefix-sum ordering, and sanity checks
+on the DP outputs) is collected in the implementation checklist of
+Section~\ref{sec:alg-checklist}; every numerical routine in this section and in
+Section~\ref{sec:nonconj} should be read against that checklist.
+
+\begin{table}[H]
+\centering
+\small
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{@{}lllll@{}}
+\toprule
+Family & Prior & Posterior & Block evidence $A^{(0)}_{ij}$ & Mean $\mathbb{E}[m_\star(\theta)|(i,j]]$ \\
+\midrule
+Gaussian$(\mu,\sigma^2/w)$ & $\mathcal{N}(\nu,\rho^2)$ & $\mathcal{N}(\nu_B,\rho_B^2)$ & closed-form normal ratio & $(\rho^2 S+\sigma^2\nu)/\kappa$ \\
+Poisson$(\lambda w)$ & $\mathrm{Gamma}(a_0,b_0)$ & $\mathrm{Gamma}(a_0+C,b_0+W)$ & $\propto b_0^{a_0}\Gamma(a_0+C)/(b_0+W)^{a_0+C}$ & $(a_0+C)/(b_0+W)$ \\
+Binomial$(m,p)$ & $\mathrm{Beta}(a_0,b_0)$ & $\mathrm{Beta}(a_0+C,b_0+M-C)$ & $B(a_0+C,b_0+M-C)/B(a_0,b_0)$ & $(a_0+C)/(a_0+b_0+M)$ \\
+NegBin$(r,p)$ & $\mathrm{Beta}(a_0,b_0)$ & $\mathrm{Beta}(a_B,b_B)$ & $B(a_B,b_B)/B(a_0,b_0)$ & $r_\ast b_B/(a_B-1)$ \\
+Beta-obs$(\mu,\phi_t)$ & $\mathrm{Beta}(a_0,b_0)$ & (1D quadrature) & Gauss--Legendre nodes & from quadrature \\
+\bottomrule
+\end{tabular}%
+}
+\caption{Block families derived in Section~\ref{sec:families}. Base-measure factor
+$\exp\{H_{ij}\}$ is implicit in the conjugate rows. The first three rows are closed-form
+conjugate examples; the Negative-Binomial row distinguishes parameter-scale Beta moments from the
+observation-mean target; and the Beta-observation row is non-conjugate but remains compatible with
+the DP layer through one-dimensional quadrature. This is a derivation/reference table; no source
+CSV is associated with it.}
+\label{tab:family-summary}
+\end{table}
+
+\subsection{Posterior-predictive formulas for common conjugate families (optional)}
+\label{sec:families-predictive}
+For groups that export segment-level conjugate posteriors, the segment posterior-predictive
+\eqref{eq:pp-seg} reduces to standard closed forms: Gaussian (known variance) with
+$\mu\mid\text{train}\sim\mathcal{N}(\nu_B,\rho_B^2)$ and $y\mid\mu\sim\mathcal{N}(\mu,\sigma^2/w)$
+gives $y\mid\text{train}\sim\mathcal{N}(\nu_B,\rho_B^2+\sigma^2/w)$; Poisson--Gamma with
+$\lambda\mid\text{train}\sim\mathrm{Gamma}(a_B,b_B)$ and exposure $w$ gives a negative-binomial
+predictive in $y$; Binomial--Beta with $p\mid\text{train}\sim\mathrm{Beta}(a_B,b_B)$ and trial
+count $m$ gives a Beta-Binomial,
+\[
+p(y\mid m,\text{train})=\binom{m}{y}\frac{B(a_B+y,b_B+m-y)}{B(a_B,b_B)}.
+\]
+For $M$ new Gaussian points within one segment, the joint posterior-predictive has
+rank-one-plus-diagonal covariance and admits $\mathcal{O}(M)$ log-density evaluation via
+Sherman--Morrison.
