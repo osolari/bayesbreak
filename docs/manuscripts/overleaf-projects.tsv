@@ -1,0 +1,34 @@
+# Manuscript -> Overleaf project registry, consumed by scripts/overleaf_sync.sh
+#
+# One TAB-separated line per manuscript:
+#   <dir name under OVERLEAF_DOCS_DIR>	<overleaf project id>	[subpath]
+#
+# The project id is the last path segment of the Overleaf project URL:
+#   https://www.overleaf.com/project/<PROJECT-ID>
+#   git clone https://git@git.overleaf.com/<PROJECT-ID>
+#
+# The optional 3rd column is the subdirectory that maps to the Overleaf project
+# ROOT. Omit it (or use ".") when the manuscript dir itself is the project root.
+#
+# Project ids are not credentials - they are useless without an authenticated
+# Overleaf account - so this file is safe to track. Auth comes from the git
+# credential helper configured for git.overleaf.com; NEVER put a token here.
+#
+# ---------------------------------------------------------------------------
+# BayesBreak layout note
+# ---------------------------------------------------------------------------
+# paper/main.tex and book/main.tex both compile from docs/manuscripts/ as the
+# working directory: they reference shared/ and paper/ as sibling paths.
+# Therefore OVERLEAF_DOCS_DIR must be set to "docs" so that "manuscripts" maps
+# to docs/manuscripts/ — the correct Overleaf project root.
+#
+#   export OVERLEAF_DOCS_DIR=docs
+#
+# If you use separate Overleaf projects for paper and book, each needs its own
+# entry and its own copy of shared/ inside the project (Overleaf cannot resolve
+# cross-project \input paths). Simplest: one project, set main document to
+# paper/main.tex or book/main.tex in Overleaf → Menu → Main document.
+# ---------------------------------------------------------------------------
+#
+# name		project id				subpath
+# manuscripts	<FILL IN PROJECT ID>			.

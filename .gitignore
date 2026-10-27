@@ -57,3 +57,6 @@ notebooks/
 # fit cache (pickle of fitted real-data estimators; may be large)
 *.fit.pkl
 .cache/
+
+# Overleaf mirror clones (scripts/overleaf_sync.sh)
+.overleaf/

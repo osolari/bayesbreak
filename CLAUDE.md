@@ -10,3 +10,11 @@ Read only the following authoritative files at the start of a Claude Code sessio
 The only maintained paper is `docs/manuscripts/paper/main.tex` (single column). The companion book is `docs/manuscripts/book/main.tex`. Both share `docs/manuscripts/shared/`. Do not introduce an alternate paper, a history directory, phase-specific plans or competing experiment definitions. Preserve all existing verified results under their stated models and leave unrun figures/tables labeled Planned. No new experiment is completed until actually executed and checked.
 
 Source code is in `src/bayesbreak/`; tests are in `tests/`. Work on the current code and E00-E10 specifications, not on hypothetical migrations or historical tasks.
+
+## Manuscripts (docs/manuscripts/)
+Each package is connected to an Overleaf project over Overleaf's git integration: develop here,
+review on Overleaf. Tool `scripts/overleaf_sync.sh` (mirror clone + rsync), registry
+`docs/manuscripts/overleaf-projects.tsv`, mirrors under gitignored `.overleaf/`.
+
+Always `overleaf_sync.sh compare <name>` before `push` — push mirrors with `--delete` and will
+destroy Overleaf-only files. Full detail: the `overleaf` skill (`.claude/skills/overleaf.md`).
