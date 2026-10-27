@@ -1575,8 +1575,8 @@ def render_tab_E01_recovery(out_dir: Path) -> None:
     lines.append(r"\bottomrule")
     lines.append(r"\end{tabular}")
 
-    _TABLES_RESULTS_DIR.mkdir(parents=True, exist_ok=True)
-    out = _TABLES_RESULTS_DIR / "tab_E01_recovery.tex"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    out = out_dir / "tab_E01_recovery.tex"
     caption = (r"E01: Gaussian recovery (primary + ablation). Geometric-decay $p(k)$ prior. "
                r"Mean [95\% bootstrap CI] over 100 independent datasets per cell. "
                r"F1 at boundary tolerance $\tau=3$; null cells report expected false-boundary count.")
@@ -1644,7 +1644,7 @@ def render_tab_E02_recovery(out_dir: Path) -> None:
     lines.append(r"\bottomrule")
     lines.append(r"\end{tabular}")
 
-    out = _TABLES_RESULTS_DIR / "tab_E02_recovery.tex"
+    out = out_dir / "tab_E02_recovery.tex"
     caption = (r"E02: Observation-family portability. $k_{\rm true}=3$, exact equal segment lengths, "
                r"geometric-decay $p(k)$ prior, $k_{\max}=10$. Mean [95\% bootstrap CI] over "
                r"100 (conjugate) or 50 (Beta-obs) independent datasets per cell. F1 at boundary "
@@ -1689,7 +1689,7 @@ def render_tab_E05_latent(out_dir: Path) -> None:
     lines.append(r"\bottomrule")
     lines.append(r"\end{tabular}")
 
-    out = _TABLES_RESULTS_DIR / "tab_E05_latent.tex"
+    out = out_dir / "tab_E05_latent.tex"
     caption = (r"E05 latent-template score clustering. Accuracy is label-permutation-invariant "
                r"hard assignment accuracy; ARI is adjusted Rand index (undefined for $G=1$, "
                r"shown as --). Bootstrap 95\% percentile intervals from 2000 resamples of "
@@ -1726,7 +1726,7 @@ def render_tab_E10_scaling(out_dir: Path) -> None:
     lines.append(r"\bottomrule")
     lines.append(r"\end{tabular}")
 
-    out = _TABLES_RESULTS_DIR / "tab_E10_scaling.tex"
+    out = out_dir / "tab_E10_scaling.tex"
     _write_latex_table(out, lines, "", "tab:E10-scaling-paper", size_cmd=None)
     logger.info("Rendered tab_E10_scaling → %s", out)
 
@@ -1767,7 +1767,7 @@ def render_tab_E07_robustness(out_dir: Path) -> None:
     lines.append(r"\multicolumn{7}{l}{\small$\dag$ misspecified fit.} \\")
     lines.append(r"\end{tabular}")
 
-    out = _TABLES_RESULTS_DIR / "tab_E07_robustness.tex"
+    out = out_dir / "tab_E07_robustness.tex"
     caption = (r"E07 misspecification and missing data: boundary recovery F1@3 (mean $\pm$ 95\% CI), "
                r"posterior count accuracy, and Brier score for $k=k_\mathrm{true}$.")
     _write_latex_table(out, lines, caption, "tab:E07-robustness", "footnotesize")
@@ -1856,6 +1856,10 @@ def main(argv: list[str] | None = None) -> int:
                     help="Render specific figure(s) by registry key")
     ap.add_argument("--outdir", type=Path, default=_OUT_DIR,
                     help="Output directory for PDF/PNG files")
+    ap.add_argument("--tables-dir", type=Path, default=None,
+                    help="Output directory for .tex table files "
+                         "(default: shared/tables/results/ when --outdir is unset, "
+                         "else --outdir)")
     args = ap.parse_args(argv)
 
     if not args.all and not args.only:
@@ -1863,6 +1867,12 @@ def main(argv: list[str] | None = None) -> int:
 
     out_dir = args.outdir
     out_dir.mkdir(parents=True, exist_ok=True)
+    # When the caller overrides --outdir (e.g. for isolated test runs), redirect
+    # table output there too so canonical shared/tables/results/ is not modified.
+    tables_dir: Path = args.tables_dir or (
+        _TABLES_RESULTS_DIR if out_dir == _OUT_DIR else out_dir
+    )
+    tables_dir.mkdir(parents=True, exist_ok=True)
 
     targets = _ALL_ORDER if args.all else args.only
     t_start = time.perf_counter()
@@ -1876,7 +1886,8 @@ def main(argv: list[str] | None = None) -> int:
         logger.info("Rendering %s ...", name)
         t0 = time.perf_counter()
         try:
-            fn(out_dir)  # type: ignore[call-arg]
+            dest = tables_dir if name.startswith("tab_") else out_dir
+            fn(dest)  # type: ignore[call-arg]
             elapsed = time.perf_counter() - t0
             logger.info("  OK  %s  (%.2fs)", name, elapsed)
             n_ok += 1
