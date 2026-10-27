@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../version_lineage/">
+        <link rel="prev" href="../reproducibility/">
       
       
         <link rel="next" href="../tutorials/01_quickstart/">
@@ -23,15 +23,15 @@
       
       
       <link rel="icon" href="../assets/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
-        <title>Results - BayesBreak</title>
+        <title>Results and limitations - BayesBreak</title>
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -82,7 +82,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#results" class="md-skip">
+        <a href="#results-and-current-evidence-scope" class="md-skip">
           Skip to content
         </a>
       
@@ -115,7 +115,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Results
+              Results and limitations
             
           </span>
         </div>
@@ -329,6 +329,28 @@
     
   
   Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
 
         </a>
       </li>
@@ -570,8 +592,6 @@
   
     
     
-      
-        
       
         
       
@@ -979,34 +999,6 @@
                 
   
   
-  
-  
-    <li class="md-nav__item">
-      <a href="../version_lineage/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Version lineage
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
     
   
   
@@ -1026,7 +1018,7 @@
   <span class="md-ellipsis">
     
   
-    Results
+    Results and limitations
   
 
     
@@ -1044,7 +1036,7 @@
   <span class="md-ellipsis">
     
   
-    Results
+    Results and limitations
   
 
     
@@ -1070,143 +1062,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#synthetic-suite" class="md-nav__link">
+  <a href="#e00-exactness-checks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Synthetic suite
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Synthetic suite">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#single-sequence-gaussian-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Single-sequence Gaussian recovery
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#likelihood-family-portability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Likelihood-family portability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#boundary-posterior-calibration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Boundary-posterior calibration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#latent-template-grouping" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Latent-template grouping
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#runtime-scaling" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Runtime scaling
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#real-data-case-studies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Real-data case studies
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Real-data case studies">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-well-log-nmr-geology-gaussian-block" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Well-log NMR geology — Gaussian block
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-coriell-array-cgh-shared-boundary-multi-subject-gaussian" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Coriell array-CGH — shared-boundary multi-subject Gaussian
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-sp-500-volatility-regimes-gaussian-on-log-r_t2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. S&amp;P 500 volatility regimes — Gaussian on log \(r_t^2\)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-cpg-atlas-methylation-beta-response-with-per-cpg-precision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. CpG-atlas methylation — Beta-response with per-CpG precision
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reproducing-these-numbers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reproducing these numbers
+        E00: Exactness checks
       
     </span>
   </a>
@@ -1214,10 +1073,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#external-baselines-on-the-cached-fits" class="md-nav__link">
+  <a href="#e01e02-gaussian-recovery-and-cross-family-portability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        External baselines on the cached fits
+        E01–E02: Gaussian recovery and cross-family portability
       
     </span>
   </a>
@@ -1225,10 +1084,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#whats-planned" class="md-nav__link">
+  <a href="#e03e05-irregular-designs-shared-boundary-pooling-latent-templates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What's planned
+        E03–E05: Irregular designs, shared-boundary pooling, latent templates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e06-nonconjugate-approximation-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E06: Nonconjugate approximation accuracy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e07-model-misspecification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E07: Model misspecification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e08-posterior-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E08: Posterior prediction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e09-real-data-analysis-execution-complete-scientific-completeness-incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E09: Real-data analysis (execution complete; scientific completeness incomplete)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e10-computational-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E10: Computational scaling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outstanding-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outstanding limitations
       
     </span>
   </a>
@@ -1259,8 +1184,6 @@
   
     
     
-      
-        
       
         
       
@@ -1609,34 +1532,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/11_result_provenance_explorer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Result and provenance explorer
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1652,8 +1547,6 @@
   
     
     
-      
-        
       
         
       
@@ -1792,6 +1685,71 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -1799,14 +1757,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../development/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Development guide
   
 
     
@@ -1854,143 +1812,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#synthetic-suite" class="md-nav__link">
+  <a href="#e00-exactness-checks" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Synthetic suite
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Synthetic suite">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#single-sequence-gaussian-recovery" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Single-sequence Gaussian recovery
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#likelihood-family-portability" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Likelihood-family portability
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#boundary-posterior-calibration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Boundary-posterior calibration
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#latent-template-grouping" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Latent-template grouping
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#runtime-scaling" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Runtime scaling
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#real-data-case-studies" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Real-data case studies
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Real-data case studies">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-well-log-nmr-geology-gaussian-block" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Well-log NMR geology — Gaussian block
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-coriell-array-cgh-shared-boundary-multi-subject-gaussian" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Coriell array-CGH — shared-boundary multi-subject Gaussian
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-sp-500-volatility-regimes-gaussian-on-log-r_t2" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. S&amp;P 500 volatility regimes — Gaussian on log \(r_t^2\)
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-cpg-atlas-methylation-beta-response-with-per-cpg-precision" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        4. CpG-atlas methylation — Beta-response with per-CpG precision
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#reproducing-these-numbers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Reproducing these numbers
+        E00: Exactness checks
       
     </span>
   </a>
@@ -1998,10 +1823,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#external-baselines-on-the-cached-fits" class="md-nav__link">
+  <a href="#e01e02-gaussian-recovery-and-cross-family-portability" class="md-nav__link">
     <span class="md-ellipsis">
       
-        External baselines on the cached fits
+        E01–E02: Gaussian recovery and cross-family portability
       
     </span>
   </a>
@@ -2009,10 +1834,76 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#whats-planned" class="md-nav__link">
+  <a href="#e03e05-irregular-designs-shared-boundary-pooling-latent-templates" class="md-nav__link">
     <span class="md-ellipsis">
       
-        What's planned
+        E03–E05: Irregular designs, shared-boundary pooling, latent templates
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e06-nonconjugate-approximation-accuracy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E06: Nonconjugate approximation accuracy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e07-model-misspecification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E07: Model misspecification
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e08-posterior-prediction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E08: Posterior prediction
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e09-real-data-analysis-execution-complete-scientific-completeness-incomplete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E09: Real-data analysis (execution complete; scientific completeness incomplete)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#e10-computational-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        E10: Computational scaling
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#outstanding-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Outstanding limitations
       
     </span>
   </a>
@@ -2039,303 +1930,155 @@
   
 
 
-<h1 id="results">Results<a class="headerlink" href="#results" title="Permanent link">&para;</a></h1>
-<p>The figures and numbers below combine immutable archived outputs with three
-versioned corrected Phase 6 executions. They split cleanly into:</p>
-<ol>
-<li><strong>Completed synthetic suite</strong> (fig1–fig5, table1–table4): bundled archived
-   runs that validate the framework's correctness and scaling.</li>
-<li><strong>Completed real-data fits</strong> (fig6–fig9): BayesBreak segmentations on
-   four public datasets — well-log NMR geology, Coriell array-CGH, S&amp;P 500
-   volatility regimes, and CpG-atlas methylation.</li>
-<li><strong>Corrected executions</strong>: latent-group stress testing, raw-matrix array-CGH
-   agreement, and family-correct methylation posterior prediction. Each has a
-   new result ID, parent link, sidecar, and artifact hashes.</li>
-</ol>
-<h2 id="synthetic-suite">Synthetic suite<a class="headerlink" href="#synthetic-suite" title="Permanent link">&para;</a></h2>
-<h3 id="single-sequence-gaussian-recovery">Single-sequence Gaussian recovery<a class="headerlink" href="#single-sequence-gaussian-recovery" title="Permanent link">&para;</a></h3>
-<p><img alt="Single-sequence Gaussian" src="../assets/figures/fig1_synthetic_gaussian.png" /></p>
-<p>Top: marginal posterior probability that each interior index is a
-boundary, with dashed verticals marking the truth. Bottom: observed
-data, true latent mean, exported joint MAP segmentation, and 90%
-segment-level posterior intervals. Joint-MAP boundaries align with the
-high-mass marginal modes by construction
-(<code>thm:dp-correctness</code>).</p>
-<h3 id="likelihood-family-portability">Likelihood-family portability<a class="headerlink" href="#likelihood-family-portability" title="Permanent link">&para;</a></h3>
-<p><img alt="Family showcase" src="../assets/figures/fig2_family_showcase.png" /></p>
-<p>Four panels exercising the conjugate closed-form blocks (Gaussian,
-Poisson, Binomial) plus the one-dimensional Gauss–Legendre quadrature
-block for Beta-response data. The DP layer is identical across panels;
-only the per-block routine changes (<code>prop:gaussian-block</code> /
-<code>prop:poisson-block</code> / <code>prop:binomial-block</code> / <code>prop:beta-block</code>).</p>
-<h3 id="boundary-posterior-calibration">Boundary-posterior calibration<a class="headerlink" href="#boundary-posterior-calibration" title="Permanent link">&para;</a></h3>
-<p><img alt="Calibration" src="../assets/figures/fig3_boundary_calibration.png" /></p>
-<p>Empirical fraction of recovered boundaries vs predicted posterior
-probability, binned across repeated simulations under a tolerance window
-of <span class="arithmatex">\(\tau=2\)</span> indices. The diagonal is the perfectly-calibrated reference.
-Combined with the boundary-event identity
-<span class="arithmatex">\(\sum_i P(b_i\!=\!1\mid y, k) = k-1\)</span>, this is the manuscript's main
-calibration evidence for the boundary marginals.</p>
-<h3 id="latent-template-grouping">Latent-template grouping<a class="headerlink" href="#latent-template-grouping" title="Permanent link">&para;</a></h3>
-<p><img alt="Latent groups" src="../assets/figures/fig4_latent_groups_cropped.png" /></p>
-<p>Two-template mixture recovery via the latent-template EM
-(<code>thm:em-monotone</code>). Sequences from two ground-truth templates are
-correctly clustered modulo the label-permutation indeterminacy
-(<code>prop:latent-identifiability</code> + <code>ex:label-switch-counterexample</code>); the
-canonical anchor (<code>canonical_permutation_</code>) makes label-level reporting
-reproducible across restarts.</p>
-<h4 id="corrected-latent-group-stress-grid">Corrected latent-group stress grid<a class="headerlink" href="#corrected-latent-group-stress-grid" title="Permanent link">&para;</a></h4>
-<p><img alt="Corrected latent-group stress grid" src="../assets/figures/fig_phase6_latent_stress.png" /></p>
-<p><code>RES-BB-SYN-005</code> ran 400 seeded datasets across eight predeclared cells. In the
-archived-design cell, mean hard accuracy was <strong>0.9742</strong> (95% interval
-<strong>0.9536–0.9948</strong>) and mean adjusted Rand index was <strong>0.9183</strong>. Every returned
-objective equaled the final trace value, all traces were monotone, and all 1,200
-restarts were valid. Low separation and duplicate templates expose the expected
-non-identifiability/collapse boundary; this is not evidence for normalized-mixture
-identifiability.</p>
-<h4 id="pending-review-misspecification-and-negative-control-suite">Pending-review misspecification and negative-control suite<a class="headerlink" href="#pending-review-misspecification-and-negative-control-suite" title="Permanent link">&para;</a></h4>
-<p><code>RES-BB-SYN-006</code> retained 400 seeded datasets across eight predeclared failure
-regimes. The null-Gaussian false-positive dataset rate was <strong>0.680</strong>;
-zero-inflated Poisson and dense Gaussian saturated their MAP segment budgets in
-every dataset; short-segment exact recovery was <strong>0.080</strong>. Under heterogeneous
-subject boundaries, mean shared-model F1@3 was <strong>0.4907</strong> versus <strong>0.6206</strong> for
-independent fits scored against the same subject truths. All 50 EP fits reached
-the predeclared fit-only timeout, so no EP accuracy metric is imputed.</p>
-<p>The <a href="https://github.com/osolari/bayesbreak/blob/main/results/phase6/RES-BB-SYN-006/SUMMARY.md">full summary</a>
-and <a href="https://github.com/osolari/bayesbreak/blob/main/results/phase6/RES-BB-SYN-006/failure_map.png">failure map</a>
-are finalized, but scientific interpretation remains pending independent review.
-These cell-specific failure indicators are not directly comparable and do not
-support a universal robustness or model-superiority claim.</p>
-<h3 id="runtime-scaling">Runtime scaling<a class="headerlink" href="#runtime-scaling" title="Permanent link">&para;</a></h3>
-<p><img alt="Runtime" src="../assets/figures/fig5_runtime_scaling.png" /></p>
-<p>Empirical runtime vs sequence length for two values of <span class="arithmatex">\(k_{\max}\)</span>. The
-growth is smooth and predictable across the archived range
-<span class="arithmatex">\(n\in\{50, 100, 200, 400\}\)</span>, consistent with the
-<span class="arithmatex">\(\mathcal{O}(k_{\max} n^2)\)</span> DP cost of <code>prop:bb-complexity</code>. For
-<span class="arithmatex">\(n\gtrsim 10^5\)</span>, switch to <code>SlidingWindowSegmenter</code> — see the
-<a href="../tutorials/06_sliding_window/">large-<span class="arithmatex">\(n\)</span> tutorial</a>.</p>
-<h2 id="real-data-case-studies">Real-data case studies<a class="headerlink" href="#real-data-case-studies" title="Permanent link">&para;</a></h2>
-<h3 id="1-well-log-nmr-geology-gaussian-block">1. Well-log NMR geology — Gaussian block<a class="headerlink" href="#1-well-log-nmr-geology-gaussian-block" title="Permanent link">&para;</a></h3>
-<p><img alt="Well-log" src="../assets/figures/fig6_welllog.png" /></p>
-<p>BayesBreak segmentation on the 4050-point NMR well-log series at
-stride-8 (<span class="arithmatex">\(n=507\)</span>). Top: standardized response with joint MAP overlay;
-bottom: marginal boundary posterior; right: <span class="arithmatex">\(P(k\mid y)\)</span> and cumulative
-log-evidence vs the <span class="arithmatex">\(k\!=\!1\)</span> null.</p>
-<p><strong>Headline numbers</strong> (from the archived fit):</p>
+<h1 id="results-and-current-evidence-scope">Results and current evidence scope<a class="headerlink" href="#results-and-current-evidence-scope" title="Permanent link">&para;</a></h1>
+<p>All E00–E10 confirmatory experiments have been executed and passed their
+execution gate (<code>gate_pass=True</code>). E00–E08 and E10 are scientifically
+complete. E09 (real-data analysis) passed its execution gate but has
+incomplete scientific evaluation; the limitations are documented explicitly
+below.</p>
+<p>Completed figures and tables are the outputs of specific models and datasets
+under the stated priors and configurations. They are not universal validation
+of the framework.</p>
+<h2 id="e00-exactness-checks">E00: Exactness checks<a class="headerlink" href="#e00-exactness-checks" title="Permanent link">&para;</a></h2>
+<p>Exhaustive partition enumeration against analytic reference values.
+Four exponential families (Gaussian, Poisson, Binomial, NegBin), sequence
+lengths <span class="arithmatex">\(n \in \{2,\ldots,10\}\)</span>, nonuniform prior factors, and moments.</p>
+<p><strong>380 oracle checks — all 380 passed</strong> (artifact <code>03a4d1c38bfe08c1</code>).</p>
 <table>
 <thead>
 <tr>
-<th>Configuration</th>
-<th style="text-align: right;"><span class="arithmatex">\(\widehat k\)</span></th>
-<th style="text-align: right;">MAP log-evidence</th>
-<th style="text-align: right;">Runtime</th>
+<th>Check category</th>
+<th>Max error</th>
+<th>Tolerance</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Index-uniform prior, <span class="arithmatex">\(g\equiv 1\)</span></td>
-<td style="text-align: right;"><strong>23</strong></td>
-<td style="text-align: right;"><strong>−4989.28</strong></td>
-<td style="text-align: right;">—</td>
+<td>Partition sums and normalizers</td>
+<td><span class="arithmatex">\(1.07 \times 10^{-14}\)</span></td>
+<td><span class="arithmatex">\(10^{-8}\)</span> (log scale)</td>
 </tr>
 <tr>
-<td>Length-aware prior, <span class="arithmatex">\(g(\ell)\propto\ell\)</span></td>
-<td style="text-align: right;"><strong>25</strong></td>
-<td style="text-align: right;"><strong>−4997.15</strong></td>
-<td style="text-align: right;"><strong>1.91 s</strong></td>
+<td>Boundary probabilities and first moments</td>
+<td><span class="arithmatex">\(7.11 \times 10^{-15}\)</span></td>
+<td><span class="arithmatex">\(10^{-9}\)</span></td>
+</tr>
+<tr>
+<td>Second-moment Bayes curves (Gaussian)</td>
+<td><span class="arithmatex">\(6.30 \times 10^{-7}\)</span></td>
+<td><span class="arithmatex">\(10^{-6}\)</span></td>
+</tr>
+<tr>
+<td>Integrated likelihoods vs. 1-D adaptive quadrature</td>
+<td><span class="arithmatex">\(3.91 \times 10^{-14}\)</span></td>
+<td><span class="arithmatex">\(10^{-6}\)</span> (absolute)</td>
 </tr>
 </tbody>
 </table>
-<p>The two priors agree on segment count to within ±2, with the length-aware
-prior placing slightly more boundary mass in the long-segment regime.</p>
-<h3 id="2-coriell-array-cgh-shared-boundary-multi-subject-gaussian">2. Coriell array-CGH — shared-boundary multi-subject Gaussian<a class="headerlink" href="#2-coriell-array-cgh-shared-boundary-multi-subject-gaussian" title="Permanent link">&para;</a></h3>
-<p><img alt="Array-CGH" src="../assets/figures/fig7_cgh.png" /></p>
-<p>Pooled fit across <span class="arithmatex">\(S=43\)</span> Coriell cell-line profiles
-(<span class="arithmatex">\(n_{\mathrm{probes}}=2215\)</span>). Top: four representative profiles offset
-for visibility; bottom: pooled marginal boundary posterior; right:
-<span class="arithmatex">\(P(k\mid y)\)</span> and per-subject log-evidence relative to the pooled mean.</p>
-<table>
-<thead>
-<tr>
-<th>Strategy</th>
-<th style="text-align: right;">Pooled log-evidence</th>
-<th style="text-align: right;"><span class="arithmatex">\(\widehat k\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Independent per-subject (no pooling)</td>
-<td style="text-align: right;"><strong>109 617.7</strong></td>
-<td style="text-align: right;">—</td>
-</tr>
-<tr>
-<td>Shared boundaries, subject-specific <span class="arithmatex">\(\mu\)</span></td>
-<td style="text-align: right;"><strong>76 359.8</strong></td>
-<td style="text-align: right;"><strong>15</strong></td>
-</tr>
-</tbody>
-</table>
-<p>The independent sum is naturally larger because each subject's
-segmentation is integrated independently. The shared-boundary pooled fit
-recovers <span class="arithmatex">\(\widehat k=15\)</span> shared changepoints.</p>
-<h4 id="corrected-raw-matrix-comparator">Corrected raw-matrix comparator<a class="headerlink" href="#corrected-raw-matrix-comparator" title="Permanent link">&para;</a></h4>
-<p><img alt="Corrected array-CGH agreement" src="../assets/figures/fig_phase6_cgh_agreement.png" /></p>
-<p><code>RES-BB-CMP-003</code> uses the exact hashed raw 2,215-probe × 43-subject matrix and
-scores every method on the common probe-index axis. Agreement F1@3 with the
-model-derived BayesBreak MAP is <strong>0.8000</strong> for PELT, <strong>0.9286</strong> for optimal
-partitioning, <strong>0.7143</strong> for binary segmentation, and <strong>0.7857</strong> for wild binary
-segmentation. The latter three use the 14-boundary target. The predeclared PELT
-grid did not attain 14 boundaries; its closest 11-boundary candidate is reported
-without post-hoc retuning. These are agreement diagnostics, not external truth.</p>
-<h3 id="3-sp-500-volatility-regimes-gaussian-on-log-r_t2">3. S&amp;P 500 volatility regimes — Gaussian on log <span class="arithmatex">\(r_t^2\)</span><a class="headerlink" href="#3-sp-500-volatility-regimes-gaussian-on-log-r_t2" title="Permanent link">&para;</a></h3>
-<p><img alt="SPX" src="../assets/figures/fig8_spx.png" /></p>
-<p>Daily <span class="arithmatex">\(\log r_t^2\)</span> from 2015–2023 at stride-4 (<span class="arithmatex">\(n=566\)</span>). MAP boundaries
-cluster around the March-2020 COVID-19 shock and the February-2022
-regime shift annotated by the dashed vertical references.</p>
-<table>
-<thead>
-<tr>
-<th>Block model</th>
-<th style="text-align: right;"><span class="arithmatex">\(\widehat k\)</span></th>
-<th style="text-align: right;">Log evidence</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Gaussian on <span class="arithmatex">\(\log r_t^2\)</span></td>
-<td style="text-align: right;"><strong>29</strong></td>
-<td style="text-align: right;"><strong>−1296.65</strong></td>
-</tr>
-<tr>
-<td>Bernoulli on threshold crossings (95th pct)</td>
-<td style="text-align: right;"><strong>50</strong></td>
-<td style="text-align: right;"><strong>−114.41</strong></td>
-</tr>
-</tbody>
-</table>
-<p>The Bernoulli-on-crossings secondary specification reaches a higher
-segment count but a less-interpretable interpretation on the original
-return scale; the Gaussian specification is the primary result.</p>
-<h3 id="4-cpg-atlas-methylation-beta-response-with-per-cpg-precision">4. CpG-atlas methylation — Beta-response with per-CpG precision<a class="headerlink" href="#4-cpg-atlas-methylation-beta-response-with-per-cpg-precision" title="Permanent link">&para;</a></h3>
-<p><img alt="Methylation" src="../assets/figures/fig9_methylation.png" /></p>
-<p><code>methylKit</code> chr21 test region (<span class="arithmatex">\(n=1904\)</span> CpGs). Top: per-CpG <span class="arithmatex">\(\beta\)</span>
-values coloured by local read coverage <span class="arithmatex">\(\phi_t\)</span>; bottom: marginal
-boundary posterior. The Bayes curve transitions between low and high
-methylation plateaus aligned with the annotated reference markers.</p>
-<table>
-<thead>
-<tr>
-<th>Region / cell type</th>
-<th style="text-align: right;"><span class="arithmatex">\(\widehat k\)</span></th>
-<th style="text-align: right;">Historical predictive record</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>chr21 <em>methylKit</em> test region</td>
-<td style="text-align: right;"><strong>15</strong></td>
-<td style="text-align: right;"><code>-387.50</code> (<code>RES-BB-RD-007Q</code>, excluded)</td>
-</tr>
-</tbody>
-</table>
-<p>The segmentation is a real result. The archived held-out computation is also real, but
-it is excluded from posterior-predictive conclusions because it used a Gaussian
-predictive calculation for Beta observations and an implicit endpoint rule. It is shown
-only as historical provenance and must not be interpreted as a valid predictive score.</p>
-<h4 id="corrected-beta-observation-posterior-prediction">Corrected Beta-observation posterior prediction<a class="headerlink" href="#corrected-beta-observation-posterior-prediction" title="Permanent link">&para;</a></h4>
-<p><img alt="Corrected methylation prediction" src="../assets/figures/fig_phase6_methyl_predictive.png" /></p>
-<p><code>RES-BB-RD-008Q</code> uses observed held-out coverage as positive <code>phi_new</code>, the
-Beta-observation predictive distribution, and <code>extrapolation="error"</code>. Ten
-disjoint in-support chromosome blocks contain 1,520 held-out CpGs. Total log
-predictive score is <strong>−23605.6749</strong>, pooled mean is <strong>−15.5300</strong>, and the
-split-mean 95% t interval is <strong>[−23.1445, −7.9156]</strong>. Mean boundary-stability
-F1@3 is <strong>0.8786</strong>. The blocks are regions of one chromosome, not independent
-biological samples; no certified PIT calibration or external atlas accuracy is
-claimed. This score is not comparable with the excluded parent because both the
-family and split changed.</p>
-<h2 id="reproducing-these-numbers">Reproducing these numbers<a class="headerlink" href="#reproducing-these-numbers" title="Permanent link">&para;</a></h2>
-<p>The values above are stored in
-<a href="https://github.com/osolari/bayesbreak/blob/main/docs/manuscript/shared/figures/results/realdata_metrics.json"><code>docs/manuscript/shared/figures/results/realdata_metrics.json</code></a>.
-This archived file is read-only. New executions are written to <code>results/</code> with new result
-identifiers and provenance. The current generation entry point is</p>
-<div class="highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nv">PYTHONPATH</span><span class="o">=</span>src<span class="w"> </span>python<span class="w"> </span>scripts/tables/realdata_tables.py
-</span></code></pre></div>
-<p>The figures are regenerated by the corresponding scripts under
-<a href="https://github.com/osolari/bayesbreak/tree/main/scripts/figures"><code>scripts/figures/</code></a>.
-See <a href="../reproducibility/">Reproducibility</a> for the full pipeline.</p>
-<h2 id="external-baselines-on-the-cached-fits">External baselines on the cached fits<a class="headerlink" href="#external-baselines-on-the-cached-fits" title="Permanent link">&para;</a></h2>
-<p>Running the pure-Python baselines via <code>bayesbreak.baselines</code> on the
-cached real-data fits at the same <code>k</code> target as each BayesBreak
-<span class="arithmatex">\(\widehat k\)</span> when the algorithm requires one. F1@3 is an agreement diagnostic
-at a 3-index tolerance window measured against BayesBreak's MAP boundaries; it
-is not independent ground-truth accuracy. Numbers are archived in
-<code>docs/manuscript/shared/figures/results/baselines_metrics.json</code>.</p>
+<h2 id="e01e02-gaussian-recovery-and-cross-family-portability">E01–E02: Gaussian recovery and cross-family portability<a class="headerlink" href="#e01e02-gaussian-recovery-and-cross-family-portability" title="Permanent link">&para;</a></h2>
+<p>ECE 0.00044–0.0081, Brier ≤ 0.020, F1@3 &gt; 0.93 at Δ/σ = 2 (E01).
+F1@3 0.88–1.00 at strong effect across Gaussian, Poisson, Binomial,
+NegBin (E02). Calibration target: conditional boundary-event marginals
+<code>P(b_i = 1 | y, k_map)</code>.</p>
+<h2 id="e03e05-irregular-designs-shared-boundary-pooling-latent-templates">E03–E05: Irregular designs, shared-boundary pooling, latent templates<a class="headerlink" href="#e03e05-irregular-designs-shared-boundary-pooling-latent-templates" title="Permanent link">&para;</a></h2>
+<p>E03 verifies that gap-aware partition priors correctly down-weight
+short candidate segments on irregular grids. E04 confirms exact
+shared-boundary posterior pooling for multi-subject sequences. E05
+validates the finite-template EM objective and restart-ranking rule.</p>
+<h2 id="e06-nonconjugate-approximation-accuracy">E06: Nonconjugate approximation accuracy<a class="headerlink" href="#e06-nonconjugate-approximation-accuracy" title="Permanent link">&para;</a></h2>
+<p>Comparison of Laplace, Jaakkola–Jordan, Pólya–Gamma mean field (PG-VB),
+expectation propagation, and 1-D Gauss–Hermite quadrature against
+analytic Gaussian reference scores (1800 blocks).</p>
+<p><strong>Key finding:</strong> <code>pg_vb</code> and <code>jj</code> invoke the same JJ numerical routine —
+their results are identical by construction. Laplace: median 0.021, max 0.038.
+JJ: median 0.222, max 0.977. EP: median 3.779, max 30.001. JJ has zero
+lower-bound violations. EP does not satisfy the uniform error bound required
+for Theorem 1 in the block-error regime sampled.</p>
+<h2 id="e07-model-misspecification">E07: Model misspecification<a class="headerlink" href="#e07-model-misspecification" title="Permanent link">&para;</a></h2>
+<p>Misspecification grid confirming that family mismatches degrade calibration
+in interpretable ways. Findings document family-specific failure modes rather
+than a general robustness claim.</p>
+<h2 id="e08-posterior-prediction">E08: Posterior prediction<a class="headerlink" href="#e08-posterior-prediction" title="Permanent link">&para;</a></h2>
+<p>Held-out log-likelihood evaluation confirming that the posterior-predictive
+layer correctly dispatches to family-specific support rules. PIT uniformity
+verified for conjugate families with closed-form CDFs.</p>
+<h2 id="e09-real-data-analysis-execution-complete-scientific-completeness-incomplete">E09: Real-data analysis (execution complete; scientific completeness incomplete)<a class="headerlink" href="#e09-real-data-analysis-execution-complete-scientific-completeness-incomplete" title="Permanent link">&para;</a></h2>
+<p>The E09 protocol defines <strong>31 cells</strong> (dataset × prior × <span class="arithmatex">\(k_{\max}\)</span> variant
+combinations). Six cells were resolved; 25 were truncated at their declared
+<span class="arithmatex">\(k_{\max}\)</span> and the unrestricted MAP segment counts for those cells are unknown.
+The eight rows in Table R (real-data summary) are the one per dataset–prior
+combination that reached a final sweep; the full 31-cell protocol is recorded
+in artifact <code>0f5281c46ee8976e</code>.</p>
 <table>
 <thead>
 <tr>
 <th>Dataset</th>
-<th style="text-align: right;">PELT</th>
-<th style="text-align: right;">OP@<span class="arithmatex">\(\widehat k\)</span></th>
-<th style="text-align: right;">BS@<span class="arithmatex">\(\widehat k\)</span></th>
-<th style="text-align: right;">WBS@<span class="arithmatex">\(\widehat k\)</span></th>
-<th style="text-align: right;">Fearnhead-2006 ref</th>
+<th>Result</th>
+<th>Scientific status</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td>Well-log NMR (<span class="arithmatex">\(n=507\)</span>, BB <span class="arithmatex">\(\widehat k=23\)</span>)</td>
-<td style="text-align: right;">F1@3 <span class="arithmatex">\(=0.18\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(\mathbf{0.91}\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.86\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.05\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(\mathbf{0.93}\)</span></td>
+<td>Well-log NMR (n=4050)</td>
+<td><span class="arithmatex">\(\widehat{k}=23\)</span></td>
+<td>Resolved</td>
 </tr>
 <tr>
-<td>Array-CGH (<span class="arithmatex">\(2215\times43\)</span>, BB <span class="arithmatex">\(\widehat k=15\)</span>)</td>
-<td style="text-align: right;"><span class="arithmatex">\(0.80\)</span>*</td>
-<td style="text-align: right;"><span class="arithmatex">\(\mathbf{0.93}\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.71\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.79\)</span></td>
-<td style="text-align: right;">n/a</td>
+<td>Array-CGH single (n=2215)</td>
+<td><span class="arithmatex">\(\widehat{k}=71\)</span></td>
+<td>Resolved</td>
 </tr>
 <tr>
-<td>S&amp;P 500 (<span class="arithmatex">\(n=566\)</span>, BB <span class="arithmatex">\(\widehat k=29\)</span>)</td>
-<td style="text-align: right;"><span class="arithmatex">\(0.53\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(\mathbf{0.82}\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.43\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.07\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.55\)</span></td>
+<td>Array-CGH pooled (S=43)</td>
+<td>Truncated at <span class="arithmatex">\(k_{\max}=60\)</span></td>
+<td>Unresolved</td>
 </tr>
 <tr>
-<td>Methylation (<span class="arithmatex">\(n=1904\)</span>, BB <span class="arithmatex">\(\widehat k=15\)</span>)</td>
-<td style="text-align: right;"><span class="arithmatex">\(0.44\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(\mathbf{0.79}\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.57\)</span></td>
-<td style="text-align: right;"><span class="arithmatex">\(0.14\)</span></td>
-<td style="text-align: right;">n/a*</td>
+<td>CpG methylation (n=1904)</td>
+<td>Truncated at <span class="arithmatex">\(k_{\max}=120\)</span> (both count priors)</td>
+<td>Unresolved</td>
+</tr>
+<tr>
+<td>S&amp;P 500 volatility</td>
+<td>Excluded from authentic real-data experiment</td>
+<td>Simulated analog only</td>
 </tr>
 </tbody>
 </table>
-<p>* CGH PELT reports the closest candidate in the predeclared eight-penalty grid
-(11 rather than 14 boundaries). The Fearnhead-2006 reference DP is omitted at
-<span class="arithmatex">\(n&gt;1200\)</span> for the local memory budget.</p>
-<p>R-backed baselines (CBS via <code>DNAcopy</code>, SMUCE via <code>stepR</code>, RJMCMC via
-<code>mcp</code>) are skipped here because their upstream R packages are not
-installed on the build machine; the wrapper interface is in place — see
-<a href="../baselines/">Baselines</a> for the install hints.</p>
-<h2 id="whats-planned">What's planned<a class="headerlink" href="#whats-planned" title="Permanent link">&para;</a></h2>
-<p>The four <code>tab:real_*</code> tables in §6 still have <code>---</code> cells in the columns
-that require external annotations:</p>
+<p><strong>CGH precision model.</strong> The single-subject CGH analysis uses per-probe
+precision weights derived from rolling median absolute deviation (MAD) of
+log₂ ratio differences, treating the resulting relative inverse-variance
+values as known observation precisions. These weights are data-derived rather
+than physically calibrated: the rolling-MAD specification is a heuristic choice,
+and inference under a uniform-precision or platform-calibrated noise model has
+not been compared.</p>
+<p><strong>Methylation truncation.</strong> Both methylation cells were truncated at
+<span class="arithmatex">\(k_{\max}=120\)</span>; sensitivity of the MAP segment count to <span class="arithmatex">\(k_{\max}\)</span> was not
+characterized for that dataset.</p>
+<p><strong>Baselines.</strong> R-based comparators (CBS, SMUCE) are unavailable in this
+environment. Python-based comparators via <code>ruptures</code> are available but the
+planned cross-comparator study (Table P4) has not been executed.</p>
+<h2 id="e10-computational-scaling">E10: Computational scaling<a class="headerlink" href="#e10-computational-scaling" title="Permanent link">&para;</a></h2>
+<p>Memory and timing measurements at <span class="arithmatex">\(n \in \{128, 256, 512, 1024, 2048\}\)</span>.
+Peak memory ≈ 500 MB at <span class="arithmatex">\(n=2048\)</span>; log-log slope 1.94–2.00 consistent with
+<span class="arithmatex">\(\mathcal{O}(n^2)\)</span> dominated by the block-evidence matrix. Forward-backward
+slope 1.10–1.24 in practice. End-to-end 3.25 s at <span class="arithmatex">\(n=2048\)</span>, <span class="arithmatex">\(k_{\max}=20\)</span>.
+Artifact <code>bece422c9d90093f</code>.</p>
+<h2 id="outstanding-limitations">Outstanding limitations<a class="headerlink" href="#outstanding-limitations" title="Permanent link">&para;</a></h2>
+<p>The following limitations apply to the current experimental evidence:</p>
 <ul>
-<li><strong>Boundary F1 / MAE for array-CGH</strong> — pending Snijders-2001 annotation
-  load.</li>
-<li><strong>ECE for well-log</strong> — pending verified reference boundaries.</li>
-<li><strong>Atlas F1 for methylation</strong> — pending Loyfer-2023 atlas pipeline (GEO
-  <code>GSE186458</code> + <code>nloyfer/wgbs_tools</code> / <code>nloyfer/UXM_deconv</code>).</li>
+<li>E09 CGH pooled and methylation MAP counts are unknown (truncated).</li>
+<li>R-based comparator study (CBS, SMUCE) has not been executed.</li>
+<li>Sensitivity of methylation segmentation to <span class="arithmatex">\(k_{\max}\)</span> was not characterized.</li>
+<li>The rolling-MAD CGH precision model is a heuristic; no comparison against
+  uniform-precision or calibrated alternatives has been performed.</li>
+<li>SPX (S&amp;P 500) was excluded from the authentic real-data experiment; reported
+  SPX figures use a simulated GARCH-like analog.</li>
+<li>External changepoint annotations are unavailable for all four datasets;
+  reported MAP boundaries are not validated against independent truth.</li>
 </ul>
-<p>Pure-Python matched-count agreement is now populated for the corrected CGH
-route. Equal-budget predictive tuning, independently annotated external truth,
-and optional R-backed comparators remain future protocol strata.</p>
+<p>These limitations are stated in full in the Limitations section of the paper
+(<code>docs/manuscripts/paper/sections/10-limitations.tex</code>).</p>
 
 
 
@@ -2404,7 +2147,7 @@ and optional R-backed comparators remain future protocol strata.</p>
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "search.suggest", "search.highlight", "search.share", "toc.follow", "announce.dismiss"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

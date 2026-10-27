@@ -1,0 +1,4 @@
+case,status,exception,message,elapsed_ms,traceback
+bernoulli nonbinary,pass,ValueError,"Bernoulli prediction requires y_new in {0, 1}",0.09099999442696571,
+binomial fractional trials,pass,ValueError,Binomial prediction n_trials must be positive integers,0.058540841564536095,
+beta boundary zero,pass,ValueError,"BayesBreakBeta prediction requires y_new strictly in (0, 1)",0.04258309490978718,

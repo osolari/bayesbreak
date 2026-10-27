@@ -1,0 +1,10 @@
+component,check,status,expected,actual,elapsed_ms,traceback
+fit,finite log evidence,pass,True,True,0.0033329706639051437,
+sum-product DP,posterior k normalizes,pass,True,True,0.02187490463256836,
+block evidence,matrix shape,pass,"(111, 111)","(111, 111)",0.0017920974642038345,
+block evidence,admissibility equals finite mask,pass,True,True,0.016249949112534523,
+max-sum DP,strict boundary partition,pass,True,np.True_,0.009542098268866539,
+prediction,prediction shape,pass,"(110,)","(110,)",0.0011671800166368484,
+transform,labels cover MAP segments,pass,"(0, 2)","(np.int64(0), np.int64(2))",0.008833128958940506,
+sklearn,clone preserves k_max,pass,8,8,0.09362492710351944,
+score,training score is finite,pass,True,True,0.10737497359514236,

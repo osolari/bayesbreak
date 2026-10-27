@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -336,6 +336,28 @@
   
 
       
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -570,8 +592,6 @@
   
     
     
-      
-        
       
         
       
@@ -1073,34 +1093,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../version_lineage/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Version lineage
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../results/" class="md-nav__link">
         
   
@@ -1108,7 +1100,7 @@
   <span class="md-ellipsis">
     
   
-    Results
+    Results and limitations
   
 
     
@@ -1137,8 +1129,6 @@
   
     
     
-      
-        
       
         
       
@@ -1487,34 +1477,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/11_result_provenance_explorer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Result and provenance explorer
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1530,8 +1492,6 @@
   
     
     
-      
-        
       
         
       
@@ -1670,6 +1630,71 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -1677,14 +1702,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../development/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Development guide
   
 
     
@@ -1848,9 +1873,9 @@ reproducible offline.</p>
 </tr>
 <tr>
 <td><code>load_methylation()</code></td>
-<td>Loyfer 2023 CpG methylation atlas (companion code at <code>nloyfer/wgbs_tools</code> / <code>nloyfer/UXM_deconv</code>; GEO <code>GSE186458</code>); local fallback uses the <code>methylKit</code> chr21 test region</td>
+<td>methylKit <code>test1.myCpG</code> chromosome-21 CpG data; not the Loyfer cell-type atlas</td>
 <td>Beta-response with per-CpG precision <span class="arithmatex">\(\phi_t\)</span></td>
-<td>CpG-atlas methylation</td>
+<td>methylKit CpG methylation</td>
 </tr>
 </tbody>
 </table>
@@ -1896,7 +1921,7 @@ check before rendering provenance badges.</p>
   CI to keep figure regressions hermetic).</li>
 </ul>
 <h2 id="headline-numbers-from-the-real-data-fits">Headline numbers from the real-data fits<a class="headerlink" href="#headline-numbers-from-the-real-data-fits" title="Permanent link">&para;</a></h2>
-<p>Archived in <code>docs/manuscript/shared/figures/results/realdata_metrics.json</code>; see
+<p>The existing measured values are in <code>docs/manuscripts/shared/figures/results/realdata_metrics.json</code>; see
 <a href="../results/">Results</a> for interpretation and exclusions.</p>
 <table>
 <thead>
@@ -1925,13 +1950,11 @@ check before rendering provenance badges.</p>
 <tr>
 <td>Methylation (chr21 region, <span class="arithmatex">\(n=1904\)</span>)</td>
 <td><code>BayesBreakBetaObs(k_max=15, phi=coverage)</code></td>
-<td><span class="arithmatex">\(\widehat k = 15\)</span>; historical predictive score excluded</td>
+<td><span class="arithmatex">\(\widehat k = 15\)</span>; invalid predictive score excluded</td>
 </tr>
 </tbody>
 </table>
-<p>The methylation segmentation remains a real result. The historical held-out score
-<code>RES-BB-RD-007Q</code> is excluded from posterior-predictive conclusions because it used a
-Gaussian predictive calculation for Beta observations and an implicit endpoint rule.</p>
+<p>The methylation segmentation remains a completed descriptive analysis. An earlier held-out score is excluded from posterior-predictive conclusions because the calculation did not use the fitted Beta observation family and had an invalid endpoint rule. Use the current in-support family-correct scoring procedure, subject to its declared split limitations.</p>
 
 
 
@@ -2000,7 +2023,7 @@ Gaussian predictive calculation for Beta observations and an implicit endpoint r
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "search.suggest", "search.highlight", "search.share", "toc.follow", "announce.dismiss"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       

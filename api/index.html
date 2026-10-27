@@ -13,7 +13,7 @@
       
       
       
-        <link rel="prev" href="../tutorials/11_result_provenance_explorer/">
+        <link rel="prev" href="../tutorials/10_advanced_model_verification/">
       
       
         <link rel="next" href="../math/">
@@ -23,7 +23,7 @@
       
       
       <link rel="icon" href="../assets/favicon.ico">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
     
     
       
@@ -31,7 +31,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
       
         
         <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
@@ -336,6 +336,28 @@
   
 
       
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../development/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Development
+
+        </a>
+      </li>
+    
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -568,8 +590,6 @@
   
     
     
-      
-        
       
         
       
@@ -976,34 +996,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../version_lineage/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Version lineage
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../results/" class="md-nav__link">
         
   
@@ -1011,7 +1003,7 @@
   <span class="md-ellipsis">
     
   
-    Results
+    Results and limitations
   
 
     
@@ -1040,8 +1032,6 @@
   
     
     
-      
-        
       
         
       
@@ -1390,34 +1380,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../tutorials/11_result_provenance_explorer/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Result and provenance explorer
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -1435,8 +1397,6 @@
   
     
     
-      
-        
       
         
       
@@ -1697,10 +1657,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#result-provenance" class="md-nav__link">
+  <a href="#confirmatory-experiment-records" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Result provenance
+        Confirmatory experiment records
       
     </span>
   </a>
@@ -1805,6 +1765,71 @@
 
               
             
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Development
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Development
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
               
                 
   
@@ -1812,14 +1837,14 @@
   
   
     <li class="md-nav__item">
-      <a href="../changelog/" class="md-nav__link">
+      <a href="../development/" class="md-nav__link">
         
   
   
   <span class="md-ellipsis">
     
   
-    Changelog
+    Development guide
   
 
     
@@ -2005,10 +2030,10 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#result-provenance" class="md-nav__link">
+  <a href="#confirmatory-experiment-records" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Result provenance
+        Confirmatory experiment records
       
     </span>
   </a>
@@ -2360,23 +2385,16 @@ receive log density <code>-inf</code>.</p>
   per-sequence marginal <code>log p(y^{(s)})</code> of <code>def:metric-loglik</code> as the
   scoring rule (<code>BayesBreakMixtureClassifier.sequence_log_likelihood</code>).</li>
 </ul>
-<h2 id="result-provenance">Result provenance<a class="headerlink" href="#result-provenance" title="Permanent link">&para;</a></h2>
-<p><code>bayesbreak.provenance</code> provides versioned result sidecars without rewriting
-historical assets:</p>
-<ul>
-<li><code>ResultRecord</code> separates execution status, scientific interpretation, and
-  original/corrected lineage. Executed records require data, configuration,
-  code, and environment SHA-256 hashes.</li>
-<li><code>validate_result_record(record, release_mode=True)</code> rejects invalid result
-  identifiers, missing corrected-result parent links, missing corrected output
-  hashes, and non-repository-relative artifact paths.</li>
-<li><code>write_sidecar(path, record)</code> writes deterministic schema-versioned JSON.</li>
-<li><code>read_sidecar(path, migration_manifest=...)</code> reads current records or applies
-  a hash-verified, in-memory path migration to an immutable legacy sidecar.</li>
-</ul>
-<p>The JSON Schema 2020-12 contracts are under <code>schemas/</code>. Corrected reruns must
-use a new result ID and identify their historical parent; reading a legacy
-record does not authorize changing its archived bytes or interpretation.</p>
+<h2 id="confirmatory-experiment-records">Confirmatory experiment records<a class="headerlink" href="#confirmatory-experiment-records" title="Permanent link">&para;</a></h2>
+<p>Confirmatory runs use the protocol in <code>.claude/skills/bayesbreak-release-audit/</code> and
+write one checked manifest per design cell to
+<code>results/confirmatory/&lt;experiment_id&gt;/&lt;config_sha256&gt;/</code>. Each record includes
+input data and configuration hashes, code/environment identity, original
+replicate measurements, failures, metric definitions, and links to generated
+figure/table fragments. The result-record schema under <code>schemas/</code> can validate
+basic provenance fields, but schema validation alone does not establish
+statistical correctness or external ground truth. A result cannot be entered
+in the manuscript until the declared protocol acceptance tests pass.</p>
 <h2 id="boundary-metrics">Boundary metrics<a class="headerlink" href="#boundary-metrics" title="Permanent link">&para;</a></h2>
 <p><code>bayesbreak.metrics.match_boundaries_one_to_one(predicted, reference,
 tolerance)</code> first maximizes the number of eligible matches and then minimizes
@@ -2386,8 +2404,7 @@ recall, F1, matched MAE (<code>None</code> when no pair matches), axis names, re
 type, matching rule, and metric version; <code>to_dict()</code> follows the versioned
 boundary-metric schema.</p>
 <p>Comparisons with BayesBreak MAP boundaries must use a reference type such as
-<code>bayesbreak-map-agreement</code>; they are not external-truth accuracy. The cached
-baseline table generator now uses this canonical metric owner.</p>
+<code>bayesbreak-map-agreement</code>; they are not external-truth accuracy. The comparator scripts and result tables must use this canonical metric definition.</p>
 <h2 id="comparator-validation">Comparator validation<a class="headerlink" href="#comparator-validation" title="Permanent link">&para;</a></h2>
 <p><code>bayesbreak.comparators.ComparatorInputSchema</code> validates comparator values,
 coordinate axes, task type, source provenance, and an explicit <code>TuningBudget</code>
@@ -2396,8 +2413,7 @@ an unflattened sequence-by-coordinate raw observation matrix and an axis whose
 length matches the matrix observation dimension. <code>scripts/run_comparators.py</code>
 constructs this validated raw route from <code>.npy</code> inputs.</p>
 <p>Fitted curves and cached map traces cannot stand in for raw multisequence data.
-The historical CGH cached route is rejected as <code>FAIL-BB-002</code> and retained only
-as a diagnostic record; no comparator is dispatched from that artifact.</p>
+Requests based on fitted curves instead of raw multisequence observations must fail validation before comparator dispatch.</p>
 <h2 id="baselines">Baselines<a class="headerlink" href="#baselines" title="Permanent link">&para;</a></h2>
 <p><code>bayesbreak.baselines</code> exposes wrappers around upstream baseline
 libraries (no re-implementation). Algorithms are dispatched through</p>
@@ -2530,7 +2546,7 @@ upstream <code>package</code> + <code>package_version</code>, and the full <code
       <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "content.code.copy", "content.code.annotate", "content.tabs.link", "content.tooltips", "search.suggest", "search.highlight", "search.share", "toc.follow", "announce.dismiss"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
       
         <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
       
