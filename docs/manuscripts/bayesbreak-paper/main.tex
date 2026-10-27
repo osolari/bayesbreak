@@ -1,5 +1,5 @@
 % BayesBreak sole authoritative single-column manuscript (SAIM v1.1).
-\documentclass[11pt,onecolumn]{paper/saim-paper}
+\documentclass[11pt,onecolumn]{saim-paper}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \setlength{\headheight}{22pt}
@@ -36,7 +36,7 @@
 \makeatother
 
 \input{shared/metadata.tex}
-\graphicspath{{paper/figures/}{shared/figures/tikz/}{shared/saim/brand/logos/}}
+\graphicspath{{figures/}{shared/figures/tikz/}{shared/saim/brand/logos/}}
 
 \usepackage{amsmath,amsfonts,amssymb,amsthm,mathtools,bm,bbm}
 \usepackage{float,makecell,longtable,tablefootnote,pifont,adjustbox,xspace,multicol}
@@ -82,29 +82,29 @@
   pdfsubject={Generalized hierarchical Bayesian segmentation},
   pdfkeywords={\ProjectKeywords}
 }
-\input{paper/sections/00-abstract.tex}
+\input{sections/00-abstract.tex}
 
 \begin{document}
 \maketitle
-\input{paper/sections/01-introduction.tex}
-\input{paper/sections/02-related-work.tex}
-\input{paper/sections/02a-problem-notation.tex}
-\input{paper/sections/03-model-block-evidence.tex}
-\input{paper/sections/03b-family-calculations.tex}
-\input{paper/sections/04-exact-inference.tex}
-\input{paper/sections/05-structured-extensions.tex}
-\input{paper/sections/06-approximation-prediction.tex}
-\input{paper/sections/07-algorithms-complexity.tex}
-\input{paper/sections/08-experimental-design.tex}
-\input{paper/sections/09-results.tex}
+\input{sections/01-introduction.tex}
+\input{sections/02-related-work.tex}
+\input{sections/02a-problem-notation.tex}
+\input{sections/03-model-block-evidence.tex}
+\input{sections/03b-family-calculations.tex}
+\input{sections/04-exact-inference.tex}
+\input{sections/05-structured-extensions.tex}
+\input{sections/06-approximation-prediction.tex}
+\input{sections/07-algorithms-complexity.tex}
+\input{sections/08-experimental-design.tex}
+\input{sections/09-results.tex}
 \FloatBarrier
-\input{paper/sections/10-limitations.tex}
-\input{paper/sections/11-conclusion.tex}
-\input{paper/sections/90-acknowledgements.tex}
+\input{sections/10-limitations.tex}
+\input{sections/11-conclusion.tex}
+\input{sections/90-acknowledgements.tex}
 
-\bibliographystyle{shared/bibliography/iclr2026_conference}
-\bibliography{shared/bibliography/references}
+\bibliographystyle{iclr2026_conference}
+\bibliography{references}
 
 \beginappendix
-\input{paper/sections/99-appendix.tex}
+\input{sections/99-appendix.tex}
 \end{document}

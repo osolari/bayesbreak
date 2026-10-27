@@ -7,7 +7,7 @@ all: paper book
 
 paper:
 	mkdir -p $(BUILD)
-	cd bayesbreak-paper && $(LATEXMK) -outdir=../$(BUILD) -jobname=bayesbreak-paper paper/main.tex
+	cd bayesbreak-paper && $(LATEXMK) -outdir=../$(BUILD) -jobname=bayesbreak-paper main.tex
 
 book:
 	mkdir -p $(BUILD)
