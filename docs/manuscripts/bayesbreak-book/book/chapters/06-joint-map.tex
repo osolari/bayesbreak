@@ -18,7 +18,7 @@ The primary purpose is pragmatic: to make explicit what must be computed, stored
 normalized in order to reproduce the theoretical quantities (evidences, boundary posteriors,
 Bayes curves) without relying on undocumented conventions.
 
-\subsection{Block-evidence precomputation via prefix sums}
+\section{Block-evidence precomputation via prefix sums}
 \label{sec:alg-blocks}
 
 For conjugate exponential-family blocks, Theorem~\ref{thm:ef-integral} shows that the single
@@ -76,7 +76,7 @@ The DP theory remains unchanged.
 
 As sanity checks, verify that invalid blocks are represented by $-\infty$ log-scores, that $\log C_k$ is computed with the same admissibility rules as the DP, that forward and backward full-sequence evidences agree, and that boundary-event marginals sum to $k-1$ conditional on fixed $k$.
 
-\subsection{Log-space dynamic programming}
+\section{Log-space dynamic programming}
 \label{sec:alg-dp-impl}
 
 The forward/backward DP in Section~\ref{sec:dp} sums products of block evidences.
@@ -142,7 +142,7 @@ convention: after choosing the next endpoint $h$ for the block $(i,h]$, the rema
 blocks must occupy at least one observation each in $(h,n]$. Thus the summation is empty, and the
 message is $-\infty$, whenever the remaining suffix cannot support the requested number of blocks.
 
-\subsection{MAP segmentation and backtracking}
+\section{MAP segmentation and backtracking}
 \label{sec:alg-map}
 
 The DP used for evidences can be augmented to recover a MAP segmentation in
@@ -215,7 +215,7 @@ Set $\widehat{b}_{\widehat{k}}\leftarrow n$ and $q\leftarrow\widehat{k}$.
 Return $\widehat{b}$.
 \end{algorithm}
 
-\subsection{Pooling across sequences and groups}
+\section{Pooling across sequences and groups}
 \label{sec:alg-pooling}
 
 For replicated or multi-subject data with shared boundaries (Section~\ref{sec:replicates}),
@@ -251,7 +251,7 @@ $\Theta(n^2 + k_{\max}n)$ working memory per group when subject sums are streame
 floating-point underflow safely; sum $-\infty$ contributions are absorbed at the pooled step.}
 \end{algorithm}
 
-\subsection{Complexity summary and stability}
+\section{Complexity summary and stability}
 \label{sec:alg-complexity}
 
 
@@ -316,7 +316,7 @@ reduce catastrophic cancellation in moment computations.
 These practices do not affect correctness, but they materially improve stability when $n$ is
 in the hundreds or thousands.
 
-\subsection{A numerical-implementation checklist}
+\section{A numerical-implementation checklist}
 \label{sec:alg-checklist}
 
 The following checklist distills the common pitfalls we have encountered and translates them into

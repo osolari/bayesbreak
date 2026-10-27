@@ -65,7 +65,7 @@ for logistic regression and mean-field for more general GLMs); (iii) expectation
 (EP); and (iv) P\'olya--Gamma augmentation for logistic and negative-binomial blocks. Throughout
 we use the family-specific descriptor $d_t$ and any separately declared power weight $a_t$ and cumulative statistics $(S_{ij},W_{ij},H_{ij})$.
 
-\subsection{Model and notation for GLM blocks}
+\section{Model and notation for GLM blocks}
 
 Consider a one-parameter canonical GLM on a block $(i,j]$:
 \[
@@ -94,7 +94,7 @@ and
 \Psi_{ij}''(\theta) = \ell_{ij}''(\theta) + (\log\pi)''(\theta).
 \]
 
-\subsection{Existence and uniqueness of block modes}
+\section{Existence and uniqueness of block modes}
 
 \begin{lemma}[Strict log-concavity and uniqueness]
 \label{lem:concave-unique}
@@ -112,7 +112,7 @@ $\Psi_{ij}$ is strictly concave. Strict concavity gives uniqueness of any maximi
 provided by the stated attainment assumption.
 \end{proof}
 
-\subsection{Laplace approximation for single-block evidence}
+\section{Laplace approximation for single-block evidence}
 
 
 \begin{theorem}[First-order Laplace approximation with a uniform remainder]
@@ -199,7 +199,7 @@ $\log \widehat{A}^{(0)}_{ij}\leftarrow \Psi(\hat\theta) + \tfrac{1}{2}\log(2\pi)
 \KwOut{$\widehat{A}^{(0)}_{ij}$ and (optional) moments via \eqref{eq:laplace-moment}}
 \end{algorithm}
 
-\subsection{Variational lower bounds for GLM blocks}
+\section{Variational lower bounds for GLM blocks}
 
 When a deterministic lower bound is desirable, introduce a variational distribution $q(\theta)$
 and apply Jensen:
@@ -253,7 +253,7 @@ Initialize $\xi$ and a Gaussian $q(\theta)=\mathcal{N}(\mu_q,\sigma_q^2)$\;
 Return $\underline{A}^{(0)}_{ij}=\exp\{\mathcal{L}_{ij}(q)\}$ and moments from $q$.
 \end{algorithm}
 
-\subsection{Expectation propagation (EP) for GLM blocks}
+\section{Expectation propagation (EP) for GLM blocks}
 Expectation propagation (EP) \citep{minka2001ep} provides a deterministic approximation to the
 block posterior and block evidence by iteratively refining local site approximations and matching
 moments. In the formulation used here the prior is Gaussian, and each likelihood term
@@ -285,7 +285,7 @@ An implementation should export the convergence flag and the maximum site residu
 block score. Downstream DP routines may then exclude failed EP blocks, retry them with stronger
 damping, or mark the whole EP approximation as uncertified for the stability analysis.
 
-\subsection{Pólya--Gamma augmentation for binomial-logistic blocks}
+\section{Pólya--Gamma augmentation for binomial-logistic blocks}
 \begin{theorem}[P\'olya--Gamma identity and conditional conjugacy]
 \label{thm:pg}
 For binomial logistic blocks with counts $m_t$ and successes $y_t$, let $w_t\ge 0$ denote either
@@ -393,7 +393,7 @@ Algorithm~\ref{alg:precompute-nonconj} provides a generic recipe for constructin
 Run DP (Algorithm~\ref{alg:dp-core}) with resulting block evidences.
 \end{algorithm}
 
-\subsection{Propagation of block approximation error through the DP}
+\section{Propagation of block approximation error through the DP}
 
 \begin{assumption}[Uniform per-block log-evidence error]
 \label{ass:uniform-block-error}

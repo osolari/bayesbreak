@@ -14,7 +14,7 @@ L_{0,0}=1,\quad L_{0,j}=0\ (j>0),\qquad
 R_{0,n}=1,\quad R_{0,i}=0\ (i<n).
 \]
 
-\subsection{Forward/backward recursions}
+\section{Forward/backward recursions}
 Given single-block evidences $A^{(0)}_{ij}$, the forward and backward recursions are
 \begin{equation}
 L_{k+1,j}
@@ -100,7 +100,7 @@ Compute $P(k\mid y)\propto p(k)\,\widetilde{L}_{k n}/C_k$ (cf.\ \eqref{eq:post-k
 \KwOut{$\{\widetilde{L}_{k j}\}$, $\{\widetilde{R}_{k i}\}$, $P(k\mid y)$, $\widehat{k}$, and boundary-marginal diagnostics}
 \end{algorithm}
 
-\subsection{Incorporating segment-factorized boundary priors}
+\section{Incorporating segment-factorized boundary priors}
 \label{subsec:priorinc}
 
 Suppose the boundary prior given $k$ factorizes over segment lengths as in \eqref{eq:partition-prior-factor}:
@@ -129,7 +129,7 @@ L^{(g)}_{k+1,j}=\sum_{h=k}^{j-1}L^{(g)}_{k,h}\,\gamma_x(h,j),\ L^{(g)}_{0,0}=1.
 \end{equation}
 In the index-uniform case $g\equiv 1$, \eqref{eq:Ck-general} reduces to $C_k=\binom{n-1}{k-1}$.
 
-\subsection[Posteriors over segment counts, boundary marginals, and joint MAP segmentations]{Posteriors over $k$, boundary marginals, and joint MAP segmentations}
+\section[Posteriors over segment counts, boundary marginals, and joint MAP segmentations]{Posteriors over $k$, boundary marginals, and joint MAP segmentations}
 Let $p(k)$ be a prior on segment count. Under index-uniform $p(t\mid k)$ we have
 $C_k=\binom{n-1}{k-1}$ and
 \[
@@ -217,7 +217,7 @@ In the sequel, whenever we report an \emph{exported MAP segmentation}, we mean t
 $\widehat{t}^{\,\mathrm{MAP}}:=\widehat{t}^{\,\mathrm{MAP}}(\widehat{k})$ rather than a vector of marginal
 boundary modes.
 
-\subsection{Segment-level and regression-curve posterior moments}
+\section{Segment-level and regression-curve posterior moments}
 For segment-wise posterior moments attached to a \emph{fixed} segmentation
 $t=(t_0,\dots,t_k)$, let segment $q\in\{1,\dots,k\}$ correspond to block
 $(i,j]=(t_{q-1},t_q]$. Then
@@ -410,7 +410,7 @@ $P(y\mid k)$ and posterior weights $P(k\mid y)$ rather than through an unnormali
 ``add one boundary'' heuristic.
 \end{remark}
 
-\subsection{End-to-end BayesBreak inference routine}\label{sec:dp-alg}
+\section{End-to-end BayesBreak inference routine}\label{sec:dp-alg}
 Collecting the ingredients from Sections~\ref{sec:ef} and \ref{sec:dp}---block-evidence precomputation,
 exact sum-product DP over partitions, and max-sum backtracking for exported segmentations---yields an
 end-to-end routine suitable for direct implementation. Algorithm~\ref{alg:bayesbreak} summarizes

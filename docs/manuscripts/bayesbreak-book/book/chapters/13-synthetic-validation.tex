@@ -2,7 +2,7 @@
 \label{ch:synthetic}\label{sec:experiments}
 \chapterpromise{Real recovery, calibration, portability, approximation, and scaling outputs interpreted at the exact scope supported by their archived protocols.}
 
-\subsection{Single-sequence Gaussian illustration}
+\section{Single-sequence Gaussian illustration}
 \label{sec:single_synth}
 
 We begin with a Gaussian sequence containing two true changepoints. Figure~\ref{fig:single_synth}
@@ -34,7 +34,7 @@ $\mathbb{E}[k\mid y]$ is larger, indicating residual posterior mass on more high
 configurations. This is precisely why the book distinguishes sum-product posterior summaries from
 max-sum exported segmentations.
 
-\subsection{Likelihood-family showcase}
+\section{Likelihood-family showcase}
 
 BayesBreak is designed so that the global DP layer does not depend on the observation model once
 block evidences are available. Figure~\ref{fig:family_showcase} visualizes this portability across
@@ -49,7 +49,7 @@ the true latent parameter closely and preserves the correct qualitative segmenta
     \label{fig:family_showcase}
 \end{figure}
 
-\subsection{Quantitative summary across families}
+\section{Quantitative summary across families}
 
 Table~\ref{tab:single_quant} aggregates the small synthetic benchmark packaged with the archive.
 The main takeaway is not that one family universally dominates another, but that the same DP
@@ -70,7 +70,7 @@ Because the table reflects one archived benchmark configuration rather than a la
 study, the numbers serve as a compact portability and relative-difficulty summary, not as
 a definitive cross-family ranking.
 
-\subsection{Calibration of boundary posterior probabilities}
+\section{Calibration of boundary posterior probabilities}
 
 A central advantage of the Bayesian formulation is that it returns marginal posterior probabilities
 for boundary events. Figure~\ref{fig:calibration} checks whether those probabilities are
@@ -93,7 +93,7 @@ changepoints. For BayesBreak, well-behaved posterior probabilities are equally i
 control downstream thresholding, boundary ranking, and any decision rule that is sensitive to the
 strength of evidence rather than just to the best segmentation.
 
-\subsection{Latent-group pooling}
+\section{Latent-group pooling}
 
 Figure~\ref{fig:latent_groups} evaluates the finite latent-group template model on $n_{\mathrm{seq}}=24$
 synthetic Gaussian sequences ($n=80$, $\sigma=1.0$) drawn from two groups with different
@@ -137,7 +137,7 @@ identifiability or a global-optimum guarantee.
     \label{fig:latent-stress-corrected}
 \end{figure}
 
-\subsection{Non-conjugate approximation trade-offs}
+\section{Non-conjugate approximation trade-offs}
 
 For non-conjugate likelihoods, BayesBreak relies on approximate block evidences while reusing the
 same DP layer. Table~\ref{tab:nonconj_tradeoff} compares several such approximations in a bundled
@@ -162,7 +162,7 @@ small-$\varepsilon$ regime. The table still usefully shows that block-level erro
 segmentation quality need not move monotonically together, but it is not a universal ranking of
 non-conjugate approximation methods.
 
-\subsection{Runtime scaling}
+\section{Runtime scaling}
 
 Finally, Figure~\ref{fig:runtime} and Table~\ref{tab:runtime_scaling} report runtime behavior for
 the Gaussian implementation. Panel~A sweeps the series length $n\in\{50,100,200,400,800\}$ at two

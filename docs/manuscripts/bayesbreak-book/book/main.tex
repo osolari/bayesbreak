@@ -1,5 +1,6 @@
 % BayesBreak technical-book entrypoint using the SAIM Unified Professional template.
 \documentclass[11pt,oneside,openany]{book}
+\usepackage[T1]{fontenc}
 \input{shared/metadata.tex}
 
 \newcommand{\BookTitle}{\ProjectTitle}
@@ -14,6 +15,12 @@
 
 \usepackage{book/saim-book}
 \usepackage{bm,bbm,makecell,longtable,tablefootnote,pifont,float,wrapfig,epigraph}
+\makeatletter
+\DeclareFontShape{U}{bbm}{m}{n}{
+   <3.55><4.25><8.5> sub * cmr/m/n
+   <5><6><7><8><9><10><12> gen * bbm
+}{}
+\makeatother
 \usepackage[ruled,vlined,linesnumbered]{algorithm2e}
 \usetikzlibrary{bayesnet,matrix,chains}
 \input{shared/components/math.tex}
