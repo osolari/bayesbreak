@@ -1,9 +1,11 @@
 # BayesBreak
 
 [![CI](https://github.com/osolari/bayesbreak/actions/workflows/ci.yml/badge.svg)](https://github.com/osolari/bayesbreak/actions/workflows/ci.yml)
+[![PyPI](https://img.shields.io/pypi/v/bayesbreak.svg)](https://pypi.org/project/bayesbreak/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
 [![arXiv](https://img.shields.io/badge/arXiv-2603.14681-b31b1b.svg?logo=arxiv&logoColor=white)](https://arxiv.org/abs/2603.14681)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23711344.svg)](https://doi.org/10.5281/zenodo.23711344)
 
 **Generalized hierarchical Bayesian segmentation with a scikit-learn compatible API.**
 

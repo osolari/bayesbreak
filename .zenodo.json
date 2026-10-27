@@ -1,4 +1,5 @@
 {
+  "doi": "10.5281/zenodo.23711344",
   "title": "BayesBreak: Generalized Hierarchical Bayesian Segmentation",
   "description": "BayesBreak is a Python library for offline Bayesian segmentation. It supports irregular designs, multi-sequence shared-boundary pooling, grouped and latent-group templates, exact conjugate inference, and explicitly approximate nonconjugate block calculations with certified perturbation bounds. All E00–E10 confirmatory experiments pass their execution gates.",
   "version": "2.1.0",
