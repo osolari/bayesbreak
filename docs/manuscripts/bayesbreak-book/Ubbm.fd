@@ -1,0 +1,20 @@
+%% Local Ubbm.fd — extends system bbm font definitions to cover all optical sizes,
+%% eliminating "Font shape U/bbm/m/n in size <X> not available" warnings.
+\DeclareFontFamily{U}{bbm}{}
+\DeclareFontShape{U}{bbm}{m}{n}{
+   <-6>    bbm5
+   <6-7>   bbm6
+   <7-8>   bbm7
+   <8-9>   bbm8
+   <9-10>  bbm9
+   <10-12> bbm10
+   <12->   bbm12
+}{}
+\DeclareFontShape{U}{bbm}{m}{sl}{
+   <5><6><7><8><9><10><12> gen * bbmsl
+   <-> ssub * bbm/m/n
+}{}
+\DeclareFontShape{U}{bbm}{bx}{n}{
+   <5><6><7><8><9><10><12> gen * bbmbx
+   <-> ssub * bbm/m/n
+}{}
