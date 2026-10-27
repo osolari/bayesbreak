@@ -52,7 +52,7 @@ info() { printf '%s\n' "$*"; }
 
 # Every directory under the docs dir is a candidate manuscript.
 discover() {
-  find "$MANUSCRIPT_DIR" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort
+  find "$MANUSCRIPT_DIR" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort
 }
 
 project_id_for() {
