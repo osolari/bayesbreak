@@ -15,7 +15,7 @@ fit inserts a short intermediate segment before settling into the large middle p
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{paper/figures/fig1_synthetic_gaussian.pdf}
+    \includegraphics[width=\textwidth]{shared/figures/results/fig1_synthetic_gaussian.pdf}
     \caption{Single-sequence Gaussian example. Top: marginal posterior probability that each interior index $i\in\{1,\dots,n-1\}$ is a changepoint, with dashed vertical lines marking the true changepoints. Bottom: observed data, true latent mean, exported joint MAP segmentation, and 90\% segment-level posterior intervals.}
     \label{fig:single_synth}
 \end{figure}
@@ -44,7 +44,7 @@ the true latent parameter closely and preserves the correct qualitative segmenta
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{paper/figures/fig2_family_showcase.pdf}
+    \includegraphics[width=\textwidth]{shared/figures/results/fig2_family_showcase.pdf}
     \caption{Likelihood-family showcase. The first three panels use closed-form conjugate block integrals (Gaussian, Poisson, and Binomial), while the final panel uses the one-dimensional Beta-response quadrature routine. In each case the fitted BayesBreak signal is close to the true piecewise-constant latent parameter.}
     \label{fig:family_showcase}
 \end{figure}
@@ -83,7 +83,7 @@ boundary probability correspond to larger empirical boundary frequency.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.78\textwidth]{paper/figures/fig3_boundary_calibration.pdf}
+    \includegraphics[width=0.78\textwidth]{shared/figures/results/fig3_boundary_calibration.pdf}
     \caption{Calibration of marginal boundary posterior probabilities under synthetic Gaussian data. The dashed diagonal denotes perfect calibration; the orange curve is the empirical frequency within bins of predicted probability.}
     \label{fig:calibration}
 \end{figure}
@@ -107,12 +107,12 @@ $t\!\approx\!53$ and a softer mode near $t\!\approx\!26$ for the first.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.82\textwidth]{paper/figures/fig4_latent_groups_cropped.pdf}
+    \includegraphics[width=0.82\textwidth]{shared/figures/results/fig4_latent_groups_cropped.pdf}
     \caption{Latent-group pooling on synthetic Gaussian sequences ($n=80$, $\sigma=1.0$, $n_{\mathrm{seq}}=24$). Left: posterior responsibilities $r_{sg}$ for each sequence and score-template group, sorted by truth; the right-hand stripe encodes the true label. Right: group-specific marginal boundary probabilities under the fitted latent templates, with dotted vertical lines marking the true per-group changepoints.}
     \label{fig:latent_groups}
 \end{figure}
 
-A six-panel companion diagnostic (uncropped figure \path{paper/figures/fig4_latent_groups.pdf})
+A six-panel companion diagnostic (uncropped figure \path{shared/figures/results/fig4_latent_groups.pdf})
 unpacks the same fit further: per-group example sequences with the inferred piecewise mean,
 the boundary marginals, the responsibility heatmap, the group-averaged signal, and a
 per-sequence assignment-confidence diagnostic that plots $r_{s,y_s}$ (responsibility on the
@@ -132,7 +132,7 @@ identifiability or a global-optimum guarantee.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.88\textwidth]{paper/figures/fig_latent_template_stress.png}
+    \includegraphics[width=0.88\textwidth]{shared/figures/results/fig_latent_template_stress.png}
     \caption{Finite-template stress study. Top: label-invariant hard accuracy with dataset-level 95\% intervals. Bottom: collapse or duplicate-template rate across the eight declared cells.}
     \label{fig:latent-stress-corrected}
 \end{figure}
@@ -182,7 +182,7 @@ Remark~\ref{rem:mem-time}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{paper/figures/fig5_runtime_scaling.pdf}
+    \includegraphics[width=\textwidth]{shared/figures/results/fig5_runtime_scaling.pdf}
     \caption{Runtime scaling for the Gaussian implementation. Panel A: log-log wall-clock time vs.\ series length $n\in\{50,100,200,400,800\}$ at two segment budgets $k_{\max}\in\{10,20\}$; annotated slopes give the empirical $\log t$ vs.\ $\log n$ exponent for each curve, and a dashed reference line shows the theoretical $\mathcal{O}(n^2)$ worst case anchored at the smallest measured point. Panel B: log-log time vs.\ $k_{\max}\in\{5,10,20,40,80\}$ at fixed $n=200$ with a dashed linear-in-$k_{\max}$ reference. Points are means over 5 repetitions; error bars denote one standard deviation.}
     \label{fig:runtime}
 \end{figure}

@@ -6,12 +6,12 @@ BUILD := build
 all: paper book
 
 paper:
-	mkdir -p $(BUILD)/paper
-	$(LATEXMK) -outdir=$(BUILD)/paper -jobname=bayesbreak-main-paper paper/main.tex
+	mkdir -p $(BUILD)
+	cd bayesbreak-paper && $(LATEXMK) -outdir=../$(BUILD) -jobname=bayesbreak-paper paper/main.tex
 
 book:
 	mkdir -p $(BUILD)
-	$(LATEXMK) -outdir=$(BUILD) -jobname=bayesbreak-technical-book book/main.tex
+	cd bayesbreak-book && $(LATEXMK) -outdir=../$(BUILD) -jobname=bayesbreak-book book/main.tex
 
 clean:
 	rm -rf $(BUILD)
