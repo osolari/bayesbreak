@@ -2,7 +2,7 @@
   "experiment_id": "E00",
   "protocol_revision": "2026-10-21-2",
   "config_sha256": "03a4d1c38bfe08c1ca1d47164e1746eb3e846b87cfb9e8cd04339b912271e5db",
-  "git_revision": "115fc03b82c3f6a2383e257efba4273213ac2cb9",
+  "git_revision": "cde463e88e7d8a26a059007737f776540d572c12",
   "working_tree_dirty": true,
   "source_file_sha256": {
     "src/bayesbreak/dp.py": "6e455402e6bc0aed9cc98ac7c442ac26f434270b84549da74b75cf793df75465",
@@ -11,7 +11,7 @@
     "src/bayesbreak/families/binomial.py": "1a8da3b86fc5fae54cf41386fac844685ae1fae5a8d7ab684d16f45df9d062ab",
     "src/bayesbreak/families/negative_binomial.py": "2bc5daf9ef4be3871b4703eb86b1e180cc398b79e95e6683c64d9db30730883e",
     "tests/test_confirmatory_E00_oracles.py": "ebaa73fb51d787682923b80a4f8c7289096668a1ba40fcf5f4a4ed195f063381",
-    ".claude/skills/bayesbreak-release-audit/protocols/experiments.json": "f3faa92542a7f9a35a1c1e67dde6c9c569b3c95cc5be3646a198da264838fbc4"
+    ".claude/skills/bayesbreak-release-audit/protocols/experiments.json": "8724b1a0b3010e103c69e6d71e592d09a818d5abfb6948f6ec1e9c8f562c4bab"
   },
   "python_version": "3.12.9 | packaged by Anaconda, Inc. | (main, Feb  6 2025, 12:55:12) [Clang 14.0.6 ]",
   "numpy_version": "2.4.4",
@@ -33,7 +33,7 @@
   "fit_status": "completed",
   "metric_schema": "E00_oracle_checks",
   "artifact_sha256": "a732ff52c859ed3f66252cd92f5338afdedfea1a7ebee058d3b546675dac8943",
-  "utc_start": "2026-10-26T20:55:58.084197+00:00",
-  "utc_end": "2026-10-26T20:57:43.055208+00:00",
+  "utc_start": "2026-10-27T18:09:00.039581+00:00",
+  "utc_end": "2026-10-27T18:10:54.996153+00:00",
   "platform": "macOS-26.6.1-arm64-arm-64bit"
 }

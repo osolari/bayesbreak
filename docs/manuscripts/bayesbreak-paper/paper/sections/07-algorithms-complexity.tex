@@ -93,6 +93,8 @@ Latent-group template update & $\Theta(GSn^2+Gk_{\max}n^2)$ per iteration & prob
 \end{tabularx}
 \end{table}
 
+The working-memory column lists per-component storage only. Forward and backward message arrays together require $\Theta(k_{\max}n)$, but the block-evidence matrix computed in the precomputation step occupies $\Theta(n^2)$ and must remain in memory throughout the partition recursions. Total peak memory is therefore $\Theta(n^2+k_{\max}n)=\Theta(n^2)$ for $k_{\max}\le n$. Retaining all block-cover terms for posterior-moment summaries adds $\Theta(k_{\max}n^2)$, as noted in Section~\ref{sec:exact-inference}.
+
 Enumeration of all admissible segments is the principal cost of the exact calculation. Pruning, screening, or a restricted changepoint grid can reduce computation, but may also remove partitions unless the restriction is proved exact for the specified model. Such accelerations are not included in the exactness claims of this paper unless their preservation of the partition sum is established separately.
 
 \subsection{Reproducibility}

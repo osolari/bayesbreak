@@ -14,7 +14,7 @@ hide:
   <p class="saim-hero-badges">
     <a href="https://arxiv.org/abs/2603.14681">arXiv:2603.14681</a>
     <a href="https://github.com/osolari/bayesbreak">GitHub</a>
-    <a href="manuscript.md">Manuscript PDF</a>
+    <a href="manuscript.md">Manuscript</a>
     <a href="quickstart.md">Quickstart</a>
     <a href="tutorials/01_quickstart.ipynb">Notebooks</a>
   </p>
@@ -28,7 +28,7 @@ companion paper:
 > Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and
 > Grouped/Latent-Group Designs.* sAIm Labs.
 > [arXiv:2603.14681](https://arxiv.org/abs/2603.14681){target=_blank} ·
-> [PDF](https://github.com/osolari/bayesbreak/blob/main/docs/manuscripts/previews/BayesBreak_Paper_Single_Column.pdf){target=_blank}
+> [Source](https://github.com/osolari/bayesbreak/tree/main/docs/manuscripts/bayesbreak-paper/paper){target=_blank}
 
 ```bibtex
 @article{solari2026bayesbreak,
@@ -106,15 +106,15 @@ full. Selected highlights:
 
 | Case study | Fit | Outcome |
 |---|---|---|
-| **Well-log NMR** (4050-point geology) | `BayesBreakGaussian(k_max=40)` | $\widehat k = 23$, log p(y) = −4989.28 |
-| **Coriell array-CGH** ($S=43$, $n_{\mathrm{probes}}=2215$) | `SharedBoundaryReplicatesSegmenter` | $\widehat k = 15$, pooled log p(y) = 76 359.8 |
-| **S&P 500 volatility** (Gaussian on $\log r_t^2$) | `BayesBreakGaussian(k_max=50)` | $\widehat k = 29$, log p(y) = −1296.7 |
-| **CpG methylation** (chr21 test region, $n=1904$) | `BayesBreakBetaObs` | $\widehat k = 15$, held-out logpred = −387.5 |
+| **Well-log NMR** (n=4050 geology) | `BayesBreakGaussian(k_max=40)` | $\widehat k=23$, log p(y)=−4989.28 |
+| **Array-CGH single** (n=2215 probes, rolling-MAD precision) | `BayesBreakGaussian` | $\widehat k=71$ |
+| **Array-CGH pooled** (S=43 subjects) | `SharedBoundaryReplicatesSegmenter` | Truncated at $k_{\max}=60$; unresolved |
+| **CpG methylation** (n=1904, chr21) | `BayesBreakBetaObs` | Truncated at $k_{\max}=120$; unresolved |
 
-Plus a calibrated boundary-posterior diagnostic (`fig:calibration`),
-latent-template clustering, runtime scaling consistent with
-$\mathcal{O}(k_{\max} n^2)$, and a non-conjugate block-error
-trade-off study (Laplace / JJ / PG-VB / EP / 1-D quadrature).
+E09 defines 31 protocol cells; 6 were resolved, 25 truncated. See [Results](results.md)
+for full breakdown and limitations. Plus a calibrated boundary-posterior diagnostic,
+latent-template clustering, runtime scaling consistent with $\mathcal{O}(k_{\max} n^2)$,
+and a non-conjugate block-error trade-off study (Laplace / JJ / EP / 1-D quadrature).
 
 ## Where to go next
 

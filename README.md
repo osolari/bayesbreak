@@ -264,8 +264,8 @@ cached data inputs from experiment results.
 To regenerate a single figure:
 
 ```bash
-python scripts/figures/render.py --fig fig1
-python scripts/figures/render.py --fig fig_E06_global_error
+python scripts/figures/render.py --only fig1
+python scripts/figures/render.py --only fig_E06_global_error
 ```
 
 To validate the full figure and table inventory:
@@ -291,8 +291,8 @@ preprint: [arXiv:2603.14681](https://arxiv.org/abs/2603.14681).
 ```
 
 See also [`CITATION.cff`](CITATION.cff), the
-[single-column paper](docs/manuscripts/previews/BayesBreak_Paper_Single_Column.pdf),
-the [technical book](docs/manuscripts/previews/BayesBreak_Technical_Book.pdf),
+[single-column paper source](docs/manuscripts/paper/main.tex),
+the [companion book source](docs/manuscripts/book/main.tex),
 and [manuscript source and status](docs/manuscript.md).
 
 ## Contributing
@@ -317,7 +317,7 @@ All E00-E10 confirmatory experiments have been executed (gate_pass=True for all)
 | E03 irregular design | `e0d11782dcbd95ff` | COMPLETE |
 | E04 shared boundary | `0d135a601bdf32b1` | COMPLETE |
 | E05 latent templates | `d33f1c5e067d38ff` | COMPLETE |
-| E06 nonconjugate | `9739f69c790aae6f` | gate_pass=True; pg_vb aliases jj -- methodological audit pending |
+| E06 nonconjugate | `9739f69c790aae6f` | COMPLETE; `pg_vb` and `jj` invoke the same JJ routine (documented in §6) |
 | E07 misspecification | `a038ac8e7e4a17b9` | COMPLETE |
 | E08 posterior prediction | `a23d9fe92c02724c` | COMPLETE |
 | E09 real data | `0f5281c46ee8976e` | Execution COMPLETE; scientific completeness INCOMPLETE (CGH pooled and methylation truncated; R baselines unavailable) |

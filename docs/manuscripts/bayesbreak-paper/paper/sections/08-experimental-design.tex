@@ -94,17 +94,17 @@ is not conflated with a block whose observed-data likelihood equals one.
 
 \begin{table}[!htbp]
 \centering\small
-\caption{\textbf{Planned Table P0 (E00).} Independent verification of the
-exact recursions and family-specific integrals. Fill each entry with the
-maximum observed numerical discrepancy across the enumerated test cases.}
+\caption{\textbf{Table P0 (E00).} Independent verification of the exact
+recursions and family-specific integrals (artifact \texttt{03a4d1c38bfe08c1}).
+Maximum observed numerical discrepancy across 380 enumerated test cases; all 380 passed.}
 \label{tab:planned-oracles-paper}
 \begin{tabularx}{0.88\textwidth}{@{}Y L{0.17\textwidth}L{0.17\textwidth}L{0.19\textwidth}@{}}
 \toprule
 Quantity & Cases tested & Maximum absolute error & Acceptance tolerance \\
 \midrule
-Partition sums and normalizers & TBD & TBD & $10^{-8}$ on log scale \\
-Boundary probabilities and moments & TBD & TBD & $10^{-9}$ probability \\
-Family-specific integrated likelihoods & TBD & TBD & Reference integration tolerance \\
+Partition sums and normalizers & 4 families; $n\in\{2,\ldots,10\}$; nonuniform prior factors (Gaussian) & $1.07\times10^{-14}$ & $10^{-8}$ on log scale \\
+Boundary probabilities and moments & 4 families; $n\in\{2,\ldots,10\}$; first moments; 2nd-moment vs.\ quadrature (Gaussian, Poisson) & $7.11\times10^{-15}$ prob.; $6.30\times10^{-7}$ 2nd-moment & $10^{-9}$ prob.; $10^{-6}$ 2nd-moment \\
+Family-specific integrated likelihoods & 4 families; $n\in\{2,\ldots,10\}$; unit and nonunit descriptors vs.\ 1D adaptive quadrature & $3.91\times10^{-14}$ & $10^{-6}$ (absolute) \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -275,8 +275,7 @@ Use the original well-log record, the probe-aligned array-CGH matrix, the
 2015--2023 daily S\&P 500 series, and the \texttt{methylKit} chromosome-21
 example with dataset identity and checksums fixed before fitting. Reproduce
 the reported preprocessing and include the full well-log record alongside the
-subsample. Array-CGH must first use a validated Gaussian precision likelihood;
-report its corrected results separately from the earlier powered-weight fit.
+subsample. Array-CGH analysis uses per-probe precision weights derived from rolling median absolute deviation of log$_2$ ratio differences, with a pooled reference variance estimate across subjects; this is a data-driven specification rather than a physically calibrated noise model. The precision weights enter the Gaussian likelihood as known inverse-variance scale factors, not as generalized-Bayes likelihood powers. Sensitivity of the segmentation to the precision specification, and comparison with a uniform-precision analysis, remain as potential future analyses.
 For methylation, compare count-based Binomial or Beta-Binomial modeling when
 raw methylated and total reads are available to the existing continuous-Beta
 response model; do not regard a Gaussian predictive fallback as a valid Beta
