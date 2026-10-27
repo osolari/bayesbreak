@@ -81,11 +81,11 @@ POISSON_HYPER = {"alpha": 2.0, "beta": 1.0}
 BINOMIAL_HYPER = {"alpha": 2.0, "beta": 3.0}
 NEGBIN_HYPER = {"alpha": 2.0, "beta": 3.0}
 
-RESULTS_BASE = os.path.join(
+# Read-only reference to the canonical artifact directory — never written to during test runs.
+CANONICAL_RESULTS_BASE = os.path.join(
     os.path.dirname(__file__), "..", "results", "confirmatory",
     "E00_exact", E00_CONFIG_SHA256[:16],
 )
-os.makedirs(RESULTS_BASE, exist_ok=True)
 
 # ---------------------------------------------------------------------------
 # Section 1: Pure oracle utilities (no production code)
@@ -1612,11 +1612,18 @@ def _sha256_file(path: str) -> str:
 
 
 @pytest.fixture(scope="session", autouse=True)
-def write_e00_results():
-    """Write manifest, oracle_checks.json, and metrics.json after all tests."""
+def write_e00_results(tmp_path_factory):
+    """Write manifest, oracle_checks.json, and metrics.json to a temp dir after all tests.
+
+    Results are written to a temporary directory, not to the canonical
+    confirmatory artifact at CANONICAL_RESULTS_BASE. After writing, oracle
+    checks are compared against the canonical artifact to detect any scientific
+    divergence introduced by code changes.
+    """
     start_utc = datetime.now(timezone.utc).isoformat()
     yield
     end_utc = datetime.now(timezone.utc).isoformat()
+    out_dir = str(tmp_path_factory.mktemp("e00_results"))
 
     repo_root = os.path.join(os.path.dirname(__file__), "..")
 
@@ -1692,16 +1699,16 @@ def write_e00_results():
         "platform": platform.platform(),
     }
 
-    with open(os.path.join(RESULTS_BASE, "manifest.json"), "w") as f:
+    with open(os.path.join(out_dir, "manifest.json"), "w") as f:
         json.dump(manifest, f, indent=2)
 
-    oracle_checks_path = os.path.join(RESULTS_BASE, "oracle_checks.json")
+    oracle_checks_path = os.path.join(out_dir, "oracle_checks.json")
     with open(oracle_checks_path, "w") as f:
         json.dump(_oracle_checks, f, indent=2)
 
     # Update artifact_sha256 now that oracle_checks.json is written.
     manifest["artifact_sha256"] = _sha256_file(oracle_checks_path)
-    with open(os.path.join(RESULTS_BASE, "manifest.json"), "w") as f:
+    with open(os.path.join(out_dir, "manifest.json"), "w") as f:
         json.dump(manifest, f, indent=2)
 
     n_total = len(_oracle_checks)
@@ -1748,5 +1755,31 @@ def write_e00_results():
         "gate_pass": n_fail == 0,
     }
 
-    with open(os.path.join(RESULTS_BASE, "metrics.json"), "w") as f:
+    with open(os.path.join(out_dir, "metrics.json"), "w") as f:
         json.dump(metrics, f, indent=2)
+
+    # Verify scientific consistency against the canonical artifact.  If the
+    # canonical oracle_checks.json is present, every check must agree in its
+    # `passed` flag and `max_error` value — any divergence means production
+    # code has changed the numerical results.
+    canonical_checks_path = os.path.join(CANONICAL_RESULTS_BASE, "oracle_checks.json")
+    if os.path.isfile(canonical_checks_path):
+        with open(canonical_checks_path) as f:
+            canonical_checks = json.load(f)
+        assert len(canonical_checks) == len(_oracle_checks), (
+            f"oracle check count changed: canonical={len(canonical_checks)}, "
+            f"current={len(_oracle_checks)}"
+        )
+        for idx, (canon, current) in enumerate(zip(canonical_checks, _oracle_checks)):
+            assert canon["passed"] == current["passed"], (
+                f"oracle check #{idx} ({current.get('quantity')}, "
+                f"family={current.get('family')}, n={current.get('n')}, "
+                f"k={current.get('k')}): passed changed "
+                f"{canon['passed']} → {current['passed']}"
+            )
+            assert abs(canon["max_error"] - current["max_error"]) < 1e-20, (
+                f"oracle check #{idx} ({current.get('quantity')}, "
+                f"family={current.get('family')}, n={current.get('n')}, "
+                f"k={current.get('k')}): max_error changed "
+                f"{canon['max_error']} → {current['max_error']}"
+            )

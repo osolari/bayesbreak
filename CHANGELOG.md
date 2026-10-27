@@ -1,5 +1,14 @@
 # Changelog
 
+## [2.1.0] — 2026-10-26 — First public release
+
+Initial public release. All E00–E10 confirmatory experiments executed and
+passing. Scientific completeness notes: E09 execution gate passed but 25 of
+31 protocol cells are truncated at their declared k_max; R-based comparators
+(CBS, SMUCE) are unavailable in the execution environment.
+
+See [CHANGELOG history](#unreleased) below for the full development record.
+
 ## Unreleased
 
 ### Confirmatory experiment execution (E03-E10)

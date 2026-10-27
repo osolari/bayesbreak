@@ -1,0 +1,67 @@
+name: Release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build and test distributions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: pip install build twine
+
+      - name: Build distributions
+        run: python -m build
+
+      - name: Check distributions
+        run: python -m twine check dist/*
+
+      - name: Install wheel and run smoke test
+        run: |
+          pip install dist/*.whl
+          python -c "
+          import bayesbreak, numpy as np
+          from bayesbreak import BayesBreakGaussian
+          rng = np.random.default_rng(0)
+          y = np.r_[rng.normal(0, 0.3, 50), rng.normal(2, 0.3, 50), rng.normal(-1, 0.3, 50)]
+          X = np.arange(y.size).reshape(-1, 1)
+          est = BayesBreakGaussian(k_max=5).fit(X, y)
+          assert est.k_map_ == 3, f'Expected k_map=3, got {est.k_map_}'
+          print('Smoke test passed — version', bayesbreak.__version__)
+          "
+
+      - name: Upload distributions as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 7
+
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write
+    steps:
+      - name: Download distributions
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

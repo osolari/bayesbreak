@@ -134,8 +134,9 @@ from bayesbreak import (
   segment posteriors recovered conditionally on the pooled boundary vector.
 - `BayesBreakGroupedClassifier` — known-group classification; per-group
   exemplar fits + exported-MAP scoring of new sequences.
-- `BayesBreakMixtureClassifier` — latent-group **finite-template score-clustering/MM**
-  (§`latent-em`), maximizing the stated finite-template objective `ℓ_⋆`.
+- `BayesBreakMixtureClassifier` — latent-group **finite-template score-clustering** via
+  Jensen minorization-maximization (Algorithm `multi-em`), monotonically maximizing
+  the finite-template objective `ℓ_⋆` — not a generative mixture likelihood.
 
 ## Prediction layer (§`sec:prediction`)
 
@@ -221,7 +222,7 @@ share the same admissibility convention. Each family also declares a
 | Joint MAP via max-sum + backtracking (eq. `joint-map-k`) | `bayesbreak.dp.max_sum_segmentation` |
 | Bayes regression curve (eq. `segmom`) | `bayesbreak.dp.bayes_regression_curve_{fixed,mixed}_k` |
 | Theorem `multisubject` (replicates) | `bayesbreak.replicates.SharedBoundaryReplicatesSegmenter` |
-| Algorithm `multi-em` (latent-template EM) | `bayesbreak.mixture.BayesBreakMixtureClassifier` |
+| Algorithm `multi-em` (latent-template Jensen MM) | `bayesbreak.mixture.BayesBreakMixtureClassifier` |
 | Posterior-predictive (Prop. `ef-predictive`) | `bayesbreak.prediction.posterior_predictive_logpdf` |
 | Algorithms `predict-group` / `predict-map` | `bayesbreak.prediction.{predict_group, predict_map_signal}` |
 | Non-conjugate block approximations (§`sec:nonconj`) | `BayesBreakLogisticNormal(approx=...)`, `BayesBreakBetaObs(phi=φ_t)` |
@@ -291,8 +292,8 @@ preprint: [arXiv:2603.14681](https://arxiv.org/abs/2603.14681).
 ```
 
 See also [`CITATION.cff`](CITATION.cff), the
-[single-column paper source](docs/manuscripts/paper/main.tex),
-the [companion book source](docs/manuscripts/book/main.tex),
+[single-column paper source](docs/manuscripts/bayesbreak-paper/paper/main.tex),
+the [companion book source](docs/manuscripts/bayesbreak-book/book/main.tex),
 and [manuscript source and status](docs/manuscript.md).
 
 ## Contributing

@@ -1,0 +1,36 @@
+{
+  "title": "BayesBreak: Generalized Hierarchical Bayesian Segmentation",
+  "description": "BayesBreak is a Python library for offline Bayesian segmentation. It supports irregular designs, multi-sequence shared-boundary pooling, grouped and latent-group templates, exact conjugate inference, and explicitly approximate nonconjugate block calculations with certified perturbation bounds. All E00–E10 confirmatory experiments pass their execution gates.",
+  "version": "2.1.0",
+  "upload_type": "software",
+  "license": "mit-license",
+  "creators": [
+    {
+      "name": "Shams Solari, Omid",
+      "affiliation": "sAIm Labs",
+      "orcid": "0000-0002-7805-6026"
+    }
+  ],
+  "related_identifiers": [
+    {
+      "identifier": "https://arxiv.org/abs/2603.14681",
+      "relation": "isDescribedBy",
+      "scheme": "url"
+    },
+    {
+      "identifier": "https://github.com/osolari/bayesbreak",
+      "relation": "isSupplementTo",
+      "scheme": "url"
+    }
+  ],
+  "keywords": [
+    "bayesian segmentation",
+    "changepoint detection",
+    "dynamic programming",
+    "conjugate inference",
+    "time series",
+    "python"
+  ],
+  "access_right": "open",
+  "notes": "This software release corresponds to arXiv preprint arXiv:2603.14681. E09 (real-data analysis) passed its execution gate but 25 of 31 protocol cells are truncated at their declared k_max; the unrestricted MAP segment counts for those cells are unknown."
+}

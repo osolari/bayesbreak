@@ -131,8 +131,9 @@ and a non-conjugate block-error trade-off study (Laplace / JJ / EP / 1-D quadrat
 
 -   :material-test-tube:{ .lg } **[Tutorials](tutorials/01_quickstart.ipynb)**
 
-    Seven runnable Jupyter notebooks covering quickstart, multivariate,
-    real-data showcase, diagnostics, baselines, large-$n$, latent groups.
+    Ten runnable Jupyter notebooks covering quickstart, multivariate,
+    real-data showcase, diagnostics, baselines, large-$n$, latent groups,
+    and verification notebooks for the DP, families, and advanced models.
 
 -   :material-chart-line:{ .lg } **[Results](results.md)**
 

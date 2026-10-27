@@ -1,6 +1,6 @@
 # Reproducibility and experiments
 
-The single-column paper source is `docs/manuscripts/paper/main.tex` and the companion technical book is `docs/manuscripts/book/main.tex`. Build commands:
+The single-column paper source is `docs/manuscripts/bayesbreak-paper/paper/main.tex` and the companion technical book is `docs/manuscripts/bayesbreak-book/book/main.tex`. Build commands:
 
 ```bash
 make -C docs/manuscripts paper

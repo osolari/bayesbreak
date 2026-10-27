@@ -7,7 +7,8 @@ name = "bayesbreak"
 dynamic = ["version"]
 description = "Generalized hierarchical Bayesian segmentation with exact conjugate and approximate nonconjugate inference"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.10"
 
 authors = [{ name = "Omid Shams Solari", email = "omid.solari@saimai.com" }]
@@ -24,12 +25,12 @@ keywords = [
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "Topic :: Scientific/Engineering :: Mathematics",
     "Typing :: Typed",
@@ -97,7 +98,7 @@ Homepage = "https://github.com/osolari/bayesbreak"
 Documentation = "https://osolari.github.io/bayesbreak"
 Repository = "https://github.com/osolari/bayesbreak"
 Issues = "https://github.com/osolari/bayesbreak/issues"
-Report = "https://github.com/osolari/bayesbreak/blob/main/docs/manuscripts/previews/BayesBreak_Paper_Single_Column.pdf"
+Paper = "https://arxiv.org/abs/2603.14681"
 
 [project.scripts]
 bayesbreak = "bayesbreak.cli:main"

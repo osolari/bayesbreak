@@ -65,7 +65,7 @@ locally — pick one of:
 |---|---|---|
 | `"laplace"` | 1-D Newton + Laplace expansion | routine-specific uniform rate unresolved |
 | `"jj"` | Jaakkola–Jordan variational lower bound | routine-specific uniform rate unresolved |
-| `"pg_vb"` | Pólya–Gamma mean-field | routine-specific uniform rate unresolved |
+| `"pg_vb"` | Alias for `"jj"` — invokes the same Jaakkola–Jordan routine | routine-specific uniform rate unresolved |
 | `"ep"` | Real Minka EP with site normalizers | convergence and uniform rate unresolved |
 | `"gh"` / `"quadrature"` | 1-D Gauss–Hermite (low / high node count) | tail and quadrature error must be established |
 

@@ -1,14 +1,48 @@
 cff-version: 1.2.0
-title: "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs"
+message: >-
+  If BayesBreak is useful to your research, please cite both the software
+  and the companion paper using the entries below.
+title: "BayesBreak: Generalized Hierarchical Bayesian Segmentation"
+abstract: >-
+  BayesBreak is a Python library for offline Bayesian segmentation of
+  univariate and multivariate sequences. It supports irregular designs,
+  multi-sequence shared-boundary pooling, grouped and latent-group
+  templates, exact conjugate inference, and explicitly approximate
+  nonconjugate block calculations with certified perturbation bounds.
+type: software
 version: 2.1.0
 date-released: "2026-10-26"
+license: MIT
 authors:
-  - family-names: Solari
-    given-names: Omid Shams
+  - family-names: Shams Solari
+    given-names: Omid
     email: omid.solari@saimai.com
     affiliation: "sAIm Labs"
+    orcid: "https://orcid.org/0000-0002-7805-6026"
 repository-code: "https://github.com/osolari/bayesbreak"
-url: "https://pypi.org/project/bayesbreak/"
+url: "https://osolari.github.io/bayesbreak"
+keywords:
+  - bayesian-segmentation
+  - changepoint-detection
+  - dynamic-programming
+  - conjugate-inference
+  - time-series
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Shams Solari
+      given-names: Omid
+      affiliation: "sAIm Labs"
+  title: >-
+    Generalized Hierarchical Bayesian Segmentation with Irregular Designs,
+    Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs
+  journal: "arXiv preprint"
+  year: 2026
+  url: "https://arxiv.org/abs/2603.14681"
+  identifiers:
+    - type: url
+      value: "https://arxiv.org/abs/2603.14681"
+      description: arXiv preprint
 references:
   - type: article
     authors:
