@@ -1,6 +1,7 @@
 cff-version: 1.2.0
 title: "Generalized Hierarchical Bayesian Segmentation with Irregular Designs, Multi-Sequence Hierarchies, and Grouped/Latent-Group Designs"
-version: 2.1.0rc0
+version: 2.1.0
+date-released: "2026-10-26"
 authors:
   - family-names: Solari
     given-names: Omid Shams
