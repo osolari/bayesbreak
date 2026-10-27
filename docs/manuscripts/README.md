@@ -1,7 +1,60 @@
 # BayesBreak manuscripts
 
-`paper/main.tex` is the only maintained paper, in the SAIM v1.1 single-column style. `book/main.tex` is the companion long-form technical book. Both share `shared/` LaTeX macros, figures, tables and references.
+Two self-contained manuscript packages, each mirrored to its own Overleaf project:
 
-Build from the repo root using `make -C docs/manuscripts paper` or `make -C docs/manuscripts book`. The source is organized to compile from `docs/manuscripts/` so LaTeX can resolve the common `shared/` paths. Book-wide scientific reconciliation with the latest paper is still outstanding; see `.claude/CURRENT_WORK.md`. The new E00-E10 experiments are planned rather than executed, with full designs in `.claude/skills/bayesbreak-release-audit/`.
+| Package | Entry point | Overleaf project |
+|---|---|---|
+| `bayesbreak-paper/` | `paper/main.tex` | SAIM v1.1 single-column journal paper |
+| `bayesbreak-book/` | `book/main.tex` | Long-form technical book |
 
-Do not recreate other paper formats, authoring copies, development histories, or LaTeX-generated coding-agent instructions here.
+Each package carries its own `shared/` tree (macros, figures, tables, bibliography) so it compiles independently on Overleaf without cross-project `\input` paths.
+
+## Building locally
+
+```bash
+make -C docs/manuscripts paper   # builds bayesbreak-paper → build/bayesbreak-paper.pdf
+make -C docs/manuscripts book    # builds bayesbreak-book  → build/bayesbreak-book.pdf
+make -C docs/manuscripts         # builds both
+make -C docs/manuscripts clean   # removes build/
+```
+
+Requires `latexmk` and a standard TeX Live / MacTeX installation.
+
+## Overleaf sync
+
+Manuscripts are kept in sync with Overleaf via `scripts/overleaf_sync.sh`.
+Always compare before pushing — push uses `--delete` and will remove
+Overleaf-only files without warning.
+
+```bash
+bash scripts/overleaf_sync.sh compare all          # diff local vs Overleaf
+bash scripts/overleaf_sync.sh push all -m "msg"    # push local → Overleaf
+bash scripts/overleaf_sync.sh pull all             # pull Overleaf → local
+bash scripts/overleaf_sync.sh doctor               # diagnose setup issues
+```
+
+Project IDs and subpath mappings are in `overleaf-projects.tsv`.
+Auth comes from the git credential helper for `git.overleaf.com`; no token is
+stored in this repo.
+
+## Structure
+
+```
+docs/manuscripts/
+  bayesbreak-paper/
+    paper/          LaTeX source (sections, figures, saim-paper.cls)
+    shared/         Macros, components, bibliography, tables, figures
+    latexmkrc       Build configuration
+  bayesbreak-book/
+    book/           LaTeX source (chapters, appendices, saim-book.sty)
+    shared/         Macros, components, bibliography, tables, figures
+    latexmkrc       Build configuration
+  Makefile          Local build targets
+  overleaf-projects.tsv   Overleaf project registry
+```
+
+## Key shared macros
+
+Project-wide metadata (title, author, emails, URLs, DOI) is defined in
+`<package>/shared/metadata.tex` and used by both `main.tex` files.
+Edit metadata there; do not hardcode values in section files.
