@@ -9,6 +9,10 @@
 
 **Generalized hierarchical Bayesian segmentation with a scikit-learn compatible API.**
 
+## Abstract
+
+Bayesian change-point and segmentation models provide uncertainty-aware piecewise-constant representations of ordered data, but exact inference is often limited to narrow likelihood classes, single sequences, or index-uniform designs. We present BayesBreak, a modular offline Bayesian segmentation framework that separates local block scoring from global inference: each candidate block supplies a marginal likelihood and any needed moment numerators, while a dynamic program combines these scores to compute posteriors over segment counts, boundaries, and latent signals. For weighted exponential-family likelihoods with conjugate priors, block evidences and posterior moments are available in closed form from cumulative sufficient statistics, enabling exact sum-product inference for p(y|k), p(k|y), boundary marginals, and Bayes regression curves. We distinguish these summaries from the joint MAP segmentation, recovered by a separate max-sum recursion. BayesBreak supports design-aware partition priors for irregular observations, exact pooling across replicates with shared boundaries, and latent-template mixtures with exact EM updates. For non-conjugate GLM blocks, the same DP layer can use deterministic local approximations such as Laplace, variational methods, EP, or quadrature. We prove a posterior-odds stability bound: uniform per-block log-evidence error ε perturbs k-odds and boundary-odds by at most (k+k')ε and 2kε. Validation includes synthetic recovery, calibration, and scaling experiments, plus four real-data illustrations: well-log geology, array-CGH copy number, equity-return volatility, and CpG-atlas methylation.
+
 BayesBreak implements the method developed in the accompanying technical book and
 single-column research paper. Supported conjugate exponential-family models use analytic segment
 integration; numerical segment integration produces explicitly approximate posterior
