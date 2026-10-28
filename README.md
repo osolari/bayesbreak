@@ -82,17 +82,18 @@ raise; `.predict()` still uses `extrapolation="error"` by default.
 
 Key fitted attributes (trailing underscore):
 
-| Attribute | Meaning |
-|---|---|
-| `k_map_` | Posterior-mode segment count |
-| `map_boundaries_` | Joint MAP boundary vector `(0, t_1, …, n)` |
-| `map_segment_means_` | Posterior mean per MAP segment |
-| `k_posterior_` | `P(k \| y)` as an array of length `k_max` |
-| `boundary_marginals_` | `P(b_i = 1 \| y, k_map_)` (the §6 calibration target) |
-| `log_evidence_` | `log p(y)` of the training sequence |
-| `log_C_k_` | Partition-prior normalizer `log C_k` (matches the `length_prior`) |
-| `boundary_coordinates_` | Candidate boundary coordinates `u_0 < … < u_n` |
-| `bayes_curve_mean_` | Posterior-mean latent signal (when `regression_curve != "none"`) |
+
+| Attribute               | Meaning                                                           |
+| ------------------------- | ------------------------------------------------------------------- |
+| `k_map_`                | Posterior-mode segment count                                      |
+| `map_boundaries_`       | Joint MAP boundary vector `(0, t_1, …, n)`                       |
+| `map_segment_means_`    | Posterior mean per MAP segment                                    |
+| `k_posterior_`          | `P(k | y)` as an array of length `k_max`                          |
+| `boundary_marginals_`   | `P(b_i = 1 | y, k_map_)` (the §6 calibration target)             |
+| `log_evidence_`         | `log p(y)` of the training sequence                               |
+| `log_C_k_`              | Partition-prior normalizer `log C_k` (matches the `length_prior`) |
+| `boundary_coordinates_` | Candidate boundary coordinates `u_0 < … < u_n`                   |
+| `bayes_curve_mean_`     | Posterior-mean latent signal (when `regression_curve != "none"`)  |
 
 ## Design-aware partition priors
 
@@ -218,22 +219,23 @@ share the same admissibility convention. Each family also declares a
 
 ## How it maps to the paper
 
-| Paper equation / theorem | Implementation |
-|---|---|
-| Block evidence `A^0_{ij}` (Theorem `ef-integral`) | `_compute_block_evidence` per family in `bayesbreak.families` |
-| Forward / backward sum-product (eq. `LR`) | `bayesbreak.dp.forward_backward` |
-| `P(k \| y)`, `log p(y)` (eq. `post-k`) | `bayesbreak.dp.posterior_over_k` |
-| Conditional boundary-event marginal (eq. `boundary-event`) | `bayesbreak.dp.boundary_event_marginals_fixed_k` |
-| Length-prior absorption + `C_k` (eq. `Atilde`, `Ck-general`) | `compute_log_C_k` + `log_g_table` everywhere |
-| Joint MAP via max-sum + backtracking (eq. `joint-map-k`) | `bayesbreak.dp.max_sum_segmentation` |
-| Bayes regression curve (eq. `segmom`) | `bayesbreak.dp.bayes_regression_curve_{fixed,mixed}_k` |
-| Theorem `multisubject` (replicates) | `bayesbreak.replicates.SharedBoundaryReplicatesSegmenter` |
-| Algorithm `multi-em` (latent-template Jensen MM) | `bayesbreak.mixture.BayesBreakMixtureClassifier` |
-| Posterior-predictive (Prop. `ef-predictive`) | `bayesbreak.prediction.posterior_predictive_logpdf` |
-| Algorithms `predict-group` / `predict-map` | `bayesbreak.prediction.{predict_group, predict_map_signal}` |
-| Non-conjugate block approximations (§`sec:nonconj`) | `BayesBreakLogisticNormal(approx=...)`, `BayesBreakBetaObs(phi=φ_t)` |
-| Stability bound (Prop. `stability`) | `run_non_conjugate_diagnostics` reports reachable-block error |
-| §6 sanity checks + §`prediction-diagnostics` | `bayesbreak.run_dp_diagnostics`, `pit_residuals`, `held_out_log_likelihood_trace` |
+
+| Paper equation / theorem                                     | Implementation                                                                    |
+| -------------------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Block evidence `A^0_{ij}` (Theorem `ef-integral`)            | `_compute_block_evidence` per family in `bayesbreak.families`                     |
+| Forward / backward sum-product (eq. `LR`)                    | `bayesbreak.dp.forward_backward`                                                  |
+| `P(k | y)`, `log p(y)` (eq. `post-k`)                        | `bayesbreak.dp.posterior_over_k`                                                  |
+| Conditional boundary-event marginal (eq. `boundary-event`)   | `bayesbreak.dp.boundary_event_marginals_fixed_k`                                  |
+| Length-prior absorption + `C_k` (eq. `Atilde`, `Ck-general`) | `compute_log_C_k` + `log_g_table` everywhere                                      |
+| Joint MAP via max-sum + backtracking (eq. `joint-map-k`)     | `bayesbreak.dp.max_sum_segmentation`                                              |
+| Bayes regression curve (eq. `segmom`)                        | `bayesbreak.dp.bayes_regression_curve_{fixed,mixed}_k`                            |
+| Theorem `multisubject` (replicates)                          | `bayesbreak.replicates.SharedBoundaryReplicatesSegmenter`                         |
+| Algorithm `multi-em` (latent-template Jensen MM)             | `bayesbreak.mixture.BayesBreakMixtureClassifier`                                  |
+| Posterior-predictive (Prop. `ef-predictive`)                 | `bayesbreak.prediction.posterior_predictive_logpdf`                               |
+| Algorithms `predict-group` / `predict-map`                   | `bayesbreak.prediction.{predict_group, predict_map_signal}`                       |
+| Non-conjugate block approximations (§`sec:nonconj`)         | `BayesBreakLogisticNormal(approx=...)`, `BayesBreakBetaObs(phi=φ_t)`             |
+| Stability bound (Prop. `stability`)                          | `run_non_conjugate_diagnostics` reports reachable-block error                     |
+| §6 sanity checks + §`prediction-diagnostics`               | `bayesbreak.run_dp_diagnostics`, `pit_residuals`, `held_out_log_likelihood_trace` |
 
 ## Real-data loaders
 
@@ -241,12 +243,13 @@ share the same admissibility convention. Each family also declares a
 `load_spx()`, `load_methylation()` — that return a uniform `DatasetBundle`
 (`X`, `y`, `sample_weight`, `true_boundaries`, `source`, `description`):
 
-| Loader | Real source | Falls back to |
-|---|---|---|
-| `load_welllog()` | TCPD `well_log.txt` (n=4050) | seed-pinned NMR analog |
-| `load_cgh()` | `cran/ecp` `ACGH.RData` (2215 × 43, multi-subject) | seed-pinned single-subject analog |
-| `load_spx()` | `yfinance` `^GSPC` log-squared returns | GARCH-like regime analog |
-| `load_methylation()` | `methylKit` chr21 example (n=1904, per-CpG coverage as `φ_t`) | Beta-fraction analog |
+
+| Loader               | Real source                                                    | Falls back to                     |
+| ---------------------- | ---------------------------------------------------------------- | ----------------------------------- |
+| `load_welllog()`     | TCPD `well_log.txt` (n=4050)                                   | seed-pinned NMR analog            |
+| `load_cgh()`         | `cran/ecp` `ACGH.RData` (2215 × 43, multi-subject)            | seed-pinned single-subject analog |
+| `load_spx()`         | `yfinance` `^GSPC` log-squared returns                         | GARCH-like regime analog          |
+| `load_methylation()` | `methylKit` chr21 example (n=1904, per-CpG coverage as `φ_t`) | Beta-fraction analog              |
 
 All loaders accept `simulated=True` to force the analog and emit a banner
 recording provenance.
@@ -316,19 +319,20 @@ The authoritative one-column LaTeX paper is `docs/manuscripts/paper/main.tex`. T
 
 All E00-E10 confirmatory experiments have been executed (gate_pass=True for all):
 
-| Experiment | Artifact SHA | Status |
-|---|---|---|
-| E00 exact oracle | `03a4d1c38bfe08c1` | COMPLETE -- 380/380 oracle checks |
-| E01 Gaussian calibration | `1e84a2673bc5b214` | COMPLETE |
-| E02 family portability | `621e2f1812b22ffa` | COMPLETE |
-| E03 irregular design | `e0d11782dcbd95ff` | COMPLETE |
-| E04 shared boundary | `0d135a601bdf32b1` | COMPLETE |
-| E05 latent templates | `d33f1c5e067d38ff` | COMPLETE |
-| E06 nonconjugate | `9739f69c790aae6f` | COMPLETE; `pg_vb` and `jj` invoke the same JJ routine (documented in §6) |
-| E07 misspecification | `a038ac8e7e4a17b9` | COMPLETE |
-| E08 posterior prediction | `a23d9fe92c02724c` | COMPLETE |
-| E09 real data | `0f5281c46ee8976e` | Execution COMPLETE; scientific completeness INCOMPLETE (CGH pooled and methylation truncated; R baselines unavailable) |
-| E10 scaling | `bece422c9d90093f` | COMPLETE -- memory O(n^2) slope 1.98; E2E 3.25s at n=2048, k_max=20 |
+
+| Experiment               | Artifact SHA       | Status                                                                                                                 |
+| -------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| E00 exact oracle         | `03a4d1c38bfe08c1` | COMPLETE -- 380/380 oracle checks                                                                                      |
+| E01 Gaussian calibration | `1e84a2673bc5b214` | COMPLETE                                                                                                               |
+| E02 family portability   | `621e2f1812b22ffa` | COMPLETE                                                                                                               |
+| E03 irregular design     | `e0d11782dcbd95ff` | COMPLETE                                                                                                               |
+| E04 shared boundary      | `0d135a601bdf32b1` | COMPLETE                                                                                                               |
+| E05 latent templates     | `d33f1c5e067d38ff` | COMPLETE                                                                                                               |
+| E06 nonconjugate         | `9739f69c790aae6f` | COMPLETE; `pg_vb` and `jj` invoke the same JJ routine (documented in §6)                                              |
+| E07 misspecification     | `a038ac8e7e4a17b9` | COMPLETE                                                                                                               |
+| E08 posterior prediction | `a23d9fe92c02724c` | COMPLETE                                                                                                               |
+| E09 real data            | `0f5281c46ee8976e` | Execution COMPLETE; scientific completeness INCOMPLETE (CGH pooled and methylation truncated; R baselines unavailable) |
+| E10 scaling              | `bece422c9d90093f` | COMPLETE -- memory O(n^2) slope 1.98; E2E 3.25s at n=2048, k_max=20                                                    |
 
 ### Execution environment
 
